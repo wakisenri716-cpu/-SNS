@@ -76,6 +76,12 @@ export default function LoginPage() {
           自治体アカウント登録
         </Link>
       </p>
+      <p className="mt-2 text-center text-sm text-gray-500">
+        自治体と連携する企業の方は
+        <Link to="/register-company" className="ml-1 text-blue-600 hover:underline">
+          企業アカウント登録
+        </Link>
+      </p>
     </div>
   );
 }

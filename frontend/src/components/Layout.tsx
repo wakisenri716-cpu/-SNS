@@ -17,7 +17,7 @@ function NavItem({ to, label }: { to: string; label: string }) {
 }
 
 export default function Layout() {
-  const { user, municipality, logout } = useAuth();
+  const { user, municipality, company, logout } = useAuth();
 
   return (
     <div className="flex min-h-screen w-full bg-gray-50 text-gray-900">
@@ -34,10 +34,13 @@ export default function Layout() {
           <NavItem to="/search" label="検索" />
           {municipality ? (
             <NavItem to="/dashboard" label="自治体管理" />
+          ) : company ? (
+            <NavItem to="/company-dashboard" label="企業管理" />
           ) : (
             <>
               {user && <NavItem to="/mypage" label="マイページ" />}
               <NavItem to="/register-municipality" label="自治体の方へ" />
+              <NavItem to="/register-company" label="企業の方へ" />
             </>
           )}
         </nav>
@@ -46,7 +49,11 @@ export default function Layout() {
           {user ? (
             <div className="flex flex-col gap-2">
               <span className="truncate text-sm font-medium text-gray-800">
-                {municipality ? `${municipality.name}（自治体）` : user.name}
+                {municipality
+                  ? `${municipality.name}（自治体）`
+                  : company
+                    ? `${company.name}（企業）`
+                    : user.name}
               </span>
               <button
                 onClick={() => logout()}

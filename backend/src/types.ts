@@ -1,4 +1,4 @@
-export type Role = "USER" | "MUNICIPALITY";
+export type Role = "USER" | "MUNICIPALITY" | "COMPANY";
 
 export interface AuthTokenPayload {
   userId: string;

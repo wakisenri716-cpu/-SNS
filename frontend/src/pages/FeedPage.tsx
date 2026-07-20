@@ -45,7 +45,10 @@ function ReelCard({ reel, onToggleLike }: { reel: Reel; onToggleLike: (reel: Ree
         </div>
         <Link to={`/municipalities/${reel.municipality.id}`} className="pointer-events-auto min-w-0">
           <p className="truncate text-sm font-semibold text-white drop-shadow">{reel.municipality.name}</p>
-          <p className="truncate text-xs text-white/80 drop-shadow">{reel.municipality.prefecture}</p>
+          <p className="truncate text-xs text-white/80 drop-shadow">
+            {reel.municipality.prefecture}
+            {reel.postedByCompany && ` ・投稿: ${reel.postedByCompany.name}`}
+          </p>
         </Link>
       </div>
 

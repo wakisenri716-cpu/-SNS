@@ -43,6 +43,9 @@ export default function MunicipalityProfilePage() {
       {featured && (
         <div className="mt-5 overflow-hidden rounded-xl border border-gray-200">
           <video src={featured.videoUrl} className="aspect-video w-full bg-black object-cover" muted controls />
+          {featured.postedByCompany && (
+            <p className="bg-gray-50 px-3 py-1.5 text-xs text-gray-500">投稿: {featured.postedByCompany.name}</p>
+          )}
         </div>
       )}
 
@@ -86,12 +89,14 @@ export default function MunicipalityProfilePage() {
         <h2 className="mb-2 text-sm font-semibold text-gray-600">投稿一覧</h2>
         <div className="grid grid-cols-2 gap-2">
           {(featured ? rest : []).map((reel) => (
-            <video
-              key={reel.id}
-              src={reel.videoUrl}
-              className="aspect-video w-full rounded-lg bg-gray-200 object-cover"
-              muted
-            />
+            <div key={reel.id} className="overflow-hidden rounded-lg">
+              <video src={reel.videoUrl} className="aspect-video w-full bg-gray-200 object-cover" muted />
+              {reel.postedByCompany && (
+                <p className="truncate bg-gray-50 px-2 py-1 text-[11px] text-gray-500">
+                  投稿: {reel.postedByCompany.name}
+                </p>
+              )}
+            </div>
           ))}
         </div>
       </div>

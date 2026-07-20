@@ -1,10 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { api, setAuthToken, setUnauthorizedHandler } from "../api/client";
-import type { AuthUser, Municipality } from "../types";
+import type { AuthUser, Company, Municipality } from "../types";
 
 interface AuthState {
   user: AuthUser | null;
   municipality: Municipality | null;
+  company: Company | null;
   token: string | null;
   ready: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -16,6 +17,13 @@ interface AuthState {
     municipalityName: string;
     prefecture: string;
   }) => Promise<void>;
+  registerCompany: (input: {
+    email: string;
+    password: string;
+    name: string;
+    companyName: string;
+    municipalityId: string;
+  }) => Promise<void>;
   logout: (notice?: string) => void;
   setMunicipality: (m: Municipality) => void;
 }
@@ -25,16 +33,25 @@ const AuthContext = createContext<AuthState | null>(null);
 const STORAGE_KEY = "tourism-sns-auth";
 export const AUTH_NOTICE_KEY = "tourism-sns-auth-notice";
 
+interface Session {
+  token: string;
+  user: AuthUser;
+  municipality: Municipality | null;
+  company: Company | null;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [municipality, setMunicipalityState] = useState<Municipality | null>(null);
+  const [company, setCompany] = useState<Company | null>(null);
   const [ready, setReady] = useState(false);
 
   function logout(notice?: string) {
     setToken(null);
     setUser(null);
     setMunicipalityState(null);
+    setCompany(null);
     setAuthToken(null);
     localStorage.removeItem(STORAGE_KEY);
     if (notice) sessionStorage.setItem(AUTH_NOTICE_KEY, notice);
@@ -62,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setToken(parsed.token);
           setUser(data.user);
           setMunicipalityState(data.municipality);
+          setCompany(data.company);
         })
         .catch(() => {
           logout();
@@ -73,22 +91,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  function persist(next: { token: string; user: AuthUser; municipality: Municipality | null }) {
+  function persist(next: Session) {
     setToken(next.token);
     setUser(next.user);
     setMunicipalityState(next.municipality);
+    setCompany(next.company);
     setAuthToken(next.token);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   }
 
   async function login(email: string, password: string) {
     const { data } = await api.post("/auth/login", { email, password });
-    persist({ token: data.token, user: data.user, municipality: data.municipality });
+    persist({ token: data.token, user: data.user, municipality: data.municipality, company: data.company });
   }
 
   async function registerUser(email: string, password: string, name: string) {
     const { data } = await api.post("/auth/register", { email, password, name });
-    persist({ token: data.token, user: data.user, municipality: null });
+    persist({ token: data.token, user: data.user, municipality: null, company: null });
   }
 
   async function registerMunicipality(input: {
@@ -99,19 +118,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     prefecture: string;
   }) {
     const { data } = await api.post("/auth/register-municipality", input);
-    persist({ token: data.token, user: data.user, municipality: data.municipality });
+    persist({ token: data.token, user: data.user, municipality: data.municipality, company: null });
+  }
+
+  async function registerCompany(input: {
+    email: string;
+    password: string;
+    name: string;
+    companyName: string;
+    municipalityId: string;
+  }) {
+    const { data } = await api.post("/auth/register-company", input);
+    persist({ token: data.token, user: data.user, municipality: null, company: data.company });
   }
 
   function setMunicipality(m: Municipality) {
     setMunicipalityState(m);
     if (token && user) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ token, user, municipality: m }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ token, user, municipality: m, company }));
     }
   }
 
   const value = useMemo(
-    () => ({ user, municipality, token, ready, login, registerUser, registerMunicipality, logout, setMunicipality }),
-    [user, municipality, token, ready]
+    () => ({
+      user,
+      municipality,
+      company,
+      token,
+      ready,
+      login,
+      registerUser,
+      registerMunicipality,
+      registerCompany,
+      logout,
+      setMunicipality,
+    }),
+    [user, municipality, company, token, ready]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

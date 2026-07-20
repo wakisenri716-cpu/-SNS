@@ -1,10 +1,17 @@
-export type Role = "USER" | "MUNICIPALITY";
+export type Role = "USER" | "MUNICIPALITY" | "COMPANY";
 
 export interface AuthUser {
   id: string;
   email: string;
   name: string;
   role: Role;
+}
+
+export interface Company {
+  id: string;
+  name: string;
+  municipalityId: string;
+  municipality: { id: string; name: string; prefecture: string };
 }
 
 export interface OtaLink {
@@ -46,6 +53,7 @@ export interface Reel {
   viewCount: number;
   createdAt: string;
   municipality: { id: string; name: string; avatarUrl: string | null; prefecture: string };
+  postedByCompany: { id: string; name: string } | null;
   likeCount: number;
   commentCount: number;
   likedByMe: boolean;

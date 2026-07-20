@@ -47,10 +47,16 @@ router.get("/", async (_req, res) => {
 router.get("/:id", async (req, res) => {
   const m = await prisma.municipality.findUnique({
     where: { id: req.params.id },
-    include: { reels: { orderBy: { createdAt: "desc" } } },
+    include: {
+      reels: {
+        orderBy: { createdAt: "desc" },
+        include: { company: { select: { id: true, name: true } } },
+      },
+    },
   });
   if (!m) return res.status(404).json({ error: "自治体が見つかりません" });
-  res.json({ ...serializeMunicipality(m), reels: m.reels });
+  const reels = m.reels.map(({ company, ...reel }) => ({ ...reel, postedByCompany: company ?? null }));
+  res.json({ ...serializeMunicipality(m), reels });
 });
 
 // Get own profile (municipality-only)
@@ -108,5 +114,19 @@ router.post(
     res.json(serializeMunicipality(updated));
   }
 );
+
+// Companies linked to this municipality (read-only — companies join themselves by
+// picking this municipality at registration; see POST /api/auth/register-company).
+router.get("/me/companies", requireAuth, requireRole("MUNICIPALITY"), async (req, res) => {
+  const municipality = await prisma.municipality.findUnique({ where: { userId: req.auth!.userId } });
+  if (!municipality) return res.status(404).json({ error: "自治体プロフィールが見つかりません" });
+
+  const companies = await prisma.company.findMany({
+    where: { municipalityId: municipality.id },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, name: true, createdAt: true },
+  });
+  res.json(companies);
+});
 
 export default router;
