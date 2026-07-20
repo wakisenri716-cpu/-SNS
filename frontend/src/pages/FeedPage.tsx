@@ -25,58 +25,52 @@ function ReelCard({ reel, onToggleLike }: { reel: Reel; onToggleLike: (reel: Ree
   }, []);
 
   return (
-    <article className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-      <div className="flex items-center gap-3 px-4 py-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold text-gray-600">
+    <article className="relative overflow-hidden rounded-xl bg-black">
+      <video
+        ref={videoRef}
+        src={reel.videoUrl}
+        className="aspect-video w-full object-cover"
+        loop
+        muted
+        playsInline
+      />
+
+      <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-black/60 to-transparent p-4">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20 text-sm font-semibold text-white ring-2 ring-white/40">
           {reel.municipality.avatarUrl ? (
             <img src={reel.municipality.avatarUrl} className="h-full w-full rounded-full object-cover" />
           ) : (
             reel.municipality.name.slice(0, 1)
           )}
         </div>
-        <Link to={`/municipalities/${reel.municipality.id}`} className="min-w-0">
-          <p className="truncate text-sm font-semibold text-gray-900">{reel.municipality.name}</p>
-          <p className="truncate text-xs text-gray-500">{reel.municipality.prefecture}</p>
+        <Link to={`/municipalities/${reel.municipality.id}`} className="pointer-events-auto min-w-0">
+          <p className="truncate text-sm font-semibold text-white drop-shadow">{reel.municipality.name}</p>
+          <p className="truncate text-xs text-white/80 drop-shadow">{reel.municipality.prefecture}</p>
         </Link>
       </div>
 
-      <video
-        ref={videoRef}
-        src={reel.videoUrl}
-        className="aspect-video w-full bg-black object-cover"
-        loop
-        muted
-        playsInline
-        controls
-      />
-
-      <div className="flex items-center gap-4 px-4 pt-3">
-        <button onClick={() => onToggleLike(reel)} className="flex items-center gap-1.5">
-          <span className={`text-xl ${reel.likedByMe ? "text-red-500" : "text-gray-700"}`}>
-            {reel.likedByMe ? "♥" : "♡"}
-          </span>
-          <span className="text-sm text-gray-700">{reel.likeCount}</span>
-        </button>
-        <span className="flex items-center gap-1.5 text-sm text-gray-700">
-          <span className="text-xl">💬</span>
-          {reel.commentCount}
-        </span>
-      </div>
-
-      <div className="px-4 pb-4 pt-2">
-        <p className="text-sm text-gray-800">{reel.caption}</p>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 pt-10">
+        <p className="text-sm text-white drop-shadow">{reel.caption}</p>
         {reel.locationName && (
-          <p className="mt-1.5 text-xs text-gray-500">
+          <p className="mt-1.5 text-xs text-white/80 drop-shadow">
             📍 {reel.locationName}
             {reel.transitSuggestion && (
               <>
                 {" "}
                 ・最寄り駅から徒歩+電車で約{reel.transitSuggestion.totalDurationMin}分
-                <span className="ml-1 rounded bg-gray-100 px-1.5 py-0.5 text-gray-400">交通情報は仮データ</span>
+                <span className="ml-1 rounded bg-white/15 px-1.5 py-0.5">交通情報は仮データ</span>
               </>
             )}
           </p>
         )}
+        <button onClick={() => onToggleLike(reel)} className="pointer-events-auto mt-2 flex items-center gap-1.5">
+          <span className={`text-xl ${reel.likedByMe ? "text-red-500" : "text-white"}`}>
+            {reel.likedByMe ? "♥" : "♡"}
+          </span>
+          <span className="text-sm text-white">{reel.likeCount}</span>
+          <span className="ml-3 text-xl text-white">💬</span>
+          <span className="text-sm text-white">{reel.commentCount}</span>
+        </button>
       </div>
     </article>
   );
@@ -111,7 +105,7 @@ export default function FeedPage() {
   if (loading) return <p className="p-10 text-center text-gray-400">読み込み中...</p>;
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
+    <div className="mx-auto flex max-w-4xl flex-col gap-4 px-6 py-8">
       {reels.length === 0 ? (
         <p className="rounded-xl border border-dashed border-gray-300 p-10 text-center text-gray-400">
           まだ投稿がありません。自治体アカウントで最初のリールを投稿してみましょう。
