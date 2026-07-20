@@ -39,22 +39,26 @@ export default function SearchPage() {
   }, [q]);
 
   return (
-    <div className="p-4">
+    <div className="mx-auto max-w-3xl px-4 py-8">
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="地域名・キーワードで検索"
-        className="w-full rounded border border-white/20 bg-transparent p-2 text-sm"
+        className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-500"
       />
 
       {q.trim() ? (
-        <div className="mt-4 flex flex-col gap-4">
+        <div className="mt-6 flex flex-col gap-6">
           {municipalities.length > 0 && (
             <div>
-              <h3 className="mb-2 text-xs font-semibold text-white/60">自治体</h3>
+              <h3 className="mb-2 text-xs font-semibold text-gray-500">自治体</h3>
               <div className="flex flex-col gap-2">
                 {municipalities.map((m) => (
-                  <Link key={m.id} to={`/municipalities/${m.id}`} className="rounded border border-white/10 p-2 text-sm">
+                  <Link
+                    key={m.id}
+                    to={`/municipalities/${m.id}`}
+                    className="rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-800 hover:bg-gray-50"
+                  >
                     {m.name}（{m.prefecture}）
                   </Link>
                 ))}
@@ -63,28 +67,31 @@ export default function SearchPage() {
           )}
           {reels.length > 0 && (
             <div>
-              <h3 className="mb-2 text-xs font-semibold text-white/60">投稿</h3>
-              <div className="grid grid-cols-3 gap-1">
+              <h3 className="mb-2 text-xs font-semibold text-gray-500">投稿</h3>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {reels.map((r) => (
-                  <video key={r.id} src={r.videoUrl} className="aspect-[9/16] w-full bg-neutral-800 object-cover" muted />
+                  <video
+                    key={r.id}
+                    src={r.videoUrl}
+                    className="aspect-video w-full rounded-lg bg-gray-200 object-cover"
+                    muted
+                  />
                 ))}
               </div>
             </div>
           )}
           {municipalities.length === 0 && reels.length === 0 && (
-            <p className="text-sm text-white/50">該当する結果が見つかりませんでした</p>
+            <p className="text-sm text-gray-400">該当する結果が見つかりませんでした</p>
           )}
         </div>
       ) : (
-        <div className="mt-4">
-          <h3 className="mb-2 text-xs font-semibold text-white/60">
-            AIレコメンド（人気・新着ベース）
-          </h3>
-          <div className="grid grid-cols-3 gap-1">
+        <div className="mt-6">
+          <h3 className="mb-2 text-xs font-semibold text-gray-500">AIレコメンド（人気・新着ベース）</h3>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {recommend.map((r) => (
               <Link key={r.id} to={`/municipalities/${r.municipality.id}`} className="relative block">
-                <video src={r.videoUrl} className="aspect-[9/16] w-full bg-neutral-800 object-cover" muted />
-                <span className="absolute bottom-1 left-1 rounded bg-black/60 px-1 text-[10px]">
+                <video src={r.videoUrl} className="aspect-video w-full rounded-lg bg-gray-200 object-cover" muted />
+                <span className="absolute bottom-1.5 left-1.5 rounded bg-black/60 px-1.5 py-0.5 text-[10px] text-white">
                   {r.municipality.name}
                 </span>
               </Link>

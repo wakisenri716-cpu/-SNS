@@ -39,10 +39,13 @@ export default function RegisterMunicipalityPage() {
     }
   }
 
+  const inputClass =
+    "rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:border-blue-500";
+
   return (
-    <div className="mx-auto max-w-sm p-6">
-      <h1 className="mb-2 text-xl font-bold">自治体アカウント登録</h1>
-      <p className="mb-6 text-sm text-white/60">
+    <div className="mx-auto max-w-sm rounded-xl border border-gray-200 bg-white p-8 shadow-sm my-12">
+      <h1 className="mb-2 text-center text-xl font-bold text-gray-900">自治体アカウント登録</h1>
+      <p className="mb-6 text-center text-sm text-gray-500">
         リール動画を投稿できるのは自治体アカウントのみです。観光PR担当の自治体職員の方はこちらから登録してください。
       </p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -51,12 +54,12 @@ export default function RegisterMunicipalityPage() {
           placeholder="自治体名（例：○○市）"
           value={form.municipalityName}
           onChange={(e) => setForm({ ...form, municipalityName: e.target.value })}
-          className="rounded border border-white/20 bg-transparent px-3 py-2"
+          className={inputClass}
         />
         <select
           value={form.prefecture}
           onChange={(e) => setForm({ ...form, prefecture: e.target.value })}
-          className="rounded border border-white/20 bg-black px-3 py-2"
+          className={inputClass}
         >
           {PREFECTURES.map((p) => (
             <option key={p} value={p}>
@@ -69,7 +72,7 @@ export default function RegisterMunicipalityPage() {
           placeholder="担当者名"
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
-          className="rounded border border-white/20 bg-transparent px-3 py-2"
+          className={inputClass}
         />
         <input
           type="email"
@@ -77,7 +80,7 @@ export default function RegisterMunicipalityPage() {
           placeholder="担当者メールアドレス"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
-          className="rounded border border-white/20 bg-transparent px-3 py-2"
+          className={inputClass}
         />
         <input
           type="password"
@@ -86,13 +89,13 @@ export default function RegisterMunicipalityPage() {
           placeholder="パスワード（8文字以上）"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
-          className="rounded border border-white/20 bg-transparent px-3 py-2"
+          className={inputClass}
         />
-        {error && <p className="text-sm text-red-400">登録に失敗しました。入力内容をご確認ください。</p>}
+        {error && <p className="text-sm text-red-500">登録に失敗しました。入力内容をご確認ください。</p>}
         <button
           type="submit"
           disabled={submitting}
-          className="rounded bg-purple-600 py-2 font-medium disabled:opacity-50"
+          className="rounded-lg bg-blue-600 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
         >
           自治体として登録する
         </button>

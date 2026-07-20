@@ -2,6 +2,9 @@ import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
+const inputClass =
+  "rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:border-blue-500";
+
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -25,8 +28,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto max-w-sm p-6">
-      <h1 className="mb-6 text-xl font-bold">ログイン</h1>
+    <div className="mx-auto max-w-sm rounded-xl border border-gray-200 bg-white p-8 shadow-sm my-12">
+      <h1 className="mb-6 text-center text-xl font-bold text-gray-900">ログイン</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
           type="email"
@@ -34,7 +37,7 @@ export default function LoginPage() {
           placeholder="メールアドレス"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="rounded border border-white/20 bg-transparent px-3 py-2"
+          className={inputClass}
         />
         <input
           type="password"
@@ -42,26 +45,26 @@ export default function LoginPage() {
           placeholder="パスワード"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="rounded border border-white/20 bg-transparent px-3 py-2"
+          className={inputClass}
         />
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && <p className="text-sm text-red-500">{error}</p>}
         <button
           type="submit"
           disabled={submitting}
-          className="rounded bg-purple-600 py-2 font-medium disabled:opacity-50"
+          className="rounded-lg bg-blue-600 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
         >
           ログイン
         </button>
       </form>
-      <p className="mt-4 text-sm text-white/60">
+      <p className="mt-4 text-center text-sm text-gray-500">
         観光客として初めての方は
-        <Link to="/register" className="ml-1 text-purple-400">
+        <Link to="/register" className="ml-1 text-blue-600 hover:underline">
           新規登録
         </Link>
       </p>
-      <p className="mt-2 text-sm text-white/60">
+      <p className="mt-2 text-center text-sm text-gray-500">
         自治体の方は
-        <Link to="/register-municipality" className="ml-1 text-purple-400">
+        <Link to="/register-municipality" className="ml-1 text-blue-600 hover:underline">
           自治体アカウント登録
         </Link>
       </p>
