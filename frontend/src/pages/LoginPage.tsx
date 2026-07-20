@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
+import { AUTH_NOTICE_KEY, useAuth } from "../auth/AuthContext";
 
 const inputClass =
   "rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:border-blue-500";
@@ -12,6 +12,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [notice] = useState(() => {
+    const stored = sessionStorage.getItem(AUTH_NOTICE_KEY);
+    if (stored) sessionStorage.removeItem(AUTH_NOTICE_KEY);
+    return stored;
+  });
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -30,6 +35,9 @@ export default function LoginPage() {
   return (
     <div className="mx-auto max-w-sm rounded-xl border border-gray-200 bg-white p-8 shadow-sm my-12">
       <h1 className="mb-6 text-center text-xl font-bold text-gray-900">ログイン</h1>
+      {notice && (
+        <p className="mb-4 rounded-lg bg-amber-50 px-3 py-2 text-center text-sm text-amber-700">{notice}</p>
+      )}
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
           type="email"

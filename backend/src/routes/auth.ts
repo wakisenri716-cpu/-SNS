@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { prisma } from "../prisma";
-import { JWT_SECRET } from "../middleware/auth";
+import { JWT_SECRET, requireAuth } from "../middleware/auth";
 
 const router = Router();
 
@@ -111,6 +111,25 @@ router.post("/login", async (req, res) => {
   const token = issueToken(user.id, user.role as "USER" | "MUNICIPALITY");
   res.json({
     token,
+    user: { id: user.id, email: user.email, name: user.name, role: user.role },
+    municipality: user.municipality ?? null,
+  });
+});
+
+// Session check: confirms the token's user still exists. Needed because the demo
+// deployment uses ephemeral storage — the database can reset independently of a
+// browser's saved login, leaving a token that "looks" valid (correct signature)
+// but points at a user row that's gone. Callers use this to detect that case and
+// force a fresh login instead of failing confusingly deeper in the app.
+router.get("/me", requireAuth, async (req, res) => {
+  const user = await prisma.user.findUnique({
+    where: { id: req.auth!.userId },
+    include: { municipality: true },
+  });
+  if (!user) {
+    return res.status(401).json({ error: "セッションが無効です。再度ログインしてください" });
+  }
+  res.json({
     user: { id: user.id, email: user.email, name: user.name, role: user.role },
     municipality: user.municipality ?? null,
   });

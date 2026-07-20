@@ -35,7 +35,10 @@ export default function Layout() {
           {municipality ? (
             <NavItem to="/dashboard" label="自治体管理" />
           ) : (
-            <NavItem to="/register-municipality" label="自治体の方へ" />
+            <>
+              {user && <NavItem to="/mypage" label="マイページ" />}
+              <NavItem to="/register-municipality" label="自治体の方へ" />
+            </>
           )}
         </nav>
 
@@ -46,7 +49,7 @@ export default function Layout() {
                 {municipality ? `${municipality.name}（自治体）` : user.name}
               </span>
               <button
-                onClick={logout}
+                onClick={() => logout()}
                 className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100"
               >
                 ログアウト

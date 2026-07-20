@@ -65,6 +65,25 @@ router.get("/", optionalAuth, async (req, res) => {
   res.json({ items, nextCursor });
 });
 
+// Reels the signed-in user has liked (used by the read-only tourist "マイページ").
+// Must be registered before "/:id" so "liked" isn't matched as a reel id.
+router.get("/liked", requireAuth, async (req, res) => {
+  const likes = await prisma.like.findMany({
+    where: { userId: req.auth!.userId },
+    orderBy: { createdAt: "desc" },
+    include: {
+      reel: {
+        include: {
+          municipality: { select: { id: true, name: true, avatarUrl: true, prefecture: true } },
+          _count: { select: { likes: true, comments: true } },
+        },
+      },
+    },
+  });
+
+  res.json({ items: likes.map((l) => serializeReel(l.reel, true)) });
+});
+
 router.get("/:id", optionalAuth, async (req, res) => {
   const reel = await prisma.reel.findUnique({
     where: { id: req.params.id },
