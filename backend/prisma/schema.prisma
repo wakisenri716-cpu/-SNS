@@ -1,0 +1,79 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// SQLite has no native enum support; role is validated in application code (see src/types.ts)
+// Valid values: "USER" | "MUNICIPALITY"
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String
+  createdAt    DateTime @default(now())
+
+  municipality Municipality?
+  likes        Like[]
+  comments     Comment[]
+}
+
+model Municipality {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String
+  prefecture     String
+  description    String   @default("")
+  avatarUrl      String?
+  accessInfo     String   @default("")
+  lodgingInfo    String   @default("")
+  restaurantInfo String   @default("")
+  tourismInfo    String   @default("")
+  otaLinks       String   @default("[]") // JSON string: [{ label, url }]
+  createdAt      DateTime @default(now())
+
+  reels Reel[]
+}
+
+model Reel {
+  id             String   @id @default(cuid())
+  municipalityId String
+  municipality   Municipality @relation(fields: [municipalityId], references: [id], onDelete: Cascade)
+  videoUrl       String
+  thumbnailUrl   String?
+  caption        String   @default("")
+  locationName   String?
+  locationLat    Float?
+  locationLng    Float?
+  viewCount      Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  likes    Like[]
+  comments Comment[]
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reelId    String
+  reel      Reel     @relation(fields: [reelId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, reelId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reelId    String
+  reel      Reel     @relation(fields: [reelId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime @default(now())
+}

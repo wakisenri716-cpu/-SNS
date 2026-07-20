@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: tabitube
+    env: node
+    plan: free
+    buildCommand: bash render-build.sh
+    startCommand: node backend/dist/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: file:./dev.db
+      - key: UPLOAD_DIR
+        value: ./uploads
+      - key: JWT_SECRET
+        generateValue: true
