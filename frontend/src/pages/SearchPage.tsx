@@ -44,7 +44,7 @@ export default function SearchPage() {
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="地域名・キーワードで検索"
-        className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-500"
+        className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-teal-500"
       />
 
       {q.trim() ? (

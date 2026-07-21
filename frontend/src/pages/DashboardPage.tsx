@@ -51,26 +51,26 @@ function ProfileTabEditor({
           <button
             key={t.key}
             onClick={() => selectTab(t.key)}
-            className={`flex-1 py-3 text-sm font-medium hover:bg-gray-50 ${
-              tab === t.key ? "border-b-2 border-blue-500 text-gray-900" : "text-gray-500"
+            className={`flex-1 py-3 text-sm font-medium hover:bg-teal-50/50 ${
+              tab === t.key ? "border-b-2 border-teal-500 text-gray-900" : "text-gray-500"
             }`}
           >
             {t.label}
           </button>
         ))}
       </div>
-      <div className="border-b border-gray-200 p-4">
+      <div className="border-b border-gray-200 p-4 lg:p-6">
         <textarea
           value={value}
           onChange={(e) => setValue(e.target.value)}
           rows={4}
           placeholder={`${TABS.find((t) => t.key === tab)!.label}を入力`}
-          className="block w-full rounded-lg border border-gray-300 bg-white p-3 text-sm text-gray-900 outline-none focus:border-blue-500"
+          className="block w-full rounded-lg border border-gray-300 bg-white p-3 text-sm text-gray-900 outline-none focus:border-teal-500"
         />
         <button
           onClick={save}
           disabled={saving}
-          className="mt-2 rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          className="mt-2 rounded-lg bg-teal-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
         >
           この項目を保存
         </button>
@@ -103,23 +103,23 @@ export default function DashboardPage() {
   const [featured, ...rest] = reels;
 
   return (
-    <div className="mx-auto max-w-2xl border-x border-gray-200 bg-white">
-      <div className="relative aspect-[3/1] w-full bg-gray-200">
+    <div className="mx-auto my-6 w-full max-w-2xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:max-w-4xl">
+      <div className="relative aspect-[3/1] w-full bg-gradient-to-br from-teal-100 to-cyan-100">
         {featured ? (
           <AutoplayVideo src={featured.videoUrl} className="h-full w-full object-cover" />
         ) : (
           <button
             onClick={() => setShowUploader(true)}
-            className="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300 text-gray-400 hover:text-gray-500"
+            className="flex h-full w-full items-center justify-center text-teal-400 hover:text-teal-500"
           >
             <span className="text-5xl leading-none">＋</span>
           </button>
         )}
       </div>
 
-      <div className="px-4">
-        <div className="-mt-10 flex items-end justify-between">
-          <label className="group relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-gray-200 text-2xl font-semibold text-gray-600 ring-4 ring-white">
+      <div className="px-4 lg:px-6">
+        <div className="-mt-10 flex items-end justify-between lg:-mt-12">
+          <label className="group relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-teal-50 text-2xl font-semibold text-teal-700 ring-4 ring-white lg:h-24 lg:w-24">
             {municipality.avatarUrl ? (
               <img src={municipality.avatarUrl} className="h-full w-full rounded-full object-cover" />
             ) : (
@@ -140,10 +140,13 @@ export default function DashboardPage() {
           </label>
         </div>
 
-        <div className="mt-3">
+        <div className="mt-3 flex items-center gap-2">
           <h1 className="text-xl font-bold text-gray-900">{municipality.name}</h1>
-          <p className="text-sm text-gray-500">@{municipality.prefecture} ・管理画面</p>
+          <span className="inline-flex items-center gap-1 rounded-full bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
+            🏛️ 自治体公式
+          </span>
         </div>
+        <p className="text-sm text-gray-500">{municipality.prefecture} ・管理画面</p>
 
         <div className="mt-3 flex gap-4 border-b border-gray-200 pb-3 text-sm text-gray-600">
           <span>
@@ -157,15 +160,15 @@ export default function DashboardPage() {
 
       <ProfileTabEditor municipality={municipality} onUpdated={setMunicipality} />
 
-      <div className="grid grid-cols-3 gap-0.5 p-0.5">
+      <div className="grid grid-cols-3 gap-2 p-3 lg:grid-cols-4 lg:gap-3 lg:p-4">
         <button
           onClick={() => setShowUploader(true)}
-          className="flex aspect-square w-full items-center justify-center border-2 border-dashed border-gray-300 text-gray-300 hover:border-gray-400 hover:text-gray-400"
+          className="flex aspect-square w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-300 hover:border-teal-400 hover:text-teal-500"
         >
           <span className="text-4xl leading-none">＋</span>
         </button>
         {(featured ? rest : []).map((reel) => (
-          <div key={reel.id} className="group relative overflow-hidden">
+          <div key={reel.id} className="group relative overflow-hidden rounded-lg">
             <video src={reel.videoUrl} className="aspect-square w-full bg-gray-200 object-cover" muted />
             {reel.postedByCompany && (
               <p className="absolute inset-x-0 bottom-0 truncate bg-black/50 px-1.5 py-0.5 text-[10px] text-white">
@@ -185,14 +188,14 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <div className="border-t border-gray-200 p-4">
+      <div className="border-t border-gray-200 p-4 lg:p-6">
         <h3 className="mb-2 text-sm font-semibold text-gray-600">紐づいている企業（{companies.length}件）</h3>
         {companies.length === 0 ? (
           <p className="rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-400">
             まだこの自治体に紐づいた企業アカウントはありません。
           </p>
         ) : (
-          <ul className="flex flex-col gap-2">
+          <ul className="flex flex-col gap-2 lg:flex-row lg:flex-wrap">
             {companies.map((c) => (
               <li key={c.id} className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700">
                 {c.name}

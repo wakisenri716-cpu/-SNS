@@ -5,7 +5,7 @@ import { useAuth } from "../auth/AuthContext";
 import type { Municipality } from "../types";
 
 const inputClass =
-  "rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:border-blue-500";
+  "rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:border-teal-500";
 
 export default function RegisterCompanyPage() {
   const { registerCompany } = useAuth();
@@ -105,7 +105,7 @@ export default function RegisterCompanyPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-lg bg-blue-600 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            className="rounded-lg bg-teal-600 py-2 font-medium text-white hover:bg-teal-700 disabled:opacity-50"
           >
             企業として登録する
           </button>

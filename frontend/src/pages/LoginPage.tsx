@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AUTH_NOTICE_KEY, useAuth } from "../auth/AuthContext";
 
 const inputClass =
-  "rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:border-blue-500";
+  "rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:border-teal-500";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -59,26 +59,26 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-lg bg-blue-600 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          className="rounded-lg bg-teal-600 py-2 font-medium text-white hover:bg-teal-700 disabled:opacity-50"
         >
           ログイン
         </button>
       </form>
       <p className="mt-4 text-center text-sm text-gray-500">
         観光客として初めての方は
-        <Link to="/register" className="ml-1 text-blue-600 hover:underline">
+        <Link to="/register" className="ml-1 text-teal-600 hover:underline">
           新規登録
         </Link>
       </p>
       <p className="mt-2 text-center text-sm text-gray-500">
         自治体の方は
-        <Link to="/register-municipality" className="ml-1 text-blue-600 hover:underline">
+        <Link to="/register-municipality" className="ml-1 text-teal-600 hover:underline">
           自治体アカウント登録
         </Link>
       </p>
       <p className="mt-2 text-center text-sm text-gray-500">
         自治体と連携する企業の方は
-        <Link to="/register-company" className="ml-1 text-blue-600 hover:underline">
+        <Link to="/register-company" className="ml-1 text-teal-600 hover:underline">
           企業アカウント登録
         </Link>
       </p>

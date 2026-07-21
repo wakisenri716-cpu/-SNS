@@ -30,18 +30,14 @@ export default function MunicipalityProfilePage() {
   const [featured, ...rest] = municipality.reels ?? [];
 
   return (
-    <div className="mx-auto max-w-2xl border-x border-gray-200 bg-white">
-      <div className="relative aspect-[3/1] w-full bg-gray-200">
-        {featured ? (
-          <AutoplayVideo src={featured.videoUrl} className="h-full w-full object-cover" />
-        ) : (
-          <div className="h-full w-full bg-gradient-to-br from-gray-200 to-gray-300" />
-        )}
+    <div className="mx-auto my-6 w-full max-w-2xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:max-w-4xl">
+      <div className="relative aspect-[3/1] w-full bg-gradient-to-br from-teal-100 to-cyan-100">
+        {featured && <AutoplayVideo src={featured.videoUrl} className="h-full w-full object-cover" />}
       </div>
 
-      <div className="px-4">
-        <div className="-mt-10 flex items-end justify-between">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-200 text-2xl font-semibold text-gray-600 ring-4 ring-white">
+      <div className="px-4 lg:px-6">
+        <div className="-mt-10 flex items-end justify-between lg:-mt-12">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-teal-50 text-2xl font-semibold text-teal-700 ring-4 ring-white lg:h-24 lg:w-24">
             {municipality.avatarUrl ? (
               <img src={municipality.avatarUrl} className="h-full w-full rounded-full object-cover" />
             ) : (
@@ -50,12 +46,14 @@ export default function MunicipalityProfilePage() {
           </div>
         </div>
 
-        <div className="mt-3">
+        <div className="mt-3 flex items-center gap-2">
           <h1 className="text-xl font-bold text-gray-900">{municipality.name}</h1>
-          <p className="text-sm text-gray-500">@{municipality.prefecture}</p>
+          <span className="inline-flex items-center gap-1 rounded-full bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
+            🏛️ 自治体公式
+          </span>
         </div>
 
-        {municipality.description && <p className="mt-3 text-sm text-gray-800">{municipality.description}</p>}
+        {municipality.description && <p className="mt-2 text-sm text-gray-800">{municipality.description}</p>}
 
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
           <span>📍 {municipality.prefecture}</span>
@@ -74,29 +72,29 @@ export default function MunicipalityProfilePage() {
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`flex-1 py-3 text-sm font-medium hover:bg-gray-50 ${
-              tab === t.key ? "border-b-2 border-blue-500 text-gray-900" : "text-gray-500"
+            className={`flex-1 py-3 text-sm font-medium hover:bg-teal-50/50 ${
+              tab === t.key ? "border-b-2 border-teal-500 text-gray-900" : "text-gray-500"
             }`}
           >
             {t.label}
           </button>
         ))}
       </div>
-      <div className="whitespace-pre-wrap border-b border-gray-200 p-4 text-sm text-gray-700">
+      <div className="whitespace-pre-wrap border-b border-gray-200 p-4 text-sm text-gray-700 lg:p-6">
         {municipality[tab] || "情報が未登録です"}
       </div>
 
       {municipality.otaLinks.length > 0 && (
-        <div className="border-b border-gray-200 p-4">
+        <div className="border-b border-gray-200 p-4 lg:p-6">
           <h2 className="mb-2 text-sm font-semibold text-gray-600">宿・予約を探す</h2>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 lg:flex-row">
             {municipality.otaLinks.map((link) => (
               <a
                 key={link.url}
                 href={link.url}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 hover:bg-gray-50"
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 hover:border-teal-300 hover:bg-teal-50"
               >
                 {link.label} ↗
               </a>
@@ -105,9 +103,9 @@ export default function MunicipalityProfilePage() {
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-0.5 p-0.5">
+      <div className="grid grid-cols-3 gap-2 p-3 lg:grid-cols-4 lg:gap-3 lg:p-4">
         {(featured ? rest : []).map((reel) => (
-          <div key={reel.id} className="relative overflow-hidden">
+          <div key={reel.id} className="relative overflow-hidden rounded-lg">
             <video src={reel.videoUrl} className="aspect-square w-full bg-gray-200 object-cover" muted />
             {reel.postedByCompany && (
               <p className="absolute inset-x-0 bottom-0 truncate bg-black/50 px-1.5 py-0.5 text-[10px] text-white">
