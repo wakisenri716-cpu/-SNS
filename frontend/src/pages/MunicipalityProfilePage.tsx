@@ -109,6 +109,21 @@ export default function MunicipalityProfilePage() {
         {municipality[tab] || "情報が未登録です"}
       </div>
 
+      {tab === "accessInfo" && municipality.nearestStationName && (
+        <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 bg-gray-50 px-4 py-3 text-xs text-gray-600 lg:px-6">
+          <span>🚉 起点駅：{municipality.nearestStationName}</span>
+          {municipality.maasConfigured ? (
+            <span className="rounded-full bg-teal-50 px-2 py-0.5 font-medium text-teal-700">
+              実際の経路データを使用中
+            </span>
+          ) : (
+            <span className="rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-500">
+              各投稿の所要時間は仮データです
+            </span>
+          )}
+        </div>
+      )}
+
       {municipality.otaLinks.length > 0 && (
         <div className="border-b border-gray-200 p-4 lg:p-6">
           <h2 className="mb-2 text-sm font-semibold text-gray-600">宿・予約を探す</h2>
