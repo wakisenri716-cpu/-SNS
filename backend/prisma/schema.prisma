@@ -36,7 +36,13 @@ model Municipality {
   restaurantInfo String   @default("")
   tourismInfo    String   @default("")
   otaLinks       String   @default("[]") // JSON string: [{ label, url }]
-  createdAt      DateTime @default(now())
+  // Reference point ("最寄り駅" / main access hub) used as the origin for real
+  // transit directions (see src/services/maasProvider.ts). Geocoded server-side
+  // from nearestStationName when saved, if a Google Maps API key is configured.
+  nearestStationName String   @default("")
+  nearestStationLat  Float?
+  nearestStationLng  Float?
+  createdAt          DateTime @default(now())
 
   reels     Reel[]
   companies Company[]

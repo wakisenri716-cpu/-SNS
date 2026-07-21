@@ -6,6 +6,7 @@ import { upload } from "../middleware/upload";
 import { parseOtaLinks, serializeOtaLinks } from "../lib/otaLinks";
 import { suggestDefaultOtaLinks } from "../services/otaProvider";
 import { reelInclude, serializeReel } from "../lib/reelSerializer";
+import { geocode, isGoogleMapsConfigured } from "../services/googleMaps";
 
 const router = Router();
 
@@ -20,6 +21,9 @@ function serializeMunicipality(m: {
   restaurantInfo: string;
   tourismInfo: string;
   otaLinks: string;
+  nearestStationName: string;
+  nearestStationLat: number | null;
+  nearestStationLng: number | null;
   createdAt: Date;
 }) {
   const otaLinks = parseOtaLinks(m.otaLinks);
@@ -34,6 +38,10 @@ function serializeMunicipality(m: {
     restaurantInfo: m.restaurantInfo,
     tourismInfo: m.tourismInfo,
     otaLinks: otaLinks.length > 0 ? otaLinks : suggestDefaultOtaLinks(m.name),
+    nearestStationName: m.nearestStationName,
+    nearestStationLat: m.nearestStationLat,
+    nearestStationLng: m.nearestStationLng,
+    maasConfigured: isGoogleMapsConfigured(),
     createdAt: m.createdAt,
   };
 }
@@ -61,7 +69,9 @@ router.get("/:id", optionalAuth, async (req, res) => {
     },
   });
   if (!m) return res.status(404).json({ error: "自治体が見つかりません" });
-  const reels = m.reels.map((r) => serializeReel(r, Array.isArray((r as any).likes) && (r as any).likes.length > 0));
+  const reels = await Promise.all(
+    m.reels.map((r) => serializeReel(r, Array.isArray((r as any).likes) && (r as any).likes.length > 0))
+  );
   res.json({ ...serializeMunicipality(m), reels });
 });
 
@@ -81,6 +91,7 @@ const updateSchema = z.object({
   restaurantInfo: z.string().optional(),
   tourismInfo: z.string().optional(),
   otaLinks: z.array(z.object({ label: z.string().min(1), url: z.string().url() })).optional(),
+  nearestStationName: z.string().optional(),
 });
 
 // Update own profile (municipality-only)
@@ -91,11 +102,29 @@ router.put("/me/profile", requireAuth, requireRole("MUNICIPALITY"), async (req, 
   const existing = await prisma.municipality.findUnique({ where: { userId: req.auth!.userId } });
   if (!existing) return res.status(404).json({ error: "自治体プロフィールが見つかりません" });
 
-  const { otaLinks, ...rest } = parsed.data;
+  const { otaLinks, nearestStationName, ...rest } = parsed.data;
+
+  // Re-geocode the reference station whenever its name changes, so transit
+  // distances (see maasProvider.ts) are computed from an accurate origin point.
+  let stationCoords: { nearestStationLat: number | null; nearestStationLng: number | null } | null = null;
+  if (nearestStationName !== undefined && nearestStationName !== existing.nearestStationName) {
+    if (nearestStationName.trim() === "") {
+      stationCoords = { nearestStationLat: null, nearestStationLng: null };
+    } else if (isGoogleMapsConfigured()) {
+      const result = await geocode(nearestStationName);
+      if (!result) {
+        return res.status(400).json({ error: "起点駅の場所を特定できませんでした。表記を見直してください。" });
+      }
+      stationCoords = { nearestStationLat: result.lat, nearestStationLng: result.lng };
+    }
+  }
+
   const updated = await prisma.municipality.update({
     where: { id: existing.id },
     data: {
       ...rest,
+      ...(nearestStationName !== undefined ? { nearestStationName } : {}),
+      ...(stationCoords ?? {}),
       ...(otaLinks ? { otaLinks: serializeOtaLinks(otaLinks) } : {}),
     },
   });

@@ -1,12 +1,22 @@
-import { getMockTransitSuggestion } from "../services/maasProvider";
+import { getTransitSuggestion } from "../services/maasProvider";
 
 export const reelInclude = {
-  municipality: { select: { id: true, name: true, avatarUrl: true, prefecture: true } },
+  municipality: {
+    select: {
+      id: true,
+      name: true,
+      avatarUrl: true,
+      prefecture: true,
+      nearestStationName: true,
+      nearestStationLat: true,
+      nearestStationLng: true,
+    },
+  },
   company: { select: { id: true, name: true } },
   _count: { select: { likes: true, comments: true } },
 } as const;
 
-export function serializeReel(
+export async function serializeReel(
   reel: {
     id: string;
     videoUrl: string;
@@ -17,12 +27,26 @@ export function serializeReel(
     locationLng: number | null;
     viewCount: number;
     createdAt: Date;
-    municipality: { id: string; name: string; avatarUrl: string | null; prefecture: string };
+    municipality: {
+      id: string;
+      name: string;
+      avatarUrl: string | null;
+      prefecture: string;
+      nearestStationName: string;
+      nearestStationLat: number | null;
+      nearestStationLng: number | null;
+    };
     company?: { id: string; name: string } | null;
     _count?: { likes: number; comments: number };
   },
   likedByMe: boolean
 ) {
+  const { nearestStationName, nearestStationLat, nearestStationLng, ...municipality } = reel.municipality;
+  const origin =
+    nearestStationLat != null && nearestStationLng != null
+      ? { label: nearestStationName || "最寄り駅", lat: nearestStationLat, lng: nearestStationLng }
+      : null;
+
   return {
     id: reel.id,
     videoUrl: reel.videoUrl,
@@ -33,14 +57,14 @@ export function serializeReel(
     locationLng: reel.locationLng,
     viewCount: reel.viewCount,
     createdAt: reel.createdAt,
-    municipality: reel.municipality,
+    municipality,
     postedByCompany: reel.company ?? null,
     likeCount: reel._count?.likes ?? 0,
     commentCount: reel._count?.comments ?? 0,
     likedByMe,
     transitSuggestion:
       reel.locationName && reel.locationLat != null && reel.locationLng != null
-        ? getMockTransitSuggestion(reel.locationName, reel.locationLat, reel.locationLng)
+        ? await getTransitSuggestion(reel.locationName, reel.locationLat, reel.locationLng, origin)
         : null,
   };
 }

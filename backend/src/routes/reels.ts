@@ -4,6 +4,7 @@ import { prisma } from "../prisma";
 import { optionalAuth, requireAuth, requireRole } from "../middleware/auth";
 import { upload } from "../middleware/upload";
 import { reelInclude, serializeReel } from "../lib/reelSerializer";
+import { geocode, isGoogleMapsConfigured } from "../services/googleMaps";
 
 const router = Router();
 
@@ -46,7 +47,9 @@ router.get("/", optionalAuth, async (req, res) => {
     },
   });
 
-  const items = reels.map((r) => serializeReel(r, Array.isArray((r as any).likes) && (r as any).likes.length > 0));
+  const items = await Promise.all(
+    reels.map((r) => serializeReel(r, Array.isArray((r as any).likes) && (r as any).likes.length > 0))
+  );
   const nextCursor = reels.length === take ? reels[reels.length - 1].id : null;
   res.json({ items, nextCursor });
 });
@@ -60,7 +63,7 @@ router.get("/liked", requireAuth, async (req, res) => {
     include: { reel: { include: reelInclude } },
   });
 
-  res.json({ items: likes.map((l) => serializeReel(l.reel, true)) });
+  res.json({ items: await Promise.all(likes.map((l) => serializeReel(l.reel, true))) });
 });
 
 // Reels the signed-in municipality/company account is allowed to manage — all
@@ -77,7 +80,7 @@ router.get("/mine", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (
     include: reelInclude,
   });
 
-  res.json({ items: reels.map((r) => serializeReel(r, false)) });
+  res.json({ items: await Promise.all(reels.map((r) => serializeReel(r, false))) });
 });
 
 router.get("/:id", optionalAuth, async (req, res) => {
@@ -92,7 +95,7 @@ router.get("/:id", optionalAuth, async (req, res) => {
 
   await prisma.reel.update({ where: { id: reel.id }, data: { viewCount: { increment: 1 } } });
 
-  res.json(serializeReel(reel, Array.isArray((reel as any).likes) && (reel as any).likes.length > 0));
+  res.json(await serializeReel(reel, Array.isArray((reel as any).likes) && (reel as any).likes.length > 0));
 });
 
 const createSchema = z.object({
@@ -119,6 +122,17 @@ router.post(
     const poster = await resolvePosterContext(req, res);
     if (!poster) return;
 
+    // If a location name was given but coordinates weren't, geocode it server-side
+    // (coordinates are still an optional manual override in the uploader form).
+    let { locationLat, locationLng } = parsed.data;
+    if (parsed.data.locationName && locationLat == null && locationLng == null && isGoogleMapsConfigured()) {
+      const result = await geocode(parsed.data.locationName);
+      if (result) {
+        locationLat = result.lat;
+        locationLng = result.lng;
+      }
+    }
+
     const reel = await prisma.reel.create({
       data: {
         municipalityId: poster.municipalityId,
@@ -126,13 +140,13 @@ router.post(
         videoUrl: `/uploads/${req.file.filename}`,
         caption: parsed.data.caption,
         locationName: parsed.data.locationName,
-        locationLat: parsed.data.locationLat,
-        locationLng: parsed.data.locationLng,
+        locationLat,
+        locationLng,
       },
       include: reelInclude,
     });
 
-    res.status(201).json(serializeReel(reel, false));
+    res.status(201).json(await serializeReel(reel, false));
   }
 );
 
@@ -170,7 +184,7 @@ router.put("/:id", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (r
     data: parsed.data,
     include: reelInclude,
   });
-  res.json(serializeReel(updated, false));
+  res.json(await serializeReel(updated, false));
 });
 
 router.delete("/:id", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (req, res) => {

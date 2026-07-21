@@ -30,6 +30,10 @@ export interface Municipality {
   restaurantInfo: string;
   tourismInfo: string;
   otaLinks: OtaLink[];
+  nearestStationName: string;
+  nearestStationLat: number | null;
+  nearestStationLng: number | null;
+  maasConfigured: boolean;
   createdAt: string;
   reels?: Reel[];
 }
@@ -39,7 +43,7 @@ export interface TransitSuggestion {
   destinationLabel: string;
   totalDurationMin: number;
   legs: { mode: string; description: string; durationMin: number }[];
-  isMock: true;
+  isMock: boolean;
 }
 
 export interface Reel {

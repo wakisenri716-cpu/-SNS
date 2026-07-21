@@ -31,8 +31,10 @@ function ReelOverlayInfo({ reel, onToggleLike }: { reel: Reel; onToggleLike: (re
             {reel.transitSuggestion && (
               <>
                 {" "}
-                ・最寄り駅から徒歩+電車で約{reel.transitSuggestion.totalDurationMin}分
-                <span className="ml-1 rounded bg-white/15 px-1.5 py-0.5">交通情報は仮データ</span>
+                ・{reel.transitSuggestion.originLabel}から約{reel.transitSuggestion.totalDurationMin}分
+                {reel.transitSuggestion.isMock && (
+                  <span className="ml-1 rounded bg-white/15 px-1.5 py-0.5">交通情報は仮データ</span>
+                )}
               </>
             )}
           </p>

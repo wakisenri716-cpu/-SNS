@@ -79,6 +79,67 @@ function ProfileTabEditor({
   );
 }
 
+function MaasStationEditor({
+  municipality,
+  onUpdated,
+}: {
+  municipality: Municipality;
+  onUpdated: (m: Municipality) => void;
+}) {
+  const [value, setValue] = useState(municipality.nearestStationName);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function save() {
+    setSaving(true);
+    setError(null);
+    try {
+      const { data } = await api.put("/municipalities/me/profile", { nearestStationName: value });
+      onUpdated(data);
+    } catch (err: any) {
+      setError(err?.response?.data?.error ?? "保存に失敗しました");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="border-b border-gray-200 p-4 lg:p-6">
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="text-sm font-semibold text-gray-600">MaaS（交通案内）起点駅</h3>
+        {municipality.maasConfigured ? (
+          <span className="inline-flex items-center gap-1 rounded-full bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
+            🗺️ 実際の経路データを使用中
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">
+            現在は仮データです（Google Maps APIキー未設定）
+          </span>
+        )}
+      </div>
+      <p className="mt-1 text-xs text-gray-400">
+        投稿の位置情報までの所要時間の起点となる駅・バス停名を設定してください。
+      </p>
+      <div className="mt-2 flex gap-2">
+        <input
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="例: 〇〇駅"
+          className="block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+        />
+        <button
+          onClick={save}
+          disabled={saving}
+          className="shrink-0 rounded-lg bg-teal-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+        >
+          保存
+        </button>
+      </div>
+      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const { municipality, setMunicipality } = useAuth();
   const [reels, setReels] = useState<Reel[]>([]);
@@ -159,6 +220,8 @@ export default function DashboardPage() {
       </div>
 
       <ProfileTabEditor municipality={municipality} onUpdated={setMunicipality} />
+
+      <MaasStationEditor municipality={municipality} onUpdated={setMunicipality} />
 
       <div className="grid grid-cols-3 gap-2 p-3 lg:grid-cols-4 lg:gap-3 lg:p-4">
         <button

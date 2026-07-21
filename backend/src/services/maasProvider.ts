@@ -1,5 +1,7 @@
+import { getTransitDirections, isGoogleMapsConfigured } from "./googleMaps";
+
 export interface TransitLeg {
-  mode: "walk" | "train" | "bus";
+  mode: "walk" | "train" | "bus" | "other";
   description: string;
   durationMin: number;
 }
@@ -11,19 +13,11 @@ export interface TransitSuggestion {
   destinationLng: number;
   totalDurationMin: number;
   legs: TransitLeg[];
-  isMock: true;
+  isMock: boolean;
 }
 
-/**
- * MaaS (Mobility as a Service) integration placeholder.
- *
- * Real transit routing requires a contracted provider (e.g. a regional MaaS API or
- * a routing service with an API key), which this project does not have. This
- * function returns a deterministic, clearly-labeled mock so the UI/UX can be built
- * and demoed end-to-end. Swap the implementation for a real provider call later —
- * the function signature and TransitSuggestion shape are the integration point.
- */
-export function getMockTransitSuggestion(
+function getMockTransitSuggestion(
+  originLabel: string,
   destinationLabel: string,
   destinationLat: number,
   destinationLng: number
@@ -36,15 +30,56 @@ export function getMockTransitSuggestion(
   const trainMin = 20 + (seed % 40);
 
   return {
-    originLabel: "最寄り駅",
+    originLabel,
     destinationLabel,
     destinationLat,
     destinationLng,
     totalDurationMin: walkMin + trainMin,
     legs: [
-      { mode: "walk", description: "最寄り駅まで徒歩", durationMin: walkMin },
+      { mode: "walk", description: `${originLabel}まで徒歩`, durationMin: walkMin },
       { mode: "train", description: `${destinationLabel}最寄り駅まで電車`, durationMin: trainMin },
     ],
     isMock: true,
   };
+}
+
+/**
+ * MaaS (Mobility as a Service) transit suggestion for a reel's location.
+ *
+ * Uses the real Google Maps Directions API (transit mode) when
+ * `GOOGLE_MAPS_API_KEY` is configured AND the municipality has set a geocoded
+ * "nearest station" reference point (see Municipality.nearestStationLat/Lng).
+ * Otherwise falls back to a deterministic mock so the feature still works without
+ * external credentials. The `isMock` flag on the result tells the frontend whether
+ * to show the "仮データ" (mock data) badge.
+ */
+export async function getTransitSuggestion(
+  destinationLabel: string,
+  destinationLat: number,
+  destinationLng: number,
+  origin?: { label: string; lat: number; lng: number } | null
+): Promise<TransitSuggestion> {
+  if (isGoogleMapsConfigured() && origin) {
+    try {
+      const directions = await getTransitDirections(
+        { lat: origin.lat, lng: origin.lng },
+        { lat: destinationLat, lng: destinationLng }
+      );
+      if (directions) {
+        return {
+          originLabel: origin.label,
+          destinationLabel,
+          destinationLat,
+          destinationLng,
+          totalDurationMin: directions.totalDurationMin,
+          legs: directions.legs,
+          isMock: false,
+        };
+      }
+    } catch (err) {
+      console.error("[maas] Directions API call failed, falling back to mock:", err);
+    }
+  }
+
+  return getMockTransitSuggestion(origin?.label ?? "最寄り駅", destinationLabel, destinationLat, destinationLng);
 }
