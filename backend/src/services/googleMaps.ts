@@ -40,36 +40,44 @@ export async function geocode(query: string): Promise<GeocodeResult | null> {
   };
 }
 
-export interface TransitLeg {
-  mode: "walk" | "train" | "bus" | "other";
-  description: string;
-  durationMin: number;
+function haversineMeters(a: { lat: number; lng: number }, b: { lat: number; lng: number }): number {
+  const R = 6371000;
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const h =
+    Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
 }
 
-export interface DirectionsResult {
+const WALKING_THRESHOLD_METERS = 3000;
+
+export interface RouteEstimate {
   totalDurationMin: number;
-  legs: TransitLeg[];
+  mode: "walk" | "drive";
 }
 
-function mapTravelMode(googleMode: string): TransitLeg["mode"] {
-  if (googleMode === "WALKING") return "walk";
-  if (googleMode === "TRANSIT") return "train";
-  if (googleMode === "BUS") return "bus";
-  return "other";
-}
-
-// Real transit directions between two coordinates via Google Directions API
-// (mode=transit, which itself includes the walking legs to/from stations).
-export async function getTransitDirections(
+// Real point-to-point travel time via Google Directions API.
+//
+// Note: Google's Directions/Routes API mode=transit reliably returns
+// ZERO_RESULTS for Japan (transit schedule data there is not exposed through
+// this API for third-party keys, unlike the US) — verified against several
+// well-known Japanese station pairs. So instead of exact train/bus transit
+// times, this estimates travel time using real walking directions for short
+// distances and real driving directions otherwise, which Google does support
+// in Japan. See README for details.
+export async function getRouteEstimate(
   origin: { lat: number; lng: number },
   destination: { lat: number; lng: number }
-): Promise<DirectionsResult | null> {
+): Promise<RouteEstimate | null> {
   if (!API_KEY) return null;
+
+  const mode = haversineMeters(origin, destination) <= WALKING_THRESHOLD_METERS ? "walking" : "driving";
 
   const url = new URL("https://maps.googleapis.com/maps/api/directions/json");
   url.searchParams.set("origin", `${origin.lat},${origin.lng}`);
   url.searchParams.set("destination", `${destination.lat},${destination.lng}`);
-  url.searchParams.set("mode", "transit");
+  url.searchParams.set("mode", mode);
   url.searchParams.set("language", "ja");
   url.searchParams.set("key", API_KEY);
 
@@ -77,26 +85,9 @@ export async function getTransitDirections(
   const data: any = await res.json();
   if (data.status !== "OK" || !data.routes?.[0]) return null;
 
-  const route = data.routes[0];
-  const googleLegs = route.legs[0]?.steps ?? [];
-  const totalDurationSeconds = route.legs[0]?.duration?.value ?? 0;
-
-  const legs: TransitLeg[] = googleLegs.map((step: any) => {
-    const mode = mapTravelMode(step.travel_mode);
-    const line = step.transit_details?.line?.name;
-    const vehicle = step.transit_details?.line?.vehicle?.name;
-    return {
-      mode,
-      description:
-        mode === "walk"
-          ? "徒歩で移動"
-          : `${vehicle ?? ""}${line ? ` ${line}` : ""}${mode === "train" || mode === "bus" ? "で移動" : ""}`.trim(),
-      durationMin: Math.round((step.duration?.value ?? 0) / 60),
-    };
-  });
-
+  const durationSeconds = data.routes[0].legs[0]?.duration?.value ?? 0;
   return {
-    totalDurationMin: Math.round(totalDurationSeconds / 60),
-    legs,
+    totalDurationMin: Math.max(1, Math.round(durationSeconds / 60)),
+    mode: mode === "walking" ? "walk" : "drive",
   };
 }

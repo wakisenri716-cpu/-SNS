@@ -1,7 +1,7 @@
-import { getTransitDirections, isGoogleMapsConfigured } from "./googleMaps";
+import { getRouteEstimate, isGoogleMapsConfigured } from "./googleMaps";
 
 export interface TransitLeg {
-  mode: "walk" | "train" | "bus" | "other";
+  mode: "walk" | "train" | "bus" | "drive";
   description: string;
   durationMin: number;
 }
@@ -46,12 +46,15 @@ function getMockTransitSuggestion(
 /**
  * MaaS (Mobility as a Service) transit suggestion for a reel's location.
  *
- * Uses the real Google Maps Directions API (transit mode) when
- * `GOOGLE_MAPS_API_KEY` is configured AND the municipality has set a geocoded
- * "nearest station" reference point (see Municipality.nearestStationLat/Lng).
- * Otherwise falls back to a deterministic mock so the feature still works without
- * external credentials. The `isMock` flag on the result tells the frontend whether
- * to show the "仮データ" (mock data) badge.
+ * Uses the real Google Maps Directions API when `GOOGLE_MAPS_API_KEY` is
+ * configured AND the municipality has set a geocoded "nearest station"
+ * reference point (see Municipality.nearestStationLat/Lng). Google's transit
+ * (train/bus schedule) mode does not cover Japan for third-party API keys, so
+ * the real-data path estimates travel time from real walking/driving
+ * directions instead — see the comment on getRouteEstimate in googleMaps.ts.
+ * Otherwise falls back to a deterministic mock so the feature still works
+ * without external credentials. The `isMock` flag on the result tells the
+ * frontend whether to show the "仮データ" (mock data) badge.
  */
 export async function getTransitSuggestion(
   destinationLabel: string,
@@ -61,18 +64,25 @@ export async function getTransitSuggestion(
 ): Promise<TransitSuggestion> {
   if (isGoogleMapsConfigured() && origin) {
     try {
-      const directions = await getTransitDirections(
+      const estimate = await getRouteEstimate(
         { lat: origin.lat, lng: origin.lng },
         { lat: destinationLat, lng: destinationLng }
       );
-      if (directions) {
+      if (estimate) {
         return {
           originLabel: origin.label,
           destinationLabel,
           destinationLat,
           destinationLng,
-          totalDurationMin: directions.totalDurationMin,
-          legs: directions.legs,
+          totalDurationMin: estimate.totalDurationMin,
+          legs: [
+            {
+              mode: estimate.mode,
+              description:
+                estimate.mode === "walk" ? `${origin.label}から徒歩で移動` : `${origin.label}から車で移動`,
+              durationMin: estimate.totalDurationMin,
+            },
+          ],
           isMock: false,
         };
       }
