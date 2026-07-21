@@ -8,10 +8,7 @@ import type { Reel } from "../types";
 // Grid thumbnail: video only, no icon/caption until the viewer opens it.
 function ReelThumb({ reel, onOpen }: { reel: Reel; onOpen: (reel: Reel) => void }) {
   return (
-    <button
-      onClick={() => onOpen(reel)}
-      className="relative block w-full overflow-hidden rounded-xl bg-black text-left"
-    >
+    <button onClick={() => onOpen(reel)} className="relative block w-full overflow-hidden bg-black text-left">
       <AutoplayVideo src={reel.videoUrl} className="aspect-video w-full object-cover" />
     </button>
   );
@@ -150,7 +147,7 @@ export default function FeedPage() {
   }
 
   return (
-    <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 py-6">
+    <div className="mx-auto grid max-w-6xl grid-cols-3">
       {reels.map((reel) => (
         <ReelThumb key={reel.id} reel={reel} onOpen={(r) => setOpenReelId(r.id)} />
       ))}
