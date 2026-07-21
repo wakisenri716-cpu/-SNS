@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { api } from "../api/client";
+import { useAuth } from "../auth/AuthContext";
 import AutoplayVideo from "../components/AutoplayVideo";
-import type { Municipality } from "../types";
+import ReelThumb from "../components/ReelGrid";
+import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
+import type { Municipality, Reel } from "../types";
 
 const TABS = [
   { key: "tourismInfo", label: "観光情報" },
@@ -18,16 +21,38 @@ function formatDate(iso: string) {
 
 export default function MunicipalityProfilePage() {
   const { id } = useParams<{ id: string }>();
+  const { token } = useAuth();
   const [municipality, setMunicipality] = useState<Municipality | null>(null);
+  const [reels, setReels] = useState<Reel[]>([]);
   const [tab, setTab] = useState<(typeof TABS)[number]["key"]>("tourismInfo");
+  const [openReelId, setOpenReelId] = useState<string | null>(null);
 
   useEffect(() => {
-    api.get(`/municipalities/${id}`).then(({ data }) => setMunicipality(data));
+    api.get(`/municipalities/${id}`).then(({ data }) => {
+      setMunicipality(data);
+      setReels(data.reels ?? []);
+    });
   }, [id]);
+
+  async function toggleLike(reel: Reel) {
+    if (!token) return;
+    if (reel.likedByMe) {
+      await api.delete(`/reels/${reel.id}/like`);
+    } else {
+      await api.post(`/reels/${reel.id}/like`);
+    }
+    setReels((prev) =>
+      prev.map((r) =>
+        r.id === reel.id
+          ? { ...r, likedByMe: !r.likedByMe, likeCount: r.likeCount + (r.likedByMe ? -1 : 1) }
+          : r
+      )
+    );
+  }
 
   if (!municipality) return <p className="p-10 text-center text-gray-400">読み込み中...</p>;
 
-  const [featured, ...rest] = municipality.reels ?? [];
+  const featured = reels[0];
 
   return (
     <div className="mx-auto my-6 w-full max-w-2xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:max-w-4xl">
@@ -62,7 +87,7 @@ export default function MunicipalityProfilePage() {
 
         <div className="mt-3 flex gap-4 border-b border-gray-200 pb-3 text-sm text-gray-600">
           <span>
-            <b className="text-gray-900">{municipality.reels?.length ?? 0}</b> 件の投稿
+            <b className="text-gray-900">{reels.length}</b> 件の投稿
           </span>
         </div>
       </div>
@@ -103,18 +128,20 @@ export default function MunicipalityProfilePage() {
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-2 p-3 lg:grid-cols-4 lg:gap-3 lg:p-4">
-        {(featured ? rest : []).map((reel) => (
-          <div key={reel.id} className="relative overflow-hidden rounded-lg">
-            <video src={reel.videoUrl} className="aspect-square w-full bg-gray-200 object-cover" muted />
-            {reel.postedByCompany && (
-              <p className="absolute inset-x-0 bottom-0 truncate bg-black/50 px-1.5 py-0.5 text-[10px] text-white">
-                投稿: {reel.postedByCompany.name}
-              </p>
-            )}
-          </div>
+      <div className="grid grid-cols-3">
+        {reels.map((reel) => (
+          <ReelThumb key={reel.id} reel={reel} onOpen={(r) => setOpenReelId(r.id)} />
         ))}
       </div>
+
+      {openReelId && (
+        <ReelFullscreenViewer
+          reels={reels}
+          initialId={openReelId}
+          onClose={() => setOpenReelId(null)}
+          onToggleLike={toggleLike}
+        />
+      )}
     </div>
   );
 }

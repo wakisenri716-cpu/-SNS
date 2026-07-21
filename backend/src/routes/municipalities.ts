@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma";
-import { requireAuth, requireRole } from "../middleware/auth";
+import { optionalAuth, requireAuth, requireRole } from "../middleware/auth";
 import { upload } from "../middleware/upload";
 import { parseOtaLinks, serializeOtaLinks } from "../lib/otaLinks";
 import { suggestDefaultOtaLinks } from "../services/otaProvider";
+import { reelInclude, serializeReel } from "../lib/reelSerializer";
 
 const router = Router();
 
@@ -43,19 +44,24 @@ router.get("/", async (_req, res) => {
   res.json(list.map(serializeMunicipality));
 });
 
-// Public profile view
-router.get("/:id", async (req, res) => {
+// Public profile view. optionalAuth + per-reel likes so the reels array matches
+// the same shape as the main feed (GET /api/reels) — this lets the frontend reuse
+// the feed's grid/fullscreen-viewer components on the profile page unchanged.
+router.get("/:id", optionalAuth, async (req, res) => {
   const m = await prisma.municipality.findUnique({
     where: { id: req.params.id },
     include: {
       reels: {
         orderBy: { createdAt: "desc" },
-        include: { company: { select: { id: true, name: true } } },
+        include: {
+          ...reelInclude,
+          likes: req.auth ? { where: { userId: req.auth.userId }, select: { id: true } } : false,
+        },
       },
     },
   });
   if (!m) return res.status(404).json({ error: "自治体が見つかりません" });
-  const reels = m.reels.map(({ company, ...reel }) => ({ ...reel, postedByCompany: company ?? null }));
+  const reels = m.reels.map((r) => serializeReel(r, Array.isArray((r as any).likes) && (r as any).likes.length > 0));
   res.json({ ...serializeMunicipality(m), reels });
 });
 
