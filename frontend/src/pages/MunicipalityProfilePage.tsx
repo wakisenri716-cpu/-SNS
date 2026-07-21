@@ -5,11 +5,16 @@ import AutoplayVideo from "../components/AutoplayVideo";
 import type { Municipality } from "../types";
 
 const TABS = [
+  { key: "tourismInfo", label: "観光情報" },
   { key: "accessInfo", label: "アクセス方法" },
   { key: "lodgingInfo", label: "宿情報" },
   { key: "restaurantInfo", label: "飲食店" },
-  { key: "tourismInfo", label: "観光情報" },
 ] as const;
+
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  return `${d.getFullYear()}年${d.getMonth() + 1}月`;
+}
 
 export default function MunicipalityProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -25,58 +30,64 @@ export default function MunicipalityProfilePage() {
   const [featured, ...rest] = municipality.reels ?? [];
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
-      {featured && (
-        <div className="overflow-hidden rounded-xl border border-gray-200">
-          <div className="relative">
-            <AutoplayVideo src={featured.videoUrl} className="aspect-video w-full bg-black object-cover" />
-            <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-black/60 to-transparent p-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20 text-sm font-semibold text-white ring-2 ring-white/40">
-                {municipality.avatarUrl ? (
-                  <img src={municipality.avatarUrl} className="h-full w-full rounded-full object-cover" />
-                ) : (
-                  municipality.name.slice(0, 1)
-                )}
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-white drop-shadow">{municipality.name}</p>
-                <p className="truncate text-xs text-white/80 drop-shadow">
-                  {municipality.prefecture}
-                  {featured.postedByCompany && ` ・投稿: ${featured.postedByCompany.name}`}
-                </p>
-              </div>
-            </div>
-          </div>
+    <div className="mx-auto max-w-2xl border-x border-gray-200 bg-white">
+      <div className="relative aspect-[3/1] w-full bg-gray-200">
+        {featured ? (
+          <AutoplayVideo src={featured.videoUrl} className="h-full w-full object-cover" />
+        ) : (
+          <div className="h-full w-full bg-gradient-to-br from-gray-200 to-gray-300" />
+        )}
+      </div>
 
-          <div className="flex bg-gray-800">
-            {TABS.map((t) => (
-              <button
-                key={t.key}
-                onClick={() => setTab(t.key)}
-                className={`flex-1 py-2.5 text-xs font-medium ${
-                  tab === t.key ? "bg-gray-900 text-white" : "text-gray-300 hover:bg-gray-700"
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-          <div className="whitespace-pre-wrap bg-gray-50 p-3 text-sm text-gray-700">
-            {municipality[tab] || "情報が未登録です"}
+      <div className="px-4">
+        <div className="-mt-10 flex items-end justify-between">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-200 text-2xl font-semibold text-gray-600 ring-4 ring-white">
+            {municipality.avatarUrl ? (
+              <img src={municipality.avatarUrl} className="h-full w-full rounded-full object-cover" />
+            ) : (
+              municipality.name.slice(0, 1)
+            )}
           </div>
         </div>
-      )}
 
-      {!featured && (
-        <div>
-          <h1 className="text-lg font-bold text-gray-900">{municipality.name}</h1>
-          <p className="text-sm text-gray-500">{municipality.prefecture}</p>
+        <div className="mt-3">
+          <h1 className="text-xl font-bold text-gray-900">{municipality.name}</h1>
+          <p className="text-sm text-gray-500">@{municipality.prefecture}</p>
         </div>
-      )}
-      {municipality.description && <p className="mt-3 text-sm text-gray-700">{municipality.description}</p>}
+
+        {municipality.description && <p className="mt-3 text-sm text-gray-800">{municipality.description}</p>}
+
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
+          <span>📍 {municipality.prefecture}</span>
+          <span>📅 {formatDate(municipality.createdAt)}から掲載</span>
+        </div>
+
+        <div className="mt-3 flex gap-4 border-b border-gray-200 pb-3 text-sm text-gray-600">
+          <span>
+            <b className="text-gray-900">{municipality.reels?.length ?? 0}</b> 件の投稿
+          </span>
+        </div>
+      </div>
+
+      <div className="flex border-b border-gray-200">
+        {TABS.map((t) => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            className={`flex-1 py-3 text-sm font-medium hover:bg-gray-50 ${
+              tab === t.key ? "border-b-2 border-blue-500 text-gray-900" : "text-gray-500"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+      <div className="whitespace-pre-wrap border-b border-gray-200 p-4 text-sm text-gray-700">
+        {municipality[tab] || "情報が未登録です"}
+      </div>
 
       {municipality.otaLinks.length > 0 && (
-        <div className="mt-6">
+        <div className="border-b border-gray-200 p-4">
           <h2 className="mb-2 text-sm font-semibold text-gray-600">宿・予約を探す</h2>
           <div className="flex flex-col gap-2">
             {municipality.otaLinks.map((link) => (
@@ -94,20 +105,17 @@ export default function MunicipalityProfilePage() {
         </div>
       )}
 
-      <div className="mt-8">
-        <h2 className="mb-2 text-sm font-semibold text-gray-600">投稿一覧</h2>
-        <div className="grid grid-cols-2 gap-2">
-          {(featured ? rest : []).map((reel) => (
-            <div key={reel.id} className="overflow-hidden rounded-lg">
-              <video src={reel.videoUrl} className="aspect-video w-full bg-gray-200 object-cover" muted />
-              {reel.postedByCompany && (
-                <p className="truncate bg-gray-50 px-2 py-1 text-[11px] text-gray-500">
-                  投稿: {reel.postedByCompany.name}
-                </p>
-              )}
-            </div>
-          ))}
-        </div>
+      <div className="grid grid-cols-3 gap-0.5 p-0.5">
+        {(featured ? rest : []).map((reel) => (
+          <div key={reel.id} className="relative overflow-hidden">
+            <video src={reel.videoUrl} className="aspect-square w-full bg-gray-200 object-cover" muted />
+            {reel.postedByCompany && (
+              <p className="absolute inset-x-0 bottom-0 truncate bg-black/50 px-1.5 py-0.5 text-[10px] text-white">
+                投稿: {reel.postedByCompany.name}
+              </p>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
