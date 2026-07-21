@@ -8,6 +8,7 @@ import authRoutes from "./routes/auth";
 import municipalityRoutes from "./routes/municipalities";
 import reelRoutes from "./routes/reels";
 import searchRoutes from "./routes/search";
+import { seedIfEmpty } from "./seed";
 
 const app = express();
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
@@ -40,6 +41,10 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
   res.status(err?.status || 500).json({ error: err?.message || "サーバーエラーが発生しました" });
 });
 
-app.listen(PORT, () => {
-  console.log(`Tourism SNS backend listening on http://localhost:${PORT}`);
-});
+seedIfEmpty()
+  .catch((err) => console.error("[seed] failed:", err))
+  .finally(() => {
+    app.listen(PORT, () => {
+      console.log(`Tourism SNS backend listening on http://localhost:${PORT}`);
+    });
+  });

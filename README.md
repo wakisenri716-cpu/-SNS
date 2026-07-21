@@ -19,6 +19,14 @@ frontend/  React(Vite) + TypeScript + Tailwind CSS の SPA
 
 フロントエンドとバックエンドは別プロジェクト・別プロセスで、フロントは `/api` 宛のリクエストを Vite の dev proxy でバックエンドに転送します。
 
+## デモ用シードデータ
+
+`backend/src/seed.ts` は、自治体テーブルが空のときに自動的に4つのデモ自治体（さくら市・うみのしま町・やまびこ村・ゆきぐに市）と、各自治体3件のリール、紐づく企業アカウント1件を作成します。バックエンド起動時（`npm run dev` / 本番起動どちらも）に自動実行されるので、特別な操作なしにフィードが埋まった状態で確認できます（Renderの無料プランでデータがリセットされた場合も、次回起動時に自動で再投入されます）。
+
+- デモ自治体アカウント：`demo-sakura@example.com` などのメールアドレス（`demo-<市区町村>@example.com`）、パスワードは全て `password123`
+- デモ企業アカウント：`demo-company@example.com` / `password123`（さくら市に紐づく企業）
+- 手動で再シードしたい場合は `cd backend && npm run seed`（既にデータがある場合は何もしません）
+
 ## セットアップ
 
 ### backend
