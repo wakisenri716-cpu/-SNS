@@ -25,15 +25,8 @@ function ReelCard({ reel, onToggleLike }: { reel: Reel; onToggleLike: (reel: Ree
   }, []);
 
   return (
-    <article className="relative overflow-hidden rounded-xl bg-black">
-      <video
-        ref={videoRef}
-        src={reel.videoUrl}
-        className="aspect-video w-full object-cover"
-        loop
-        muted
-        playsInline
-      />
+    <article className="relative h-full w-full overflow-hidden rounded-xl bg-black">
+      <video ref={videoRef} src={reel.videoUrl} className="h-full w-full object-cover" loop muted playsInline />
 
       <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-black/60 to-transparent p-4">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20 text-sm font-semibold text-white ring-2 ring-white/40">
@@ -107,15 +100,23 @@ export default function FeedPage() {
 
   if (loading) return <p className="p-10 text-center text-gray-400">読み込み中...</p>;
 
+  if (reels.length === 0) {
+    return (
+      <p className="m-6 rounded-xl border border-dashed border-gray-300 p-10 text-center text-gray-400">
+        まだ投稿がありません。自治体アカウントで最初のリールを投稿してみましょう。
+      </p>
+    );
+  }
+
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4 px-6 py-8">
-      {reels.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-gray-300 p-10 text-center text-gray-400">
-          まだ投稿がありません。自治体アカウントで最初のリールを投稿してみましょう。
-        </p>
-      ) : (
-        reels.map((reel) => <ReelCard key={reel.id} reel={reel} onToggleLike={toggleLike} />)
-      )}
+    <div className="h-screen snap-y snap-mandatory overflow-y-scroll">
+      {reels.map((reel) => (
+        <div key={reel.id} className="snap-start p-3" style={{ height: "100vh" }}>
+          <div className="mx-auto h-full max-w-5xl">
+            <ReelCard reel={reel} onToggleLike={toggleLike} />
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
