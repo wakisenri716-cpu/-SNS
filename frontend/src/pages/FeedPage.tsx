@@ -2,30 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
+import AutoplayVideo from "../components/AutoplayVideo";
 import type { Reel } from "../types";
-
-function AutoplayVideo({ reel, className }: { reel: Reel; className: string }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    const el = videoRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.play().catch(() => {});
-        } else {
-          el.pause();
-        }
-      },
-      { threshold: 0.6 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  return <video ref={videoRef} src={reel.videoUrl} className={className} loop muted playsInline />;
-}
 
 // Grid thumbnail: video only, no icon/caption until the viewer opens it.
 function ReelThumb({ reel, onOpen }: { reel: Reel; onOpen: (reel: Reel) => void }) {
@@ -34,7 +12,7 @@ function ReelThumb({ reel, onOpen }: { reel: Reel; onOpen: (reel: Reel) => void 
       onClick={() => onOpen(reel)}
       className="relative block w-full overflow-hidden rounded-xl bg-black text-left"
     >
-      <AutoplayVideo reel={reel} className="aspect-video w-full object-cover" />
+      <AutoplayVideo src={reel.videoUrl} className="aspect-video w-full object-cover" />
     </button>
   );
 }
@@ -125,7 +103,7 @@ function ReelFullscreenViewer({
             }}
             className="relative h-full w-full snap-start"
           >
-            <AutoplayVideo reel={reel} className="h-full w-full object-cover" />
+            <AutoplayVideo src={reel.videoUrl} className="h-full w-full object-cover" />
             <ReelOverlayInfo reel={reel} onToggleLike={onToggleLike} />
           </div>
         ))}
