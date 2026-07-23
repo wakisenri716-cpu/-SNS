@@ -195,4 +195,48 @@ router.get("/me", requireAuth, async (req, res) => {
   });
 });
 
+const updateMeSchema = z.object({
+  name: z.string().min(1).optional(),
+  email: z.string().email().optional(),
+});
+
+// Account settings: update the signed-in user's own name/email (any role).
+router.put("/me", requireAuth, async (req, res) => {
+  const parsed = updateMeSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+
+  if (parsed.data.email) {
+    const existing = await prisma.user.findUnique({ where: { email: parsed.data.email } });
+    if (existing && existing.id !== req.auth!.userId) {
+      return res.status(409).json({ error: "このメールアドレスは既に使用されています" });
+    }
+  }
+
+  const updated = await prisma.user.update({
+    where: { id: req.auth!.userId },
+    data: parsed.data,
+  });
+  res.json({ id: updated.id, email: updated.email, name: updated.name, role: updated.role });
+});
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: z.string().min(8),
+});
+
+router.put("/password", requireAuth, async (req, res) => {
+  const parsed = changePasswordSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+
+  const user = await prisma.user.findUnique({ where: { id: req.auth!.userId } });
+  if (!user) return res.status(404).json({ error: "ユーザーが見つかりません" });
+
+  const valid = await bcrypt.compare(parsed.data.currentPassword, user.passwordHash);
+  if (!valid) return res.status(401).json({ error: "現在のパスワードが正しくありません" });
+
+  const passwordHash = await bcrypt.hash(parsed.data.newPassword, 10);
+  await prisma.user.update({ where: { id: user.id }, data: { passwordHash } });
+  res.status(204).end();
+});
+
 export default router;

@@ -13,6 +13,7 @@ import DashboardPage from "./pages/DashboardPage";
 import CompanyDashboardPage from "./pages/CompanyDashboardPage";
 import SearchPage from "./pages/SearchPage";
 import MyPage from "./pages/MyPage";
+import SettingsPage from "./pages/SettingsPage";
 
 function App() {
   return (
@@ -30,6 +31,14 @@ function App() {
           element={
             <RequireAuth>
               <MyPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <RequireAuth>
+              <SettingsPage />
             </RequireAuth>
           }
         />

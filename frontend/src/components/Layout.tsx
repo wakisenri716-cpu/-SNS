@@ -43,6 +43,7 @@ export default function Layout() {
               <NavItem to="/register-company" label="企業の方へ" />
             </>
           )}
+          {user && <NavItem to="/settings" label="設定" />}
         </nav>
 
         <div className="mt-auto">
