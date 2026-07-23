@@ -5,6 +5,7 @@ import { optionalAuth, requireAuth, requireRole } from "../middleware/auth";
 import { upload } from "../middleware/upload";
 import { reelInclude, serializeReel } from "../lib/reelSerializer";
 import { geocode, isGoogleMapsConfigured } from "../services/googleMaps";
+import { REEL_CATEGORIES } from "../types";
 
 const router = Router();
 
@@ -32,14 +33,20 @@ async function resolvePosterContext(
   return { municipalityId: company.municipalityId, companyId: company.id };
 }
 
-// Feed: main "おすすめ" reel feed, newest first (paginated)
+// Feed: main "おすすめ" reel feed, newest first (paginated). Optionally filtered to
+// a single category tab (自然/文化/アクティビティー/宿/飲食店) via ?category=.
 router.get("/", optionalAuth, async (req, res) => {
   const cursor = typeof req.query.cursor === "string" ? req.query.cursor : undefined;
+  const category =
+    typeof req.query.category === "string" && (REEL_CATEGORIES as readonly string[]).includes(req.query.category)
+      ? req.query.category
+      : undefined;
   const take = 10;
 
   const reels = await prisma.reel.findMany({
     take,
     ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
+    ...(category ? { where: { category } } : {}),
     orderBy: { createdAt: "desc" },
     include: {
       ...reelInclude,
@@ -100,6 +107,7 @@ router.get("/:id", optionalAuth, async (req, res) => {
 
 const createSchema = z.object({
   caption: z.string().max(2000).optional().default(""),
+  category: z.enum(REEL_CATEGORIES),
   locationName: z.string().max(200).optional(),
   locationLat: z.coerce.number().optional(),
   locationLng: z.coerce.number().optional(),
@@ -139,6 +147,7 @@ router.post(
         companyId: poster.companyId,
         videoUrl: `/uploads/${req.file.filename}`,
         caption: parsed.data.caption,
+        category: parsed.data.category,
         locationName: parsed.data.locationName,
         locationLat,
         locationLng,
@@ -152,6 +161,7 @@ router.post(
 
 const updateSchema = z.object({
   caption: z.string().max(2000).optional(),
+  category: z.enum(REEL_CATEGORIES).optional(),
   locationName: z.string().max(200).optional(),
   locationLat: z.coerce.number().optional(),
   locationLng: z.coerce.number().optional(),

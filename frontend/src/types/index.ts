@@ -1,5 +1,8 @@
 export type Role = "USER" | "MUNICIPALITY" | "COMPANY";
 
+export const REEL_CATEGORIES = ["nature", "culture", "activity", "lodging", "restaurant"] as const;
+export type ReelCategory = (typeof REEL_CATEGORIES)[number];
+
 export interface AuthUser {
   id: string;
   email: string;
@@ -57,6 +60,7 @@ export interface Reel {
   videoUrl: string;
   thumbnailUrl: string | null;
   caption: string;
+  category: ReelCategory;
   locationName: string | null;
   locationLat: number | null;
   locationLng: number | null;

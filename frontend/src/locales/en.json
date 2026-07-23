@@ -126,7 +126,8 @@
     "maasNote": "If you enter a location, access/transit info is shown automatically (currently mock data, to be switched to real data once MaaS is connected).",
     "submit": "Post",
     "videoRequiredError": "Please choose a video file",
-    "genericError": "Failed to post"
+    "genericError": "Failed to post",
+    "categoryLabel": "Category"
   },
   "reelManageGrid": {
     "empty": "No posts yet.",
@@ -219,5 +220,13 @@
   "brand": {
     "name": "JAZIBA",
     "tagline": "Tourism-Only SNS"
+  },
+  "category": {
+    "all": "For You",
+    "nature": "Nature",
+    "culture": "Culture",
+    "activity": "Activities",
+    "lodging": "Lodging",
+    "restaurant": "Restaurants"
   }
 }

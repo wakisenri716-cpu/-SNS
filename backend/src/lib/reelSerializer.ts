@@ -22,6 +22,7 @@ export async function serializeReel(
     videoUrl: string;
     thumbnailUrl: string | null;
     caption: string;
+    category: string;
     locationName: string | null;
     locationLat: number | null;
     locationLng: number | null;
@@ -52,6 +53,7 @@ export async function serializeReel(
     videoUrl: reel.videoUrl,
     thumbnailUrl: reel.thumbnailUrl,
     caption: reel.caption,
+    category: reel.category,
     locationName: reel.locationName,
     locationLat: reel.locationLat,
     locationLng: reel.locationLng,

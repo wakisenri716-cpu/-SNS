@@ -88,6 +88,9 @@ model Reel {
   locationName   String?
   locationLat    Float?
   locationLng    Float?
+  // One of: "nature" | "culture" | "activity" | "lodging" | "restaurant" — chosen by
+  // the poster at upload time, used to filter the main feed into category tabs.
+  category       String   @default("nature")
   viewCount      Int      @default(0)
   createdAt      DateTime @default(now())
 

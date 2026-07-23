@@ -126,7 +126,8 @@
     "maasNote": "場所を入力すると、アクセス情報（交通案内）が自動表示されます（現在は仮データです。MaaS連携後に実データへ切替予定）。",
     "submit": "投稿する",
     "videoRequiredError": "動画ファイルを選択してください",
-    "genericError": "投稿に失敗しました"
+    "genericError": "投稿に失敗しました",
+    "categoryLabel": "カテゴリ"
   },
   "reelManageGrid": {
     "empty": "まだ投稿がありません。",
@@ -219,5 +220,13 @@
   "brand": {
     "name": "ジャジバ",
     "tagline": "観光専用SNS"
+  },
+  "category": {
+    "all": "おすすめ",
+    "nature": "自然",
+    "culture": "文化",
+    "activity": "アクティビティー",
+    "lodging": "宿",
+    "restaurant": "飲食店"
   }
 }

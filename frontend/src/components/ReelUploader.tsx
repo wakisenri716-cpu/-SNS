@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
-import type { Reel } from "../types";
+import { REEL_CATEGORIES, type Reel, type ReelCategory } from "../types";
 
 const inputClass =
   "rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-teal-500";
@@ -9,6 +9,7 @@ const inputClass =
 export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) => void }) {
   const { t } = useTranslation();
   const [caption, setCaption] = useState("");
+  const [category, setCategory] = useState<ReelCategory>("nature");
   const [locationName, setLocationName] = useState("");
   const [locationLat, setLocationLat] = useState("");
   const [locationLng, setLocationLng] = useState("");
@@ -28,6 +29,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
       const fd = new FormData();
       fd.append("video", file);
       fd.append("caption", caption);
+      fd.append("category", category);
       if (locationName) fd.append("locationName", locationName);
       if (locationLat) fd.append("locationLat", locationLat);
       if (locationLng) fd.append("locationLng", locationLng);
@@ -61,6 +63,20 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
         rows={2}
         className={inputClass}
       />
+      <label className="text-xs font-medium text-gray-500">
+        {t("reelUploader.categoryLabel")}
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value as ReelCategory)}
+          className={`mt-1 block w-full ${inputClass}`}
+        >
+          {REEL_CATEGORIES.map((c) => (
+            <option key={c} value={c}>
+              {t(`category.${c}`)}
+            </option>
+          ))}
+        </select>
+      </label>
       <div className="grid grid-cols-3 gap-2">
         <input
           placeholder={t("reelUploader.locationNamePlaceholder")}

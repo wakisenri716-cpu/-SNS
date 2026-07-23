@@ -126,7 +126,8 @@
     "maasNote": "장소를 입력하면 접근 정보（교통 안내）가 자동으로 표시됩니다（현재는 임시 데이터이며, MaaS 연동 후 실제 데이터로 전환될 예정입니다）。",
     "submit": "게시하기",
     "videoRequiredError": "동영상 파일을 선택해 주세요",
-    "genericError": "게시에 실패했습니다"
+    "genericError": "게시에 실패했습니다",
+    "categoryLabel": "카테고리"
   },
   "reelManageGrid": {
     "empty": "아직 게시물이 없습니다.",
@@ -219,5 +220,13 @@
   "brand": {
     "name": "JAZIBA",
     "tagline": "관광 전용 SNS"
+  },
+  "category": {
+    "all": "추천",
+    "nature": "자연",
+    "culture": "문화",
+    "activity": "액티비티",
+    "lodging": "숙박",
+    "restaurant": "음식점"
   }
 }

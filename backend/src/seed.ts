@@ -23,7 +23,7 @@ interface SeedMunicipality {
   accessInfo: string;
   lodgingInfo: string;
   restaurantInfo: string;
-  reels: { caption: string; locationName: string; lat: number; lng: number }[];
+  reels: { caption: string; locationName: string; lat: number; lng: number; category: string }[];
 }
 
 const MUNICIPALITIES: SeedMunicipality[] = [
@@ -37,9 +37,9 @@ const MUNICIPALITIES: SeedMunicipality[] = [
     lodgingInfo: "町家を改装した宿や温泉旅館があります。",
     restaurantInfo: "老舗の和菓子店、湯豆腐料理店が人気です。",
     reels: [
-      { caption: "桜並木が満開になりました🌸", locationName: "さくら並木通り", lat: 35.0116, lng: 135.7681 },
-      { caption: "町家カフェでほっと一息", locationName: "さくら町家カフェ通り", lat: 35.014, lng: 135.77 },
-      { caption: "夜のライトアップも必見です", locationName: "さくら城跡公園", lat: 35.02, lng: 135.76 },
+      { caption: "桜並木が満開になりました🌸", locationName: "さくら並木通り", lat: 35.0116, lng: 135.7681, category: "nature" },
+      { caption: "町家カフェでほっと一息", locationName: "さくら町家カフェ通り", lat: 35.014, lng: 135.77, category: "restaurant" },
+      { caption: "夜のライトアップも必見です", locationName: "さくら城跡公園", lat: 35.02, lng: 135.76, category: "culture" },
     ],
   },
   {
@@ -52,9 +52,9 @@ const MUNICIPALITIES: SeedMunicipality[] = [
     lodgingInfo: "海沿いのリゾートホテルからゲストハウスまで幅広く揃っています。",
     restaurantInfo: "新鮮な島魚料理と沖縄そばの名店があります。",
     reels: [
-      { caption: "エメラルドグリーンの海です🌊", locationName: "うみのしまビーチ", lat: 26.2124, lng: 127.6809 },
-      { caption: "サンゴ礁シュノーケリング体験", locationName: "うみのしま沖合", lat: 26.21, lng: 127.68 },
-      { caption: "島の朝市もおすすめ", locationName: "うみのしま港", lat: 26.215, lng: 127.685 },
+      { caption: "エメラルドグリーンの海です🌊", locationName: "うみのしまビーチ", lat: 26.2124, lng: 127.6809, category: "nature" },
+      { caption: "サンゴ礁シュノーケリング体験", locationName: "うみのしま沖合", lat: 26.21, lng: 127.68, category: "activity" },
+      { caption: "島の朝市もおすすめ", locationName: "うみのしま港", lat: 26.215, lng: 127.685, category: "restaurant" },
     ],
   },
   {
@@ -67,9 +67,10 @@ const MUNICIPALITIES: SeedMunicipality[] = [
     lodgingInfo: "高原ペンションやキャンプ場が点在しています。",
     restaurantInfo: "地元の高原野菜を使ったレストランが人気です。",
     reels: [
-      { caption: "満天の星空が広がります✨", locationName: "やまびこ高原展望台", lat: 36.2048, lng: 138.2529 },
-      { caption: "朝霧に包まれる高原トレッキング", locationName: "やまびこ高原遊歩道", lat: 36.21, lng: 138.25 },
-      { caption: "高原野菜のマルシェを開催中", locationName: "やまびこ村役場前", lat: 36.2, lng: 138.26 },
+      { caption: "満天の星空が広がります✨", locationName: "やまびこ高原展望台", lat: 36.2048, lng: 138.2529, category: "nature" },
+      { caption: "朝霧に包まれる高原トレッキング", locationName: "やまびこ高原遊歩道", lat: 36.21, lng: 138.25, category: "activity" },
+      { caption: "高原野菜のマルシェを開催中", locationName: "やまびこ村役場前", lat: 36.2, lng: 138.26, category: "restaurant" },
+      { caption: "ログペンションでゆったり朝食", locationName: "やまびこ高原ペンション村", lat: 36.205, lng: 138.255, category: "lodging" },
     ],
   },
   {
@@ -82,9 +83,9 @@ const MUNICIPALITIES: SeedMunicipality[] = [
     lodgingInfo: "スキーインスキーアウトのホテルが充実しています。",
     restaurantInfo: "濃厚なスープカレーとジンギスカンの名店があります。",
     reels: [
-      { caption: "極上のパウダースノーが降りました❄️", locationName: "ゆきぐにスキー場", lat: 43.0642, lng: 141.3469 },
-      { caption: "夏はラベンダー畑が見頃です", locationName: "ゆきぐにラベンダー園", lat: 43.07, lng: 141.35 },
-      { caption: "地元名物のスープカレーはいかが？", locationName: "ゆきぐに駅前商店街", lat: 43.06, lng: 141.34 },
+      { caption: "極上のパウダースノーが降りました❄️", locationName: "ゆきぐにスキー場", lat: 43.0642, lng: 141.3469, category: "activity" },
+      { caption: "夏はラベンダー畑が見頃です", locationName: "ゆきぐにラベンダー園", lat: 43.07, lng: 141.35, category: "nature" },
+      { caption: "地元名物のスープカレーはいかが？", locationName: "ゆきぐに駅前商店街", lat: 43.06, lng: 141.34, category: "restaurant" },
     ],
   },
 ];
@@ -139,6 +140,7 @@ export async function seedIfEmpty() {
           municipalityId,
           videoUrl,
           caption: r.caption,
+          category: r.category,
           locationName: r.locationName,
           locationLat: r.lat,
           locationLng: r.lng,
@@ -165,6 +167,7 @@ export async function seedIfEmpty() {
         companyId: companyUser.company!.id,
         videoUrl: copySeedVideo("reel5.webm"),
         caption: "地元企業からもさくら市の魅力をお届けします！",
+        category: "culture",
         locationName: "さくら駅前広場",
         locationLat: 35.015,
         locationLng: 135.765,

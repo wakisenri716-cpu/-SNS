@@ -126,7 +126,8 @@
     "maasNote": "输入地点后会自动显示交通指南信息（当前为模拟数据，MaaS 对接后将切换为真实数据）。",
     "submit": "发布",
     "videoRequiredError": "请选择视频文件",
-    "genericError": "发布失败"
+    "genericError": "发布失败",
+    "categoryLabel": "分类"
   },
   "reelManageGrid": {
     "empty": "还没有任何投稿。",
@@ -219,5 +220,13 @@
   "brand": {
     "name": "JAZIBA",
     "tagline": "观光专用SNS"
+  },
+  "category": {
+    "all": "推荐",
+    "nature": "自然",
+    "culture": "文化",
+    "activity": "体验活动",
+    "lodging": "住宿",
+    "restaurant": "餐饮店"
   }
 }
