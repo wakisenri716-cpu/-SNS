@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import type { Reel } from "../types";
 
 export default function MyPage() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [likedReels, setLikedReels] = useState<Reel[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,17 +32,17 @@ export default function MyPage() {
         </div>
       </div>
 
-      <p className="mt-3 text-xs text-gray-400">
-        観光客アカウントの閲覧専用ページです。投稿の作成・編集はできません（自治体アカウントのみ可能です）。
-      </p>
+      <p className="mt-3 text-xs text-gray-400">{t("myPage.viewOnlyNotice")}</p>
 
       <div className="mt-8">
-        <h2 className="mb-3 text-sm font-semibold text-gray-600">いいねしたリール（{likedReels.length}件）</h2>
+        <h2 className="mb-3 text-sm font-semibold text-gray-600">
+          {t("myPage.likedHeading", { count: likedReels.length })}
+        </h2>
         {loading ? (
-          <p className="text-sm text-gray-400">読み込み中...</p>
+          <p className="text-sm text-gray-400">{t("myPage.loading")}</p>
         ) : likedReels.length === 0 ? (
           <p className="rounded-xl border border-dashed border-gray-300 p-8 text-center text-sm text-gray-400">
-            まだいいねしたリールがありません。フィードで気になる投稿にいいねしてみましょう。
+            {t("myPage.emptyLiked")}
           </p>
         ) : (
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">

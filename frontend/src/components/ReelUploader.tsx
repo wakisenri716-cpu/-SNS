@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import type { Reel } from "../types";
 
@@ -6,6 +7,7 @@ const inputClass =
   "rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-teal-500";
 
 export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) => void }) {
+  const { t } = useTranslation();
   const [caption, setCaption] = useState("");
   const [locationName, setLocationName] = useState("");
   const [locationLat, setLocationLat] = useState("");
@@ -17,7 +19,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (!file) {
-      setError("動画ファイルを選択してください");
+      setError(t("reelUploader.videoRequiredError"));
       return;
     }
     setSubmitting(true);
@@ -37,7 +39,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
       setLocationLng("");
       setFile(null);
     } catch (err: any) {
-      setError(err?.response?.data?.error ?? "投稿に失敗しました");
+      setError(err?.response?.data?.error ?? t("reelUploader.genericError"));
     } finally {
       setSubmitting(false);
     }
@@ -45,7 +47,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-5">
-      <h3 className="text-sm font-semibold text-gray-900">新しいリールを投稿</h3>
+      <h3 className="text-sm font-semibold text-gray-900">{t("reelUploader.heading")}</h3>
       <input
         type="file"
         accept="video/mp4,video/quicktime,video/webm"
@@ -53,7 +55,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
         className="text-xs"
       />
       <textarea
-        placeholder="説明文"
+        placeholder={t("reelUploader.captionPlaceholder")}
         value={caption}
         onChange={(e) => setCaption(e.target.value)}
         rows={2}
@@ -61,33 +63,31 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
       />
       <div className="grid grid-cols-3 gap-2">
         <input
-          placeholder="場所名（例：○○展望台）"
+          placeholder={t("reelUploader.locationNamePlaceholder")}
           value={locationName}
           onChange={(e) => setLocationName(e.target.value)}
           className={`col-span-3 ${inputClass}`}
         />
         <input
-          placeholder="緯度"
+          placeholder={t("reelUploader.latPlaceholder")}
           value={locationLat}
           onChange={(e) => setLocationLat(e.target.value)}
           className={inputClass}
         />
         <input
-          placeholder="経度"
+          placeholder={t("reelUploader.lngPlaceholder")}
           value={locationLng}
           onChange={(e) => setLocationLng(e.target.value)}
           className={inputClass}
         />
       </div>
-      <p className="text-xs text-gray-400">
-        場所を入力すると、アクセス情報（交通案内）が自動表示されます（現在は仮データです。MaaS連携後に実データへ切替予定）。
-      </p>
+      <p className="text-xs text-gray-400">{t("reelUploader.maasNote")}</p>
       {error && <p className="text-xs text-red-500">{error}</p>}
       <button
         disabled={submitting}
         className="rounded-lg bg-teal-600 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
       >
-        投稿する
+        {t("reelUploader.submit")}
       </button>
     </form>
   );

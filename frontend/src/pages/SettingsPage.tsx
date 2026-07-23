@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { isDataSaverEnabled, setDataSaverEnabled } from "../components/AutoplayVideo";
+import { SUPPORTED_LANGUAGES, setAppLanguage, type SupportedLanguage } from "../i18n";
 
 function AvatarSection() {
+  const { t } = useTranslation();
   const { user, municipality, company, updateUser, setMunicipality, updateCompany } = useAuth();
   const [uploading, setUploading] = useState(false);
 
@@ -33,7 +36,7 @@ function AvatarSection() {
 
   return (
     <section className="border-b border-gray-200 p-4 lg:p-6">
-      <h2 className="mb-3 text-sm font-semibold text-gray-600">プロフィール画像</h2>
+      <h2 className="mb-3 text-sm font-semibold text-gray-600">{t("settings.avatarHeading")}</h2>
       <label className="group relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-teal-50 text-2xl font-semibold text-teal-700 ring-1 ring-gray-200">
         {avatarUrl ? (
           <img src={avatarUrl} className="h-full w-full rounded-full object-cover" />
@@ -41,7 +44,7 @@ function AvatarSection() {
           label
         )}
         <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 text-[10px] text-white opacity-0 group-hover:opacity-100">
-          {uploading ? "..." : "変更"}
+          {uploading ? "..." : t("settings.avatarChange")}
         </span>
         <input
           type="file"
@@ -59,6 +62,7 @@ function AvatarSection() {
 }
 
 function ProfileSection() {
+  const { t } = useTranslation();
   const { user, updateUser } = useAuth();
   const [name, setName] = useState(user?.name ?? "");
   const [email, setEmail] = useState(user?.email ?? "");
@@ -73,9 +77,9 @@ function ProfileSection() {
     try {
       const { data } = await api.put("/auth/me", { name, email });
       updateUser(data);
-      setMessage("保存しました");
+      setMessage(t("settings.saveSuccess"));
     } catch (err: any) {
-      setError(err?.response?.data?.error ?? "保存に失敗しました");
+      setError(err?.response?.data?.error ?? t("settings.saveError"));
     } finally {
       setSaving(false);
     }
@@ -83,10 +87,10 @@ function ProfileSection() {
 
   return (
     <section className="border-b border-gray-200 p-4 lg:p-6">
-      <h2 className="mb-3 text-sm font-semibold text-gray-600">アカウント情報</h2>
+      <h2 className="mb-3 text-sm font-semibold text-gray-600">{t("settings.profileHeading")}</h2>
       <div className="flex flex-col gap-3 lg:max-w-md">
         <label className="text-xs font-medium text-gray-500">
-          お名前
+          {t("settings.nameLabel")}
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -94,7 +98,7 @@ function ProfileSection() {
           />
         </label>
         <label className="text-xs font-medium text-gray-500">
-          メールアドレス
+          {t("settings.emailLabel")}
           <input
             type="email"
             value={email}
@@ -107,7 +111,7 @@ function ProfileSection() {
           disabled={saving}
           className="w-fit rounded-lg bg-teal-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
         >
-          保存
+          {t("settings.save")}
         </button>
         {message && <p className="text-xs text-teal-600">{message}</p>}
         {error && <p className="text-xs text-red-500">{error}</p>}
@@ -144,6 +148,7 @@ function ToggleRow({
 }
 
 function NotificationSection() {
+  const { t } = useTranslation();
   const { user, updateUser } = useAuth();
   const [notifyOnLike, setNotifyOnLike] = useState(user?.notifyOnLike ?? true);
   const [notifyOnComment, setNotifyOnComment] = useState(user?.notifyOnComment ?? true);
@@ -161,14 +166,12 @@ function NotificationSection() {
 
   return (
     <section className="border-b border-gray-200 p-4 lg:p-6">
-      <h2 className="mb-1 text-sm font-semibold text-gray-600">通知設定</h2>
-      <p className="mb-2 text-xs text-gray-400">
-        現在このアプリにはプッシュ通知・メール通知の送信機能がないため、ここでの設定は将来の通知機能のための保存のみで、今は挙動に影響しません。
-      </p>
+      <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("settings.notificationHeading")}</h2>
+      <p className="mb-2 text-xs text-gray-400">{t("settings.notificationDisclaimer")}</p>
       <div className="divide-y divide-gray-100 lg:max-w-md">
         <ToggleRow
-          label="いいね通知"
-          description="自分の投稿にいいねが付いたときに通知を受け取る"
+          label={t("settings.notifyLikeLabel")}
+          description={t("settings.notifyLikeDescription")}
           checked={notifyOnLike}
           onChange={(v) => {
             setNotifyOnLike(v);
@@ -176,8 +179,8 @@ function NotificationSection() {
           }}
         />
         <ToggleRow
-          label="コメント通知"
-          description="自分の投稿にコメントが付いたときに通知を受け取る"
+          label={t("settings.notifyCommentLabel")}
+          description={t("settings.notifyCommentDescription")}
           checked={notifyOnComment}
           onChange={(v) => {
             setNotifyOnComment(v);
@@ -185,12 +188,13 @@ function NotificationSection() {
           }}
         />
       </div>
-      {saving && <p className="mt-1 text-xs text-gray-400">保存中...</p>}
+      {saving && <p className="mt-1 text-xs text-gray-400">{t("settings.saving")}</p>}
     </section>
   );
 }
 
 function CommentsPermissionSection() {
+  const { t } = useTranslation();
   const { municipality, company, setMunicipality, updateCompany } = useAuth();
   const [saving, setSaving] = useState(false);
   if (!municipality && !company) return null;
@@ -214,36 +218,31 @@ function CommentsPermissionSection() {
 
   return (
     <section className="border-b border-gray-200 p-4 lg:p-6">
-      <h2 className="mb-1 text-sm font-semibold text-gray-600">コメントの許可</h2>
+      <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("settings.commentsHeading")}</h2>
       <p className="mb-2 text-xs text-gray-400">
         {municipality
-          ? "自治体名義の投稿（紐づく企業の投稿含む）へのコメントを受け付けるかどうかを設定します。"
-          : "自社が投稿したリールへのコメントを受け付けるかどうかを設定します。"}
+          ? t("settings.commentsDescriptionMunicipality")
+          : t("settings.commentsDescriptionCompany")}
       </p>
       <div className="lg:max-w-md">
-        <ToggleRow
-          label="コメントを受け付ける"
-          checked={commentsEnabled}
-          onChange={save}
-        />
+        <ToggleRow label={t("settings.commentsToggleLabel")} checked={commentsEnabled} onChange={save} />
       </div>
-      {saving && <p className="mt-1 text-xs text-gray-400">保存中...</p>}
+      {saving && <p className="mt-1 text-xs text-gray-400">{t("settings.saving")}</p>}
     </section>
   );
 }
 
 function DataSaverSection() {
+  const { t } = useTranslation();
   const [dataSaver, setDataSaver] = useState(isDataSaverEnabled());
 
   return (
     <section className="border-b border-gray-200 p-4 lg:p-6">
-      <h2 className="mb-1 text-sm font-semibold text-gray-600">モバイル通信の節約</h2>
-      <p className="mb-2 text-xs text-gray-400">
-        オンにすると、リール動画の自動再生・先読みを止め、タップして再生する方式に切り替わります（この端末・ブラウザのみの設定です）。
-      </p>
+      <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("settings.dataSaverHeading")}</h2>
+      <p className="mb-2 text-xs text-gray-400">{t("settings.dataSaverDescription")}</p>
       <div className="lg:max-w-md">
         <ToggleRow
-          label="データ節約モード"
+          label={t("settings.dataSaverToggleLabel")}
           checked={dataSaver}
           onChange={(v) => {
             setDataSaver(v);
@@ -255,24 +254,40 @@ function DataSaverSection() {
   );
 }
 
+const LANGUAGE_LABELS: Record<SupportedLanguage, string> = {
+  ja: "日本語",
+  en: "English",
+  zh: "中文",
+  ko: "한국어",
+};
+
 function LanguageSection() {
+  const { t, i18n } = useTranslation();
+
   return (
     <section className="border-b border-gray-200 p-4 lg:p-6">
-      <h2 className="mb-1 text-sm font-semibold text-gray-600">表示言語</h2>
-      <div className="flex gap-2 lg:max-w-md">
-        <span className="rounded-lg bg-teal-600 px-3 py-1.5 text-sm font-medium text-white">日本語</span>
-        <span
-          title="近日対応予定"
-          className="cursor-not-allowed rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-300"
-        >
-          English（近日対応）
-        </span>
+      <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("settings.languageHeading")}</h2>
+      <div className="flex flex-wrap gap-2 lg:max-w-md">
+        {SUPPORTED_LANGUAGES.map((lang) => (
+          <button
+            key={lang}
+            onClick={() => setAppLanguage(lang)}
+            className={`rounded-lg px-3 py-1.5 text-sm font-medium ${
+              i18n.language === lang
+                ? "bg-teal-600 text-white"
+                : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+            }`}
+          >
+            {LANGUAGE_LABELS[lang]}
+          </button>
+        ))}
       </div>
     </section>
   );
 }
 
 function PasswordSection() {
+  const { t } = useTranslation();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -284,18 +299,18 @@ function PasswordSection() {
     setMessage(null);
     setError(null);
     if (newPassword !== confirmPassword) {
-      setError("新しいパスワードが一致しません");
+      setError(t("settings.passwordMismatch"));
       return;
     }
     setSaving(true);
     try {
       await api.put("/auth/password", { currentPassword, newPassword });
-      setMessage("パスワードを変更しました");
+      setMessage(t("settings.passwordChanged"));
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err: any) {
-      setError(err?.response?.data?.error ?? "変更に失敗しました");
+      setError(err?.response?.data?.error ?? t("settings.passwordChangeError"));
     } finally {
       setSaving(false);
     }
@@ -303,10 +318,10 @@ function PasswordSection() {
 
   return (
     <section className="border-b border-gray-200 p-4 lg:p-6">
-      <h2 className="mb-3 text-sm font-semibold text-gray-600">パスワード変更</h2>
+      <h2 className="mb-3 text-sm font-semibold text-gray-600">{t("settings.passwordHeading")}</h2>
       <div className="flex flex-col gap-3 lg:max-w-md">
         <label className="text-xs font-medium text-gray-500">
-          現在のパスワード
+          {t("settings.currentPasswordLabel")}
           <input
             type="password"
             value={currentPassword}
@@ -315,7 +330,7 @@ function PasswordSection() {
           />
         </label>
         <label className="text-xs font-medium text-gray-500">
-          新しいパスワード（8文字以上）
+          {t("settings.newPasswordLabel")}
           <input
             type="password"
             value={newPassword}
@@ -324,7 +339,7 @@ function PasswordSection() {
           />
         </label>
         <label className="text-xs font-medium text-gray-500">
-          新しいパスワード（確認）
+          {t("settings.confirmPasswordLabel")}
           <input
             type="password"
             value={confirmPassword}
@@ -337,7 +352,7 @@ function PasswordSection() {
           disabled={saving || !currentPassword || !newPassword}
           className="w-fit rounded-lg bg-teal-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
         >
-          パスワードを変更
+          {t("settings.changePassword")}
         </button>
         {message && <p className="text-xs text-teal-600">{message}</p>}
         {error && <p className="text-xs text-red-500">{error}</p>}
@@ -347,6 +362,7 @@ function PasswordSection() {
 }
 
 function DeleteAccountSection() {
+  const { t } = useTranslation();
   const { logout } = useAuth();
   const [confirming, setConfirming] = useState(false);
   const [password, setPassword] = useState("");
@@ -360,7 +376,7 @@ function DeleteAccountSection() {
       await api.delete("/auth/me", { data: { password } });
       logout();
     } catch (err: any) {
-      setError(err?.response?.data?.error ?? "削除に失敗しました");
+      setError(err?.response?.data?.error ?? t("settings.deleteError"));
     } finally {
       setDeleting(false);
     }
@@ -368,21 +384,19 @@ function DeleteAccountSection() {
 
   return (
     <section className="p-4 lg:p-6">
-      <h2 className="mb-1 text-sm font-semibold text-red-600">アカウントの削除</h2>
-      <p className="mb-2 text-xs text-gray-400">
-        アカウントを削除すると、投稿・いいね・コメントを含むすべてのデータが削除され、元に戻せません。
-      </p>
+      <h2 className="mb-1 text-sm font-semibold text-red-600">{t("settings.deleteHeading")}</h2>
+      <p className="mb-2 text-xs text-gray-400">{t("settings.deleteWarning")}</p>
       {!confirming ? (
         <button
           onClick={() => setConfirming(true)}
           className="rounded-lg border border-red-300 px-4 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50"
         >
-          アカウントを削除する
+          {t("settings.deleteButton")}
         </button>
       ) : (
         <div className="flex flex-col gap-2 lg:max-w-md">
           <label className="text-xs font-medium text-gray-500">
-            確認のため現在のパスワードを入力してください
+            {t("settings.deleteConfirmLabel")}
             <input
               type="password"
               value={password}
@@ -396,7 +410,7 @@ function DeleteAccountSection() {
               disabled={deleting || !password}
               className="rounded-lg bg-red-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
             >
-              完全に削除する
+              {t("settings.deleteConfirmButton")}
             </button>
             <button
               onClick={() => {
@@ -406,7 +420,7 @@ function DeleteAccountSection() {
               }}
               className="rounded-lg border border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
             >
-              キャンセル
+              {t("settings.deleteCancelButton")}
             </button>
           </div>
           {error && <p className="text-xs text-red-500">{error}</p>}
@@ -417,19 +431,20 @@ function DeleteAccountSection() {
 }
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const { user, municipality, company, logout } = useAuth();
   const navigate = useNavigate();
 
   return (
     <div className="mx-auto my-6 w-full max-w-2xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:max-w-3xl">
       <div className="border-b border-gray-200 p-4 lg:p-6">
-        <h1 className="text-xl font-bold text-gray-900">設定</h1>
+        <h1 className="text-xl font-bold text-gray-900">{t("settings.title")}</h1>
         <p className="mt-1 text-sm text-gray-500">
           {municipality
-            ? `${municipality.name}（自治体アカウント）`
+            ? t("settings.accountMunicipality", { name: municipality.name })
             : company
-              ? `${company.name}（企業アカウント）`
-              : `${user?.name}（一般ユーザー）`}
+              ? t("settings.accountCompany", { name: company.name })
+              : t("settings.accountUser", { name: user?.name })}
         </p>
       </div>
 
@@ -446,7 +461,7 @@ export default function SettingsPage() {
           onClick={() => navigate("/privacy-policy")}
           className="text-sm font-medium text-teal-700 hover:underline"
         >
-          プライバシーポリシーを見る ↗
+          {t("settings.privacyPolicyLink")}
         </button>
       </div>
 
@@ -455,7 +470,7 @@ export default function SettingsPage() {
           onClick={() => logout()}
           className="rounded-lg border border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
         >
-          ログアウト
+          {t("settings.logout")}
         </button>
       </div>
 

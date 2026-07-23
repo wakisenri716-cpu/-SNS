@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AutoplayVideo from "./AutoplayVideo";
 import type { Reel } from "../types";
 
 function ReelOverlayInfo({ reel, onToggleLike }: { reel: Reel; onToggleLike: (reel: Reel) => void }) {
+  const { t } = useTranslation();
   return (
     <>
       <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-black/60 to-transparent p-4">
@@ -18,7 +20,7 @@ function ReelOverlayInfo({ reel, onToggleLike }: { reel: Reel; onToggleLike: (re
           <p className="truncate text-sm font-semibold text-white drop-shadow">{reel.municipality.name}</p>
           <p className="truncate text-xs text-white/80 drop-shadow">
             {reel.municipality.prefecture}
-            {reel.postedByCompany && ` ・投稿: ${reel.postedByCompany.name}`}
+            {reel.postedByCompany && t("reelViewer.postedBy", { name: reel.postedByCompany.name })}
           </p>
         </Link>
       </div>
@@ -30,10 +32,12 @@ function ReelOverlayInfo({ reel, onToggleLike }: { reel: Reel; onToggleLike: (re
             📍 {reel.locationName}
             {reel.transitSuggestion && (
               <>
-                {" "}
-                ・{reel.transitSuggestion.originLabel}から約{reel.transitSuggestion.totalDurationMin}分
+                {t("reelViewer.distanceFromOrigin", {
+                  origin: reel.transitSuggestion.originLabel,
+                  minutes: reel.transitSuggestion.totalDurationMin,
+                })}
                 {reel.transitSuggestion.isMock && (
-                  <span className="ml-1 rounded bg-white/15 px-1.5 py-0.5">交通情報は仮データ</span>
+                  <span className="ml-1 rounded bg-white/15 px-1.5 py-0.5">{t("reelViewer.mockBadge")}</span>
                 )}
               </>
             )}

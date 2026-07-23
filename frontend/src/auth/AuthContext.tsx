@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { api, setAuthToken, setUnauthorizedHandler } from "../api/client";
+import i18n from "../i18n";
 import type { AuthUser, Company, Municipality } from "../types";
 
 interface AuthState {
@@ -60,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    setUnauthorizedHandler(() => logout("セッションが切れました。もう一度ログインしてください。"));
+    setUnauthorizedHandler(() => logout(i18n.t("auth.sessionExpired")));
     return () => setUnauthorizedHandler(null);
   }, []);
 

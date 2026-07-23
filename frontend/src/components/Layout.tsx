@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../auth/AuthContext";
 
 function NavItem({ to, label }: { to: string; label: string }) {
@@ -18,6 +19,7 @@ function NavItem({ to, label }: { to: string; label: string }) {
 
 export default function Layout() {
   const { user, municipality, company, logout } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <div className="flex min-h-screen w-full bg-gray-50 text-gray-900">
@@ -30,17 +32,17 @@ export default function Layout() {
         </NavLink>
 
         <nav className="flex flex-col gap-1">
-          <NavItem to="/" label="おすすめ" />
-          <NavItem to="/search" label="検索" />
+          <NavItem to="/" label={t("nav.recommend")} />
+          <NavItem to="/search" label={t("nav.search")} />
           {municipality ? (
-            <NavItem to="/dashboard" label="自治体管理" />
+            <NavItem to="/dashboard" label={t("nav.dashboardMunicipality")} />
           ) : company ? (
-            <NavItem to="/company-dashboard" label="企業管理" />
+            <NavItem to="/company-dashboard" label={t("nav.dashboardCompany")} />
           ) : (
             <>
-              {user && <NavItem to="/mypage" label="マイページ" />}
-              <NavItem to="/register-municipality" label="自治体の方へ" />
-              <NavItem to="/register-company" label="企業の方へ" />
+              {user && <NavItem to="/mypage" label={t("nav.myPage")} />}
+              <NavItem to="/register-municipality" label={t("nav.forMunicipality")} />
+              <NavItem to="/register-company" label={t("nav.forCompany")} />
             </>
           )}
         </nav>
@@ -51,14 +53,14 @@ export default function Layout() {
               <div className="flex items-center justify-between gap-2">
                 <span className="truncate text-sm font-medium text-gray-800">
                   {municipality
-                    ? `${municipality.name}（自治体）`
+                    ? `${municipality.name}${t("nav.municipalitySuffix")}`
                     : company
-                      ? `${company.name}（企業）`
+                      ? `${company.name}${t("nav.companySuffix")}`
                       : user.name}
                 </span>
                 <NavLink
                   to="/settings"
-                  title="設定"
+                  title={t("nav.settings")}
                   className={({ isActive }) =>
                     `flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-base ${
                       isActive ? "bg-teal-600 text-white" : "text-gray-500 hover:bg-gray-100"
@@ -72,7 +74,7 @@ export default function Layout() {
                 onClick={() => logout()}
                 className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100"
               >
-                ログアウト
+                {t("nav.logout")}
               </button>
             </div>
           ) : (
@@ -80,7 +82,7 @@ export default function Layout() {
               to="/login"
               className="block rounded-lg bg-teal-600 px-3 py-2 text-center text-sm font-medium text-white hover:bg-teal-700"
             >
-              ログイン
+              {t("nav.login")}
             </NavLink>
           )}
         </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import type { Municipality, Reel } from "../types";
 
@@ -14,6 +15,7 @@ interface RecommendItem {
 }
 
 export default function SearchPage() {
+  const { t } = useTranslation();
   const [q, setQ] = useState("");
   const [municipalities, setMunicipalities] = useState<Municipality[]>([]);
   const [reels, setReels] = useState<Reel[]>([]);
@@ -43,7 +45,7 @@ export default function SearchPage() {
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="地域名・キーワードで検索"
+        placeholder={t("search.placeholder")}
         className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-teal-500"
       />
 
@@ -51,7 +53,7 @@ export default function SearchPage() {
         <div className="mt-6 flex flex-col gap-6">
           {municipalities.length > 0 && (
             <div>
-              <h3 className="mb-2 text-xs font-semibold text-gray-500">自治体</h3>
+              <h3 className="mb-2 text-xs font-semibold text-gray-500">{t("search.municipalitiesHeading")}</h3>
               <div className="flex flex-col gap-2">
                 {municipalities.map((m) => (
                   <Link
@@ -67,7 +69,7 @@ export default function SearchPage() {
           )}
           {reels.length > 0 && (
             <div>
-              <h3 className="mb-2 text-xs font-semibold text-gray-500">投稿</h3>
+              <h3 className="mb-2 text-xs font-semibold text-gray-500">{t("search.postsHeading")}</h3>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {reels.map((r) => (
                   <video
@@ -81,12 +83,12 @@ export default function SearchPage() {
             </div>
           )}
           {municipalities.length === 0 && reels.length === 0 && (
-            <p className="text-sm text-gray-400">該当する結果が見つかりませんでした</p>
+            <p className="text-sm text-gray-400">{t("search.noResults")}</p>
           )}
         </div>
       ) : (
         <div className="mt-6">
-          <h3 className="mb-2 text-xs font-semibold text-gray-500">AIレコメンド（人気・新着ベース）</h3>
+          <h3 className="mb-2 text-xs font-semibold text-gray-500">{t("search.recommendHeading")}</h3>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {recommend.map((r) => (
               <Link key={r.id} to={`/municipalities/${r.municipality.id}`} className="relative block">

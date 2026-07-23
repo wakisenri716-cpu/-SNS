@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import AutoplayVideo from "../components/AutoplayVideo";
@@ -7,24 +8,25 @@ import ReelThumb from "../components/ReelGrid";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import type { Municipality, Reel } from "../types";
 
-const TABS = [
-  { key: "tourismInfo", label: "観光情報" },
-  { key: "accessInfo", label: "アクセス方法" },
-  { key: "lodgingInfo", label: "宿情報" },
-  { key: "restaurantInfo", label: "飲食店" },
-] as const;
+const TAB_KEYS = ["tourismInfo", "accessInfo", "lodgingInfo", "restaurantInfo"] as const;
 
-function formatDate(iso: string) {
-  const d = new Date(iso);
-  return `${d.getFullYear()}年${d.getMonth() + 1}月`;
+function formatDate(iso: string, language: string) {
+  return new Intl.DateTimeFormat(language, { year: "numeric", month: "long" }).format(new Date(iso));
 }
 
 export default function MunicipalityProfilePage() {
   const { id } = useParams<{ id: string }>();
   const { token } = useAuth();
+  const { t, i18n } = useTranslation();
+  const tabs = [
+    { key: "tourismInfo", label: t("dashboard.tabTourism") },
+    { key: "accessInfo", label: t("dashboard.tabAccess") },
+    { key: "lodgingInfo", label: t("dashboard.tabLodging") },
+    { key: "restaurantInfo", label: t("dashboard.tabRestaurant") },
+  ] as const satisfies { key: (typeof TAB_KEYS)[number]; label: string }[];
   const [municipality, setMunicipality] = useState<Municipality | null>(null);
   const [reels, setReels] = useState<Reel[]>([]);
-  const [tab, setTab] = useState<(typeof TABS)[number]["key"]>("tourismInfo");
+  const [tab, setTab] = useState<(typeof TAB_KEYS)[number]>("tourismInfo");
   const [openReelId, setOpenReelId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -50,7 +52,7 @@ export default function MunicipalityProfilePage() {
     );
   }
 
-  if (!municipality) return <p className="p-10 text-center text-gray-400">読み込み中...</p>;
+  if (!municipality) return <p className="p-10 text-center text-gray-400">{t("municipalityProfile.loading")}</p>;
 
   const featured = reels[0];
 
@@ -74,7 +76,7 @@ export default function MunicipalityProfilePage() {
         <div className="mt-3 flex items-center gap-2">
           <h1 className="text-xl font-bold text-gray-900">{municipality.name}</h1>
           <span className="inline-flex items-center gap-1 rounded-full bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
-            🏛️ 自治体公式
+            {t("municipalityProfile.officialBadge")}
           </span>
         </div>
 
@@ -82,43 +84,47 @@ export default function MunicipalityProfilePage() {
 
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
           <span>📍 {municipality.prefecture}</span>
-          <span>📅 {formatDate(municipality.createdAt)}から掲載</span>
+          <span>
+            📅 {formatDate(municipality.createdAt, i18n.language)}
+            {t("municipalityProfile.since")}
+          </span>
         </div>
 
         <div className="mt-3 flex gap-4 border-b border-gray-200 pb-3 text-sm text-gray-600">
           <span>
-            <b className="text-gray-900">{reels.length}</b> 件の投稿
+            <b className="text-gray-900">{reels.length}</b>
+            {t("municipalityProfile.postsCount")}
           </span>
         </div>
       </div>
 
       <div className="flex border-b border-gray-200">
-        {TABS.map((t) => (
+        {tabs.map((tabItem) => (
           <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
+            key={tabItem.key}
+            onClick={() => setTab(tabItem.key)}
             className={`flex-1 py-3 text-sm font-medium hover:bg-teal-50/50 ${
-              tab === t.key ? "border-b-2 border-teal-500 text-gray-900" : "text-gray-500"
+              tab === tabItem.key ? "border-b-2 border-teal-500 text-gray-900" : "text-gray-500"
             }`}
           >
-            {t.label}
+            {tabItem.label}
           </button>
         ))}
       </div>
       <div className="whitespace-pre-wrap border-b border-gray-200 p-4 text-sm text-gray-700 lg:p-6">
-        {municipality[tab] || "情報が未登録です"}
+        {municipality[tab] || t("municipalityProfile.noInfo")}
       </div>
 
       {tab === "accessInfo" && municipality.nearestStationName && (
         <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 bg-gray-50 px-4 py-3 text-xs text-gray-600 lg:px-6">
-          <span>🚉 起点駅：{municipality.nearestStationName}</span>
+          <span>{t("municipalityProfile.stationLabel", { name: municipality.nearestStationName })}</span>
           {municipality.maasConfigured ? (
             <span className="rounded-full bg-teal-50 px-2 py-0.5 font-medium text-teal-700">
-              実際の経路データを使用中
+              {t("municipalityProfile.realData")}
             </span>
           ) : (
             <span className="rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-500">
-              各投稿の所要時間は仮データです
+              {t("municipalityProfile.mockData")}
             </span>
           )}
         </div>
@@ -126,7 +132,7 @@ export default function MunicipalityProfilePage() {
 
       {municipality.otaLinks.length > 0 && (
         <div className="border-b border-gray-200 p-4 lg:p-6">
-          <h2 className="mb-2 text-sm font-semibold text-gray-600">宿・予約を探す</h2>
+          <h2 className="mb-2 text-sm font-semibold text-gray-600">{t("municipalityProfile.otaHeading")}</h2>
           <div className="flex flex-col gap-2 lg:flex-row">
             {municipality.otaLinks.map((link) => (
               <a

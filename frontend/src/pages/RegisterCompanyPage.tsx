@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import type { Municipality } from "../types";
@@ -10,6 +11,7 @@ const inputClass =
 export default function RegisterCompanyPage() {
   const { registerCompany } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [municipalities, setMunicipalities] = useState<Municipality[]>([]);
   const [form, setForm] = useState({
     companyName: "",
@@ -36,7 +38,7 @@ export default function RegisterCompanyPage() {
       await registerCompany(form);
       navigate("/company-dashboard");
     } catch (err: any) {
-      setError(err?.response?.data?.error ?? "登録に失敗しました");
+      setError(err?.response?.data?.error ?? t("registerUser.genericError"));
     } finally {
       setSubmitting(false);
     }
@@ -44,19 +46,17 @@ export default function RegisterCompanyPage() {
 
   return (
     <div className="mx-auto max-w-sm rounded-xl border border-gray-200 bg-white p-8 shadow-sm my-12">
-      <h1 className="mb-2 text-center text-xl font-bold text-gray-900">企業アカウント登録</h1>
-      <p className="mb-6 text-center text-sm text-gray-500">
-        登録済みの観光自治体を選び、その自治体名義でリールを投稿できる企業アカウントを作成します。
-      </p>
+      <h1 className="mb-2 text-center text-xl font-bold text-gray-900">{t("registerCompany.title")}</h1>
+      <p className="mb-6 text-center text-sm text-gray-500">{t("registerCompany.description")}</p>
 
       {municipalities.length === 0 ? (
         <p className="rounded-lg bg-amber-50 px-3 py-2 text-center text-sm text-amber-700">
-          まだ登録されている自治体がありません。先に自治体アカウントが登録される必要があります。
+          {t("registerCompany.noMunicipalities")}
         </p>
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <label className="text-xs font-medium text-gray-500">
-            紐づける自治体
+            {t("registerCompany.municipalityLabel")}
             <select
               required
               value={form.municipalityId}
@@ -72,14 +72,14 @@ export default function RegisterCompanyPage() {
           </label>
           <input
             required
-            placeholder="企業名（例：○○観光協会）"
+            placeholder={t("registerCompany.companyNamePlaceholder")}
             value={form.companyName}
             onChange={(e) => setForm({ ...form, companyName: e.target.value })}
             className={inputClass}
           />
           <input
             required
-            placeholder="担当者名"
+            placeholder={t("registerCompany.staffNamePlaceholder")}
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             className={inputClass}
@@ -87,7 +87,7 @@ export default function RegisterCompanyPage() {
           <input
             type="email"
             required
-            placeholder="担当者メールアドレス"
+            placeholder={t("registerCompany.emailPlaceholder")}
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             className={inputClass}
@@ -96,7 +96,7 @@ export default function RegisterCompanyPage() {
             type="password"
             required
             minLength={8}
-            placeholder="パスワード（8文字以上）"
+            placeholder={t("registerCompany.passwordPlaceholder")}
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
             className={inputClass}
@@ -107,7 +107,7 @@ export default function RegisterCompanyPage() {
             disabled={submitting}
             className="rounded-lg bg-teal-600 py-2 font-medium text-white hover:bg-teal-700 disabled:opacity-50"
           >
-            企業として登録する
+            {t("registerCompany.submit")}
           </button>
         </form>
       )}

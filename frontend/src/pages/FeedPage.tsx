@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import ReelThumb from "../components/ReelGrid";
@@ -7,6 +8,7 @@ import type { Reel } from "../types";
 
 export default function FeedPage() {
   const { token } = useAuth();
+  const { t } = useTranslation();
   const [reels, setReels] = useState<Reel[]>([]);
   const [loading, setLoading] = useState(true);
   const [openReelId, setOpenReelId] = useState<string | null>(null);
@@ -32,12 +34,12 @@ export default function FeedPage() {
     );
   }
 
-  if (loading) return <p className="p-10 text-center text-gray-400">読み込み中...</p>;
+  if (loading) return <p className="p-10 text-center text-gray-400">{t("feed.loading")}</p>;
 
   if (reels.length === 0) {
     return (
       <p className="m-6 rounded-xl border border-dashed border-gray-300 p-10 text-center text-gray-400">
-        まだ投稿がありません。自治体アカウントで最初のリールを投稿してみましょう。
+        {t("feed.empty")}
       </p>
     );
   }

@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../auth/AuthContext";
 
 const PREFECTURES = [
@@ -15,6 +16,7 @@ const PREFECTURES = [
 export default function RegisterMunicipalityPage() {
   const { registerMunicipality } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -33,7 +35,7 @@ export default function RegisterMunicipalityPage() {
       await registerMunicipality(form);
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err?.response?.data?.error ?? "登録に失敗しました");
+      setError(err?.response?.data?.error ?? t("registerMunicipality.genericError"));
     } finally {
       setSubmitting(false);
     }
@@ -44,14 +46,12 @@ export default function RegisterMunicipalityPage() {
 
   return (
     <div className="mx-auto max-w-sm rounded-xl border border-gray-200 bg-white p-8 shadow-sm my-12">
-      <h1 className="mb-2 text-center text-xl font-bold text-gray-900">自治体アカウント登録</h1>
-      <p className="mb-6 text-center text-sm text-gray-500">
-        リール動画を投稿できるのは自治体アカウントのみです。観光PR担当の自治体職員の方はこちらから登録してください。
-      </p>
+      <h1 className="mb-2 text-center text-xl font-bold text-gray-900">{t("registerMunicipality.title")}</h1>
+      <p className="mb-6 text-center text-sm text-gray-500">{t("registerMunicipality.description")}</p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
           required
-          placeholder="自治体名（例：○○市）"
+          placeholder={t("registerMunicipality.municipalityNamePlaceholder")}
           value={form.municipalityName}
           onChange={(e) => setForm({ ...form, municipalityName: e.target.value })}
           className={inputClass}
@@ -69,7 +69,7 @@ export default function RegisterMunicipalityPage() {
         </select>
         <input
           required
-          placeholder="担当者名"
+          placeholder={t("registerMunicipality.staffNamePlaceholder")}
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
           className={inputClass}
@@ -77,7 +77,7 @@ export default function RegisterMunicipalityPage() {
         <input
           type="email"
           required
-          placeholder="担当者メールアドレス"
+          placeholder={t("registerMunicipality.emailPlaceholder")}
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           className={inputClass}
@@ -86,18 +86,18 @@ export default function RegisterMunicipalityPage() {
           type="password"
           required
           minLength={8}
-          placeholder="パスワード（8文字以上）"
+          placeholder={t("registerMunicipality.passwordPlaceholder")}
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
           className={inputClass}
         />
-        {error && <p className="text-sm text-red-500">登録に失敗しました。入力内容をご確認ください。</p>}
+        {error && <p className="text-sm text-red-500">{error}</p>}
         <button
           type="submit"
           disabled={submitting}
           className="rounded-lg bg-teal-600 py-2 font-medium text-white hover:bg-teal-700 disabled:opacity-50"
         >
-          自治体として登録する
+          {t("registerMunicipality.submit")}
         </button>
       </form>
     </div>

@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../auth/AuthContext";
 
 const inputClass =
@@ -8,6 +9,7 @@ const inputClass =
 export default function RegisterUserPage() {
   const { registerUser } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -20,7 +22,7 @@ export default function RegisterUserPage() {
       await registerUser(form.email, form.password, form.name);
       navigate("/");
     } catch (err: any) {
-      setError(err?.response?.data?.error ?? "登録に失敗しました");
+      setError(err?.response?.data?.error ?? t("registerUser.genericError"));
     } finally {
       setSubmitting(false);
     }
@@ -28,11 +30,11 @@ export default function RegisterUserPage() {
 
   return (
     <div className="mx-auto max-w-sm rounded-xl border border-gray-200 bg-white p-8 shadow-sm my-12">
-      <h1 className="mb-6 text-center text-xl font-bold text-gray-900">新規登録（観光客の方）</h1>
+      <h1 className="mb-6 text-center text-xl font-bold text-gray-900">{t("registerUser.title")}</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
           required
-          placeholder="お名前"
+          placeholder={t("registerUser.namePlaceholder")}
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
           className={inputClass}
@@ -40,7 +42,7 @@ export default function RegisterUserPage() {
         <input
           type="email"
           required
-          placeholder="メールアドレス"
+          placeholder={t("registerUser.emailPlaceholder")}
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           className={inputClass}
@@ -49,18 +51,22 @@ export default function RegisterUserPage() {
           type="password"
           required
           minLength={8}
-          placeholder="パスワード（8文字以上）"
+          placeholder={t("registerUser.passwordPlaceholder")}
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
           className={inputClass}
         />
-        {error && <p className="text-sm text-red-500">{typeof error === "string" ? error : "入力内容を確認してください"}</p>}
+        {error && (
+          <p className="text-sm text-red-500">
+            {typeof error === "string" ? error : t("registerUser.invalidInput")}
+          </p>
+        )}
         <button
           type="submit"
           disabled={submitting}
           className="rounded-lg bg-teal-600 py-2 font-medium text-white hover:bg-teal-700 disabled:opacity-50"
         >
-          登録する
+          {t("registerUser.submit")}
         </button>
       </form>
     </div>
