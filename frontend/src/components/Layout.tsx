@@ -26,9 +26,9 @@ export default function Layout() {
       <aside className="sticky top-0 flex h-screen w-56 shrink-0 flex-col border-r border-gray-200 bg-white px-4 py-6">
         <NavLink to="/" className="mb-8 flex items-center gap-2 text-xl font-bold tracking-tight text-gray-900">
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-sm text-white">
-            T
+            ジ
           </span>
-          TabiTube
+          ジャジバ
         </NavLink>
 
         <nav className="flex flex-col gap-1">
