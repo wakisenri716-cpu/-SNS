@@ -183,7 +183,8 @@
     "deleteConfirmButton": "완전히 삭제하기",
     "deleteCancelButton": "취소",
     "deleteError": "삭제에 실패했습니다",
-    "contactLink": "문의하기 ↗"
+    "contactLink": "문의하기 ↗",
+    "notLoggedIn": "로그인되어 있지 않습니다. 프로필 사진・알림・비밀번호 등 계정 설정을 이용하려면 로그인해 주세요."
   },
   "privacyPolicy": {
     "title": "개인정보 처리방침",

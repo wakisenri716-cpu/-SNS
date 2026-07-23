@@ -444,17 +444,25 @@ export default function SettingsPage() {
             ? t("settings.accountMunicipality", { name: municipality.name })
             : company
               ? t("settings.accountCompany", { name: company.name })
-              : t("settings.accountUser", { name: user?.name })}
+              : user
+                ? t("settings.accountUser", { name: user.name })
+                : t("settings.notLoggedIn")}
         </p>
       </div>
 
-      <AvatarSection />
-      <ProfileSection />
-      <NotificationSection />
-      <CommentsPermissionSection />
+      {user && (
+        <>
+          <AvatarSection />
+          <ProfileSection />
+          <NotificationSection />
+          <CommentsPermissionSection />
+        </>
+      )}
+
       <DataSaverSection />
       <LanguageSection />
-      <PasswordSection />
+
+      {user && <PasswordSection />}
 
       <div className="flex flex-col items-start gap-2 border-b border-gray-200 p-4 lg:p-6">
         <button
@@ -469,15 +477,24 @@ export default function SettingsPage() {
       </div>
 
       <div className="border-b border-gray-200 p-4 lg:p-6">
-        <button
-          onClick={() => logout()}
-          className="rounded-lg border border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
-        >
-          {t("settings.logout")}
-        </button>
+        {user ? (
+          <button
+            onClick={() => logout()}
+            className="rounded-lg border border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
+          >
+            {t("settings.logout")}
+          </button>
+        ) : (
+          <button
+            onClick={() => navigate("/login")}
+            className="rounded-lg bg-teal-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-teal-700"
+          >
+            {t("nav.login")}
+          </button>
+        )}
       </div>
 
-      <DeleteAccountSection />
+      {user && <DeleteAccountSection />}
     </div>
   );
 }

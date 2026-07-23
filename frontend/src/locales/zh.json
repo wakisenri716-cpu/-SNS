@@ -183,7 +183,8 @@
     "deleteConfirmButton": "永久删除",
     "deleteCancelButton": "取消",
     "deleteError": "删除失败",
-    "contactLink": "联系我们 ↗"
+    "contactLink": "联系我们 ↗",
+    "notLoggedIn": "您尚未登录。请登录以使用账号相关设置（头像、通知、密码等）。"
   },
   "privacyPolicy": {
     "title": "隐私政策",

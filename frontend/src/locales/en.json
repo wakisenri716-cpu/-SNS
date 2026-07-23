@@ -183,7 +183,8 @@
     "deleteConfirmButton": "Delete Permanently",
     "deleteCancelButton": "Cancel",
     "deleteError": "Failed to delete account",
-    "contactLink": "Contact Us ↗"
+    "contactLink": "Contact Us ↗",
+    "notLoggedIn": "You're not logged in. Log in to access account settings (profile picture, notifications, password, etc.)."
   },
   "privacyPolicy": {
     "title": "Privacy Policy",

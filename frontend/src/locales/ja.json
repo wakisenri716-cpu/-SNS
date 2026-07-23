@@ -183,7 +183,8 @@
     "deleteConfirmButton": "完全に削除する",
     "deleteCancelButton": "キャンセル",
     "deleteError": "削除に失敗しました",
-    "contactLink": "お問い合わせ ↗"
+    "contactLink": "お問い合わせ ↗",
+    "notLoggedIn": "ログインしていません。アカウントに関する設定（プロフィール画像・通知・パスワードなど）を利用するにはログインしてください。"
   },
   "privacyPolicy": {
     "title": "プライバシーポリシー",

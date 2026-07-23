@@ -78,12 +78,25 @@ export default function Layout() {
               </button>
             </div>
           ) : (
-            <NavLink
-              to="/login"
-              className="block rounded-lg bg-teal-600 px-3 py-2 text-center text-sm font-medium text-white hover:bg-teal-700"
-            >
-              {t("nav.login")}
-            </NavLink>
+            <div className="flex items-center gap-2">
+              <NavLink
+                to="/login"
+                className="flex-1 rounded-lg bg-teal-600 px-3 py-2 text-center text-sm font-medium text-white hover:bg-teal-700"
+              >
+                {t("nav.login")}
+              </NavLink>
+              <NavLink
+                to="/settings"
+                title={t("nav.settings")}
+                className={({ isActive }) =>
+                  `flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-base ${
+                    isActive ? "bg-teal-600 text-white" : "text-gray-500 hover:bg-gray-100"
+                  }`
+                }
+              >
+                ⚙️
+              </NavLink>
+            </div>
           )}
         </div>
       </aside>

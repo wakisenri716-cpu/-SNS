@@ -46,14 +46,7 @@ function App() {
             </RequireAuth>
           }
         />
-        <Route
-          path="/settings"
-          element={
-            <RequireAuth>
-              <SettingsPage />
-            </RequireAuth>
-          }
-        />
+        <Route path="/settings" element={<SettingsPage />} />
         <Route
           path="/dashboard"
           element={
