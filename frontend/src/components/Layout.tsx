@@ -43,19 +43,31 @@ export default function Layout() {
               <NavItem to="/register-company" label="企業の方へ" />
             </>
           )}
-          {user && <NavItem to="/settings" label="設定" />}
         </nav>
 
         <div className="mt-auto">
           {user ? (
             <div className="flex flex-col gap-2">
-              <span className="truncate text-sm font-medium text-gray-800">
-                {municipality
-                  ? `${municipality.name}（自治体）`
-                  : company
-                    ? `${company.name}（企業）`
-                    : user.name}
-              </span>
+              <div className="flex items-center justify-between gap-2">
+                <span className="truncate text-sm font-medium text-gray-800">
+                  {municipality
+                    ? `${municipality.name}（自治体）`
+                    : company
+                      ? `${company.name}（企業）`
+                      : user.name}
+                </span>
+                <NavLink
+                  to="/settings"
+                  title="設定"
+                  className={({ isActive }) =>
+                    `flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-base ${
+                      isActive ? "bg-teal-600 text-white" : "text-gray-500 hover:bg-gray-100"
+                    }`
+                  }
+                >
+                  ⚙️
+                </NavLink>
+              </div>
               <button
                 onClick={() => logout()}
                 className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100"
