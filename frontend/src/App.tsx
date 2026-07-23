@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Layout from "./components/Layout";
 import RequireMunicipality from "./components/RequireMunicipality";
 import RequireCompany from "./components/RequireCompany";
@@ -18,6 +20,12 @@ import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import ContactPage from "./pages/ContactPage";
 
 function App() {
+  const { t, i18n } = useTranslation();
+
+  useEffect(() => {
+    document.title = `${t("brand.name")} - ${t("brand.tagline")}`;
+  }, [t, i18n.language]);
+
   return (
     <Routes>
       <Route element={<Layout />}>

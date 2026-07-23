@@ -189,7 +189,7 @@
     "title": "Privacy Policy",
     "draftNotice": "This is a development draft. Have it reviewed by legal counsel before launching the service.",
     "section1Heading": "1. Information We Collect",
-    "section1Intro": "Jajiba collects the following information.",
+    "section1Intro": "JAZIBA collects the following information.",
     "section1Item1": "Account information (email address, name, hashed password)",
     "section1Item2": "Posted content (videos, captions, and location data uploaded by municipality/company accounts)",
     "section1Item3": "Usage history (likes, comments, view counts, etc.)",
@@ -214,5 +214,9 @@
     "success": "Your message has been sent. Thank you for contacting us.",
     "genericError": "Failed to send. Please try again later.",
     "directEmailNote": "You can also reach us directly at the email address below."
+  },
+  "brand": {
+    "name": "JAZIBA",
+    "tagline": "Tourism-Only SNS"
   }
 }

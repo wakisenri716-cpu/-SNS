@@ -189,7 +189,7 @@
     "title": "隐私政策",
     "draftNotice": "这是开发用的草稿。正式上线前请务必交由法务人员・专业人士确认内容。",
     "section1Heading": "1. 我们收集的信息",
-    "section1Intro": "本服务（Jajiba）会收集以下信息。",
+    "section1Intro": "本服务（JAZIBA）会收集以下信息。",
     "section1Item1": "账号信息（邮箱地址、姓名、密码哈希值）",
     "section1Item2": "投稿内容（自治体・企业账号上传的视频、说明文字、位置信息）",
     "section1Item3": "使用记录（点赞、评论、浏览次数等）",
@@ -214,5 +214,9 @@
     "success": "您的留言已发送。感谢您的联系。",
     "genericError": "发送失败，请稍后重试。",
     "directEmailNote": "除填写表单外，您也可以直接发送邮件至以下地址与我们联系。"
+  },
+  "brand": {
+    "name": "JAZIBA",
+    "tagline": "观光专用SNS"
   }
 }
