@@ -6,6 +6,7 @@ import path from "path";
 import { UPLOAD_DIR } from "./middleware/upload";
 import authRoutes from "./routes/auth";
 import municipalityRoutes from "./routes/municipalities";
+import companyRoutes from "./routes/companies";
 import reelRoutes from "./routes/reels";
 import searchRoutes from "./routes/search";
 import { seedIfEmpty } from "./seed";
@@ -21,6 +22,7 @@ app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/municipalities", municipalityRoutes);
+app.use("/api/companies", companyRoutes);
 app.use("/api/reels", reelRoutes);
 app.use("/api/search", searchRoutes);
 

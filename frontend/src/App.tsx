@@ -14,6 +14,7 @@ import CompanyDashboardPage from "./pages/CompanyDashboardPage";
 import SearchPage from "./pages/SearchPage";
 import MyPage from "./pages/MyPage";
 import SettingsPage from "./pages/SettingsPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/register-municipality" element={<RegisterMunicipalityPage />} />
         <Route path="/register-company" element={<RegisterCompanyPage />} />
         <Route path="/municipalities/:id" element={<MunicipalityProfilePage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route
           path="/mypage"
           element={

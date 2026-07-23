@@ -4,9 +4,30 @@ import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { prisma } from "../prisma";
 import { JWT_SECRET, requireAuth } from "../middleware/auth";
+import { upload } from "../middleware/upload";
 import type { Role } from "../types";
 
 const router = Router();
+
+function serializeUser(user: {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  avatarUrl: string | null;
+  notifyOnLike: boolean;
+  notifyOnComment: boolean;
+}) {
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    avatarUrl: user.avatarUrl,
+    notifyOnLike: user.notifyOnLike,
+    notifyOnComment: user.notifyOnComment,
+  };
+}
 
 const registerUserSchema = z.object({
   email: z.string().email(),
@@ -37,6 +58,8 @@ const companySelect = {
   id: true,
   name: true,
   municipalityId: true,
+  avatarUrl: true,
+  commentsEnabled: true,
   municipality: { select: { id: true, name: true, prefecture: true } },
 } as const;
 
@@ -60,7 +83,7 @@ router.post("/register", async (req, res) => {
   const token = issueToken(user.id, "USER");
   res.status(201).json({
     token,
-    user: { id: user.id, email: user.email, name: user.name, role: user.role },
+    user: serializeUser(user),
   });
 });
 
@@ -96,7 +119,7 @@ router.post("/register-municipality", async (req, res) => {
   const token = issueToken(user.id, "MUNICIPALITY");
   res.status(201).json({
     token,
-    user: { id: user.id, email: user.email, name: user.name, role: user.role },
+    user: serializeUser(user),
     municipality: user.municipality,
   });
 });
@@ -141,7 +164,7 @@ router.post("/register-company", async (req, res) => {
   const token = issueToken(user.id, "COMPANY");
   res.status(201).json({
     token,
-    user: { id: user.id, email: user.email, name: user.name, role: user.role },
+    user: serializeUser(user),
     company: user.company,
   });
 });
@@ -169,7 +192,7 @@ router.post("/login", async (req, res) => {
   const token = issueToken(user.id, user.role as Role);
   res.json({
     token,
-    user: { id: user.id, email: user.email, name: user.name, role: user.role },
+    user: serializeUser(user),
     municipality: user.municipality ?? null,
     company: user.company ?? null,
   });
@@ -189,7 +212,7 @@ router.get("/me", requireAuth, async (req, res) => {
     return res.status(401).json({ error: "セッションが無効です。再度ログインしてください" });
   }
   res.json({
-    user: { id: user.id, email: user.email, name: user.name, role: user.role },
+    user: serializeUser(user),
     municipality: user.municipality ?? null,
     company: user.company ?? null,
   });
@@ -198,9 +221,12 @@ router.get("/me", requireAuth, async (req, res) => {
 const updateMeSchema = z.object({
   name: z.string().min(1).optional(),
   email: z.string().email().optional(),
+  notifyOnLike: z.boolean().optional(),
+  notifyOnComment: z.boolean().optional(),
 });
 
-// Account settings: update the signed-in user's own name/email (any role).
+// Account settings: update the signed-in user's own name/email/notification
+// preferences (any role).
 router.put("/me", requireAuth, async (req, res) => {
   const parsed = updateMeSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
@@ -216,7 +242,38 @@ router.put("/me", requireAuth, async (req, res) => {
     where: { id: req.auth!.userId },
     data: parsed.data,
   });
-  res.json({ id: updated.id, email: updated.email, name: updated.name, role: updated.role });
+  res.json(serializeUser(updated));
+});
+
+// Profile picture — shared by all account types (general users, and municipality/
+// company accounts that don't yet have a separate branded avatar set elsewhere).
+router.post("/me/avatar", requireAuth, upload.single("avatar"), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "ファイルがありません" });
+
+  const updated = await prisma.user.update({
+    where: { id: req.auth!.userId },
+    data: { avatarUrl: `/uploads/${req.file.filename}` },
+  });
+  res.json(serializeUser(updated));
+});
+
+// Delete the signed-in user's own account. Cascades (see schema.prisma) remove
+// the linked Municipality/Company profile, their reels, likes, and comments.
+// This is irreversible and requires the current password as confirmation.
+const deleteMeSchema = z.object({ password: z.string().min(1) });
+
+router.delete("/me", requireAuth, async (req, res) => {
+  const parsed = deleteMeSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+
+  const user = await prisma.user.findUnique({ where: { id: req.auth!.userId } });
+  if (!user) return res.status(404).json({ error: "ユーザーが見つかりません" });
+
+  const valid = await bcrypt.compare(parsed.data.password, user.passwordHash);
+  if (!valid) return res.status(401).json({ error: "パスワードが正しくありません" });
+
+  await prisma.user.delete({ where: { id: user.id } });
+  res.status(204).end();
 });
 
 const changePasswordSchema = z.object({

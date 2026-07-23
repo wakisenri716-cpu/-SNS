@@ -24,6 +24,7 @@ function serializeMunicipality(m: {
   nearestStationName: string;
   nearestStationLat: number | null;
   nearestStationLng: number | null;
+  commentsEnabled: boolean;
   createdAt: Date;
 }) {
   const otaLinks = parseOtaLinks(m.otaLinks);
@@ -42,6 +43,7 @@ function serializeMunicipality(m: {
     nearestStationLat: m.nearestStationLat,
     nearestStationLng: m.nearestStationLng,
     maasConfigured: isGoogleMapsConfigured(),
+    commentsEnabled: m.commentsEnabled,
     createdAt: m.createdAt,
   };
 }
@@ -92,6 +94,7 @@ const updateSchema = z.object({
   tourismInfo: z.string().optional(),
   otaLinks: z.array(z.object({ label: z.string().min(1), url: z.string().url() })).optional(),
   nearestStationName: z.string().optional(),
+  commentsEnabled: z.boolean().optional(),
 });
 
 // Update own profile (municipality-only)

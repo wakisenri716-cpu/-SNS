@@ -15,6 +15,12 @@ model User {
   passwordHash String
   name         String
   role         String
+  avatarUrl    String?
+  // Whether to notify this user when someone likes/comments on their content.
+  // Stored for future use — the app has no notification delivery mechanism
+  // (push/email) yet, so these currently have no visible effect.
+  notifyOnLike    Boolean  @default(true)
+  notifyOnComment Boolean  @default(true)
   createdAt    DateTime @default(now())
 
   municipality Municipality?
@@ -42,6 +48,9 @@ model Municipality {
   nearestStationName String   @default("")
   nearestStationLat  Float?
   nearestStationLng  Float?
+  // Whether tourists can comment on this municipality's reels (including ones
+  // posted by its linked companies). Toggled from Settings.
+  commentsEnabled    Boolean  @default(true)
   createdAt          DateTime @default(now())
 
   reels     Reel[]
@@ -59,6 +68,9 @@ model Company {
   municipalityId String
   municipality   Municipality @relation(fields: [municipalityId], references: [id], onDelete: Cascade)
   name           String
+  avatarUrl      String?
+  // Whether tourists can comment on this company's own reels. Toggled from Settings.
+  commentsEnabled Boolean  @default(true)
   createdAt      DateTime @default(now())
 
   reels Reel[]

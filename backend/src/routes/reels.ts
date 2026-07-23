@@ -234,8 +234,23 @@ router.post("/:id/comments", requireAuth, async (req, res) => {
   const parsed = commentSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
 
-  const reel = await prisma.reel.findUnique({ where: { id: req.params.id } });
+  const reel = await prisma.reel.findUnique({
+    where: { id: req.params.id },
+    include: {
+      municipality: { select: { commentsEnabled: true } },
+      company: { select: { commentsEnabled: true } },
+    },
+  });
   if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
+
+  // The municipality can turn off comments for everything under its name
+  // (including its companies' posts, mirroring its moderation authority over
+  // them elsewhere in the app); a company can additionally turn off comments
+  // on just its own posts. Either "off" wins.
+  const commentsEnabled = reel.municipality.commentsEnabled && (reel.company?.commentsEnabled ?? true);
+  if (!commentsEnabled) {
+    return res.status(403).json({ error: "この投稿はコメントが許可されていません" });
+  }
 
   const comment = await prisma.comment.create({
     data: { body: parsed.data.body, reelId: reel.id, userId: req.auth!.userId },

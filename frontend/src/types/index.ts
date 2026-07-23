@@ -5,12 +5,17 @@ export interface AuthUser {
   email: string;
   name: string;
   role: Role;
+  avatarUrl: string | null;
+  notifyOnLike: boolean;
+  notifyOnComment: boolean;
 }
 
 export interface Company {
   id: string;
   name: string;
   municipalityId: string;
+  avatarUrl: string | null;
+  commentsEnabled: boolean;
   municipality: { id: string; name: string; prefecture: string };
 }
 
@@ -34,6 +39,7 @@ export interface Municipality {
   nearestStationLat: number | null;
   nearestStationLng: number | null;
   maasConfigured: boolean;
+  commentsEnabled: boolean;
   createdAt: string;
   reels?: Reel[];
 }

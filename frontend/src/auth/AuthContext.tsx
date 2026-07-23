@@ -26,6 +26,7 @@ interface AuthState {
   }) => Promise<void>;
   logout: (notice?: string) => void;
   setMunicipality: (m: Municipality) => void;
+  updateCompany: (c: Company) => void;
   updateUser: (u: AuthUser) => void;
 }
 
@@ -147,6 +148,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  function updateCompany(c: Company) {
+    setCompany(c);
+    if (token && user) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ token, user, municipality, company: c }));
+    }
+  }
+
   const value = useMemo(
     () => ({
       user,
@@ -160,6 +168,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       registerCompany,
       logout,
       setMunicipality,
+      updateCompany,
       updateUser,
     }),
     [user, municipality, company, token, ready]
