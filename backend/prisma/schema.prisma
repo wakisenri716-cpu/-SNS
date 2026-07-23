@@ -115,3 +115,14 @@ model Comment {
   body      String
   createdAt DateTime @default(now())
 }
+
+// Public contact-form submissions (no login required to send one). There's no
+// admin role/inbox UI in this app yet, so the operator currently reads these via
+// `npx prisma studio` or a direct DB query — see README.
+model Inquiry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+}

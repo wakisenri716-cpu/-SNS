@@ -182,7 +182,8 @@
     "deleteConfirmLabel": "Enter your current password to confirm",
     "deleteConfirmButton": "Delete Permanently",
     "deleteCancelButton": "Cancel",
-    "deleteError": "Failed to delete account"
+    "deleteError": "Failed to delete account",
+    "contactLink": "Contact Us ↗"
   },
   "privacyPolicy": {
     "title": "Privacy Policy",
@@ -200,6 +201,18 @@
     "section4Heading": "4. Deleting Your Account",
     "section4Body": "You can delete your account at any time from Settings. Deletion also removes related data, including posts, likes, and comments, and cannot be undone.",
     "section5Heading": "5. Contact",
-    "section5Body": "For questions about this policy, please contact the service operator."
+    "section5Body": "For questions about this policy, please contact the service operator.",
+    "section5Link": "Go to Contact Form ↗"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "description": "If you have any questions or feedback, please feel free to reach out using the form below.",
+    "namePlaceholder": "Name",
+    "emailPlaceholder": "Email address",
+    "messagePlaceholder": "Your message",
+    "submit": "Send",
+    "success": "Your message has been sent. Thank you for contacting us.",
+    "genericError": "Failed to send. Please try again later.",
+    "directEmailNote": "You can also reach us directly at the email address below."
   }
 }

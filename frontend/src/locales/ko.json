@@ -182,7 +182,8 @@
     "deleteConfirmLabel": "확인을 위해 현재 비밀번호를 입력해 주세요",
     "deleteConfirmButton": "완전히 삭제하기",
     "deleteCancelButton": "취소",
-    "deleteError": "삭제에 실패했습니다"
+    "deleteError": "삭제에 실패했습니다",
+    "contactLink": "문의하기 ↗"
   },
   "privacyPolicy": {
     "title": "개인정보 처리방침",
@@ -200,6 +201,18 @@
     "section4Heading": "4. 계정 삭제",
     "section4Body": "설정 화면에서 언제든지 자신의 계정을 삭제할 수 있습니다. 삭제하면 게시물・좋아요・댓글을 포함한 관련 데이터도 삭제되며 복구할 수 없습니다.",
     "section5Heading": "5. 문의",
-    "section5Body": "본 방침에 관한 문의는 서비스 운영자에게 연락해 주세요."
+    "section5Body": "본 방침에 관한 문의는 서비스 운영자에게 연락해 주세요.",
+    "section5Link": "문의 양식으로 이동 ↗"
+  },
+  "contact": {
+    "title": "문의하기",
+    "description": "질문이나 의견이 있으시면 아래 양식을 통해 편하게 연락해 주세요.",
+    "namePlaceholder": "이름",
+    "emailPlaceholder": "이메일 주소",
+    "messagePlaceholder": "문의 내용",
+    "submit": "보내기",
+    "success": "문의가 전송되었습니다. 연락해 주셔서 감사합니다.",
+    "genericError": "전송에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+    "directEmailNote": "양식 외에도 아래 이메일 주소로 직접 문의하실 수 있습니다."
   }
 }

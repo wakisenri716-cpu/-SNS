@@ -182,7 +182,8 @@
     "deleteConfirmLabel": "確認のため現在のパスワードを入力してください",
     "deleteConfirmButton": "完全に削除する",
     "deleteCancelButton": "キャンセル",
-    "deleteError": "削除に失敗しました"
+    "deleteError": "削除に失敗しました",
+    "contactLink": "お問い合わせ ↗"
   },
   "privacyPolicy": {
     "title": "プライバシーポリシー",
@@ -200,6 +201,18 @@
     "section4Heading": "4. アカウントの削除",
     "section4Body": "設定画面からいつでも自分のアカウントを削除できます。削除すると、投稿・いいね・コメントを含む関連データも削除され、復元できません。",
     "section5Heading": "5. お問い合わせ",
-    "section5Body": "本ポリシーに関するお問い合わせは、サービス運営者までご連絡ください。"
+    "section5Body": "本ポリシーに関するお問い合わせは、サービス運営者までご連絡ください。",
+    "section5Link": "お問い合わせフォームへ ↗"
+  },
+  "contact": {
+    "title": "お問い合わせ",
+    "description": "ご質問・ご要望などがございましたら、以下のフォームからお気軽にご連絡ください。",
+    "namePlaceholder": "お名前",
+    "emailPlaceholder": "メールアドレス",
+    "messagePlaceholder": "お問い合わせ内容",
+    "submit": "送信する",
+    "success": "お問い合わせを送信しました。ご連絡ありがとうございます。",
+    "genericError": "送信に失敗しました。時間をおいて再度お試しください。",
+    "directEmailNote": "フォームのほか、下記メールアドレスへ直接ご連絡いただくことも可能です。"
   }
 }

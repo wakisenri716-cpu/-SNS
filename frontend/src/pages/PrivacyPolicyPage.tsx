@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 export default function PrivacyPolicyPage() {
@@ -38,6 +39,9 @@ export default function PrivacyPolicyPage() {
         <section>
           <h2 className="mb-1 font-semibold text-gray-900">{t("privacyPolicy.section5Heading")}</h2>
           <p>{t("privacyPolicy.section5Body")}</p>
+          <Link to="/contact" className="mt-1 inline-block text-teal-700 hover:underline">
+            {t("privacyPolicy.section5Link")}
+          </Link>
         </section>
       </div>
     </div>

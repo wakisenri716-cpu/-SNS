@@ -9,6 +9,7 @@ import municipalityRoutes from "./routes/municipalities";
 import companyRoutes from "./routes/companies";
 import reelRoutes from "./routes/reels";
 import searchRoutes from "./routes/search";
+import inquiryRoutes from "./routes/inquiries";
 import { seedIfEmpty } from "./seed";
 
 const app = express();
@@ -25,6 +26,7 @@ app.use("/api/municipalities", municipalityRoutes);
 app.use("/api/companies", companyRoutes);
 app.use("/api/reels", reelRoutes);
 app.use("/api/search", searchRoutes);
+app.use("/api/inquiries", inquiryRoutes);
 
 // Serve the built frontend (frontend/npm run build -> frontend/dist) so a single
 // backend process can host both the API and the SPA, e.g. one Render web service.

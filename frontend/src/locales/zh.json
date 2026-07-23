@@ -182,7 +182,8 @@
     "deleteConfirmLabel": "请输入当前密码以确认",
     "deleteConfirmButton": "永久删除",
     "deleteCancelButton": "取消",
-    "deleteError": "删除失败"
+    "deleteError": "删除失败",
+    "contactLink": "联系我们 ↗"
   },
   "privacyPolicy": {
     "title": "隐私政策",
@@ -200,6 +201,18 @@
     "section4Heading": "4. 账号删除",
     "section4Body": "您可以随时在设置页面删除自己的账号。删除后，包括投稿・点赞・评论在内的相关数据也将被删除，且无法恢复。",
     "section5Heading": "5. 联系方式",
-    "section5Body": "如对本政策有任何疑问，请联系服务运营方。"
+    "section5Body": "如对本政策有任何疑问，请联系服务运营方。",
+    "section5Link": "前往联系表单 ↗"
+  },
+  "contact": {
+    "title": "联系我们",
+    "description": "如有任何问题或意见，请通过以下表单随时与我们联系。",
+    "namePlaceholder": "姓名",
+    "emailPlaceholder": "邮箱地址",
+    "messagePlaceholder": "咨询内容",
+    "submit": "发送",
+    "success": "您的留言已发送。感谢您的联系。",
+    "genericError": "发送失败，请稍后重试。",
+    "directEmailNote": "除填写表单外，您也可以直接发送邮件至以下地址与我们联系。"
   }
 }

@@ -456,12 +456,15 @@ export default function SettingsPage() {
       <LanguageSection />
       <PasswordSection />
 
-      <div className="border-b border-gray-200 p-4 lg:p-6">
+      <div className="flex flex-col items-start gap-2 border-b border-gray-200 p-4 lg:p-6">
         <button
           onClick={() => navigate("/privacy-policy")}
           className="text-sm font-medium text-teal-700 hover:underline"
         >
           {t("settings.privacyPolicyLink")}
+        </button>
+        <button onClick={() => navigate("/contact")} className="text-sm font-medium text-teal-700 hover:underline">
+          {t("settings.contactLink")}
         </button>
       </div>
 
