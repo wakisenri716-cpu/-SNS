@@ -5,6 +5,7 @@ import Layout from "./components/Layout";
 import RequireMunicipality from "./components/RequireMunicipality";
 import RequireCompany from "./components/RequireCompany";
 import RequireAuth from "./components/RequireAuth";
+import RequirePoster from "./components/RequirePoster";
 import FeedPage from "./pages/FeedPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterUserPage from "./pages/RegisterUserPage";
@@ -18,6 +19,7 @@ import MyPage from "./pages/MyPage";
 import SettingsPage from "./pages/SettingsPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import ContactPage from "./pages/ContactPage";
+import InsightsPage from "./pages/InsightsPage";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -61,6 +63,14 @@ function App() {
             <RequireCompany>
               <CompanyDashboardPage />
             </RequireCompany>
+          }
+        />
+        <Route
+          path="/insights"
+          element={
+            <RequirePoster>
+              <InsightsPage />
+            </RequirePoster>
           }
         />
       </Route>

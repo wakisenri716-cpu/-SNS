@@ -4,6 +4,7 @@
     "search": "搜索",
     "dashboardMunicipality": "自治体管理",
     "dashboardCompany": "企业管理",
+    "insights": "数据洞察",
     "myPage": "我的页面",
     "forMunicipality": "自治体入口",
     "forCompany": "企业入口",
@@ -231,5 +232,22 @@
     "activity": "体验活动",
     "lodging": "住宿",
     "restaurant": "餐饮店"
+  },
+  "insights": {
+    "heading": "投稿数据洞察",
+    "subheading": "查看您（含关联企业）投稿的播放量、点赞数、评论数等统计信息。",
+    "loading": "加载中...",
+    "empty": "还没有任何投稿。发布后即可在此查看播放量等统计数据。",
+    "totalPosts": "投稿数",
+    "totalViews": "总播放量",
+    "totalLikes": "总点赞数",
+    "totalComments": "总评论数",
+    "byCategoryHeading": "分类明细",
+    "categoryStats": "{{count}}条・播放{{views}}・点赞{{likes}}・评论{{comments}}",
+    "byReelHeading": "各投稿明细",
+    "sortViews": "按播放量排序",
+    "sortLikes": "按点赞数排序",
+    "sortComments": "按评论数排序",
+    "sortDate": "按最新排序"
   }
 }

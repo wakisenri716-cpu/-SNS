@@ -35,9 +35,15 @@ export default function Layout() {
           <NavItem to="/" label={t("nav.recommend")} />
           <NavItem to="/search" label={t("nav.search")} />
           {municipality ? (
-            <NavItem to="/dashboard" label={t("nav.dashboardMunicipality")} />
+            <>
+              <NavItem to="/dashboard" label={t("nav.dashboardMunicipality")} />
+              <NavItem to="/insights" label={t("nav.insights")} />
+            </>
           ) : company ? (
-            <NavItem to="/company-dashboard" label={t("nav.dashboardCompany")} />
+            <>
+              <NavItem to="/company-dashboard" label={t("nav.dashboardCompany")} />
+              <NavItem to="/insights" label={t("nav.insights")} />
+            </>
           ) : (
             <>
               {user && <NavItem to="/mypage" label={t("nav.myPage")} />}

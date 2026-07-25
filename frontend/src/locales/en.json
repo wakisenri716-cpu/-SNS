@@ -4,6 +4,7 @@
     "search": "Search",
     "dashboardMunicipality": "Municipality Admin",
     "dashboardCompany": "Company Admin",
+    "insights": "Insights",
     "myPage": "My Page",
     "forMunicipality": "For Municipalities",
     "forCompany": "For Companies",
@@ -231,5 +232,22 @@
     "activity": "Activities",
     "lodging": "Lodging",
     "restaurant": "Restaurants"
+  },
+  "insights": {
+    "heading": "Post Insights",
+    "subheading": "View counts, likes, and comments for your posts (including linked companies' posts).",
+    "loading": "Loading...",
+    "empty": "No posts yet. Once you post, stats like view counts will show up here.",
+    "totalPosts": "Posts",
+    "totalViews": "Total Views",
+    "totalLikes": "Total Likes",
+    "totalComments": "Total Comments",
+    "byCategoryHeading": "Breakdown by Category",
+    "categoryStats": "{{count}} posts · {{views}} views · {{likes}} likes · {{comments}} comments",
+    "byReelHeading": "Breakdown by Post",
+    "sortViews": "Sort by views",
+    "sortLikes": "Sort by likes",
+    "sortComments": "Sort by comments",
+    "sortDate": "Sort by newest"
   }
 }

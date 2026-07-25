@@ -4,6 +4,7 @@
     "search": "検索",
     "dashboardMunicipality": "自治体管理",
     "dashboardCompany": "企業管理",
+    "insights": "インサイト",
     "myPage": "マイページ",
     "forMunicipality": "自治体の方へ",
     "forCompany": "企業の方へ",
@@ -231,5 +232,22 @@
     "activity": "アクティビティー",
     "lodging": "宿",
     "restaurant": "飲食店"
+  },
+  "insights": {
+    "heading": "投稿インサイト",
+    "subheading": "自分（紐づく企業を含む）の投稿の再生数・いいね数・コメント数を確認できます。",
+    "loading": "読み込み中...",
+    "empty": "まだ投稿がありません。投稿するとここに再生数などの統計が表示されます。",
+    "totalPosts": "投稿数",
+    "totalViews": "総再生数",
+    "totalLikes": "総いいね数",
+    "totalComments": "総コメント数",
+    "byCategoryHeading": "カテゴリ別の内訳",
+    "categoryStats": "{{count}}件・再生{{views}}・いいね{{likes}}・コメント{{comments}}",
+    "byReelHeading": "投稿ごとの内訳",
+    "sortViews": "再生数順",
+    "sortLikes": "いいね数順",
+    "sortComments": "コメント数順",
+    "sortDate": "新着順"
   }
 }

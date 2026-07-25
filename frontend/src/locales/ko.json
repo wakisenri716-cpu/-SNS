@@ -4,6 +4,7 @@
     "search": "검색",
     "dashboardMunicipality": "지자체 관리",
     "dashboardCompany": "기업 관리",
+    "insights": "인사이트",
     "myPage": "마이페이지",
     "forMunicipality": "지자체 담당자",
     "forCompany": "기업 담당자",
@@ -231,5 +232,22 @@
     "activity": "액티비티",
     "lodging": "숙박",
     "restaurant": "음식점"
+  },
+  "insights": {
+    "heading": "게시물 인사이트",
+    "subheading": "내（연결된 기업 포함） 게시물의 조회수・좋아요・댓글 수를 확인할 수 있습니다.",
+    "loading": "불러오는 중...",
+    "empty": "아직 게시물이 없습니다. 게시하면 이곳에 조회수 등의 통계가 표시됩니다.",
+    "totalPosts": "게시물 수",
+    "totalViews": "총 조회수",
+    "totalLikes": "총 좋아요 수",
+    "totalComments": "총 댓글 수",
+    "byCategoryHeading": "카테고리별 내역",
+    "categoryStats": "{{count}}건・조회 {{views}}・좋아요 {{likes}}・댓글 {{comments}}",
+    "byReelHeading": "게시물별 내역",
+    "sortViews": "조회수순",
+    "sortLikes": "좋아요순",
+    "sortComments": "댓글순",
+    "sortDate": "최신순"
   }
 }
