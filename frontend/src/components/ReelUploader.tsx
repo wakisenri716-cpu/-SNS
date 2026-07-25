@@ -6,6 +6,11 @@ import { REEL_CATEGORIES, type Reel, type ReelCategory } from "../types";
 const inputClass =
   "rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-teal-500";
 
+// Matches the backend's multer limit (see backend/src/middleware/upload.ts) — checked
+// client-side too so oversized files fail fast instead of uploading for a long time
+// only to be rejected by the server at the end.
+const MAX_FILE_SIZE_BYTES = 200 * 1024 * 1024;
+
 export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) => void }) {
   const { t } = useTranslation();
   const [caption, setCaption] = useState("");
@@ -15,6 +20,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
   const [locationLng, setLocationLng] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadPercent, setUploadPercent] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   async function submit(e: FormEvent) {
@@ -23,7 +29,12 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
       setError(t("reelUploader.videoRequiredError"));
       return;
     }
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      setError(t("reelUploader.fileTooLargeError"));
+      return;
+    }
     setSubmitting(true);
+    setUploadPercent(0);
     setError(null);
     try {
       const fd = new FormData();
@@ -33,7 +44,11 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
       if (locationName) fd.append("locationName", locationName);
       if (locationLat) fd.append("locationLat", locationLat);
       if (locationLng) fd.append("locationLng", locationLng);
-      const { data } = await api.post("/reels", fd);
+      const { data } = await api.post("/reels", fd, {
+        onUploadProgress: (e) => {
+          if (e.total) setUploadPercent(Math.round((e.loaded / e.total) * 100));
+        },
+      });
       onCreated(data);
       setCaption("");
       setLocationName("");
@@ -44,6 +59,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
       setError(err?.response?.data?.error ?? t("reelUploader.genericError"));
     } finally {
       setSubmitting(false);
+      setUploadPercent(0);
     }
   }
 
@@ -99,6 +115,19 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
       </div>
       <p className="text-xs text-gray-400">{t("reelUploader.maasNote")}</p>
       {error && <p className="text-xs text-red-500">{error}</p>}
+      {submitting && (
+        <div className="flex flex-col gap-1">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+            <div
+              className="h-full rounded-full bg-teal-600 transition-all"
+              style={{ width: `${uploadPercent}%` }}
+            />
+          </div>
+          <p className="text-xs text-gray-500">
+            {uploadPercent < 100 ? t("reelUploader.uploading", { percent: uploadPercent }) : t("reelUploader.processing")}
+          </p>
+        </div>
+      )}
       <button
         disabled={submitting}
         className="rounded-lg bg-teal-600 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"

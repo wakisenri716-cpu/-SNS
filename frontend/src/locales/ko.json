@@ -127,7 +127,10 @@
     "submit": "게시하기",
     "videoRequiredError": "동영상 파일을 선택해 주세요",
     "genericError": "게시에 실패했습니다",
-    "categoryLabel": "카테고리"
+    "categoryLabel": "카테고리",
+    "uploading": "업로드 중... {{percent}}%",
+    "fileTooLargeError": "동영상 파일이 너무 큽니다（200MB 이하로 해주세요）",
+    "processing": "처리 중..."
   },
   "reelManageGrid": {
     "empty": "아직 게시물이 없습니다.",

@@ -114,7 +114,12 @@ router.put("/me/profile", requireAuth, requireRole("MUNICIPALITY"), async (req, 
     if (nearestStationName.trim() === "") {
       stationCoords = { nearestStationLat: null, nearestStationLng: null };
     } else if (isGoogleMapsConfigured()) {
-      const result = await geocode(nearestStationName);
+      let result: Awaited<ReturnType<typeof geocode>> = null;
+      try {
+        result = await geocode(nearestStationName);
+      } catch (err) {
+        console.error("[municipalities] Geocoding failed:", err);
+      }
       if (!result) {
         return res.status(400).json({ error: "起点駅の場所を特定できませんでした。表記を見直してください。" });
       }

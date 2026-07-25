@@ -127,7 +127,10 @@
     "submit": "Post",
     "videoRequiredError": "Please choose a video file",
     "genericError": "Failed to post",
-    "categoryLabel": "Category"
+    "categoryLabel": "Category",
+    "uploading": "Uploading... {{percent}}%",
+    "fileTooLargeError": "The video file is too large (please keep it under 200MB)",
+    "processing": "Processing..."
   },
   "reelManageGrid": {
     "empty": "No posts yet.",

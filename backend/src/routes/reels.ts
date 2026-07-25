@@ -131,13 +131,18 @@ router.post(
     if (!poster) return;
 
     // If a location name was given but coordinates weren't, geocode it server-side
-    // (coordinates are still an optional manual override in the uploader form).
+    // (coordinates are still an optional manual override in the uploader form). A
+    // slow/failed geocode call must not block the post — fall back to no coordinates.
     let { locationLat, locationLng } = parsed.data;
     if (parsed.data.locationName && locationLat == null && locationLng == null && isGoogleMapsConfigured()) {
-      const result = await geocode(parsed.data.locationName);
-      if (result) {
-        locationLat = result.lat;
-        locationLng = result.lng;
+      try {
+        const result = await geocode(parsed.data.locationName);
+        if (result) {
+          locationLat = result.lat;
+          locationLng = result.lng;
+        }
+      } catch (err) {
+        console.error("[reels] Geocoding failed, posting without coordinates:", err);
       }
     }
 

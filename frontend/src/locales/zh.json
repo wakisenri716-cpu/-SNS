@@ -127,7 +127,10 @@
     "submit": "发布",
     "videoRequiredError": "请选择视频文件",
     "genericError": "发布失败",
-    "categoryLabel": "分类"
+    "categoryLabel": "分类",
+    "uploading": "上传中... {{percent}}%",
+    "fileTooLargeError": "视频文件过大（请控制在200MB以内）",
+    "processing": "处理中..."
   },
   "reelManageGrid": {
     "empty": "还没有任何投稿。",

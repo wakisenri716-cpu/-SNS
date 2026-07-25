@@ -127,7 +127,10 @@
     "submit": "投稿する",
     "videoRequiredError": "動画ファイルを選択してください",
     "genericError": "投稿に失敗しました",
-    "categoryLabel": "カテゴリ"
+    "categoryLabel": "カテゴリ",
+    "uploading": "アップロード中... {{percent}}%",
+    "fileTooLargeError": "動画ファイルが大きすぎます（200MB以下にしてください）",
+    "processing": "処理中..."
   },
   "reelManageGrid": {
     "empty": "まだ投稿がありません。",

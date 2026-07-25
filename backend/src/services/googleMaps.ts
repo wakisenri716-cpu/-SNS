@@ -9,6 +9,11 @@
 
 const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
+// Bounds how long a single Google Maps call can block a request (e.g. posting a
+// reel, or loading the feed). Without this, a slow/unresponsive upstream call
+// would hang the whole request indefinitely instead of falling back to mock data.
+const REQUEST_TIMEOUT_MS = 5000;
+
 export function isGoogleMapsConfigured(): boolean {
   return Boolean(API_KEY);
 }
@@ -28,7 +33,7 @@ export async function geocode(query: string): Promise<GeocodeResult | null> {
   url.searchParams.set("region", "jp");
   url.searchParams.set("key", API_KEY);
 
-  const res = await fetch(url);
+  const res = await fetch(url, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
   const data: any = await res.json();
   if (data.status !== "OK" || !data.results?.[0]) return null;
 
@@ -81,7 +86,7 @@ export async function getRouteEstimate(
   url.searchParams.set("language", "ja");
   url.searchParams.set("key", API_KEY);
 
-  const res = await fetch(url);
+  const res = await fetch(url, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
   const data: any = await res.json();
   if (data.status !== "OK" || !data.routes?.[0]) return null;
 
