@@ -5,7 +5,7 @@ import { optionalAuth, requireAuth, requireRole } from "../middleware/auth";
 import { upload } from "../middleware/upload";
 import { reelInclude, serializeReel } from "../lib/reelSerializer";
 import { geocode, isGoogleMapsConfigured } from "../services/googleMaps";
-import { REEL_CATEGORIES } from "../types";
+import { AGE_BUCKETS, REEL_CATEGORIES, ageBucketFromBirthYear } from "../types";
 
 const router = Router();
 
@@ -90,6 +90,51 @@ router.get("/mine", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (
   res.json({ items: await Promise.all(reels.map((r) => serializeReel(r, false))) });
 });
 
+// Aggregated, anonymized audience breakdown (nationality / age bucket) across all
+// reels the signed-in municipality/company account can manage — built from the
+// ReelView log rather than viewCount so it can be attributed to individual
+// viewers' (optional, self-reported) profile fields. Must be registered before
+// "/:id" so "mine" isn't matched as a reel id.
+router.get(
+  "/mine/demographics",
+  requireAuth,
+  requireRole("MUNICIPALITY", "COMPANY"),
+  async (req, res) => {
+    const poster = await resolvePosterContext(req, res);
+    if (!poster) return;
+
+    const reels = await prisma.reel.findMany({
+      where: poster.companyId ? { companyId: poster.companyId } : { municipalityId: poster.municipalityId },
+      select: { id: true },
+    });
+
+    const views = await prisma.reelView.findMany({
+      where: { reelId: { in: reels.map((r) => r.id) } },
+      select: { viewer: { select: { nationality: true, birthYear: true } } },
+    });
+
+    const nationalityCounts = new Map<string, number>();
+    const ageBucketCounts = new Map<string, number>();
+    for (const v of views) {
+      const nationality = v.viewer?.nationality ?? "unknown";
+      nationalityCounts.set(nationality, (nationalityCounts.get(nationality) ?? 0) + 1);
+      const bucket = v.viewer?.birthYear ? ageBucketFromBirthYear(v.viewer.birthYear) : "unknown";
+      ageBucketCounts.set(bucket, (ageBucketCounts.get(bucket) ?? 0) + 1);
+    }
+
+    res.json({
+      totalViews: views.length,
+      byNationality: [...nationalityCounts.entries()]
+        .map(([nationality, count]) => ({ nationality, count }))
+        .sort((a, b) => b.count - a.count),
+      byAgeBucket: [...AGE_BUCKETS, "unknown"].map((bucket) => ({
+        bucket,
+        count: ageBucketCounts.get(bucket) ?? 0,
+      })),
+    });
+  }
+);
+
 router.get("/:id", optionalAuth, async (req, res) => {
   const reel = await prisma.reel.findUnique({
     where: { id: req.params.id },
@@ -100,7 +145,10 @@ router.get("/:id", optionalAuth, async (req, res) => {
   });
   if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
 
-  await prisma.reel.update({ where: { id: reel.id }, data: { viewCount: { increment: 1 } } });
+  await Promise.all([
+    prisma.reel.update({ where: { id: reel.id }, data: { viewCount: { increment: 1 } } }),
+    prisma.reelView.create({ data: { reelId: reel.id, viewerId: req.auth?.userId ?? null } }),
+  ]);
 
   res.json(await serializeReel(reel, Array.isArray((reel as any).likes) && (reel as any).likes.length > 0));
 });

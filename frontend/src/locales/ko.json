@@ -37,7 +37,11 @@
     "passwordPlaceholder": "비밀번호（8자 이상）",
     "submit": "가입하기",
     "genericError": "가입에 실패했습니다",
-    "invalidInput": "입력 내용을 확인해 주세요"
+    "invalidInput": "입력 내용을 확인해 주세요",
+    "demographicsNote": "국적・출생 연도는 선택 사항입니다. 지자체・기업 계정에 표시되는 집계된 오디언스 데이터에만 사용되며, 나중에 설정에서 변경할 수 있습니다.",
+    "nationalityLabel": "국적（선택）",
+    "nationalityPlaceholder": "선택 안 함",
+    "birthYearPlaceholder": "출생 연도（선택, 예：1990）"
   },
   "registerMunicipality": {
     "title": "지자체 계정 등록",
@@ -189,7 +193,8 @@
     "deleteCancelButton": "취소",
     "deleteError": "삭제에 실패했습니다",
     "contactLink": "문의하기 ↗",
-    "notLoggedIn": "로그인되어 있지 않습니다. 프로필 사진・알림・비밀번호 등 계정 설정을 이용하려면 로그인해 주세요."
+    "notLoggedIn": "로그인되어 있지 않습니다. 프로필 사진・알림・비밀번호 등 계정 설정을 이용하려면 로그인해 주세요.",
+    "demographicsNote": "국적・출생 연도는 선택 사항입니다. 지자체・기업 계정에 표시되는 집계된 오디언스 데이터에만 사용됩니다."
   },
   "privacyPolicy": {
     "title": "개인정보 처리방침",
@@ -200,6 +205,7 @@
     "section1Item2": "게시 콘텐츠（지자체・기업 계정이 업로드하는 동영상・설명・위치 정보）",
     "section1Item3": "이용 기록（좋아요・댓글・조회수 등）",
     "section1Item4": "브라우저 로컬 스토리지에 저장되는 로그인 상태・일부 표시 설정",
+    "section1Item5": "국적・출생 연도（선택적으로 등록하는 속성 정보. 지자체・기업 계정을 위한 익명화・집계된 오디언스 데이터（인사이트 기능）에만 사용됩니다）",
     "section2Heading": "2. 이용 목적",
     "section2Body": "수집한 정보는 본 서비스의 제공・유지, 기능 개선, 부정 이용 방지를 위해 사용합니다.",
     "section3Heading": "3. 제3자 제공",
@@ -248,6 +254,40 @@
     "sortViews": "조회수순",
     "sortLikes": "좋아요순",
     "sortComments": "댓글순",
-    "sortDate": "최신순"
+    "sortDate": "최신순",
+    "audienceHeading": "오디언스（시청자 데이터）",
+    "audienceNote": "국적・출생 연도를 등록한 상태로 로그인하여 시청한 경우만 집계됩니다. 로그아웃 상태이거나 미등록인 시청은 “알 수 없음”으로 분류됩니다.",
+    "byNationalityHeading": "국적별",
+    "byAgeHeading": "연령대별",
+    "audienceEmpty": "아직 데이터가 없습니다."
+  },
+  "nationality": {
+    "japan": "일본",
+    "china": "중국",
+    "taiwan": "대만",
+    "hong_kong": "홍콩",
+    "south_korea": "한국",
+    "thailand": "태국",
+    "singapore": "싱가포르",
+    "vietnam": "베트남",
+    "philippines": "필리핀",
+    "indonesia": "인도네시아",
+    "usa": "미국",
+    "canada": "캐나다",
+    "uk": "영국",
+    "france": "프랑스",
+    "germany": "독일",
+    "australia": "호주",
+    "other": "기타",
+    "unknown": "알 수 없음（로그아웃・미등록）"
+  },
+  "ageBucket": {
+    "under20": "10대 이하",
+    "20s": "20대",
+    "30s": "30대",
+    "40s": "40대",
+    "50s": "50대",
+    "60plus": "60대 이상",
+    "unknown": "알 수 없음（로그아웃・미등록）"
   }
 }

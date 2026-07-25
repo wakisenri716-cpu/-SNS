@@ -93,6 +93,18 @@ const MUNICIPALITIES: SeedMunicipality[] = [
 const VIDEO_FILES = ["reel1.webm", "reel2.webm", "reel3.webm", "reel4.webm"];
 const SEED_PASSWORD = "password123";
 
+// Demo "tourist" accounts with varied nationality/birth year, used only to
+// populate GET /reels/mine/demographics with realistic-looking data on first
+// look — see the ReelView seeding loop below.
+const DEMO_VIEWERS = [
+  { name: "Emily Carter", email: "viewer-us1@example.com", nationality: "usa", birthYear: 1994 },
+  { name: "Wei Chen", email: "viewer-cn1@example.com", nationality: "china", birthYear: 1988 },
+  { name: "Min-jun Kim", email: "viewer-kr1@example.com", nationality: "south_korea", birthYear: 2001 },
+  { name: "Hana Lin", email: "viewer-tw1@example.com", nationality: "taiwan", birthYear: 1975 },
+  { name: "田中太郎", email: "viewer-jp1@example.com", nationality: "japan", birthYear: 1990 },
+  { name: "Somchai P.", email: "viewer-th1@example.com", nationality: "thailand", birthYear: 1983 },
+];
+
 // Populates a handful of demo municipalities (+ one linked company) with reels so
 // the feed isn't empty on first look. Runs automatically at server startup (see
 // index.ts) but only when the municipality table is empty — on the Render free
@@ -107,6 +119,7 @@ export async function seedIfEmpty() {
   const passwordHash = await bcrypt.hash(SEED_PASSWORD, 10);
   let clipIndex = 0;
   let sakuraId: string | null = null;
+  const allReelIds: string[] = [];
 
   for (const m of MUNICIPALITIES) {
     const user = await prisma.user.create({
@@ -135,7 +148,7 @@ export async function seedIfEmpty() {
     for (const r of m.reels) {
       const videoUrl = copySeedVideo(VIDEO_FILES[clipIndex % VIDEO_FILES.length]);
       clipIndex++;
-      await prisma.reel.create({
+      const reel = await prisma.reel.create({
         data: {
           municipalityId,
           videoUrl,
@@ -146,6 +159,7 @@ export async function seedIfEmpty() {
           locationLng: r.lng,
         },
       });
+      allReelIds.push(reel.id);
     }
   }
 
@@ -161,7 +175,7 @@ export async function seedIfEmpty() {
       },
       include: { company: true },
     });
-    await prisma.reel.create({
+    const companyReel = await prisma.reel.create({
       data: {
         municipalityId: sakuraId,
         companyId: companyUser.company!.id,
@@ -173,6 +187,36 @@ export async function seedIfEmpty() {
         locationLng: 135.765,
       },
     });
+    allReelIds.push(companyReel.id);
+  }
+
+  // Demo viewers + reel views, so GET /reels/mine/demographics has realistic
+  // data to show right after a fresh deploy instead of an empty audience tab.
+  const viewerUsers = await Promise.all(
+    DEMO_VIEWERS.map((v) =>
+      prisma.user.create({
+        data: {
+          email: v.email,
+          passwordHash,
+          name: v.name,
+          role: "USER",
+          nationality: v.nationality,
+          birthYear: v.birthYear,
+        },
+      })
+    )
+  );
+
+  for (const reelId of allReelIds) {
+    const viewCount = Math.floor(Math.random() * 40) + 10;
+    const rows = Array.from({ length: viewCount }, () => {
+      // ~60% of views are attributable to a signed-in demo viewer, the rest
+      // simulate logged-out visitors (viewerId null).
+      const viewer = Math.random() < 0.6 ? viewerUsers[Math.floor(Math.random() * viewerUsers.length)] : null;
+      return { reelId, viewerId: viewer?.id ?? null };
+    });
+    await prisma.reelView.createMany({ data: rows });
+    await prisma.reel.update({ where: { id: reelId }, data: { viewCount } });
   }
 
   console.log(

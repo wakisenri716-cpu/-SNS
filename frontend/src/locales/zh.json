@@ -37,7 +37,11 @@
     "passwordPlaceholder": "密码（8位以上）",
     "submit": "注册",
     "genericError": "注册失败",
-    "invalidInput": "请检查输入内容"
+    "invalidInput": "请检查输入内容",
+    "demographicsNote": "国籍和出生年份为选填项，仅用于向自治体・企业账号展示的汇总观众数据，之后也可以在设置中修改。",
+    "nationalityLabel": "国籍（选填）",
+    "nationalityPlaceholder": "不填写",
+    "birthYearPlaceholder": "出生年份（选填，例：1990）"
   },
   "registerMunicipality": {
     "title": "自治体账号注册",
@@ -189,7 +193,8 @@
     "deleteCancelButton": "取消",
     "deleteError": "删除失败",
     "contactLink": "联系我们 ↗",
-    "notLoggedIn": "您尚未登录。请登录以使用账号相关设置（头像、通知、密码等）。"
+    "notLoggedIn": "您尚未登录。请登录以使用账号相关设置（头像、通知、密码等）。",
+    "demographicsNote": "国籍和出生年份为选填项，仅用于向自治体・企业账号展示的汇总观众数据。"
   },
   "privacyPolicy": {
     "title": "隐私政策",
@@ -200,6 +205,7 @@
     "section1Item2": "投稿内容（自治体・企业账号上传的视频、说明文字、位置信息）",
     "section1Item3": "使用记录（点赞、评论、浏览次数等）",
     "section1Item4": "保存在浏览器本地存储中的登录状态及部分显示设置",
+    "section1Item5": "国籍・出生年份（选填的属性信息，仅用于向自治体・企业账号提供的匿名化・汇总观众数据（数据洞察功能））",
     "section2Heading": "2. 使用目的",
     "section2Body": "所收集的信息将用于提供并维护本服务、改进功能以及防止不当使用。",
     "section3Heading": "3. 向第三方提供信息",
@@ -248,6 +254,40 @@
     "sortViews": "按播放量排序",
     "sortLikes": "按点赞数排序",
     "sortComments": "按评论数排序",
-    "sortDate": "按最新排序"
+    "sortDate": "按最新排序",
+    "audienceHeading": "观众数据",
+    "audienceNote": "仅统计登录且已登记国籍・出生年份的观众。未登录或未登记的观看将归为“未知”。",
+    "byNationalityHeading": "按国籍",
+    "byAgeHeading": "按年龄段",
+    "audienceEmpty": "暂无数据。"
+  },
+  "nationality": {
+    "japan": "日本",
+    "china": "中国",
+    "taiwan": "台湾",
+    "hong_kong": "中国香港",
+    "south_korea": "韩国",
+    "thailand": "泰国",
+    "singapore": "新加坡",
+    "vietnam": "越南",
+    "philippines": "菲律宾",
+    "indonesia": "印度尼西亚",
+    "usa": "美国",
+    "canada": "加拿大",
+    "uk": "英国",
+    "france": "法国",
+    "germany": "德国",
+    "australia": "澳大利亚",
+    "other": "其他",
+    "unknown": "未知（未登录・未登记）"
+  },
+  "ageBucket": {
+    "under20": "20岁以下",
+    "20s": "20多岁",
+    "30s": "30多岁",
+    "40s": "40多岁",
+    "50s": "50多岁",
+    "60plus": "60岁以上",
+    "unknown": "未知（未登录・未登记）"
   }
 }

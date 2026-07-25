@@ -5,6 +5,7 @@ import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { isDataSaverEnabled, setDataSaverEnabled } from "../components/AutoplayVideo";
 import { SUPPORTED_LANGUAGES, setAppLanguage, type SupportedLanguage } from "../i18n";
+import { NATIONALITIES } from "../types";
 
 function AvatarSection() {
   const { t } = useTranslation();
@@ -66,6 +67,8 @@ function ProfileSection() {
   const { user, updateUser } = useAuth();
   const [name, setName] = useState(user?.name ?? "");
   const [email, setEmail] = useState(user?.email ?? "");
+  const [nationality, setNationality] = useState(user?.nationality ?? "");
+  const [birthYear, setBirthYear] = useState(user?.birthYear ? String(user.birthYear) : "");
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -75,7 +78,13 @@ function ProfileSection() {
     setMessage(null);
     setError(null);
     try {
-      const { data } = await api.put("/auth/me", { name, email });
+      const { data } = await api.put("/auth/me", {
+        name,
+        email,
+        ...(user?.role === "USER"
+          ? { nationality: nationality || undefined, birthYear: birthYear ? Number(birthYear) : undefined }
+          : {}),
+      });
       updateUser(data);
       setMessage(t("settings.saveSuccess"));
     } catch (err: any) {
@@ -106,6 +115,37 @@ function ProfileSection() {
             className="mt-1 block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
           />
         </label>
+        {user?.role === "USER" && (
+          <>
+            <p className="text-xs text-gray-400">{t("settings.demographicsNote")}</p>
+            <label className="text-xs font-medium text-gray-500">
+              {t("registerUser.nationalityLabel")}
+              <select
+                value={nationality}
+                onChange={(e) => setNationality(e.target.value)}
+                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+              >
+                <option value="">{t("registerUser.nationalityPlaceholder")}</option>
+                {NATIONALITIES.map((n) => (
+                  <option key={n} value={n}>
+                    {t(`nationality.${n}`)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-xs font-medium text-gray-500">
+              {t("registerUser.birthYearPlaceholder")}
+              <input
+                type="number"
+                min={1900}
+                max={new Date().getFullYear()}
+                value={birthYear}
+                onChange={(e) => setBirthYear(e.target.value)}
+                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+              />
+            </label>
+          </>
+        )}
         <button
           onClick={save}
           disabled={saving}

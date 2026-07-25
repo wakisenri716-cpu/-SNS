@@ -18,6 +18,7 @@ export default function PrivacyPolicyPage() {
             <li>{t("privacyPolicy.section1Item2")}</li>
             <li>{t("privacyPolicy.section1Item3")}</li>
             <li>{t("privacyPolicy.section1Item4")}</li>
+            <li>{t("privacyPolicy.section1Item5")}</li>
           </ul>
         </section>
 

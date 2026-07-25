@@ -3,14 +3,48 @@ export type Role = "USER" | "MUNICIPALITY" | "COMPANY";
 export const REEL_CATEGORIES = ["nature", "culture", "activity", "lodging", "restaurant"] as const;
 export type ReelCategory = (typeof REEL_CATEGORIES)[number];
 
+// Optional, self-reported. Mirrors backend/src/types.ts — used only to power
+// aggregated audience insights for municipality/company accounts.
+export const NATIONALITIES = [
+  "japan",
+  "china",
+  "taiwan",
+  "hong_kong",
+  "south_korea",
+  "thailand",
+  "singapore",
+  "vietnam",
+  "philippines",
+  "indonesia",
+  "usa",
+  "canada",
+  "uk",
+  "france",
+  "germany",
+  "australia",
+  "other",
+] as const;
+export type Nationality = (typeof NATIONALITIES)[number];
+
+export const AGE_BUCKETS = ["under20", "20s", "30s", "40s", "50s", "60plus"] as const;
+export type AgeBucket = (typeof AGE_BUCKETS)[number];
+
 export interface AuthUser {
   id: string;
   email: string;
   name: string;
   role: Role;
   avatarUrl: string | null;
+  nationality: string | null;
+  birthYear: number | null;
   notifyOnLike: boolean;
   notifyOnComment: boolean;
+}
+
+export interface Demographics {
+  totalViews: number;
+  byNationality: { nationality: string; count: number }[];
+  byAgeBucket: { bucket: string; count: number }[];
 }
 
 export interface Company {

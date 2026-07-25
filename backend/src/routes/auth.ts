@@ -5,7 +5,7 @@ import { z } from "zod";
 import { prisma } from "../prisma";
 import { JWT_SECRET, requireAuth } from "../middleware/auth";
 import { upload } from "../middleware/upload";
-import type { Role } from "../types";
+import { NATIONALITIES, type Role } from "../types";
 
 const router = Router();
 
@@ -15,6 +15,8 @@ function serializeUser(user: {
   name: string;
   role: string;
   avatarUrl: string | null;
+  nationality: string | null;
+  birthYear: number | null;
   notifyOnLike: boolean;
   notifyOnComment: boolean;
 }) {
@@ -24,15 +26,24 @@ function serializeUser(user: {
     name: user.name,
     role: user.role,
     avatarUrl: user.avatarUrl,
+    nationality: user.nationality,
+    birthYear: user.birthYear,
     notifyOnLike: user.notifyOnLike,
     notifyOnComment: user.notifyOnComment,
   };
 }
 
+// Nationality/birth year are optional and self-reported — collected only to power
+// aggregated audience insights for municipality/company accounts (see
+// GET /reels/mine/demographics). A visitor can skip both at signup and fill them
+// in later from Settings, or never.
+const currentYear = new Date().getFullYear();
 const registerUserSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
   name: z.string().min(1),
+  nationality: z.enum(NATIONALITIES).optional(),
+  birthYear: z.coerce.number().int().min(1900).max(currentYear - 5).optional(),
 });
 
 const registerMunicipalitySchema = registerUserSchema.extend({
@@ -68,7 +79,7 @@ router.post("/register", async (req, res) => {
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.flatten() });
   }
-  const { email, password, name } = parsed.data;
+  const { email, password, name, nationality, birthYear } = parsed.data;
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
@@ -77,7 +88,7 @@ router.post("/register", async (req, res) => {
 
   const passwordHash = await bcrypt.hash(password, 10);
   const user = await prisma.user.create({
-    data: { email, passwordHash, name, role: "USER" },
+    data: { email, passwordHash, name, role: "USER", nationality, birthYear },
   });
 
   const token = issueToken(user.id, "USER");
@@ -221,6 +232,8 @@ router.get("/me", requireAuth, async (req, res) => {
 const updateMeSchema = z.object({
   name: z.string().min(1).optional(),
   email: z.string().email().optional(),
+  nationality: z.enum(NATIONALITIES).optional(),
+  birthYear: z.coerce.number().int().min(1900).max(currentYear - 5).optional(),
   notifyOnLike: z.boolean().optional(),
   notifyOnComment: z.boolean().optional(),
 });

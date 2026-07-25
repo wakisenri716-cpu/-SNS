@@ -16,6 +16,12 @@ model User {
   name         String
   role         String
   avatarUrl    String?
+  // Optional self-reported attributes, collected at registration or later from
+  // Settings. Used only to power anonymized, aggregated audience breakdowns
+  // (nationality / age) for municipality & company accounts — see ReelView.
+  // Never shown to other individual viewers, and never required.
+  nationality  String?
+  birthYear    Int?
   // Whether to notify this user when someone likes/comments on their content.
   // Stored for future use — the app has no notification delivery mechanism
   // (push/email) yet, so these currently have no visible effect.
@@ -27,6 +33,7 @@ model User {
   company      Company?
   likes        Like[]
   comments     Comment[]
+  reelViews    ReelView[]
 }
 
 model Municipality {
@@ -96,6 +103,24 @@ model Reel {
 
   likes    Like[]
   comments Comment[]
+  views    ReelView[]
+}
+
+// One row per reel view, kept (rather than just incrementing a counter) so
+// municipality/company accounts can see anonymized, aggregated audience
+// breakdowns by nationality and age bucket — see GET /reels/mine/demographics.
+// viewerId is null for logged-out viewers: they still count toward totals but
+// can't be attributed to any demographic.
+model ReelView {
+  id        String   @id @default(cuid())
+  reelId    String
+  reel      Reel     @relation(fields: [reelId], references: [id], onDelete: Cascade)
+  viewerId  String?
+  viewer    User?    @relation(fields: [viewerId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+
+  @@index([reelId])
+  @@index([viewerId])
 }
 
 model Like {

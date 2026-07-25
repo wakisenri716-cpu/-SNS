@@ -37,7 +37,11 @@
     "passwordPlaceholder": "パスワード（8文字以上）",
     "submit": "登録する",
     "genericError": "登録に失敗しました",
-    "invalidInput": "入力内容を確認してください"
+    "invalidInput": "入力内容を確認してください",
+    "demographicsNote": "国籍・生まれた年は任意です。自治体・企業向けの視聴者データ集計にのみ利用され、後から設定画面で変更できます。",
+    "nationalityLabel": "国籍（任意）",
+    "nationalityPlaceholder": "選択しない",
+    "birthYearPlaceholder": "生まれた年（任意・例：1990）"
   },
   "registerMunicipality": {
     "title": "自治体アカウント登録",
@@ -189,7 +193,8 @@
     "deleteCancelButton": "キャンセル",
     "deleteError": "削除に失敗しました",
     "contactLink": "お問い合わせ ↗",
-    "notLoggedIn": "ログインしていません。アカウントに関する設定（プロフィール画像・通知・パスワードなど）を利用するにはログインしてください。"
+    "notLoggedIn": "ログインしていません。アカウントに関する設定（プロフィール画像・通知・パスワードなど）を利用するにはログインしてください。",
+    "demographicsNote": "国籍・生まれた年は任意です。自治体・企業向けの視聴者データ集計にのみ利用されます。"
   },
   "privacyPolicy": {
     "title": "プライバシーポリシー",
@@ -200,6 +205,7 @@
     "section1Item2": "投稿コンテンツ（自治体・企業アカウントがアップロードする動画・キャプション・位置情報）",
     "section1Item3": "利用履歴（いいね・コメント・閲覧数など）",
     "section1Item4": "ブラウザのローカルストレージに保存するログイン状態・一部の表示設定",
+    "section1Item5": "国籍・生まれた年（任意で登録いただく属性情報。自治体・企業アカウント向けの匿名化・集計された視聴者データ（インサイト機能）にのみ利用します）",
     "section2Heading": "2. 利用目的",
     "section2Body": "取得した情報は、本サービスの提供・維持、機能改善、不正利用の防止のために利用します。",
     "section3Heading": "3. 第三者への提供",
@@ -248,6 +254,40 @@
     "sortViews": "再生数順",
     "sortLikes": "いいね数順",
     "sortComments": "コメント数順",
-    "sortDate": "新着順"
+    "sortDate": "新着順",
+    "audienceHeading": "オーディエンス（視聴者データ）",
+    "audienceNote": "国籍・生まれた年を登録した状態でログインして視聴した人のみ集計対象です。未ログイン・未登録の視聴は「不明」に分類されます。",
+    "byNationalityHeading": "国籍別",
+    "byAgeHeading": "年代別",
+    "audienceEmpty": "まだデータがありません。"
+  },
+  "nationality": {
+    "japan": "日本",
+    "china": "中国",
+    "taiwan": "台湾",
+    "hong_kong": "香港",
+    "south_korea": "韓国",
+    "thailand": "タイ",
+    "singapore": "シンガポール",
+    "vietnam": "ベトナム",
+    "philippines": "フィリピン",
+    "indonesia": "インドネシア",
+    "usa": "アメリカ",
+    "canada": "カナダ",
+    "uk": "イギリス",
+    "france": "フランス",
+    "germany": "ドイツ",
+    "australia": "オーストラリア",
+    "other": "その他",
+    "unknown": "不明（未ログイン・未登録）"
+  },
+  "ageBucket": {
+    "under20": "10代以下",
+    "20s": "20代",
+    "30s": "30代",
+    "40s": "40代",
+    "50s": "50代",
+    "60plus": "60代以上",
+    "unknown": "不明（未ログイン・未登録）"
   }
 }

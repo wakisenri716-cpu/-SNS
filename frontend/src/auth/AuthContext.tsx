@@ -10,7 +10,12 @@ interface AuthState {
   token: string | null;
   ready: boolean;
   login: (email: string, password: string) => Promise<void>;
-  registerUser: (email: string, password: string, name: string) => Promise<void>;
+  registerUser: (
+    email: string,
+    password: string,
+    name: string,
+    extra?: { nationality?: string; birthYear?: number }
+  ) => Promise<void>;
   registerMunicipality: (input: {
     email: string;
     password: string;
@@ -108,8 +113,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     persist({ token: data.token, user: data.user, municipality: data.municipality, company: data.company });
   }
 
-  async function registerUser(email: string, password: string, name: string) {
-    const { data } = await api.post("/auth/register", { email, password, name });
+  async function registerUser(
+    email: string,
+    password: string,
+    name: string,
+    extra?: { nationality?: string; birthYear?: number }
+  ) {
+    const { data } = await api.post("/auth/register", { email, password, name, ...extra });
     persist({ token: data.token, user: data.user, municipality: null, company: null });
   }
 

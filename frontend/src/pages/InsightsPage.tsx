@@ -2,9 +2,21 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
-import { REEL_CATEGORIES, type Reel } from "../types";
+import { REEL_CATEGORIES, type Demographics, type Reel } from "../types";
 
 type SortKey = "views" | "likes" | "comments" | "date";
+
+function AudienceBar({ label, count, max }: { label: string; count: number; max: number }) {
+  return (
+    <div className="flex items-center gap-3 text-sm">
+      <span className="w-28 shrink-0 truncate text-gray-600">{label}</span>
+      <div className="h-2 flex-1 overflow-hidden rounded-full bg-gray-100">
+        <div className="h-full rounded-full bg-cyan-500" style={{ width: `${max > 0 ? (count / max) * 100 : 0}%` }} />
+      </div>
+      <span className="w-10 shrink-0 text-right text-xs text-gray-400">{count}</span>
+    </div>
+  );
+}
 
 function SummaryCard({ label, value }: { label: string; value: number }) {
   return (
@@ -21,6 +33,7 @@ export default function InsightsPage() {
   const [reels, setReels] = useState<Reel[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortKey, setSortKey] = useState<SortKey>("views");
+  const [demographics, setDemographics] = useState<Demographics | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -28,6 +41,7 @@ export default function InsightsPage() {
       .get("/reels/mine")
       .then(({ data }: { data: { items: Reel[] } }) => setReels(data.items))
       .finally(() => setLoading(false));
+    api.get("/reels/mine/demographics").then(({ data }: { data: Demographics }) => setDemographics(data));
   }, [municipality?.id, company?.id]);
 
   const totals = useMemo(
@@ -113,6 +127,45 @@ export default function InsightsPage() {
               ))}
             </div>
           </section>
+
+          {demographics && (
+            <section>
+              <h3 className="mb-1 text-sm font-semibold text-gray-600">{t("insights.audienceHeading")}</h3>
+              <p className="mb-2 text-xs text-gray-400">{t("insights.audienceNote")}</p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4">
+                  <h4 className="mb-1 text-xs font-semibold text-gray-500">{t("insights.byNationalityHeading")}</h4>
+                  {demographics.byNationality.length === 0 ? (
+                    <p className="text-xs text-gray-400">{t("insights.audienceEmpty")}</p>
+                  ) : (
+                    demographics.byNationality.map((n) => (
+                      <AudienceBar
+                        key={n.nationality}
+                        label={t(`nationality.${n.nationality}`)}
+                        count={n.count}
+                        max={demographics.byNationality[0].count}
+                      />
+                    ))
+                  )}
+                </div>
+                <div className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4">
+                  <h4 className="mb-1 text-xs font-semibold text-gray-500">{t("insights.byAgeHeading")}</h4>
+                  {demographics.totalViews === 0 ? (
+                    <p className="text-xs text-gray-400">{t("insights.audienceEmpty")}</p>
+                  ) : (
+                    demographics.byAgeBucket.map((b) => (
+                      <AudienceBar
+                        key={b.bucket}
+                        label={t(`ageBucket.${b.bucket}`)}
+                        count={b.count}
+                        max={Math.max(...demographics.byAgeBucket.map((x) => x.count), 1)}
+                      />
+                    ))
+                  )}
+                </div>
+              </div>
+            </section>
+          )}
 
           <section>
             <div className="mb-2 flex items-center justify-between">

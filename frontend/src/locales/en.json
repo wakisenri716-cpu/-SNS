@@ -37,7 +37,11 @@
     "passwordPlaceholder": "Password (8+ characters)",
     "submit": "Sign Up",
     "genericError": "Failed to register",
-    "invalidInput": "Please check your input"
+    "invalidInput": "Please check your input",
+    "demographicsNote": "Nationality and birth year are optional. They're only used for aggregated audience data shown to municipality/company accounts, and can be changed later in Settings.",
+    "nationalityLabel": "Nationality (optional)",
+    "nationalityPlaceholder": "Prefer not to say",
+    "birthYearPlaceholder": "Birth year (optional, e.g. 1990)"
   },
   "registerMunicipality": {
     "title": "Register a Municipality Account",
@@ -189,7 +193,8 @@
     "deleteCancelButton": "Cancel",
     "deleteError": "Failed to delete account",
     "contactLink": "Contact Us ↗",
-    "notLoggedIn": "You're not logged in. Log in to access account settings (profile picture, notifications, password, etc.)."
+    "notLoggedIn": "You're not logged in. Log in to access account settings (profile picture, notifications, password, etc.).",
+    "demographicsNote": "Nationality and birth year are optional. They're only used for aggregated audience data shown to municipality/company accounts."
   },
   "privacyPolicy": {
     "title": "Privacy Policy",
@@ -200,6 +205,7 @@
     "section1Item2": "Posted content (videos, captions, and location data uploaded by municipality/company accounts)",
     "section1Item3": "Usage history (likes, comments, view counts, etc.)",
     "section1Item4": "Login state and some display preferences stored in your browser's local storage",
+    "section1Item5": "Nationality and birth year (optional profile attributes, used only for anonymized, aggregated audience data shown to municipality/company accounts via the Insights feature)",
     "section2Heading": "2. How We Use It",
     "section2Body": "We use the collected information to provide and maintain the service, improve features, and prevent misuse.",
     "section3Heading": "3. Sharing with Third Parties",
@@ -248,6 +254,40 @@
     "sortViews": "Sort by views",
     "sortLikes": "Sort by likes",
     "sortComments": "Sort by comments",
-    "sortDate": "Sort by newest"
+    "sortDate": "Sort by newest",
+    "audienceHeading": "Audience",
+    "audienceNote": "Only counts viewers who were logged in and had registered a nationality/birth year. Logged-out or unregistered views are grouped as \"Unknown\".",
+    "byNationalityHeading": "By Nationality",
+    "byAgeHeading": "By Age",
+    "audienceEmpty": "No data yet."
+  },
+  "nationality": {
+    "japan": "Japan",
+    "china": "China",
+    "taiwan": "Taiwan",
+    "hong_kong": "Hong Kong",
+    "south_korea": "South Korea",
+    "thailand": "Thailand",
+    "singapore": "Singapore",
+    "vietnam": "Vietnam",
+    "philippines": "Philippines",
+    "indonesia": "Indonesia",
+    "usa": "United States",
+    "canada": "Canada",
+    "uk": "United Kingdom",
+    "france": "France",
+    "germany": "Germany",
+    "australia": "Australia",
+    "other": "Other",
+    "unknown": "Unknown (logged out / not set)"
+  },
+  "ageBucket": {
+    "under20": "Under 20",
+    "20s": "20s",
+    "30s": "30s",
+    "40s": "40s",
+    "50s": "50s",
+    "60plus": "60+",
+    "unknown": "Unknown (logged out / not set)"
   }
 }

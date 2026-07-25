@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../auth/AuthContext";
+import { NATIONALITIES } from "../types";
 
 const inputClass =
   "rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:border-teal-500";
@@ -11,6 +12,8 @@ export default function RegisterUserPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [nationality, setNationality] = useState("");
+  const [birthYear, setBirthYear] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -19,7 +22,10 @@ export default function RegisterUserPage() {
     setError(null);
     setSubmitting(true);
     try {
-      await registerUser(form.email, form.password, form.name);
+      await registerUser(form.email, form.password, form.name, {
+        nationality: nationality || undefined,
+        birthYear: birthYear ? Number(birthYear) : undefined,
+      });
       navigate("/");
     } catch (err: any) {
       setError(err?.response?.data?.error ?? t("registerUser.genericError"));
@@ -54,6 +60,31 @@ export default function RegisterUserPage() {
           placeholder={t("registerUser.passwordPlaceholder")}
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
+          className={inputClass}
+        />
+        <p className="mt-1 text-xs text-gray-400">{t("registerUser.demographicsNote")}</p>
+        <label className="text-xs font-medium text-gray-500">
+          {t("registerUser.nationalityLabel")}
+          <select
+            value={nationality}
+            onChange={(e) => setNationality(e.target.value)}
+            className={`mt-1 block w-full ${inputClass}`}
+          >
+            <option value="">{t("registerUser.nationalityPlaceholder")}</option>
+            {NATIONALITIES.map((n) => (
+              <option key={n} value={n}>
+                {t(`nationality.${n}`)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <input
+          type="number"
+          placeholder={t("registerUser.birthYearPlaceholder")}
+          min={1900}
+          max={new Date().getFullYear()}
+          value={birthYear}
+          onChange={(e) => setBirthYear(e.target.value)}
           className={inputClass}
         />
         {error && (
