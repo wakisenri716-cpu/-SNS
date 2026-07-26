@@ -41,7 +41,8 @@
     "demographicsNote": "国籍和出生年份为选填项，仅用于向自治体・企业账号展示的汇总观众数据，之后也可以在设置中修改。",
     "nationalityLabel": "国籍（选填）",
     "nationalityPlaceholder": "不填写",
-    "birthYearPlaceholder": "出生年份（选填，例：1990）"
+    "birthYearPlaceholder": "出生年份（选填，例：1990）",
+    "nationalityAutoSuggested": "根据您的IP地址推测。如不准确请自行修改。"
   },
   "registerMunicipality": {
     "title": "自治体账号注册",
@@ -206,6 +207,7 @@
     "section1Item3": "使用记录（点赞、评论、浏览次数等）",
     "section1Item4": "保存在浏览器本地存储中的登录状态及部分显示设置",
     "section1Item5": "国籍・出生年份（选填的属性信息，仅用于向自治体・企业账号提供的匿名化・汇总观众数据（数据洞察功能））",
+    "section1Item6": "IP地址（仅在注册时临时用于粗略推测国籍栏的初始值，不会被保存，且该推测结果在注册前后均可随时修改）",
     "section2Heading": "2. 使用目的",
     "section2Body": "所收集的信息将用于提供并维护本服务、改进功能以及防止不当使用。",
     "section3Heading": "3. 向第三方提供信息",

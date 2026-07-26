@@ -41,7 +41,8 @@
     "demographicsNote": "Nationality and birth year are optional. They're only used for aggregated audience data shown to municipality/company accounts, and can be changed later in Settings.",
     "nationalityLabel": "Nationality (optional)",
     "nationalityPlaceholder": "Prefer not to say",
-    "birthYearPlaceholder": "Birth year (optional, e.g. 1990)"
+    "birthYearPlaceholder": "Birth year (optional, e.g. 1990)",
+    "nationalityAutoSuggested": "Guessed from your IP address. Please change it if it's wrong."
   },
   "registerMunicipality": {
     "title": "Register a Municipality Account",
@@ -206,6 +207,7 @@
     "section1Item3": "Usage history (likes, comments, view counts, etc.)",
     "section1Item4": "Login state and some display preferences stored in your browser's local storage",
     "section1Item5": "Nationality and birth year (optional profile attributes, used only for anonymized, aggregated audience data shown to municipality/company accounts via the Insights feature)",
+    "section1Item6": "IP address (used only momentarily at signup to roughly guess a starting value for the nationality field; not stored, and the guess can always be changed before or after signing up)",
     "section2Heading": "2. How We Use It",
     "section2Body": "We use the collected information to provide and maintain the service, improve features, and prevent misuse.",
     "section3Heading": "3. Sharing with Third Parties",

@@ -1,6 +1,7 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { NATIONALITIES } from "../types";
 
@@ -13,9 +14,26 @@ export default function RegisterUserPage() {
   const { t } = useTranslation();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [nationality, setNationality] = useState("");
+  const [nationalityAutoSuggested, setNationalityAutoSuggested] = useState(false);
   const [birthYear, setBirthYear] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  // Best-effort IP-based guess, shown as a pre-selected (but always editable)
+  // starting point — email addresses carry no reliable nationality/age signal,
+  // so this is the only automatic hint available. Never overrides a choice the
+  // visitor already made.
+  useEffect(() => {
+    api
+      .get("/auth/suggest-nationality")
+      .then(({ data }: { data: { nationality: string | null } }) => {
+        if (data.nationality) {
+          setNationality((current) => current || data.nationality!);
+          setNationalityAutoSuggested(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -67,7 +85,10 @@ export default function RegisterUserPage() {
           {t("registerUser.nationalityLabel")}
           <select
             value={nationality}
-            onChange={(e) => setNationality(e.target.value)}
+            onChange={(e) => {
+              setNationality(e.target.value);
+              setNationalityAutoSuggested(false);
+            }}
             className={`mt-1 block w-full ${inputClass}`}
           >
             <option value="">{t("registerUser.nationalityPlaceholder")}</option>
@@ -77,6 +98,9 @@ export default function RegisterUserPage() {
               </option>
             ))}
           </select>
+          {nationalityAutoSuggested && (
+            <span className="mt-1 block text-[11px] text-gray-400">{t("registerUser.nationalityAutoSuggested")}</span>
+          )}
         </label>
         <input
           type="number"

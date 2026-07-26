@@ -5,6 +5,7 @@ import { z } from "zod";
 import { prisma } from "../prisma";
 import { JWT_SECRET, requireAuth } from "../middleware/auth";
 import { upload } from "../middleware/upload";
+import { guessNationalityFromIp } from "../services/geoLookup";
 import { NATIONALITIES, type Role } from "../types";
 
 const router = Router();
@@ -74,12 +75,24 @@ const companySelect = {
   municipality: { select: { id: true, name: true, prefecture: true } },
 } as const;
 
+// Best-effort nationality guess from the caller's IP address (see
+// geoLookup.ts), used by the signup form to pre-fill (and let the visitor
+// confirm/correct) the nationality field before they submit. No auth, no
+// personal data stored by calling this — it's a stateless lookup.
+router.get("/suggest-nationality", (req, res) => {
+  res.json({ nationality: guessNationalityFromIp(req.ip) });
+});
+
 router.post("/register", async (req, res) => {
   const parsed = registerUserSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.flatten() });
   }
-  const { email, password, name, nationality, birthYear } = parsed.data;
+  const { email, password, name, birthYear } = parsed.data;
+  // Fall back to an IP-based guess if the client didn't send one (e.g. the
+  // signup form's own lookup failed, or a direct API call skipped it) — still
+  // just a hint, never shown as fact, and editable anytime from Settings.
+  const nationality = parsed.data.nationality ?? guessNationalityFromIp(req.ip) ?? undefined;
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {

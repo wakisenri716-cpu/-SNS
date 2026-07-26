@@ -41,7 +41,8 @@
     "demographicsNote": "국적・출생 연도는 선택 사항입니다. 지자체・기업 계정에 표시되는 집계된 오디언스 데이터에만 사용되며, 나중에 설정에서 변경할 수 있습니다.",
     "nationalityLabel": "국적（선택）",
     "nationalityPlaceholder": "선택 안 함",
-    "birthYearPlaceholder": "출생 연도（선택, 예：1990）"
+    "birthYearPlaceholder": "출생 연도（선택, 예：1990）",
+    "nationalityAutoSuggested": "IP 주소를 기반으로 추정했습니다. 다르다면 변경해 주세요."
   },
   "registerMunicipality": {
     "title": "지자체 계정 등록",
@@ -206,6 +207,7 @@
     "section1Item3": "이용 기록（좋아요・댓글・조회수 등）",
     "section1Item4": "브라우저 로컬 스토리지에 저장되는 로그인 상태・일부 표시 설정",
     "section1Item5": "국적・출생 연도（선택적으로 등록하는 속성 정보. 지자체・기업 계정을 위한 익명화・집계된 오디언스 데이터（인사이트 기능）에만 사용됩니다）",
+    "section1Item6": "IP 주소（가입 시 국적 항목의 초기값을 대략적으로 추정하기 위해서만 일시적으로 사용되며 저장되지 않습니다. 추정된 값은 가입 전후 언제든지 변경할 수 있습니다）",
     "section2Heading": "2. 이용 목적",
     "section2Body": "수집한 정보는 본 서비스의 제공・유지, 기능 개선, 부정 이용 방지를 위해 사용합니다.",
     "section3Heading": "3. 제3자 제공",

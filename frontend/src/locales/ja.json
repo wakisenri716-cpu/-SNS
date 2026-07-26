@@ -41,7 +41,8 @@
     "demographicsNote": "国籍・生まれた年は任意です。自治体・企業向けの視聴者データ集計にのみ利用され、後から設定画面で変更できます。",
     "nationalityLabel": "国籍（任意）",
     "nationalityPlaceholder": "選択しない",
-    "birthYearPlaceholder": "生まれた年（任意・例：1990）"
+    "birthYearPlaceholder": "生まれた年（任意・例：1990）",
+    "nationalityAutoSuggested": "IPアドレスから推定しました。違う場合は変更してください。"
   },
   "registerMunicipality": {
     "title": "自治体アカウント登録",
@@ -206,6 +207,7 @@
     "section1Item3": "利用履歴（いいね・コメント・閲覧数など）",
     "section1Item4": "ブラウザのローカルストレージに保存するログイン状態・一部の表示設定",
     "section1Item5": "国籍・生まれた年（任意で登録いただく属性情報。自治体・企業アカウント向けの匿名化・集計された視聴者データ（インサイト機能）にのみ利用します）",
+    "section1Item6": "IPアドレス（新規登録時、国籍欄の初期値をおおまかに推定するためだけに一時的に利用します。保存はされず、推定結果はご本人が登録前・登録後いつでも変更できます）",
     "section2Heading": "2. 利用目的",
     "section2Body": "取得した情報は、本サービスの提供・維持、機能改善、不正利用の防止のために利用します。",
     "section3Heading": "3. 第三者への提供",

@@ -15,6 +15,11 @@ import { seedIfEmpty } from "./seed";
 const app = express();
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
 
+// Render (and most PaaS hosts) sit behind a reverse proxy, so without this
+// req.ip would always be the proxy's address instead of the real client's —
+// this is needed for the IP-based nationality suggestion (see geoLookup.ts).
+app.set("trust proxy", true);
+
 app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static(path.resolve(UPLOAD_DIR)));
