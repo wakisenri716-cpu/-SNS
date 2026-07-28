@@ -135,6 +135,7 @@
     "search": "ルートを調べる",
     "searching": "検索中...",
     "genericError": "ルートを取得できませんでした。出発地点の表記を見直してご確認ください。",
+    "stationNotConfigured": "この自治体はまだ起点駅を設定していないため、現在アクセスプランナーはご利用いただけません。",
     "duration": "約{{minutes}}分",
     "fare": "概算{{yen}}円",
     "fareFree": "無料（徒歩）",

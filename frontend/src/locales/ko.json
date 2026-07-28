@@ -135,6 +135,7 @@
     "search": "경로 확인",
     "searching": "검색 중...",
     "genericError": "경로를 가져올 수 없습니다. 출발지 표기를 다시 확인해 주세요.",
+    "stationNotConfigured": "이 지자체는 아직 기준역을 설정하지 않아 현재 접근 방법 조회 기능을 이용할 수 없습니다.",
     "duration": "약 {{minutes}}분",
     "fare": "약 {{yen}}엔",
     "fareFree": "무료（도보）",

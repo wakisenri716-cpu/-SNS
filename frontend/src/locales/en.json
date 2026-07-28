@@ -135,6 +135,7 @@
     "search": "Check Route",
     "searching": "Searching...",
     "genericError": "Couldn't get a route. Please check how you spelled the starting point.",
+    "stationNotConfigured": "This municipality hasn't set a reference station yet, so the access planner isn't available right now.",
     "duration": "About {{minutes}} min",
     "fare": "Approx. ¥{{yen}}",
     "fareFree": "Free (walking)",

@@ -25,7 +25,13 @@ const MODE_LABEL_KEY: Record<string, string> = {
 // time/mode/fare to reach this municipality — a one-shot, user-initiated
 // lookup (GET /municipalities/:id/access-plan), unlike the automatic
 // per-reel-view MaaS calls elsewhere in the app.
-function AccessPlanner({ municipalityId }: { municipalityId: string }) {
+function AccessPlanner({
+  municipalityId,
+  stationConfigured,
+}: {
+  municipalityId: string;
+  stationConfigured: boolean;
+}) {
   const { t } = useTranslation();
   const [origin, setOrigin] = useState("");
   const [loading, setLoading] = useState(false);
@@ -54,22 +60,30 @@ function AccessPlanner({ municipalityId }: { municipalityId: string }) {
     <div className="border-b border-gray-200 p-4 lg:p-6">
       <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("accessPlanner.heading")}</h2>
       <p className="mb-2 text-xs text-gray-400">{t("accessPlanner.description")}</p>
-      <form onSubmit={search} className="flex gap-2">
-        <input
-          value={origin}
-          onChange={(e) => setOrigin(e.target.value)}
-          placeholder={t("accessPlanner.originPlaceholder")}
-          className="block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500 lg:max-w-xs"
-        />
-        <button
-          type="submit"
-          disabled={loading || !origin.trim()}
-          className="shrink-0 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
-        >
-          {loading ? t("accessPlanner.searching") : t("accessPlanner.search")}
-        </button>
-      </form>
-      {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+      {!stationConfigured ? (
+        <p className="rounded-lg border border-dashed border-gray-300 p-3 text-xs text-gray-400">
+          {t("accessPlanner.stationNotConfigured")}
+        </p>
+      ) : (
+        <>
+          <form onSubmit={search} className="flex gap-2">
+            <input
+              value={origin}
+              onChange={(e) => setOrigin(e.target.value)}
+              placeholder={t("accessPlanner.originPlaceholder")}
+              className="block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500 lg:max-w-xs"
+            />
+            <button
+              type="submit"
+              disabled={loading || !origin.trim()}
+              className="shrink-0 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+            >
+              {loading ? t("accessPlanner.searching") : t("accessPlanner.search")}
+            </button>
+          </form>
+          {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+        </>
+      )}
       {result && (
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg bg-gray-50 p-3 text-sm text-gray-700">
           <span>
@@ -276,21 +290,23 @@ export default function MunicipalityProfilePage() {
         {municipality[tab] || t("municipalityProfile.noInfo")}
       </div>
 
-      {tab === "accessInfo" && municipality.nearestStationName && (
+      {tab === "accessInfo" && (
         <>
-          <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 bg-gray-50 px-4 py-3 text-xs text-gray-600 lg:px-6">
-            <span>{t("municipalityProfile.stationLabel", { name: municipality.nearestStationName })}</span>
-            {municipality.maasConfigured ? (
-              <span className="rounded-full bg-teal-50 px-2 py-0.5 font-medium text-teal-700">
-                {t("municipalityProfile.realData")}
-              </span>
-            ) : (
-              <span className="rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-500">
-                {t("municipalityProfile.mockData")}
-              </span>
-            )}
-          </div>
-          <AccessPlanner municipalityId={municipality.id} />
+          {municipality.nearestStationName && (
+            <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 bg-gray-50 px-4 py-3 text-xs text-gray-600 lg:px-6">
+              <span>{t("municipalityProfile.stationLabel", { name: municipality.nearestStationName })}</span>
+              {municipality.maasConfigured ? (
+                <span className="rounded-full bg-teal-50 px-2 py-0.5 font-medium text-teal-700">
+                  {t("municipalityProfile.realData")}
+                </span>
+              ) : (
+                <span className="rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-500">
+                  {t("municipalityProfile.mockData")}
+                </span>
+              )}
+            </div>
+          )}
+          <AccessPlanner municipalityId={municipality.id} stationConfigured={!!municipality.nearestStationName} />
         </>
       )}
 

@@ -135,6 +135,7 @@
     "search": "查询路线",
     "searching": "查询中...",
     "genericError": "无法获取路线，请检查出发地点的输入是否正确。",
+    "stationNotConfigured": "该自治体尚未设置起点站，目前无法使用交通方式查询功能。",
     "duration": "约{{minutes}}分钟",
     "fare": "约{{yen}}日元",
     "fareFree": "免费（步行）",
