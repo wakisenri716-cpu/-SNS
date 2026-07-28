@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
@@ -6,12 +6,100 @@ import { useAuth } from "../auth/AuthContext";
 import AutoplayVideo from "../components/AutoplayVideo";
 import ReelThumb from "../components/ReelGrid";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
-import type { Municipality, Reel } from "../types";
+import type { Municipality, Reel, TransitSuggestion } from "../types";
 
 const TAB_KEYS = ["tourismInfo", "accessInfo", "lodgingInfo", "restaurantInfo"] as const;
 
 function formatDate(iso: string, language: string) {
   return new Intl.DateTimeFormat(language, { year: "numeric", month: "long" }).format(new Date(iso));
+}
+
+const MODE_LABEL_KEY: Record<string, string> = {
+  walk: "accessPlanner.modeWalk",
+  drive: "accessPlanner.modeDrive",
+  train: "accessPlanner.modeTrain",
+  bus: "accessPlanner.modeBus",
+};
+
+// Lets a visitor type in their own starting point and see an estimated
+// time/mode/fare to reach this municipality — a one-shot, user-initiated
+// lookup (GET /municipalities/:id/access-plan), unlike the automatic
+// per-reel-view MaaS calls elsewhere in the app.
+function AccessPlanner({ municipalityId }: { municipalityId: string }) {
+  const { t } = useTranslation();
+  const [origin, setOrigin] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<TransitSuggestion | null>(null);
+
+  async function search(e: FormEvent) {
+    e.preventDefault();
+    if (!origin.trim()) return;
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    try {
+      const { data } = await api.get(`/municipalities/${municipalityId}/access-plan`, {
+        params: { origin: origin.trim() },
+      });
+      setResult(data);
+    } catch (err: any) {
+      setError(err?.response?.data?.error ?? t("accessPlanner.genericError"));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="border-b border-gray-200 p-4 lg:p-6">
+      <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("accessPlanner.heading")}</h2>
+      <p className="mb-2 text-xs text-gray-400">{t("accessPlanner.description")}</p>
+      <form onSubmit={search} className="flex gap-2">
+        <input
+          value={origin}
+          onChange={(e) => setOrigin(e.target.value)}
+          placeholder={t("accessPlanner.originPlaceholder")}
+          className="block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500 lg:max-w-xs"
+        />
+        <button
+          type="submit"
+          disabled={loading || !origin.trim()}
+          className="shrink-0 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+        >
+          {loading ? t("accessPlanner.searching") : t("accessPlanner.search")}
+        </button>
+      </form>
+      {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+      {result && (
+        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg bg-gray-50 p-3 text-sm text-gray-700">
+          <span>
+            🕐 {t("accessPlanner.duration", { minutes: result.totalDurationMin })}
+          </span>
+          <span>
+            {result.legs
+              .map((leg) => t(MODE_LABEL_KEY[leg.mode] ?? "accessPlanner.modeDrive"))
+              .join(t("accessPlanner.modeSeparator"))}
+          </span>
+          <span>
+            💴{" "}
+            {result.estimatedFareYen > 0
+              ? t("accessPlanner.fare", { yen: result.estimatedFareYen.toLocaleString() })
+              : t("accessPlanner.fareFree")}
+          </span>
+          {result.isMock ? (
+            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">
+              {t("municipalityProfile.mockData")}
+            </span>
+          ) : (
+            <span className="rounded-full bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
+              {t("municipalityProfile.realData")}
+            </span>
+          )}
+          <span className="w-full text-xs text-gray-400">{t("accessPlanner.fareDisclaimer")}</span>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function MunicipalityProfilePage() {
@@ -189,18 +277,21 @@ export default function MunicipalityProfilePage() {
       </div>
 
       {tab === "accessInfo" && municipality.nearestStationName && (
-        <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 bg-gray-50 px-4 py-3 text-xs text-gray-600 lg:px-6">
-          <span>{t("municipalityProfile.stationLabel", { name: municipality.nearestStationName })}</span>
-          {municipality.maasConfigured ? (
-            <span className="rounded-full bg-teal-50 px-2 py-0.5 font-medium text-teal-700">
-              {t("municipalityProfile.realData")}
-            </span>
-          ) : (
-            <span className="rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-500">
-              {t("municipalityProfile.mockData")}
-            </span>
-          )}
-        </div>
+        <>
+          <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 bg-gray-50 px-4 py-3 text-xs text-gray-600 lg:px-6">
+            <span>{t("municipalityProfile.stationLabel", { name: municipality.nearestStationName })}</span>
+            {municipality.maasConfigured ? (
+              <span className="rounded-full bg-teal-50 px-2 py-0.5 font-medium text-teal-700">
+                {t("municipalityProfile.realData")}
+              </span>
+            ) : (
+              <span className="rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-500">
+                {t("municipalityProfile.mockData")}
+              </span>
+            )}
+          </div>
+          <AccessPlanner municipalityId={municipality.id} />
+        </>
       )}
 
       {municipality.otaLinks.length > 0 && (

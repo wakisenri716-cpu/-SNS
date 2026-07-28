@@ -8,6 +8,7 @@ import { suggestDefaultOtaLinks } from "../services/otaProvider";
 import { reelInclude, serializeReel } from "../lib/reelSerializer";
 import { getFollowedIds } from "../lib/followState";
 import { geocode, isGoogleMapsConfigured } from "../services/googleMaps";
+import { getTransitSuggestion } from "../services/maasProvider";
 
 const router = Router();
 
@@ -118,6 +119,42 @@ router.post("/:id/follow", requireAuth, async (req, res) => {
 router.delete("/:id/follow", requireAuth, async (req, res) => {
   await prisma.follow.deleteMany({ where: { followerId: req.auth!.userId, municipalityId: req.params.id } });
   res.status(204).end();
+});
+
+// "アクセス" tab route planner: given a starting point the visitor types in,
+// estimate travel time / mode / fare from there to this municipality's
+// reference station. No auth required — this is a user-initiated, one-shot
+// lookup (unlike the automatic per-reel-view Directions calls elsewhere),
+// so it doesn't add to that per-view API cost concern. Falls back to a
+// deterministic mock (see maasProvider.ts) if Maps isn't configured or the
+// typed origin can't be geocoded, so the feature never dead-ends.
+router.get("/:id/access-plan", async (req, res) => {
+  const origin = typeof req.query.origin === "string" ? req.query.origin.trim() : "";
+  if (!origin) return res.status(400).json({ error: "出発地点を入力してください" });
+
+  const municipality = await prisma.municipality.findUnique({ where: { id: req.params.id } });
+  if (!municipality) return res.status(404).json({ error: "自治体が見つかりません" });
+  if (municipality.nearestStationLat == null || municipality.nearestStationLng == null) {
+    return res.status(400).json({ error: "この自治体はまだ起点駅が設定されていません" });
+  }
+
+  let originCoords: { lat: number; lng: number } | null = null;
+  if (isGoogleMapsConfigured()) {
+    try {
+      const geocoded = await geocode(origin);
+      if (geocoded) originCoords = { lat: geocoded.lat, lng: geocoded.lng };
+    } catch (err) {
+      console.error("[municipalities] Geocoding access-plan origin failed:", err);
+    }
+  }
+
+  const suggestion = await getTransitSuggestion(
+    municipality.nearestStationName || municipality.name,
+    municipality.nearestStationLat,
+    municipality.nearestStationLng,
+    { label: origin, ...originCoords }
+  );
+  res.json(suggestion);
 });
 
 // Get own profile (municipality-only)

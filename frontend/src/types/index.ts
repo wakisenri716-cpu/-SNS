@@ -88,6 +88,7 @@ export interface TransitSuggestion {
   destinationLabel: string;
   totalDurationMin: number;
   legs: { mode: string; description: string; durationMin: number }[];
+  estimatedFareYen: number;
   isMock: boolean;
 }
 

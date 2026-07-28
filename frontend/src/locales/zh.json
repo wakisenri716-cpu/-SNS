@@ -128,6 +128,23 @@
     "mockData": "各投稿所需时间为模拟数据",
     "otaHeading": "查找住宿・预订"
   },
+  "accessPlanner": {
+    "heading": "查询交通方式",
+    "description": "输入出发地点，即可查看到该自治体（起点站）的预计所需时间・交通方式・大致票价。",
+    "originPlaceholder": "出发地点（例：东京站）",
+    "search": "查询路线",
+    "searching": "查询中...",
+    "genericError": "无法获取路线，请检查出发地点的输入是否正确。",
+    "duration": "约{{minutes}}分钟",
+    "fare": "约{{yen}}日元",
+    "fareFree": "免费（步行）",
+    "fareDisclaimer": "※票价为大致估算，可能与实际票价・所需时间有出入。",
+    "modeSeparator": "・",
+    "modeWalk": "步行",
+    "modeDrive": "开车",
+    "modeTrain": "电车",
+    "modeBus": "巴士"
+  },
   "reelUploader": {
     "heading": "发布新短视频",
     "captionPlaceholder": "说明文字",

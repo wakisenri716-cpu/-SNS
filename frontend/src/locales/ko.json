@@ -128,6 +128,23 @@
     "mockData": "각 게시물의 소요 시간은 임시 데이터입니다",
     "otaHeading": "숙박・예약 찾기"
   },
+  "accessPlanner": {
+    "heading": "접근 방법 확인",
+    "description": "출발지를 입력하면 이 지자체（기준역）까지의 예상 소요 시간・이동 수단・대략적인 요금을 확인할 수 있습니다.",
+    "originPlaceholder": "출발지（예：도쿄역）",
+    "search": "경로 확인",
+    "searching": "검색 중...",
+    "genericError": "경로를 가져올 수 없습니다. 출발지 표기를 다시 확인해 주세요.",
+    "duration": "약 {{minutes}}분",
+    "fare": "약 {{yen}}엔",
+    "fareFree": "무료（도보）",
+    "fareDisclaimer": "※요금은 대략적인 추정치이며 실제 요금・소요 시간과 다를 수 있습니다.",
+    "modeSeparator": "・",
+    "modeWalk": "도보",
+    "modeDrive": "자동차",
+    "modeTrain": "전철",
+    "modeBus": "버스"
+  },
   "reelUploader": {
     "heading": "새 릴 게시하기",
     "captionPlaceholder": "설명",

@@ -128,6 +128,23 @@
     "mockData": "Travel times for each post are mock data",
     "otaHeading": "Find Lodging & Bookings"
   },
+  "accessPlanner": {
+    "heading": "Check Access",
+    "description": "Enter a starting point to see an estimated travel time, mode, and rough fare to this municipality's reference station.",
+    "originPlaceholder": "Starting point (e.g. Tokyo Station)",
+    "search": "Check Route",
+    "searching": "Searching...",
+    "genericError": "Couldn't get a route. Please check how you spelled the starting point.",
+    "duration": "About {{minutes}} min",
+    "fare": "Approx. ¥{{yen}}",
+    "fareFree": "Free (walking)",
+    "fareDisclaimer": "Fare is a rough estimate and may differ from the actual fare/travel time.",
+    "modeSeparator": " · ",
+    "modeWalk": "Walk",
+    "modeDrive": "Drive",
+    "modeTrain": "Train",
+    "modeBus": "Bus"
+  },
   "reelUploader": {
     "heading": "Post a New Reel",
     "captionPlaceholder": "Caption",

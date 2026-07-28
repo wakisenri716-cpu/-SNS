@@ -128,6 +128,23 @@
     "mockData": "各投稿の所要時間は仮データです",
     "otaHeading": "宿・予約を探す"
   },
+  "accessPlanner": {
+    "heading": "アクセスを調べる",
+    "description": "出発地点を入力すると、この自治体（起点駅）までの所要時間・移動手段・概算運賃の目安が分かります。",
+    "originPlaceholder": "出発地点（例：東京駅）",
+    "search": "ルートを調べる",
+    "searching": "検索中...",
+    "genericError": "ルートを取得できませんでした。出発地点の表記を見直してご確認ください。",
+    "duration": "約{{minutes}}分",
+    "fare": "概算{{yen}}円",
+    "fareFree": "無料（徒歩）",
+    "fareDisclaimer": "※運賃は概算です。実際の運賃・所要時間とは異なる場合があります。",
+    "modeSeparator": "・",
+    "modeWalk": "徒歩",
+    "modeDrive": "車",
+    "modeTrain": "電車",
+    "modeBus": "バス"
+  },
   "reelUploader": {
     "heading": "新しいリールを投稿",
     "captionPlaceholder": "説明文",
