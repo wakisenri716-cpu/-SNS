@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../auth/AuthContext";
+import JazibaLogo from "./JazibaLogo";
 
 function NavItem({ to, label }: { to: string; label: string }) {
   return (
@@ -24,11 +25,8 @@ export default function Layout() {
   return (
     <div className="flex min-h-screen w-full bg-gray-50 text-gray-900">
       <aside className="sticky top-0 flex h-screen w-56 shrink-0 flex-col border-r border-gray-200 bg-white px-4 py-6">
-        <NavLink to="/" className="mb-8 flex items-center gap-2 text-xl font-bold tracking-tight text-gray-900">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-sm text-white">
-            {t("brand.name").slice(0, 1)}
-          </span>
-          {t("brand.name")}
+        <NavLink to="/" className="mb-8 flex items-center" aria-label={t("brand.name")}>
+          <JazibaLogo className="h-9 w-auto" />
         </NavLink>
 
         <nav className="flex flex-col gap-1">
