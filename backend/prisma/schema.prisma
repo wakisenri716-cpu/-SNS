@@ -34,6 +34,8 @@ model User {
   likes        Like[]
   comments     Comment[]
   reelViews    ReelView[]
+  savedReels   SavedReel[]
+  follows      Follow[]
 }
 
 model Municipality {
@@ -62,6 +64,7 @@ model Municipality {
 
   reels     Reel[]
   companies Company[]
+  followers Follow[]
 }
 
 // A company/business account tied to exactly one municipality. Companies can post
@@ -80,7 +83,8 @@ model Company {
   commentsEnabled Boolean  @default(true)
   createdAt      DateTime @default(now())
 
-  reels Reel[]
+  reels     Reel[]
+  followers Follow[]
 }
 
 model Reel {
@@ -104,6 +108,7 @@ model Reel {
   likes    Like[]
   comments Comment[]
   views    ReelView[]
+  saves    SavedReel[]
 }
 
 // One row per reel view, kept (rather than just incrementing a counter) so
@@ -132,6 +137,38 @@ model Like {
   createdAt DateTime @default(now())
 
   @@unique([userId, reelId])
+}
+
+// A user bookmarking a reel to find again later — see the feed's "保存中" tab
+// (GET /reels/saved).
+model SavedReel {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reelId    String
+  reel      Reel     @relation(fields: [reelId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, reelId])
+}
+
+// A user following a municipality or a company (never both in the same row) to
+// get their reels in the feed's "フォロー中" tab — see GET /reels/following.
+// Both foreign keys are optional; exactly one is set per row. SQLite/Prisma
+// treat NULL as distinct in unique indexes, so the two @@unique constraints
+// below only actually dedupe the column that's populated for a given row.
+model Follow {
+  id             String   @id @default(cuid())
+  followerId     String
+  follower       User     @relation(fields: [followerId], references: [id], onDelete: Cascade)
+  municipalityId String?
+  municipality   Municipality? @relation(fields: [municipalityId], references: [id], onDelete: Cascade)
+  companyId      String?
+  company        Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+
+  @@unique([followerId, municipalityId])
+  @@unique([followerId, companyId])
 }
 
 model Comment {

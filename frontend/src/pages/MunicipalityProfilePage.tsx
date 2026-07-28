@@ -52,6 +52,64 @@ export default function MunicipalityProfilePage() {
     );
   }
 
+  async function toggleSave(reel: Reel) {
+    if (!token) return;
+    if (reel.savedByMe) {
+      await api.delete(`/reels/${reel.id}/save`);
+    } else {
+      await api.post(`/reels/${reel.id}/save`);
+    }
+    setReels((prev) => prev.map((r) => (r.id === reel.id ? { ...r, savedByMe: !r.savedByMe } : r)));
+  }
+
+  async function toggleFollowMunicipality() {
+    if (!token || !municipality) return;
+    if (municipality.isFollowing) {
+      await api.delete(`/municipalities/${municipality.id}/follow`);
+    } else {
+      await api.post(`/municipalities/${municipality.id}/follow`);
+    }
+    setMunicipality((prev) =>
+      prev
+        ? {
+            ...prev,
+            isFollowing: !prev.isFollowing,
+            followerCount: prev.followerCount + (prev.isFollowing ? -1 : 1),
+          }
+        : prev
+    );
+    setReels((prev) =>
+      prev.map((r) =>
+        r.municipality.id === municipality.id
+          ? { ...r, municipality: { ...r.municipality, isFollowing: !municipality.isFollowing } }
+          : r
+      )
+    );
+  }
+
+  function toggleFollowFromReel(reel: Reel) {
+    if (reel.postedByCompany) {
+      // Company-posted reels shown here are managed via the reel viewer's own
+      // follow button; the profile page itself only tracks municipality follow.
+      if (!token) return;
+      const isFollowing = reel.postedByCompany.isFollowing;
+      const request = isFollowing
+        ? api.delete(`/companies/${reel.postedByCompany.id}/follow`)
+        : api.post(`/companies/${reel.postedByCompany.id}/follow`);
+      request.then(() => {
+        setReels((prev) =>
+          prev.map((r) =>
+            r.postedByCompany?.id === reel.postedByCompany!.id
+              ? { ...r, postedByCompany: { ...r.postedByCompany!, isFollowing: !isFollowing } }
+              : r
+          )
+        );
+      });
+    } else {
+      toggleFollowMunicipality();
+    }
+  }
+
   if (!municipality) return <p className="p-10 text-center text-gray-400">{t("municipalityProfile.loading")}</p>;
 
   const featured = reels[0];
@@ -78,7 +136,22 @@ export default function MunicipalityProfilePage() {
           <span className="inline-flex items-center gap-1 rounded-full bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
             {t("municipalityProfile.officialBadge")}
           </span>
+          {token && (
+            <button
+              onClick={toggleFollowMunicipality}
+              className={`ml-auto rounded-full px-4 py-1.5 text-sm font-medium ${
+                municipality.isFollowing
+                  ? "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                  : "bg-teal-600 text-white hover:bg-teal-700"
+              }`}
+            >
+              {municipality.isFollowing ? t("municipalityProfile.following") : t("municipalityProfile.follow")}
+            </button>
+          )}
         </div>
+        <p className="mt-1 text-xs text-gray-400">
+          {t("municipalityProfile.followerCount", { count: municipality.followerCount })}
+        </p>
 
         {municipality.description && <p className="mt-2 text-sm text-gray-800">{municipality.description}</p>}
 
@@ -161,6 +234,8 @@ export default function MunicipalityProfilePage() {
           initialId={openReelId}
           onClose={() => setOpenReelId(null)}
           onToggleLike={toggleLike}
+          onToggleSave={toggleSave}
+          onToggleFollow={toggleFollowFromReel}
         />
       )}
     </div>

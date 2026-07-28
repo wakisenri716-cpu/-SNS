@@ -67,7 +67,9 @@
   },
   "feed": {
     "loading": "Loading...",
-    "empty": "No posts yet. Municipality accounts can post the first reel."
+    "empty": "No posts yet. Municipality accounts can post the first reel.",
+    "emptySaved": "No saved reels yet. Tap the 🔖 icon while watching a reel to save it.",
+    "emptyFollowing": "No posts from accounts you follow yet. Try following a municipality or company while watching a reel."
   },
   "search": {
     "placeholder": "Search by region or keyword",
@@ -115,6 +117,9 @@
   "municipalityProfile": {
     "loading": "Loading...",
     "officialBadge": "🏛️ Official Municipality",
+    "follow": "Follow",
+    "following": "Following",
+    "followerCount": "{{count}} followers",
     "since": " · Listed since",
     "postsCount": " posts",
     "noInfo": "No information yet",
@@ -146,7 +151,9 @@
   "reelViewer": {
     "postedBy": " · Posted by: {{name}}",
     "distanceFromOrigin": " · About {{minutes}} min from {{origin}}",
-    "mockBadge": "Transit info is mock data"
+    "mockBadge": "Transit info is mock data",
+    "follow": "Follow",
+    "following": "Following"
   },
   "settings": {
     "title": "Settings",
@@ -239,7 +246,9 @@
     "culture": "Culture",
     "activity": "Activities",
     "lodging": "Lodging",
-    "restaurant": "Restaurants"
+    "restaurant": "Restaurants",
+    "saved": "Saved",
+    "following": "Following"
   },
   "insights": {
     "heading": "Post Insights",

@@ -67,7 +67,9 @@
   },
   "feed": {
     "loading": "加载中...",
-    "empty": "还没有任何投稿。快来发布第一条自治体短视频吧。"
+    "empty": "还没有任何投稿。快来发布第一条自治体短视频吧。",
+    "emptySaved": "还没有保存的短视频。观看短视频时点击🔖图标即可保存。",
+    "emptyFollowing": "还没有已关注账号的投稿。观看短视频时可以关注自治体或企业账号。"
   },
   "search": {
     "placeholder": "按地区名或关键词搜索",
@@ -115,6 +117,9 @@
   "municipalityProfile": {
     "loading": "加载中...",
     "officialBadge": "🏛️ 自治体官方",
+    "follow": "关注",
+    "following": "已关注",
+    "followerCount": "{{count}}人关注",
     "since": "・自此开始展示",
     "postsCount": "条投稿",
     "noInfo": "尚未登记信息",
@@ -146,7 +151,9 @@
   "reelViewer": {
     "postedBy": "・发布者：{{name}}",
     "distanceFromOrigin": "・距{{origin}}约{{minutes}}分钟",
-    "mockBadge": "交通信息为模拟数据"
+    "mockBadge": "交通信息为模拟数据",
+    "follow": "关注",
+    "following": "已关注"
   },
   "settings": {
     "title": "设置",
@@ -239,7 +246,9 @@
     "culture": "文化",
     "activity": "体验活动",
     "lodging": "住宿",
-    "restaurant": "餐饮店"
+    "restaurant": "餐饮店",
+    "saved": "收藏",
+    "following": "关注中"
   },
   "insights": {
     "heading": "投稿数据洞察",

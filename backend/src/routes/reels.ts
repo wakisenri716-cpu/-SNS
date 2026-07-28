@@ -3,9 +3,21 @@ import { z } from "zod";
 import { prisma } from "../prisma";
 import { optionalAuth, requireAuth, requireRole } from "../middleware/auth";
 import { upload } from "../middleware/upload";
-import { reelInclude, serializeReel } from "../lib/reelSerializer";
+import { anonymousViewerState, reelInclude, serializeReel, type ReelViewerState } from "../lib/reelSerializer";
+import { getFollowedIds } from "../lib/followState";
 import { geocode, isGoogleMapsConfigured } from "../services/googleMaps";
 import { AGE_BUCKETS, REEL_CATEGORIES, ageBucketFromBirthYear } from "../types";
+
+// Builds the per-viewer state (liked/saved/followed) for one reel row fetched
+// with the `likes`/`saves` conditional includes below, layered on top of the
+// viewer's follow set fetched once per request.
+function viewerStateFor(reel: { likes?: unknown; saves?: unknown }, followed: Awaited<ReturnType<typeof getFollowedIds>>): ReelViewerState {
+  return {
+    likedByMe: Array.isArray(reel.likes) && reel.likes.length > 0,
+    savedByMe: Array.isArray(reel.saves) && reel.saves.length > 0,
+    ...followed,
+  };
+}
 
 const router = Router();
 
@@ -43,6 +55,7 @@ router.get("/", optionalAuth, async (req, res) => {
       : undefined;
   const take = 10;
 
+  const followed = await getFollowedIds(req.auth?.userId);
   const reels = await prisma.reel.findMany({
     take,
     ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
@@ -51,12 +64,11 @@ router.get("/", optionalAuth, async (req, res) => {
     include: {
       ...reelInclude,
       likes: req.auth ? { where: { userId: req.auth.userId }, select: { id: true } } : false,
+      saves: req.auth ? { where: { userId: req.auth.userId }, select: { id: true } } : false,
     },
   });
 
-  const items = await Promise.all(
-    reels.map((r) => serializeReel(r, Array.isArray((r as any).likes) && (r as any).likes.length > 0))
-  );
+  const items = await Promise.all(reels.map((r) => serializeReel(r, viewerStateFor(r, followed))));
   const nextCursor = reels.length === take ? reels[reels.length - 1].id : null;
   res.json({ items, nextCursor });
 });
@@ -64,13 +76,80 @@ router.get("/", optionalAuth, async (req, res) => {
 // Reels the signed-in user has liked (used by the read-only tourist "マイページ").
 // Must be registered before "/:id" so "liked" isn't matched as a reel id.
 router.get("/liked", requireAuth, async (req, res) => {
+  const followed = await getFollowedIds(req.auth!.userId);
   const likes = await prisma.like.findMany({
     where: { userId: req.auth!.userId },
     orderBy: { createdAt: "desc" },
-    include: { reel: { include: reelInclude } },
+    include: {
+      reel: {
+        include: {
+          ...reelInclude,
+          saves: { where: { userId: req.auth!.userId }, select: { id: true } },
+        },
+      },
+    },
   });
 
-  res.json({ items: await Promise.all(likes.map((l) => serializeReel(l.reel, true))) });
+  res.json({
+    items: await Promise.all(
+      likes.map((l) => serializeReel(l.reel, { likedByMe: true, savedByMe: l.reel.saves.length > 0, ...followed }))
+    ),
+  });
+});
+
+// Reels the signed-in user has saved/bookmarked — the feed's "保存中" tab.
+// Must be registered before "/:id" so "saved" isn't matched as a reel id.
+router.get("/saved", requireAuth, async (req, res) => {
+  const followed = await getFollowedIds(req.auth!.userId);
+  const saves = await prisma.savedReel.findMany({
+    where: { userId: req.auth!.userId },
+    orderBy: { createdAt: "desc" },
+    include: {
+      reel: {
+        include: {
+          ...reelInclude,
+          likes: { where: { userId: req.auth!.userId }, select: { id: true } },
+        },
+      },
+    },
+  });
+
+  res.json({
+    items: await Promise.all(
+      saves.map((s) => serializeReel(s.reel, { likedByMe: s.reel.likes.length > 0, savedByMe: true, ...followed }))
+    ),
+  });
+});
+
+// Reels from municipalities/companies the signed-in user follows — the feed's
+// "フォロー中" tab. Following a municipality surfaces all reels under its name
+// (including its linked companies' posts, matching the attribution shown
+// elsewhere), while following a company surfaces only that company's own reels.
+// Must be registered before "/:id" so "following" isn't matched as a reel id.
+router.get("/following", requireAuth, async (req, res) => {
+  const followed = await getFollowedIds(req.auth!.userId);
+  const municipalityIds = [...followed.followedMunicipalityIds];
+  const companyIds = [...followed.followedCompanyIds];
+  if (municipalityIds.length === 0 && companyIds.length === 0) {
+    return res.json({ items: [] });
+  }
+
+  const reels = await prisma.reel.findMany({
+    where: {
+      OR: [
+        ...(municipalityIds.length ? [{ municipalityId: { in: municipalityIds } }] : []),
+        ...(companyIds.length ? [{ companyId: { in: companyIds } }] : []),
+      ],
+    },
+    orderBy: { createdAt: "desc" },
+    include: {
+      ...reelInclude,
+      likes: { where: { userId: req.auth!.userId }, select: { id: true } },
+      saves: { where: { userId: req.auth!.userId }, select: { id: true } },
+    },
+  });
+
+  res.json({ items: await Promise.all(reels.map((r) => serializeReel(r, viewerStateFor(r, followed)))) });
 });
 
 // Reels the signed-in municipality/company account is allowed to manage — all
@@ -87,7 +166,7 @@ router.get("/mine", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (
     include: reelInclude,
   });
 
-  res.json({ items: await Promise.all(reels.map((r) => serializeReel(r, false))) });
+  res.json({ items: await Promise.all(reels.map((r) => serializeReel(r, anonymousViewerState()))) });
 });
 
 // Aggregated, anonymized audience breakdown (nationality / age bucket) across all
@@ -136,11 +215,13 @@ router.get(
 );
 
 router.get("/:id", optionalAuth, async (req, res) => {
+  const followed = await getFollowedIds(req.auth?.userId);
   const reel = await prisma.reel.findUnique({
     where: { id: req.params.id },
     include: {
       ...reelInclude,
       likes: req.auth ? { where: { userId: req.auth.userId }, select: { id: true } } : false,
+      saves: req.auth ? { where: { userId: req.auth.userId }, select: { id: true } } : false,
     },
   });
   if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
@@ -150,7 +231,7 @@ router.get("/:id", optionalAuth, async (req, res) => {
     prisma.reelView.create({ data: { reelId: reel.id, viewerId: req.auth?.userId ?? null } }),
   ]);
 
-  res.json(await serializeReel(reel, Array.isArray((reel as any).likes) && (reel as any).likes.length > 0));
+  res.json(await serializeReel(reel, viewerStateFor(reel, followed)));
 });
 
 const createSchema = z.object({
@@ -208,7 +289,7 @@ router.post(
       include: reelInclude,
     });
 
-    res.status(201).json(await serializeReel(reel, false));
+    res.status(201).json(await serializeReel(reel, anonymousViewerState()));
   }
 );
 
@@ -247,7 +328,7 @@ router.put("/:id", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (r
     data: parsed.data,
     include: reelInclude,
   });
-  res.json(await serializeReel(updated, false));
+  res.json(await serializeReel(updated, anonymousViewerState()));
 });
 
 router.delete("/:id", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (req, res) => {
@@ -278,6 +359,24 @@ router.post("/:id/like", requireAuth, async (req, res) => {
 
 router.delete("/:id/like", requireAuth, async (req, res) => {
   await prisma.like.deleteMany({ where: { userId: req.auth!.userId, reelId: req.params.id } });
+  res.status(204).end();
+});
+
+// Save / unsave (bookmark a reel to find again later — the feed's "保存中" tab)
+router.post("/:id/save", requireAuth, async (req, res) => {
+  const reel = await prisma.reel.findUnique({ where: { id: req.params.id } });
+  if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
+
+  await prisma.savedReel.upsert({
+    where: { userId_reelId: { userId: req.auth!.userId, reelId: reel.id } },
+    create: { userId: req.auth!.userId, reelId: reel.id },
+    update: {},
+  });
+  res.status(204).end();
+});
+
+router.delete("/:id/save", requireAuth, async (req, res) => {
+  await prisma.savedReel.deleteMany({ where: { userId: req.auth!.userId, reelId: req.params.id } });
   res.status(204).end();
 });
 

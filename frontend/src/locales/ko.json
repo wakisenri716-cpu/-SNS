@@ -67,7 +67,9 @@
   },
   "feed": {
     "loading": "불러오는 중...",
-    "empty": "아직 게시물이 없습니다. 지자체 계정으로 첫 릴을 게시해 보세요."
+    "empty": "아직 게시물이 없습니다. 지자체 계정으로 첫 릴을 게시해 보세요.",
+    "emptySaved": "아직 저장한 릴이 없습니다. 릴을 재생하면서 🔖 아이콘을 눌러 저장해 보세요.",
+    "emptyFollowing": "아직 팔로우한 계정의 게시물이 없습니다. 릴을 재생하면서 지자체・기업을 팔로우해 보세요."
   },
   "search": {
     "placeholder": "지역명・키워드로 검색",
@@ -115,6 +117,9 @@
   "municipalityProfile": {
     "loading": "불러오는 중...",
     "officialBadge": "🏛️ 지자체 공식",
+    "follow": "팔로우",
+    "following": "팔로잉",
+    "followerCount": "팔로워 {{count}}명",
     "since": "・부터 게시",
     "postsCount": "건의 게시물",
     "noInfo": "등록된 정보가 없습니다",
@@ -146,7 +151,9 @@
   "reelViewer": {
     "postedBy": "・게시자: {{name}}",
     "distanceFromOrigin": "・{{origin}}에서 약 {{minutes}}분",
-    "mockBadge": "교통 정보는 임시 데이터입니다"
+    "mockBadge": "교통 정보는 임시 데이터입니다",
+    "follow": "팔로우",
+    "following": "팔로잉"
   },
   "settings": {
     "title": "설정",
@@ -239,7 +246,9 @@
     "culture": "문화",
     "activity": "액티비티",
     "lodging": "숙박",
-    "restaurant": "음식점"
+    "restaurant": "음식점",
+    "saved": "저장됨",
+    "following": "팔로잉"
   },
   "insights": {
     "heading": "게시물 인사이트",

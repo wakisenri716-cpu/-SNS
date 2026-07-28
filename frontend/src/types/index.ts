@@ -77,6 +77,8 @@ export interface Municipality {
   nearestStationLng: number | null;
   maasConfigured: boolean;
   commentsEnabled: boolean;
+  followerCount: number;
+  isFollowing: boolean;
   createdAt: string;
   reels?: Reel[];
 }
@@ -100,11 +102,12 @@ export interface Reel {
   locationLng: number | null;
   viewCount: number;
   createdAt: string;
-  municipality: { id: string; name: string; avatarUrl: string | null; prefecture: string };
-  postedByCompany: { id: string; name: string } | null;
+  municipality: { id: string; name: string; avatarUrl: string | null; prefecture: string; isFollowing: boolean };
+  postedByCompany: { id: string; name: string; isFollowing: boolean } | null;
   likeCount: number;
   commentCount: number;
   likedByMe: boolean;
+  savedByMe: boolean;
   transitSuggestion: TransitSuggestion | null;
 }
 

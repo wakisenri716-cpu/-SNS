@@ -4,11 +4,22 @@ import { useTranslation } from "react-i18next";
 import AutoplayVideo from "./AutoplayVideo";
 import type { Reel } from "../types";
 
-function ReelOverlayInfo({ reel, onToggleLike }: { reel: Reel; onToggleLike: (reel: Reel) => void }) {
+function ReelOverlayInfo({
+  reel,
+  onToggleLike,
+  onToggleSave,
+  onToggleFollow,
+}: {
+  reel: Reel;
+  onToggleLike: (reel: Reel) => void;
+  onToggleSave: (reel: Reel) => void;
+  onToggleFollow: (reel: Reel) => void;
+}) {
   const { t } = useTranslation();
+  const poster = reel.postedByCompany ?? reel.municipality;
   return (
     <>
-      <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-black/60 to-transparent p-4">
+      <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-black/60 to-transparent p-4 pr-16">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20 text-sm font-semibold text-white ring-2 ring-white/40">
           {reel.municipality.avatarUrl ? (
             <img src={reel.municipality.avatarUrl} className="h-full w-full rounded-full object-cover" />
@@ -16,13 +27,21 @@ function ReelOverlayInfo({ reel, onToggleLike }: { reel: Reel; onToggleLike: (re
             reel.municipality.name.slice(0, 1)
           )}
         </div>
-        <Link to={`/municipalities/${reel.municipality.id}`} className="pointer-events-auto min-w-0">
+        <Link to={`/municipalities/${reel.municipality.id}`} className="pointer-events-auto min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-white drop-shadow">{reel.municipality.name}</p>
           <p className="truncate text-xs text-white/80 drop-shadow">
             {reel.municipality.prefecture}
             {reel.postedByCompany && t("reelViewer.postedBy", { name: reel.postedByCompany.name })}
           </p>
         </Link>
+        <button
+          onClick={() => onToggleFollow(reel)}
+          className={`pointer-events-auto shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${
+            poster.isFollowing ? "bg-white/20 text-white" : "bg-white text-gray-900"
+          }`}
+        >
+          {poster.isFollowing ? t("reelViewer.following") : t("reelViewer.follow")}
+        </button>
       </div>
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 pt-10">
@@ -43,14 +62,23 @@ function ReelOverlayInfo({ reel, onToggleLike }: { reel: Reel; onToggleLike: (re
             )}
           </p>
         )}
-        <button onClick={() => onToggleLike(reel)} className="pointer-events-auto mt-2 flex items-center gap-1.5">
-          <span className={`text-xl ${reel.likedByMe ? "text-red-500" : "text-white"}`}>
-            {reel.likedByMe ? "♥" : "♡"}
+        <div className="pointer-events-auto mt-2 flex items-center gap-4">
+          <button onClick={() => onToggleLike(reel)} className="flex items-center gap-1.5">
+            <span className={`text-xl ${reel.likedByMe ? "text-red-500" : "text-white"}`}>
+              {reel.likedByMe ? "♥" : "♡"}
+            </span>
+            <span className="text-sm text-white">{reel.likeCount}</span>
+          </button>
+          <span className="flex items-center gap-1.5">
+            <span className="text-xl text-white">💬</span>
+            <span className="text-sm text-white">{reel.commentCount}</span>
           </span>
-          <span className="text-sm text-white">{reel.likeCount}</span>
-          <span className="ml-3 text-xl text-white">💬</span>
-          <span className="text-sm text-white">{reel.commentCount}</span>
-        </button>
+          <button onClick={() => onToggleSave(reel)} className="ml-auto flex items-center gap-1.5">
+            <span className={`text-xl ${reel.savedByMe ? "text-yellow-400" : "text-white"}`}>
+              {reel.savedByMe ? "🔖" : "📑"}
+            </span>
+          </button>
+        </div>
       </div>
     </>
   );
@@ -65,11 +93,15 @@ export default function ReelFullscreenViewer({
   initialId,
   onClose,
   onToggleLike,
+  onToggleSave,
+  onToggleFollow,
 }: {
   reels: Reel[];
   initialId: string;
   onClose: () => void;
   onToggleLike: (reel: Reel) => void;
+  onToggleSave: (reel: Reel) => void;
+  onToggleFollow: (reel: Reel) => void;
 }) {
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
@@ -98,7 +130,12 @@ export default function ReelFullscreenViewer({
             className="relative h-full w-full snap-start"
           >
             <AutoplayVideo src={reel.videoUrl} className="h-full w-full object-cover" />
-            <ReelOverlayInfo reel={reel} onToggleLike={onToggleLike} />
+            <ReelOverlayInfo
+              reel={reel}
+              onToggleLike={onToggleLike}
+              onToggleSave={onToggleSave}
+              onToggleFollow={onToggleFollow}
+            />
           </div>
         ))}
       </div>

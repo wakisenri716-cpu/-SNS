@@ -1,4 +1,5 @@
 import { getTransitSuggestion } from "../services/maasProvider";
+import type { FollowedIds } from "./followState";
 
 export const reelInclude = {
   municipality: {
@@ -15,6 +16,23 @@ export const reelInclude = {
   company: { select: { id: true, name: true } },
   _count: { select: { likes: true, comments: true } },
 } as const;
+
+// Per-viewer state that isn't part of the reel row itself — whether *this*
+// signed-in viewer liked/saved it, and whether they follow its poster. Callers
+// build this once per request (see getFollowedIds) rather than querying per reel.
+export interface ReelViewerState extends FollowedIds {
+  likedByMe: boolean;
+  savedByMe: boolean;
+}
+
+export function anonymousViewerState(): ReelViewerState {
+  return {
+    likedByMe: false,
+    savedByMe: false,
+    followedMunicipalityIds: new Set(),
+    followedCompanyIds: new Set(),
+  };
+}
 
 export async function serializeReel(
   reel: {
@@ -40,7 +58,7 @@ export async function serializeReel(
     company?: { id: string; name: string } | null;
     _count?: { likes: number; comments: number };
   },
-  likedByMe: boolean
+  viewer: ReelViewerState
 ) {
   const { nearestStationName, nearestStationLat, nearestStationLng, ...municipality } = reel.municipality;
   const origin =
@@ -59,11 +77,14 @@ export async function serializeReel(
     locationLng: reel.locationLng,
     viewCount: reel.viewCount,
     createdAt: reel.createdAt,
-    municipality,
-    postedByCompany: reel.company ?? null,
+    municipality: { ...municipality, isFollowing: viewer.followedMunicipalityIds.has(municipality.id) },
+    postedByCompany: reel.company
+      ? { ...reel.company, isFollowing: viewer.followedCompanyIds.has(reel.company.id) }
+      : null,
     likeCount: reel._count?.likes ?? 0,
     commentCount: reel._count?.comments ?? 0,
-    likedByMe,
+    likedByMe: viewer.likedByMe,
+    savedByMe: viewer.savedByMe,
     transitSuggestion:
       reel.locationName && reel.locationLat != null && reel.locationLng != null
         ? await getTransitSuggestion(reel.locationName, reel.locationLat, reel.locationLng, origin)

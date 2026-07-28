@@ -6,27 +6,32 @@ import { upload } from "../middleware/upload";
 import { parseOtaLinks, serializeOtaLinks } from "../lib/otaLinks";
 import { suggestDefaultOtaLinks } from "../services/otaProvider";
 import { reelInclude, serializeReel } from "../lib/reelSerializer";
+import { getFollowedIds } from "../lib/followState";
 import { geocode, isGoogleMapsConfigured } from "../services/googleMaps";
 
 const router = Router();
 
-function serializeMunicipality(m: {
-  id: string;
-  name: string;
-  prefecture: string;
-  description: string;
-  avatarUrl: string | null;
-  accessInfo: string;
-  lodgingInfo: string;
-  restaurantInfo: string;
-  tourismInfo: string;
-  otaLinks: string;
-  nearestStationName: string;
-  nearestStationLat: number | null;
-  nearestStationLng: number | null;
-  commentsEnabled: boolean;
-  createdAt: Date;
-}) {
+function serializeMunicipality(
+  m: {
+    id: string;
+    name: string;
+    prefecture: string;
+    description: string;
+    avatarUrl: string | null;
+    accessInfo: string;
+    lodgingInfo: string;
+    restaurantInfo: string;
+    tourismInfo: string;
+    otaLinks: string;
+    nearestStationName: string;
+    nearestStationLat: number | null;
+    nearestStationLng: number | null;
+    commentsEnabled: boolean;
+    createdAt: Date;
+    _count?: { followers: number };
+  },
+  viewer: { isFollowing: boolean } = { isFollowing: false }
+) {
   const otaLinks = parseOtaLinks(m.otaLinks);
   return {
     id: m.id,
@@ -44,42 +49,83 @@ function serializeMunicipality(m: {
     nearestStationLng: m.nearestStationLng,
     maasConfigured: isGoogleMapsConfigured(),
     commentsEnabled: m.commentsEnabled,
+    followerCount: m._count?.followers ?? 0,
+    isFollowing: viewer.isFollowing,
     createdAt: m.createdAt,
   };
 }
 
+const municipalityCountInclude = { _count: { select: { followers: true } } } as const;
+
 // List all municipalities (for directory / search)
 router.get("/", async (_req, res) => {
-  const list = await prisma.municipality.findMany({ orderBy: { createdAt: "desc" } });
-  res.json(list.map(serializeMunicipality));
+  const list = await prisma.municipality.findMany({
+    orderBy: { createdAt: "desc" },
+    include: municipalityCountInclude,
+  });
+  res.json(list.map((m) => serializeMunicipality(m)));
 });
 
 // Public profile view. optionalAuth + per-reel likes so the reels array matches
 // the same shape as the main feed (GET /api/reels) — this lets the frontend reuse
 // the feed's grid/fullscreen-viewer components on the profile page unchanged.
 router.get("/:id", optionalAuth, async (req, res) => {
+  const followed = await getFollowedIds(req.auth?.userId);
   const m = await prisma.municipality.findUnique({
     where: { id: req.params.id },
     include: {
+      ...municipalityCountInclude,
       reels: {
         orderBy: { createdAt: "desc" },
         include: {
           ...reelInclude,
           likes: req.auth ? { where: { userId: req.auth.userId }, select: { id: true } } : false,
+          saves: req.auth ? { where: { userId: req.auth.userId }, select: { id: true } } : false,
         },
       },
     },
   });
   if (!m) return res.status(404).json({ error: "自治体が見つかりません" });
   const reels = await Promise.all(
-    m.reels.map((r) => serializeReel(r, Array.isArray((r as any).likes) && (r as any).likes.length > 0))
+    m.reels.map((r) =>
+      serializeReel(r, {
+        likedByMe: Array.isArray((r as any).likes) && (r as any).likes.length > 0,
+        savedByMe: Array.isArray((r as any).saves) && (r as any).saves.length > 0,
+        ...followed,
+      })
+    )
   );
-  res.json({ ...serializeMunicipality(m), reels });
+  res.json({
+    ...serializeMunicipality(m, { isFollowing: followed.followedMunicipalityIds.has(m.id) }),
+    reels,
+  });
+});
+
+// Follow / unfollow a municipality — surfaces its reels (including its linked
+// companies' posts) in the signed-in user's feed "フォロー中" tab.
+router.post("/:id/follow", requireAuth, async (req, res) => {
+  const municipality = await prisma.municipality.findUnique({ where: { id: req.params.id } });
+  if (!municipality) return res.status(404).json({ error: "自治体が見つかりません" });
+
+  await prisma.follow.upsert({
+    where: { followerId_municipalityId: { followerId: req.auth!.userId, municipalityId: municipality.id } },
+    create: { followerId: req.auth!.userId, municipalityId: municipality.id },
+    update: {},
+  });
+  res.status(204).end();
+});
+
+router.delete("/:id/follow", requireAuth, async (req, res) => {
+  await prisma.follow.deleteMany({ where: { followerId: req.auth!.userId, municipalityId: req.params.id } });
+  res.status(204).end();
 });
 
 // Get own profile (municipality-only)
 router.get("/me/profile", requireAuth, requireRole("MUNICIPALITY"), async (req, res) => {
-  const m = await prisma.municipality.findUnique({ where: { userId: req.auth!.userId } });
+  const m = await prisma.municipality.findUnique({
+    where: { userId: req.auth!.userId },
+    include: municipalityCountInclude,
+  });
   if (!m) return res.status(404).json({ error: "自治体プロフィールが見つかりません" });
   res.json(serializeMunicipality(m));
 });
@@ -135,6 +181,7 @@ router.put("/me/profile", requireAuth, requireRole("MUNICIPALITY"), async (req, 
       ...(stationCoords ?? {}),
       ...(otaLinks ? { otaLinks: serializeOtaLinks(otaLinks) } : {}),
     },
+    include: municipalityCountInclude,
   });
   res.json(serializeMunicipality(updated));
 });
@@ -153,6 +200,7 @@ router.post(
     const updated = await prisma.municipality.update({
       where: { id: existing.id },
       data: { avatarUrl: `/uploads/${req.file.filename}` },
+      include: municipalityCountInclude,
     });
     res.json(serializeMunicipality(updated));
   }

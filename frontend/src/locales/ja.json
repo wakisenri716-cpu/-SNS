@@ -67,7 +67,9 @@
   },
   "feed": {
     "loading": "読み込み中...",
-    "empty": "まだ投稿がありません。自治体アカウントで最初のリールを投稿してみましょう。"
+    "empty": "まだ投稿がありません。自治体アカウントで最初のリールを投稿してみましょう。",
+    "emptySaved": "まだ保存した動画がありません。動画を再生して🔖アイコンをタップすると保存できます。",
+    "emptyFollowing": "まだフォロー中のアカウントの投稿がありません。動画を再生して自治体・企業をフォローしてみましょう。"
   },
   "search": {
     "placeholder": "地域名・キーワードで検索",
@@ -115,6 +117,9 @@
   "municipalityProfile": {
     "loading": "読み込み中...",
     "officialBadge": "🏛️ 自治体公式",
+    "follow": "フォローする",
+    "following": "フォロー中",
+    "followerCount": "{{count}}人がフォロー中",
     "since": "から掲載",
     "postsCount": "件の投稿",
     "noInfo": "情報が未登録です",
@@ -146,7 +151,9 @@
   "reelViewer": {
     "postedBy": "・投稿: {{name}}",
     "distanceFromOrigin": "・{{origin}}から約{{minutes}}分",
-    "mockBadge": "交通情報は仮データ"
+    "mockBadge": "交通情報は仮データ",
+    "follow": "フォロー",
+    "following": "フォロー中"
   },
   "settings": {
     "title": "設定",
@@ -239,7 +246,9 @@
     "culture": "文化",
     "activity": "アクティビティー",
     "lodging": "宿",
-    "restaurant": "飲食店"
+    "restaurant": "飲食店",
+    "saved": "保存中",
+    "following": "フォロー中"
   },
   "insights": {
     "heading": "投稿インサイト",
