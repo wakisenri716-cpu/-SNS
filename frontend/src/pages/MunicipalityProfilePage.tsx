@@ -6,6 +6,7 @@ import { useAuth } from "../auth/AuthContext";
 import AutoplayVideo from "../components/AutoplayVideo";
 import ReelThumb from "../components/ReelGrid";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
+import { TRANSIT_MODE_LABEL_KEY } from "../lib/transitModeLabels";
 import type { Municipality, Reel, TransitSuggestion } from "../types";
 
 const TAB_KEYS = ["tourismInfo", "accessInfo", "lodgingInfo", "restaurantInfo"] as const;
@@ -13,13 +14,6 @@ const TAB_KEYS = ["tourismInfo", "accessInfo", "lodgingInfo", "restaurantInfo"] 
 function formatDate(iso: string, language: string) {
   return new Intl.DateTimeFormat(language, { year: "numeric", month: "long" }).format(new Date(iso));
 }
-
-const MODE_LABEL_KEY: Record<string, string> = {
-  walk: "accessPlanner.modeWalk",
-  drive: "accessPlanner.modeDrive",
-  train: "accessPlanner.modeTrain",
-  bus: "accessPlanner.modeBus",
-};
 
 // Lets a visitor type in their own starting point and see an estimated
 // time/mode/fare to reach this municipality — a one-shot, user-initiated
@@ -91,7 +85,7 @@ function AccessPlanner({
           </span>
           <span>
             {result.legs
-              .map((leg) => t(MODE_LABEL_KEY[leg.mode] ?? "accessPlanner.modeDrive"))
+              .map((leg) => t(TRANSIT_MODE_LABEL_KEY[leg.mode] ?? "accessPlanner.modeDrive"))
               .join(t("accessPlanner.modeSeparator"))}
           </span>
           <span>

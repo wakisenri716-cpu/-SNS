@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AutoplayVideo from "./AutoplayVideo";
+import { TRANSIT_MODE_LABEL_KEY } from "../lib/transitModeLabels";
 import type { Reel } from "../types";
 
 function ReelOverlayInfo({
@@ -53,8 +54,15 @@ function ReelOverlayInfo({
               <>
                 {t("reelViewer.distanceFromOrigin", {
                   origin: reel.transitSuggestion.originLabel,
+                  mode: reel.transitSuggestion.legs
+                    .map((leg) => t(TRANSIT_MODE_LABEL_KEY[leg.mode] ?? "accessPlanner.modeDrive"))
+                    .join(t("accessPlanner.modeSeparator")),
                   minutes: reel.transitSuggestion.totalDurationMin,
                 })}
+                {" · "}
+                {reel.transitSuggestion.estimatedFareYen > 0
+                  ? t("accessPlanner.fare", { yen: reel.transitSuggestion.estimatedFareYen.toLocaleString() })
+                  : t("accessPlanner.fareFree")}
                 {reel.transitSuggestion.isMock && (
                   <span className="ml-1 rounded bg-white/15 px-1.5 py-0.5">{t("reelViewer.mockBadge")}</span>
                 )}

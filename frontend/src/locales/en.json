@@ -168,7 +168,7 @@
   },
   "reelViewer": {
     "postedBy": " · Posted by: {{name}}",
-    "distanceFromOrigin": " · About {{minutes}} min from {{origin}}",
+    "distanceFromOrigin": " · About {{minutes}} min by {{mode}} from {{origin}}",
     "mockBadge": "Transit info is mock data",
     "follow": "Follow",
     "following": "Following"
