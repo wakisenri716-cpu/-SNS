@@ -8,9 +8,58 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@800&display=swap" rel="stylesheet" />
     <title>ジャジバ - 観光専用SNS</title>
+    <style>
+      /* Splash shown immediately from static HTML, before the JS bundle loads
+         or executes — matters most on the free-tier backend's cold starts.
+         React's createRoot(...).render() replaces #root's contents wholesale
+         once it mounts, so this needs no manual removal/cleanup. */
+      #splash {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f9fafb;
+      }
+      #splash svg {
+        width: 200px;
+        height: auto;
+        animation: splash-pulse 1.4s ease-in-out infinite;
+      }
+      @keyframes splash-pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.55;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="splash">
+        <svg viewBox="0 0 230 84" role="img" aria-label="Jaziba">
+          <text
+            x="6"
+            y="54"
+            font-family="'Baloo 2', 'Arial Rounded MT Bold', system-ui, sans-serif"
+            font-weight="800"
+            font-size="52"
+            fill="#D6293C"
+            letter-spacing="-1"
+          >Jaziba</text>
+          <path
+            d="M14 68 C 70 82, 160 82, 216 64"
+            stroke="#D6293C"
+            stroke-width="6"
+            stroke-linecap="round"
+            fill="none"
+          />
+        </svg>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
