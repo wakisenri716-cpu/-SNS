@@ -168,8 +168,8 @@
   },
   "reelViewer": {
     "postedBy": "・发布者：{{name}}",
-    "distanceFromOrigin": "・从{{origin}}{{mode}}约{{minutes}}分钟",
     "mockBadge": "交通信息为模拟数据",
+    "accessButton": "交通方式",
     "follow": "关注",
     "following": "已关注"
   },

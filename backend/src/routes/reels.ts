@@ -6,6 +6,7 @@ import { upload } from "../middleware/upload";
 import { anonymousViewerState, reelInclude, serializeReel, type ReelViewerState } from "../lib/reelSerializer";
 import { getFollowedIds } from "../lib/followState";
 import { geocode, isGoogleMapsConfigured } from "../services/googleMaps";
+import { getTransitSuggestion } from "../services/maasProvider";
 import { AGE_BUCKETS, REEL_CATEGORIES, ageBucketFromBirthYear } from "../types";
 
 // Builds the per-viewer state (liked/saved/followed) for one reel row fetched
@@ -378,6 +379,42 @@ router.post("/:id/save", requireAuth, async (req, res) => {
 router.delete("/:id/save", requireAuth, async (req, res) => {
   await prisma.savedReel.deleteMany({ where: { userId: req.auth!.userId, reelId: req.params.id } });
   res.status(204).end();
+});
+
+// "アクセス" button on the reel viewer: given a starting point the viewer types
+// in, estimate travel time / mode / fare from there to THIS reel's specific
+// location (as opposed to GET /municipalities/:id/access-plan, which always
+// estimates to the municipality's reference station). No auth required — a
+// user-initiated, one-shot lookup, so it doesn't add to the automatic
+// per-reel-view Directions cost. Falls back to a deterministic mock if Maps
+// isn't configured or the typed origin can't be geocoded.
+router.get("/:id/access-plan", async (req, res) => {
+  const origin = typeof req.query.origin === "string" ? req.query.origin.trim() : "";
+  if (!origin) return res.status(400).json({ error: "出発地点を入力してください" });
+
+  const reel = await prisma.reel.findUnique({ where: { id: req.params.id } });
+  if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
+  if (reel.locationLat == null || reel.locationLng == null) {
+    return res.status(400).json({ error: "この投稿には位置情報が設定されていません" });
+  }
+
+  let originCoords: { lat: number; lng: number } | null = null;
+  if (isGoogleMapsConfigured()) {
+    try {
+      const geocoded = await geocode(origin);
+      if (geocoded) originCoords = { lat: geocoded.lat, lng: geocoded.lng };
+    } catch (err) {
+      console.error("[reels] Geocoding access-plan origin failed:", err);
+    }
+  }
+
+  const suggestion = await getTransitSuggestion(
+    reel.locationName || "目的地",
+    reel.locationLat,
+    reel.locationLng,
+    { label: origin, ...originCoords }
+  );
+  res.json(suggestion);
 });
 
 // Comments

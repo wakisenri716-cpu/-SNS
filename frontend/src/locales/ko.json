@@ -168,8 +168,8 @@
   },
   "reelViewer": {
     "postedBy": "・게시자: {{name}}",
-    "distanceFromOrigin": "・{{origin}}에서 {{mode}}로 약 {{minutes}}분",
     "mockBadge": "교통 정보는 임시 데이터입니다",
+    "accessButton": "접근 방법",
     "follow": "팔로우",
     "following": "팔로잉"
   },

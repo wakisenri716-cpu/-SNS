@@ -168,8 +168,8 @@
   },
   "reelViewer": {
     "postedBy": "・投稿: {{name}}",
-    "distanceFromOrigin": "・{{origin}}から{{mode}}で約{{minutes}}分",
     "mockBadge": "交通情報は仮データ",
+    "accessButton": "アクセス",
     "follow": "フォロー",
     "following": "フォロー中"
   },
