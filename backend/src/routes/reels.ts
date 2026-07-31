@@ -7,6 +7,7 @@ import { anonymousViewerState, reelInclude, serializeReel, type ReelViewerState 
 import { getFollowedIds } from "../lib/followState";
 import { geocode, isGoogleMapsConfigured } from "../services/googleMaps";
 import { getTransitSuggestion } from "../services/maasProvider";
+import { parseDepartureTime } from "../lib/parseDepartureTime";
 import { AGE_BUCKETS, REEL_CATEGORIES, ageBucketFromBirthYear } from "../types";
 
 // Builds the per-viewer state (liked/saved/followed) for one reel row fetched
@@ -412,7 +413,8 @@ router.get("/:id/access-plan", async (req, res) => {
     reel.locationName || "目的地",
     reel.locationLat,
     reel.locationLng,
-    { label: origin, ...originCoords }
+    { label: origin, ...originCoords },
+    parseDepartureTime(req.query.datetime)
   );
   res.json(suggestion);
 });

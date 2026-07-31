@@ -17,6 +17,12 @@ export interface TransitSuggestion {
   // note on estimateFareYen below) — always treat alongside isMock as "a
   // ballpark, not a quote".
   estimatedFareYen: number;
+  // ISO timestamps for when the trip starts/ends. departureAt echoes back
+  // whatever the caller asked for (defaulting to "now" if omitted);
+  // arrivalAt = departureAt + totalDurationMin. Neither reflects a real
+  // train/bus timetable — see the module doc comment below.
+  departureAt: string;
+  arrivalAt: string;
   isMock: boolean;
 }
 
@@ -38,7 +44,8 @@ function getMockTransitSuggestion(
   originLabel: string,
   destinationLabel: string,
   destinationLat: number,
-  destinationLng: number
+  destinationLng: number,
+  departureAt: Date
 ): TransitSuggestion {
   // Deterministic pseudo-duration derived from the origin+destination names so
   // repeated calls for the same pair return the same mock numbers.
@@ -47,18 +54,21 @@ function getMockTransitSuggestion(
   const walkMin = 5 + (seed % 10);
   const trainMin = 20 + (seed % 40);
   const mockDistanceKm = 3 + (seed % 120);
+  const totalDurationMin = walkMin + trainMin;
 
   return {
     originLabel,
     destinationLabel,
     destinationLat,
     destinationLng,
-    totalDurationMin: walkMin + trainMin,
+    totalDurationMin,
     legs: [
       { mode: "walk", description: `${originLabel}まで徒歩`, durationMin: walkMin },
       { mode: "train", description: `${destinationLabel}最寄り駅まで電車`, durationMin: trainMin },
     ],
     estimatedFareYen: estimateFareYen(mockDistanceKm * 1000, "drive"),
+    departureAt: departureAt.toISOString(),
+    arrivalAt: new Date(departureAt.getTime() + totalDurationMin * 60000).toISOString(),
     isMock: true,
   };
 }
@@ -73,9 +83,14 @@ function getMockTransitSuggestion(
  * their own starting point). Google's transit (train/bus schedule) mode does
  * not cover Japan for third-party API keys, so the real-data path estimates
  * travel time from real walking/driving directions instead — see the comment
- * on getRouteEstimate in googleMaps.ts. The fare shown is always an estimate
- * (see estimateFareYen), never a real fetched fare.
- * Otherwise falls back to a deterministic mock so the feature still works
+ * on getRouteEstimate in googleMaps.ts. That means departureAt/arrivalAt are
+ * always a computed estimate (departure + walk/drive duration), never a real
+ * train/bus timetable entry — this app has no such data source (a
+ * specialized API like 駅すぱあと/NAVITIME would be needed for that, see
+ * README). For a future/now departureTime with driving mode, the duration
+ * does reflect real predicted traffic conditions from Google, though.
+ * The fare shown is always an estimate (see estimateFareYen), never a real
+ * fetched fare. Falls back to a deterministic mock so the feature still works
  * without external credentials or an unrecognized origin. The `isMock` flag on
  * the result tells the frontend whether to show the "仮データ" (mock data) badge.
  */
@@ -83,13 +98,15 @@ export async function getTransitSuggestion(
   destinationLabel: string,
   destinationLat: number,
   destinationLng: number,
-  origin?: { label: string; lat?: number; lng?: number } | null
+  origin?: { label: string; lat?: number; lng?: number } | null,
+  departureAt: Date = new Date()
 ): Promise<TransitSuggestion> {
   if (isGoogleMapsConfigured() && origin && origin.lat != null && origin.lng != null) {
     try {
       const estimate = await getRouteEstimate(
         { lat: origin.lat, lng: origin.lng },
-        { lat: destinationLat, lng: destinationLng }
+        { lat: destinationLat, lng: destinationLng },
+        departureAt
       );
       if (estimate) {
         return {
@@ -107,6 +124,8 @@ export async function getTransitSuggestion(
             },
           ],
           estimatedFareYen: estimateFareYen(estimate.distanceMeters, estimate.mode),
+          departureAt: departureAt.toISOString(),
+          arrivalAt: new Date(departureAt.getTime() + estimate.totalDurationMin * 60000).toISOString(),
           isMock: false,
         };
       }
@@ -115,5 +134,11 @@ export async function getTransitSuggestion(
     }
   }
 
-  return getMockTransitSuggestion(origin?.label ?? "最寄り駅", destinationLabel, destinationLat, destinationLng);
+  return getMockTransitSuggestion(
+    origin?.label ?? "最寄り駅",
+    destinationLabel,
+    destinationLat,
+    destinationLng,
+    departureAt
+  );
 }

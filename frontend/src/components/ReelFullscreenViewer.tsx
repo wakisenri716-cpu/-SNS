@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import AutoplayVideo from "./AutoplayVideo";
 import { TRANSIT_MODE_LABEL_KEY } from "../lib/transitModeLabels";
+import { formatDateTime, localDateTimeToIso, nowAsDatetimeLocalValue } from "../lib/departureTime";
 import type { Reel, TransitSuggestion } from "../types";
 
 // "アクセス" button on a reel: the viewer types in their own starting point
@@ -11,9 +12,10 @@ import type { Reel, TransitSuggestion } from "../types";
 // location — a one-shot, user-initiated lookup (GET /reels/:id/access-plan),
 // distinct from the municipality-wide access planner on the profile page.
 function ReelAccessPlanner({ reelId }: { reelId: string }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const [origin, setOrigin] = useState("");
+  const [departureLocal, setDepartureLocal] = useState(nowAsDatetimeLocalValue);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<TransitSuggestion | null>(null);
@@ -25,7 +27,9 @@ function ReelAccessPlanner({ reelId }: { reelId: string }) {
     setError(null);
     setResult(null);
     try {
-      const { data } = await api.get(`/reels/${reelId}/access-plan`, { params: { origin: origin.trim() } });
+      const { data } = await api.get(`/reels/${reelId}/access-plan`, {
+        params: { origin: origin.trim(), datetime: localDateTimeToIso(departureLocal) },
+      });
       setResult(data);
     } catch (err: any) {
       setError(err?.response?.data?.error ?? t("accessPlanner.genericError"));
@@ -44,25 +48,37 @@ function ReelAccessPlanner({ reelId }: { reelId: string }) {
       </button>
       {open && (
         <div className="mt-2 max-w-xs rounded-lg bg-black/70 p-3 backdrop-blur">
-          <form onSubmit={search} className="flex gap-2">
+          <form onSubmit={search} className="flex flex-col gap-2">
             <input
               value={origin}
               onChange={(e) => setOrigin(e.target.value)}
               placeholder={t("accessPlanner.originPlaceholder")}
               className="w-full rounded-lg border border-white/30 bg-white/10 px-2 py-1 text-xs text-white placeholder-white/50 outline-none focus:border-white"
             />
-            <button
-              type="submit"
-              disabled={loading || !origin.trim()}
-              className="shrink-0 rounded-lg bg-teal-600 px-3 py-1 text-xs font-medium text-white hover:bg-teal-700 disabled:opacity-50"
-            >
-              {loading ? t("accessPlanner.searching") : t("accessPlanner.search")}
-            </button>
+            <div className="flex gap-2">
+              <input
+                type="datetime-local"
+                value={departureLocal}
+                onChange={(e) => setDepartureLocal(e.target.value)}
+                className="w-full rounded-lg border border-white/30 bg-white/10 px-2 py-1 text-xs text-white outline-none focus:border-white [color-scheme:dark]"
+              />
+              <button
+                type="submit"
+                disabled={loading || !origin.trim()}
+                className="shrink-0 rounded-lg bg-teal-600 px-3 py-1 text-xs font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+              >
+                {loading ? t("accessPlanner.searching") : t("accessPlanner.search")}
+              </button>
+            </div>
           </form>
           {error && <p className="mt-1.5 text-xs text-red-300">{error}</p>}
           {result && (
             <div className="mt-2 text-xs text-white/90">
               <p>
+                🚉 {t("accessPlanner.departure", { time: formatDateTime(result.departureAt, i18n.language) })}
+                {" · "}🏁 {t("accessPlanner.arrival", { time: formatDateTime(result.arrivalAt, i18n.language) })}
+              </p>
+              <p className="mt-1">
                 🕐 {t("accessPlanner.duration", { minutes: result.totalDurationMin })}
                 {" · "}
                 {result.legs
@@ -77,6 +93,7 @@ function ReelAccessPlanner({ reelId }: { reelId: string }) {
                 )}
               </p>
               <p className="mt-1 text-[11px] text-white/60">{t("accessPlanner.fareDisclaimer")}</p>
+              <p className="text-[11px] text-white/60">{t("accessPlanner.noTimetableDisclaimer")}</p>
             </div>
           )}
         </div>

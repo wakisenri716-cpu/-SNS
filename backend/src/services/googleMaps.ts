@@ -74,7 +74,12 @@ export interface RouteEstimate {
 // in Japan. See README for details.
 export async function getRouteEstimate(
   origin: { lat: number; lng: number },
-  destination: { lat: number; lng: number }
+  destination: { lat: number; lng: number },
+  // Only affects driving mode: Google factors in predicted traffic for that
+  // departure time (duration_in_traffic) instead of the traffic-free default.
+  // Must be now-or-future — the Directions API ignores/rejects past
+  // timestamps, so callers should omit this for a past departureTime.
+  departureTime?: Date
 ): Promise<RouteEstimate | null> {
   if (!API_KEY) return null;
 
@@ -87,13 +92,17 @@ export async function getRouteEstimate(
   url.searchParams.set("mode", mode);
   url.searchParams.set("language", "ja");
   url.searchParams.set("key", API_KEY);
+  if (mode === "driving" && departureTime && departureTime.getTime() >= Date.now()) {
+    url.searchParams.set("departure_time", String(Math.floor(departureTime.getTime() / 1000)));
+    url.searchParams.set("traffic_model", "best_guess");
+  }
 
   const res = await fetch(url, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
   const data: any = await res.json();
   if (data.status !== "OK" || !data.routes?.[0]) return null;
 
   const leg = data.routes[0].legs[0];
-  const durationSeconds = leg?.duration?.value ?? 0;
+  const durationSeconds = leg?.duration_in_traffic?.value ?? leg?.duration?.value ?? 0;
   return {
     totalDurationMin: Math.max(1, Math.round(durationSeconds / 60)),
     mode: mode === "walking" ? "walk" : "drive",

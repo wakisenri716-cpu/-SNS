@@ -9,6 +9,7 @@ import { reelInclude, serializeReel } from "../lib/reelSerializer";
 import { getFollowedIds } from "../lib/followState";
 import { geocode, isGoogleMapsConfigured } from "../services/googleMaps";
 import { getTransitSuggestion } from "../services/maasProvider";
+import { parseDepartureTime } from "../lib/parseDepartureTime";
 
 const router = Router();
 
@@ -152,7 +153,8 @@ router.get("/:id/access-plan", async (req, res) => {
     municipality.nearestStationName || municipality.name,
     municipality.nearestStationLat,
     municipality.nearestStationLng,
-    { label: origin, ...originCoords }
+    { label: origin, ...originCoords },
+    parseDepartureTime(req.query.datetime)
   );
   res.json(suggestion);
 });

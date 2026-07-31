@@ -7,6 +7,7 @@ import AutoplayVideo from "../components/AutoplayVideo";
 import ReelThumb from "../components/ReelGrid";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import { TRANSIT_MODE_LABEL_KEY } from "../lib/transitModeLabels";
+import { formatDateTime, localDateTimeToIso, nowAsDatetimeLocalValue } from "../lib/departureTime";
 import type { Municipality, Reel, TransitSuggestion } from "../types";
 
 const TAB_KEYS = ["tourismInfo", "accessInfo", "lodgingInfo", "restaurantInfo"] as const;
@@ -26,8 +27,9 @@ function AccessPlanner({
   municipalityId: string;
   stationConfigured: boolean;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [origin, setOrigin] = useState("");
+  const [departureLocal, setDepartureLocal] = useState(nowAsDatetimeLocalValue);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<TransitSuggestion | null>(null);
@@ -40,7 +42,7 @@ function AccessPlanner({
     setResult(null);
     try {
       const { data } = await api.get(`/municipalities/${municipalityId}/access-plan`, {
-        params: { origin: origin.trim() },
+        params: { origin: origin.trim(), datetime: localDateTimeToIso(departureLocal) },
       });
       setResult(data);
     } catch (err: any) {
@@ -60,12 +62,18 @@ function AccessPlanner({
         </p>
       ) : (
         <>
-          <form onSubmit={search} className="flex gap-2">
+          <form onSubmit={search} className="flex flex-wrap gap-2">
             <input
               value={origin}
               onChange={(e) => setOrigin(e.target.value)}
               placeholder={t("accessPlanner.originPlaceholder")}
               className="block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500 lg:max-w-xs"
+            />
+            <input
+              type="datetime-local"
+              value={departureLocal}
+              onChange={(e) => setDepartureLocal(e.target.value)}
+              className="block rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
             />
             <button
               type="submit"
@@ -80,6 +88,12 @@ function AccessPlanner({
       )}
       {result && (
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg bg-gray-50 p-3 text-sm text-gray-700">
+          <span>
+            🚉 {t("accessPlanner.departure", { time: formatDateTime(result.departureAt, i18n.language) })}
+          </span>
+          <span>
+            🏁 {t("accessPlanner.arrival", { time: formatDateTime(result.arrivalAt, i18n.language) })}
+          </span>
           <span>
             🕐 {t("accessPlanner.duration", { minutes: result.totalDurationMin })}
           </span>
@@ -104,6 +118,7 @@ function AccessPlanner({
             </span>
           )}
           <span className="w-full text-xs text-gray-400">{t("accessPlanner.fareDisclaimer")}</span>
+          <span className="w-full text-xs text-gray-400">{t("accessPlanner.noTimetableDisclaimer")}</span>
         </div>
       )}
     </div>
