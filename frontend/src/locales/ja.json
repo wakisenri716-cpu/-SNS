@@ -176,6 +176,10 @@
     "follow": "フォロー",
     "following": "フォロー中"
   },
+  "reelAccessPage": {
+    "back": "戻る",
+    "description": "出発地点を入力すると、この投稿の場所までの所要時間・移動手段・概算運賃の目安が分かります。"
+  },
   "settings": {
     "title": "設定",
     "accountMunicipality": "{{name}}（自治体アカウント）",

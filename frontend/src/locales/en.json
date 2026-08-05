@@ -176,6 +176,10 @@
     "follow": "Follow",
     "following": "Following"
   },
+  "reelAccessPage": {
+    "back": "Back",
+    "description": "Enter a starting point to see the estimated time, mode, and fare from there to this post's location."
+  },
   "settings": {
     "title": "Settings",
     "accountMunicipality": "{{name}} (Municipality Account)",

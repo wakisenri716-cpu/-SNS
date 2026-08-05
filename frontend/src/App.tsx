@@ -20,6 +20,7 @@ import SettingsPage from "./pages/SettingsPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import ContactPage from "./pages/ContactPage";
 import InsightsPage from "./pages/InsightsPage";
+import ReelAccessPage from "./pages/ReelAccessPage";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -38,6 +39,7 @@ function App() {
         <Route path="/register-municipality" element={<RegisterMunicipalityPage />} />
         <Route path="/register-company" element={<RegisterCompanyPage />} />
         <Route path="/municipalities/:id" element={<MunicipalityProfilePage />} />
+        <Route path="/reels/:id/access" element={<ReelAccessPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route

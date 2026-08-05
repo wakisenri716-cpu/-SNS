@@ -176,6 +176,10 @@
     "follow": "关注",
     "following": "已关注"
   },
+  "reelAccessPage": {
+    "back": "返回",
+    "description": "输入出发地点，即可查看到这个投稿地点的大致所需时间・交通方式・预估票价。"
+  },
   "settings": {
     "title": "设置",
     "accountMunicipality": "{{name}}（自治体账号）",

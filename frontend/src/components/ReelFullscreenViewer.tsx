@@ -1,106 +1,8 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { api } from "../api/client";
 import AutoplayVideo from "./AutoplayVideo";
-import { TRANSIT_MODE_LABEL_KEY } from "../lib/transitModeLabels";
-import { formatDateTime, localDateTimeToIso, nowAsDatetimeLocalValue } from "../lib/departureTime";
-import type { Reel, TransitSuggestion } from "../types";
-
-// "アクセス" button on a reel: the viewer types in their own starting point
-// and gets an estimated time/mode/fare from there to THIS reel's specific
-// location — a one-shot, user-initiated lookup (GET /reels/:id/access-plan),
-// distinct from the municipality-wide access planner on the profile page.
-function ReelAccessPlanner({ reelId }: { reelId: string }) {
-  const { t, i18n } = useTranslation();
-  const [open, setOpen] = useState(false);
-  const [origin, setOrigin] = useState("");
-  const [departureLocal, setDepartureLocal] = useState(nowAsDatetimeLocalValue);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<TransitSuggestion | null>(null);
-
-  async function search(e: FormEvent) {
-    e.preventDefault();
-    if (!origin.trim()) return;
-    setLoading(true);
-    setError(null);
-    setResult(null);
-    try {
-      const { data } = await api.get(`/reels/${reelId}/access-plan`, {
-        params: { origin: origin.trim(), datetime: localDateTimeToIso(departureLocal) },
-      });
-      setResult(data);
-    } catch (err: any) {
-      setError(err?.response?.data?.error ?? t("accessPlanner.genericError"));
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div className="pointer-events-auto mt-1.5">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white backdrop-blur hover:bg-white/30"
-      >
-        🧭 {t("reelViewer.accessButton")}
-      </button>
-      {open && (
-        <div className="mt-2 max-w-xs rounded-lg bg-black/70 p-3 backdrop-blur">
-          <form onSubmit={search} className="flex flex-col gap-2">
-            <input
-              value={origin}
-              onChange={(e) => setOrigin(e.target.value)}
-              placeholder={t("accessPlanner.originPlaceholder")}
-              className="w-full rounded-lg border border-white/30 bg-white/10 px-2 py-1 text-xs text-white placeholder-white/50 outline-none focus:border-white"
-            />
-            <div className="flex gap-2">
-              <input
-                type="datetime-local"
-                value={departureLocal}
-                onChange={(e) => setDepartureLocal(e.target.value)}
-                className="w-full rounded-lg border border-white/30 bg-white/10 px-2 py-1 text-xs text-white outline-none focus:border-white [color-scheme:dark]"
-              />
-              <button
-                type="submit"
-                disabled={loading || !origin.trim()}
-                className="shrink-0 rounded-lg bg-teal-600 px-3 py-1 text-xs font-medium text-white hover:bg-teal-700 disabled:opacity-50"
-              >
-                {loading ? t("accessPlanner.searching") : t("accessPlanner.search")}
-              </button>
-            </div>
-          </form>
-          {error && <p className="mt-1.5 text-xs text-red-300">{error}</p>}
-          {result && (
-            <div className="mt-2 text-xs text-white/90">
-              <p>
-                🚉 {t("accessPlanner.departure", { time: formatDateTime(result.departureAt, i18n.language) })}
-                {" · "}🏁 {t("accessPlanner.arrival", { time: formatDateTime(result.arrivalAt, i18n.language) })}
-              </p>
-              <p className="mt-1">
-                🕐 {t("accessPlanner.duration", { minutes: result.totalDurationMin })}
-                {" · "}
-                {result.legs
-                  .map((leg) => t(TRANSIT_MODE_LABEL_KEY[leg.mode] ?? "accessPlanner.modeDrive"))
-                  .join(t("accessPlanner.modeSeparator"))}
-                {" · "}💴{" "}
-                {result.estimatedFareYen > 0
-                  ? t("accessPlanner.fare", { yen: result.estimatedFareYen.toLocaleString() })
-                  : t("accessPlanner.fareFree")}
-                {result.isMock && (
-                  <span className="ml-1 rounded bg-white/15 px-1.5 py-0.5">{t("reelViewer.mockBadge")}</span>
-                )}
-              </p>
-              <p className="mt-1 text-[11px] text-white/60">{t("accessPlanner.fareDisclaimer")}</p>
-              <p className="text-[11px] text-white/60">{t("accessPlanner.noTimetableDisclaimer")}</p>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
+import type { Reel } from "../types";
 
 function ReelOverlayInfo({
   reel,
@@ -147,7 +49,15 @@ function ReelOverlayInfo({
         {reel.locationName && (
           <p className="mt-1.5 text-xs text-white/80 drop-shadow">📍 {reel.locationName}</p>
         )}
-        {reel.locationLat != null && reel.locationLng != null && <ReelAccessPlanner reelId={reel.id} />}
+        {reel.locationLat != null && reel.locationLng != null && (
+          <Link
+            to={`/reels/${reel.id}/access`}
+            state={{ reel }}
+            className="pointer-events-auto mt-1.5 inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white backdrop-blur hover:bg-white/30"
+          >
+            🧭 {t("reelViewer.accessButton")}
+          </Link>
+        )}
         <div className="pointer-events-auto mt-2 flex items-center gap-4">
           <button onClick={() => onToggleLike(reel)} className="flex items-center gap-1.5">
             <span className={`text-xl ${reel.likedByMe ? "text-red-500" : "text-white"}`}>

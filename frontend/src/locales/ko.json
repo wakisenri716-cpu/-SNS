@@ -176,6 +176,10 @@
     "follow": "팔로우",
     "following": "팔로잉"
   },
+  "reelAccessPage": {
+    "back": "뒤로",
+    "description": "출발지를 입력하면 이 게시물 위치까지의 대략적인 소요 시간・이동 수단・예상 요금을 확인할 수 있습니다."
+  },
   "settings": {
     "title": "설정",
     "accountMunicipality": "{{name}}（지자체 계정）",
