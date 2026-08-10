@@ -19,7 +19,7 @@ interface SeedMunicipality {
   name: string;
   prefecture: string;
   description: string;
-  tourismInfo: string;
+  tourismSpots: { name: string; description: string }[];
   accessInfo: string;
   lodgingInfo: string;
   restaurantInfo: string;
@@ -42,8 +42,16 @@ const MUNICIPALITIES: SeedMunicipality[] = [
     name: "松本市",
     prefecture: "長野県",
     description: "北アルプスの玄関口。特別名勝・特別天然記念物「上高地」を擁する山岳観光都市です。",
-    tourismInfo:
-      "河童橋・大正池をはじめ、穂高連峰を望む梓川沿いの遊歩道が広がります。例年4月中旬〜11月中旬が開山期間で、冬期は閉鎖されます。",
+    tourismSpots: [
+      {
+        name: "河童橋",
+        description: "上高地のシンボルとなっている木製の吊り橋。橋の上から穂高連峰を一望できます。例年4月中旬〜11月中旬が開山期間で、冬期は閉鎖されます。",
+      },
+      {
+        name: "大正池",
+        description: "1915年の焼岳の噴火でできた池。立ち枯れた木々と穂高連峰が水面に映る、上高地を代表する撮影スポットです。",
+      },
+    ],
     accessInfo:
       "上高地は通年マイカー規制のため、車は松本ICから沢渡（さわんど）駐車場までで、その先はシャトルバスかタクシーに乗り換えが必要です。松本駅からは、アルピコ交通上高地線で新島々駅まで約30分、そこから路線バスで上高地バスターミナルまで約1時間です。",
     lodgingInfo: "上高地帝国ホテルや上高地温泉ホテルなど、梓川沿いの山岳リゾートホテルが点在しています。",
@@ -101,13 +109,13 @@ export async function seedIfEmpty() {
             name: m.name,
             prefecture: m.prefecture,
             description: m.description,
-            tourismInfo: m.tourismInfo,
             accessInfo: m.accessInfo,
             lodgingInfo: m.lodgingInfo,
             restaurantInfo: m.restaurantInfo,
             nearestStationName: m.nearestStationName,
             nearestStationLat: m.nearestStationLat,
             nearestStationLng: m.nearestStationLng,
+            tourismSpots: { create: m.tourismSpots },
           },
         },
       },

@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
           { name: { contains: q } },
           { prefecture: { contains: q } },
           { description: { contains: q } },
-          { tourismInfo: { contains: q } },
+          { tourismSpots: { some: { OR: [{ name: { contains: q } }, { description: { contains: q } }] } } },
         ],
       },
       take: 20,

@@ -13,7 +13,7 @@ import { parseDepartureTime } from "../lib/parseDepartureTime";
 
 const router = Router();
 
-function serializeMunicipality(
+export function serializeMunicipality(
   m: {
     id: string;
     name: string;
@@ -23,7 +23,6 @@ function serializeMunicipality(
     accessInfo: string;
     lodgingInfo: string;
     restaurantInfo: string;
-    tourismInfo: string;
     otaLinks: string;
     nearestStationName: string;
     nearestStationLat: number | null;
@@ -31,6 +30,7 @@ function serializeMunicipality(
     commentsEnabled: boolean;
     createdAt: Date;
     _count?: { followers: number };
+    tourismSpots?: { id: string; name: string; description: string; createdAt: Date }[];
   },
   viewer: { isFollowing: boolean } = { isFollowing: false }
 ) {
@@ -44,7 +44,7 @@ function serializeMunicipality(
     accessInfo: m.accessInfo,
     lodgingInfo: m.lodgingInfo,
     restaurantInfo: m.restaurantInfo,
-    tourismInfo: m.tourismInfo,
+    tourismSpots: m.tourismSpots ?? [],
     otaLinks: otaLinks.length > 0 ? otaLinks : suggestDefaultOtaLinks(m.name),
     nearestStationName: m.nearestStationName,
     nearestStationLat: m.nearestStationLat,
@@ -57,7 +57,13 @@ function serializeMunicipality(
   };
 }
 
-const municipalityCountInclude = { _count: { select: { followers: true } } } as const;
+export const municipalityCountInclude = { _count: { select: { followers: true } } } as const;
+export const tourismSpotsOrder = { tourismSpots: { orderBy: { createdAt: "asc" as const } } };
+// Shared by both this router and auth.ts (login/register-municipality/me),
+// so a municipality's serialized shape is identical no matter which endpoint
+// produced it — see the comment on serializeMunicipality's callers in
+// auth.ts for why that matters.
+export const municipalityDetailInclude = { ...municipalityCountInclude, ...tourismSpotsOrder };
 
 // List all municipalities (for directory / search)
 router.get("/", async (_req, res) => {
@@ -76,7 +82,7 @@ router.get("/:id", optionalAuth, async (req, res) => {
   const m = await prisma.municipality.findUnique({
     where: { id: req.params.id },
     include: {
-      ...municipalityCountInclude,
+      ...municipalityDetailInclude,
       reels: {
         orderBy: { createdAt: "desc" },
         include: {
@@ -163,7 +169,7 @@ router.get("/:id/access-plan", async (req, res) => {
 router.get("/me/profile", requireAuth, requireRole("MUNICIPALITY"), async (req, res) => {
   const m = await prisma.municipality.findUnique({
     where: { userId: req.auth!.userId },
-    include: municipalityCountInclude,
+    include: municipalityDetailInclude,
   });
   if (!m) return res.status(404).json({ error: "自治体プロフィールが見つかりません" });
   res.json(serializeMunicipality(m));
@@ -176,7 +182,6 @@ const updateSchema = z.object({
   accessInfo: z.string().optional(),
   lodgingInfo: z.string().optional(),
   restaurantInfo: z.string().optional(),
-  tourismInfo: z.string().optional(),
   otaLinks: z.array(z.object({ label: z.string().min(1), url: z.string().url() })).optional(),
   nearestStationName: z.string().optional(),
   commentsEnabled: z.boolean().optional(),
@@ -220,7 +225,7 @@ router.put("/me/profile", requireAuth, requireRole("MUNICIPALITY"), async (req, 
       ...(stationCoords ?? {}),
       ...(otaLinks ? { otaLinks: serializeOtaLinks(otaLinks) } : {}),
     },
-    include: municipalityCountInclude,
+    include: municipalityDetailInclude,
   });
   res.json(serializeMunicipality(updated));
 });
@@ -239,11 +244,62 @@ router.post(
     const updated = await prisma.municipality.update({
       where: { id: existing.id },
       data: { avatarUrl: `/uploads/${req.file.filename}` },
-      include: municipalityCountInclude,
+      include: municipalityDetailInclude,
     });
     res.json(serializeMunicipality(updated));
   }
 );
+
+const tourismSpotSchema = z.object({
+  name: z.string().min(1, "スポット名を入力してください").max(100),
+  description: z.string().max(2000).optional().default(""),
+});
+
+// Tourism spots CRUD (municipality-only, own municipality) — each entry is one
+// attraction within the municipality's jurisdiction, replacing the old
+// single free-text tourismInfo field so a municipality can list them out
+// individually. Shown as a list on the public profile's 観光情報 tab.
+router.post("/me/tourism-spots", requireAuth, requireRole("MUNICIPALITY"), async (req, res) => {
+  const parsed = tourismSpotSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+
+  const municipality = await prisma.municipality.findUnique({ where: { userId: req.auth!.userId } });
+  if (!municipality) return res.status(404).json({ error: "自治体プロフィールが見つかりません" });
+
+  const spot = await prisma.tourismSpot.create({
+    data: { municipalityId: municipality.id, name: parsed.data.name, description: parsed.data.description },
+  });
+  res.status(201).json(spot);
+});
+
+router.put("/me/tourism-spots/:spotId", requireAuth, requireRole("MUNICIPALITY"), async (req, res) => {
+  const parsed = tourismSpotSchema.partial().safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+
+  const municipality = await prisma.municipality.findUnique({ where: { userId: req.auth!.userId } });
+  if (!municipality) return res.status(404).json({ error: "自治体プロフィールが見つかりません" });
+
+  const spot = await prisma.tourismSpot.findUnique({ where: { id: req.params.spotId } });
+  if (!spot || spot.municipalityId !== municipality.id) {
+    return res.status(404).json({ error: "観光スポットが見つかりません" });
+  }
+
+  const updated = await prisma.tourismSpot.update({ where: { id: spot.id }, data: parsed.data });
+  res.json(updated);
+});
+
+router.delete("/me/tourism-spots/:spotId", requireAuth, requireRole("MUNICIPALITY"), async (req, res) => {
+  const municipality = await prisma.municipality.findUnique({ where: { userId: req.auth!.userId } });
+  if (!municipality) return res.status(404).json({ error: "自治体プロフィールが見つかりません" });
+
+  const spot = await prisma.tourismSpot.findUnique({ where: { id: req.params.spotId } });
+  if (!spot || spot.municipalityId !== municipality.id) {
+    return res.status(404).json({ error: "観光スポットが見つかりません" });
+  }
+
+  await prisma.tourismSpot.delete({ where: { id: spot.id } });
+  res.status(204).end();
+});
 
 // Companies linked to this municipality (read-only — companies join themselves by
 // picking this municipality at registration; see POST /api/auth/register-company).

@@ -61,6 +61,16 @@ export interface OtaLink {
   url: string;
 }
 
+// One tourist attraction within a municipality's jurisdiction, edited from
+// the dashboard's 観光情報 tab — see backend/src/routes/municipalities.ts's
+// tourism-spots CRUD routes.
+export interface TourismSpot {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+}
+
 export interface Municipality {
   id: string;
   name: string;
@@ -70,7 +80,7 @@ export interface Municipality {
   accessInfo: string;
   lodgingInfo: string;
   restaurantInfo: string;
-  tourismInfo: string;
+  tourismSpots: TourismSpot[];
   otaLinks: OtaLink[];
   nearestStationName: string;
   nearestStationLat: number | null;

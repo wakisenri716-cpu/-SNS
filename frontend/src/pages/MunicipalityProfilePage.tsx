@@ -213,9 +213,28 @@ export default function MunicipalityProfilePage() {
           </button>
         ))}
       </div>
-      <div className="whitespace-pre-wrap border-b border-gray-200 p-4 text-sm text-gray-700 lg:p-6">
-        {municipality[tab] || t("municipalityProfile.noInfo")}
-      </div>
+      {tab === "tourismInfo" ? (
+        <div className="border-b border-gray-200 p-4 lg:p-6">
+          {municipality.tourismSpots.length === 0 ? (
+            <p className="text-sm text-gray-400">{t("municipalityProfile.noSpots")}</p>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {municipality.tourismSpots.map((spot) => (
+                <div key={spot.id}>
+                  <h3 className="text-sm font-bold text-gray-900">{spot.name}</h3>
+                  {spot.description && (
+                    <p className="mt-1 whitespace-pre-wrap text-sm text-gray-700">{spot.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="whitespace-pre-wrap border-b border-gray-200 p-4 text-sm text-gray-700 lg:p-6">
+          {municipality[tab] || t("municipalityProfile.noInfo")}
+        </div>
+      )}
 
       {tab === "accessInfo" && (
         <>

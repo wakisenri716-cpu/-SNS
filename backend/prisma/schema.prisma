@@ -49,7 +49,6 @@ model Municipality {
   accessInfo     String   @default("")
   lodgingInfo    String   @default("")
   restaurantInfo String   @default("")
-  tourismInfo    String   @default("")
   otaLinks       String   @default("[]") // JSON string: [{ label, url }]
   // Reference point ("最寄り駅" / main access hub) used as the origin for real
   // transit directions (see src/services/maasProvider.ts). Geocoded server-side
@@ -62,9 +61,24 @@ model Municipality {
   commentsEnabled    Boolean  @default(true)
   createdAt          DateTime @default(now())
 
-  reels     Reel[]
-  companies Company[]
-  followers Follow[]
+  reels        Reel[]
+  companies    Company[]
+  followers    Follow[]
+  tourismSpots TourismSpot[]
+}
+
+// One tourist attraction within a municipality's jurisdiction — the 観光情報
+// ("tourism info") tab used to be a single free-text field per municipality;
+// this replaces it so a municipality can list out each spot in its area
+// individually (name + description), edited from the dashboard's 投稿 tab's
+// neighbor and shown as a list on the public profile's 観光情報 tab.
+model TourismSpot {
+  id             String       @id @default(cuid())
+  municipalityId String
+  municipality   Municipality @relation(fields: [municipalityId], references: [id], onDelete: Cascade)
+  name           String
+  description    String       @default("")
+  createdAt      DateTime     @default(now())
 }
 
 // A company/business account tied to exactly one municipality. Companies can post

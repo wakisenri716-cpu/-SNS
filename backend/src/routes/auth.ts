@@ -7,6 +7,7 @@ import { JWT_SECRET, requireAuth } from "../middleware/auth";
 import { upload } from "../middleware/upload";
 import { guessNationalityFromIp } from "../services/geoLookup";
 import { NATIONALITIES, type Role } from "../types";
+import { municipalityDetailInclude, serializeMunicipality } from "./municipalities";
 
 const router = Router();
 
@@ -137,14 +138,14 @@ router.post("/register-municipality", async (req, res) => {
         },
       },
     },
-    include: { municipality: true },
+    include: { municipality: { include: municipalityDetailInclude } },
   });
 
   const token = issueToken(user.id, "MUNICIPALITY");
   res.status(201).json({
     token,
     user: serializeUser(user),
-    municipality: user.municipality,
+    municipality: serializeMunicipality(user.municipality!),
   });
 });
 
@@ -202,7 +203,7 @@ router.post("/login", async (req, res) => {
 
   const user = await prisma.user.findUnique({
     where: { email },
-    include: { municipality: true, company: { select: companySelect } },
+    include: { municipality: { include: municipalityDetailInclude }, company: { select: companySelect } },
   });
   if (!user) {
     return res.status(401).json({ error: "メールアドレスまたはパスワードが違います" });
@@ -217,7 +218,7 @@ router.post("/login", async (req, res) => {
   res.json({
     token,
     user: serializeUser(user),
-    municipality: user.municipality ?? null,
+    municipality: user.municipality ? serializeMunicipality(user.municipality) : null,
     company: user.company ?? null,
   });
 });
@@ -230,14 +231,14 @@ router.post("/login", async (req, res) => {
 router.get("/me", requireAuth, async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { id: req.auth!.userId },
-    include: { municipality: true, company: { select: companySelect } },
+    include: { municipality: { include: municipalityDetailInclude }, company: { select: companySelect } },
   });
   if (!user) {
     return res.status(401).json({ error: "セッションが無効です。再度ログインしてください" });
   }
   res.json({
     user: serializeUser(user),
-    municipality: user.municipality ?? null,
+    municipality: user.municipality ? serializeMunicipality(user.municipality) : null,
     company: user.company ?? null,
   });
 });
