@@ -196,6 +196,7 @@
     "reservationNoteTaxi": "Dispatch can take longer during busy periods — allow extra time.",
     "modeTaxi": "Taxi",
     "estimateDisclaimer": "Train/bus/taxi times and fares are distance-based estimates, not real schedule data. Whichever of walk/car could be matched to a real route from what you entered reflects that real result.",
+    "mapUnavailable": "Couldn't load a map (schematic only)",
     "tagWeatherProof": "Not much affected by weather",
     "tagStationWalk": "Includes a walk to the station",
     "tagCheapFare": "Lower fare",

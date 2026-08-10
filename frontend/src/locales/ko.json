@@ -196,6 +196,7 @@
     "reservationNoteTaxi": "성수기에는 배차가 지연될 수 있으니 여유를 두고 준비하세요.",
     "modeTaxi": "택시",
     "estimateDisclaimer": "전철・버스・택시의 시간과 요금은 실제 운행 데이터가 아닌 거리 기반 추정치입니다. 도보 또는 자동차 중 입력하신 내용으로 실제 경로 데이터를 가져올 수 있었던 경우 그 결과를 반영합니다.",
+    "mapUnavailable": "지도를 표시할 수 없습니다（간이 도식）",
     "tagWeatherProof": "날씨의 영향을 덜 받음",
     "tagStationWalk": "역까지 도보 이동 포함",
     "tagCheapFare": "요금이 저렴한 편",

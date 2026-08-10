@@ -5,7 +5,7 @@ import { optionalAuth, requireAuth, requireRole } from "../middleware/auth";
 import { upload } from "../middleware/upload";
 import { anonymousViewerState, reelInclude, serializeReel, type ReelViewerState } from "../lib/reelSerializer";
 import { getFollowedIds } from "../lib/followState";
-import { geocode, isGoogleMapsConfigured } from "../services/googleMaps";
+import { geocode, getRouteEstimate, getStaticMapImage, isGoogleMapsConfigured } from "../services/googleMaps";
 import { getTransitSuggestion } from "../services/maasProvider";
 import { parseDepartureTime } from "../lib/parseDepartureTime";
 import { AGE_BUCKETS, REEL_CATEGORIES, ageBucketFromBirthYear } from "../types";
@@ -417,6 +417,39 @@ router.get("/:id/access-plan", async (req, res) => {
     parseDepartureTime(req.query.datetime)
   );
   res.json(suggestion);
+});
+
+// Small route-preview image for the access-plan detail panel — same
+// one-shot, user-initiated shape as /access-plan above (only called when a
+// viewer expands a mode card), proxied through the backend so the Maps API
+// key never reaches the browser (see the doc comment on getStaticMapImage).
+// 404s whenever a real map can't be produced (Maps not configured, origin
+// not geocodable, or Directions/Static Maps failed) — the frontend falls
+// back to a plain schematic line rather than treating this as a hard error.
+router.get("/:id/access-map", async (req, res) => {
+  const origin = typeof req.query.origin === "string" ? req.query.origin.trim() : "";
+  if (!origin || !isGoogleMapsConfigured()) return res.status(404).end();
+
+  const reel = await prisma.reel.findUnique({ where: { id: req.params.id } });
+  if (!reel || reel.locationLat == null || reel.locationLng == null) return res.status(404).end();
+
+  try {
+    const geocoded = await geocode(origin);
+    if (!geocoded) return res.status(404).end();
+
+    const originCoords = { lat: geocoded.lat, lng: geocoded.lng };
+    const destinationCoords = { lat: reel.locationLat, lng: reel.locationLng };
+    const route = await getRouteEstimate(originCoords, destinationCoords);
+    const image = await getStaticMapImage(originCoords, destinationCoords, route?.polyline ?? null);
+    if (!image) return res.status(404).end();
+
+    res.set("Content-Type", image.contentType);
+    res.set("Cache-Control", "public, max-age=3600");
+    res.send(Buffer.from(image.body));
+  } catch (err) {
+    console.error("[reels] access-map failed:", err);
+    res.status(404).end();
+  }
 });
 
 // Comments

@@ -56,6 +56,40 @@ function GroupSizeToggle({ value, onChange }: { value: GroupSize; onChange: (v: 
   );
 }
 
+// Route-preview image (see GET /reels/:id/access-map). Falls back to a plain
+// schematic dashed-line diagram — clearly labeled as such — when the real
+// map can't be produced (Static Maps not configured/enabled, origin not
+// geocodable, or the request just failed), rather than showing nothing or
+// silently pretending the schematic is a real map.
+function RouteMap({ reelId, origin, destinationLabel }: { reelId: string; origin: string; destinationLabel: string }) {
+  const { t } = useTranslation();
+  const [failed, setFailed] = useState(false);
+  const src = `/api/reels/${reelId}/access-map?origin=${encodeURIComponent(origin)}`;
+
+  if (failed) {
+    return (
+      <div className="mt-2 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+        <svg viewBox="0 0 300 110" className="h-28 w-full" preserveAspectRatio="none" aria-hidden="true">
+          <line x1="24" y1="82" x2="276" y2="28" stroke="#0d9488" strokeWidth="2" strokeDasharray="4 6" strokeLinecap="round" />
+          <circle cx="24" cy="82" r="5" fill="#0f766e" />
+          <circle cx="276" cy="28" r="5" fill="#d6293c" />
+        </svg>
+        <div className="flex items-center justify-between gap-2 px-3 pb-1 text-[10px] font-medium text-gray-500">
+          <span className="min-w-0 truncate">{origin}</span>
+          <span className="min-w-0 truncate text-right">{destinationLabel}</span>
+        </div>
+        <p className="px-3 pb-2 text-[10px] text-gray-400">{t("reelAccessPage.mapUnavailable")}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-2 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+      <img src={src} alt="" className="h-28 w-full object-cover md:h-36" loading="lazy" onError={() => setFailed(true)} />
+    </div>
+  );
+}
+
 function Switch({ active, onToggle, label }: { active: boolean; onToggle: () => void; label: string }) {
   return (
     <label className="flex cursor-pointer items-center gap-2">
@@ -80,6 +114,8 @@ function Switch({ active, onToggle, label }: { active: boolean; onToggle: () => 
 function ModeCard({
   estimate,
   recommended,
+  reelId,
+  origin,
   destinationLabel,
   departureAt,
   accessibility,
@@ -88,6 +124,8 @@ function ModeCard({
 }: {
   estimate: ModeEstimate;
   recommended: boolean;
+  reelId: string;
+  origin: string;
   destinationLabel: string;
   departureAt: Date;
   accessibility: boolean;
@@ -102,7 +140,7 @@ function ModeCard({
 
   return (
     <div
-      className={`relative rounded-lg border bg-white p-4 ${recommended ? "border-teal-600" : "border-gray-200"}`}
+      className={`relative rounded-lg border bg-white p-4 ${recommended ? "border-teal-600 md:col-span-2" : "border-gray-200"}`}
     >
       {recommended && (
         <span className="absolute left-0 top-0 rounded-br-lg rounded-tl-lg bg-teal-600 px-2.5 py-0.5 text-[10px] font-bold text-white">
@@ -169,6 +207,7 @@ function ModeCard({
           </p>
           <p className="mt-1.5 text-gray-400">{t("accessPlanner.fareDisclaimer")}</p>
           <p className="text-gray-400">{t("accessPlanner.noTimetableDisclaimer")}</p>
+          <RouteMap reelId={reelId} origin={origin} destinationLabel={destinationLabel} />
         </div>
       )}
     </div>
@@ -242,18 +281,18 @@ export default function ReelAccessPage() {
     : null;
 
   return (
-    <div className="mx-auto max-w-lg p-4 lg:p-6">
+    <div className="mx-auto max-w-lg p-4 lg:max-w-3xl lg:p-8">
       <button onClick={() => navigate(-1)} className="mb-4 text-sm text-gray-500 hover:text-gray-700">
         ← {t("reelAccessPage.back")}
       </button>
 
-      <div className="relative mb-4 h-40 overflow-hidden rounded-lg bg-gray-900">
+      <div className="relative mb-4 h-40 overflow-hidden rounded-lg bg-gray-900 lg:h-56">
         <AutoplayVideo src={reel.videoUrl} className="h-full w-full object-cover opacity-90" />
-        <div className="pointer-events-none absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 to-transparent p-3">
+        <div className="pointer-events-none absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 to-transparent p-3 lg:p-5">
           <span className="mb-1 self-start rounded bg-white/90 px-2 py-0.5 text-[10px] font-bold text-gray-800">
             {t(`category.${reel.category}`)}
           </span>
-          <p className="text-base font-bold text-white drop-shadow">
+          <p className="text-base font-bold text-white drop-shadow lg:text-xl">
             {reel.locationName || reel.municipality.name}
           </p>
         </div>
@@ -267,7 +306,7 @@ export default function ReelAccessPage() {
         </span>
       </div>
 
-      <div className="mb-4 rounded-lg border border-gray-200 bg-white p-4">
+      <div className="mb-4 rounded-lg border border-gray-200 bg-white p-4 lg:p-5">
         <p className="text-sm font-bold text-gray-900">{t("reelAccessPage.conditionsHeading")}</p>
         <p className="mt-0.5 text-xs text-gray-400">{t("reelAccessPage.conditionsSub")}</p>
 
@@ -276,30 +315,32 @@ export default function ReelAccessPage() {
           <GroupSizeToggle value={groupSize} onChange={setGroupSize} />
         </div>
 
-        <form onSubmit={search} className="mt-4 flex flex-col gap-2">
-          <span className="text-xs font-semibold text-gray-500">{t("accessPlanner.heading")}</span>
-          <input
-            value={origin}
-            onChange={(e) => setOrigin(e.target.value)}
-            placeholder={t("accessPlanner.originPlaceholder")}
-            className="w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
-          />
-          <span className="mt-1 text-xs font-semibold text-gray-500">{t("reelAccessPage.departureLabel")}</span>
-          <div className="flex flex-wrap gap-2">
+        <form onSubmit={search} className="mt-4 flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-end lg:gap-3">
+          <div className="flex min-w-0 flex-col gap-1 lg:flex-1 lg:basis-48">
+            <span className="text-xs font-semibold text-gray-500">{t("accessPlanner.heading")}</span>
+            <input
+              value={origin}
+              onChange={(e) => setOrigin(e.target.value)}
+              placeholder={t("accessPlanner.originPlaceholder")}
+              className="w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold text-gray-500">{t("reelAccessPage.departureLabel")}</span>
             <input
               type="datetime-local"
               value={departureLocal}
               onChange={(e) => setDepartureLocal(e.target.value)}
               className="rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
             />
-            <button
-              type="submit"
-              disabled={loading || !origin.trim()}
-              className="shrink-0 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
-            >
-              {loading ? t("accessPlanner.searching") : t("accessPlanner.search")}
-            </button>
           </div>
+          <button
+            type="submit"
+            disabled={loading || !origin.trim()}
+            className="shrink-0 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+          >
+            {loading ? t("accessPlanner.searching") : t("accessPlanner.search")}
+          </button>
         </form>
 
         <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-gray-100 pt-3">
@@ -311,12 +352,14 @@ export default function ReelAccessPage() {
       {error && <p className="mb-4 text-xs text-red-500">{error}</p>}
 
       {orderedEstimates && departureAt && (
-        <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {orderedEstimates.map((estimate) => (
             <ModeCard
               key={estimate.mode}
               estimate={estimate}
               recommended={estimate.mode === recommendedMode}
+              reelId={reel.id}
+              origin={origin.trim()}
               destinationLabel={reel.locationName || reel.municipality.name}
               departureAt={departureAt}
               accessibility={accessibility}
@@ -324,7 +367,9 @@ export default function ReelAccessPage() {
               groupSize={groupSize}
             />
           ))}
-          <p className="px-1 text-[11px] leading-relaxed text-gray-400">{t("reelAccessPage.estimateDisclaimer")}</p>
+          <p className="px-1 text-[11px] leading-relaxed text-gray-400 md:col-span-2">
+            {t("reelAccessPage.estimateDisclaimer")}
+          </p>
         </div>
       )}
 

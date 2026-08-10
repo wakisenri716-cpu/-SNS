@@ -61,6 +61,10 @@ export interface RouteEstimate {
   totalDurationMin: number;
   mode: "walk" | "drive";
   distanceMeters: number;
+  // Google's encoded polyline for the route actually taken, when Directions
+  // returned one — lets a caller draw the real road/path line on a map
+  // instead of a straight line between the two points. See getStaticMapImage.
+  polyline: string | null;
 }
 
 // Real point-to-point travel time via Google Directions API.
@@ -107,5 +111,45 @@ export async function getRouteEstimate(
     totalDurationMin: Math.max(1, Math.round(durationSeconds / 60)),
     mode: mode === "walking" ? "walk" : "drive",
     distanceMeters: leg?.distance?.value ?? straightLineMeters,
+    polyline: data.routes[0].overview_polyline?.points ?? null,
+  };
+}
+
+// Renders a small route-preview image via the Static Maps API — same key,
+// a third Google Maps Platform API beyond Geocoding/Directions, so it needs
+// enabling separately in Google Cloud Console (see README). Draws the real
+// road/path line when a polyline is available (from getRouteEstimate above);
+// falls back to a straight line between the two points otherwise, which is
+// still a rough "roughly this direction" cue but not a real routed path.
+// Proxied through the backend (see the /access-map route) rather than having
+// the frontend hit this URL directly, so the API key never reaches the
+// browser — this app's key is meant to stay server-side only (see the module
+// doc comment above).
+export async function getStaticMapImage(
+  origin: { lat: number; lng: number },
+  destination: { lat: number; lng: number },
+  polyline: string | null
+): Promise<{ contentType: string; body: ArrayBuffer } | null> {
+  if (!API_KEY) return null;
+
+  const pathParam = polyline
+    ? `color:0x0d9488cc|weight:4|enc:${polyline}`
+    : `color:0x0d9488cc|weight:4|${origin.lat},${origin.lng}|${destination.lat},${destination.lng}`;
+
+  const url = new URL("https://maps.googleapis.com/maps/api/staticmap");
+  url.searchParams.set("size", "640x320");
+  url.searchParams.set("scale", "2");
+  url.searchParams.set("maptype", "roadmap");
+  url.searchParams.set("language", "ja");
+  url.searchParams.append("markers", `color:0x0f766e|label:A|${origin.lat},${origin.lng}`);
+  url.searchParams.append("markers", `color:0xd6293c|label:B|${destination.lat},${destination.lng}`);
+  url.searchParams.set("path", pathParam);
+  url.searchParams.set("key", API_KEY);
+
+  const res = await fetch(url, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
+  if (!res.ok) return null;
+  return {
+    contentType: res.headers.get("content-type") || "image/png",
+    body: await res.arrayBuffer(),
   };
 }

@@ -196,6 +196,7 @@
     "reservationNoteTaxi": "繁忙期は配車に時間がかかることがあります。余裕を持って手配しましょう。",
     "modeTaxi": "タクシー",
     "estimateDisclaimer": "電車・バス・タクシーの時間や運賃は、実際の運行データではなく距離をもとにした概算です。徒歩・車のいずれかは、入力内容から実際の経路データを取得できた場合その結果を反映しています。",
+    "mapUnavailable": "地図を表示できませんでした（簡易図）",
     "tagWeatherProof": "天候に左右されにくい",
     "tagStationWalk": "駅まで徒歩移動あり",
     "tagCheapFare": "運賃が安め",
