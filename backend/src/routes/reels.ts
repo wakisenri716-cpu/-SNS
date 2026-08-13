@@ -164,6 +164,8 @@ router.get("/itinerary", requireAuth, async (req, res) => {
       caption: r.caption,
       category: r.category,
       locationName: r.locationName,
+      locationLat: r.locationLat,
+      locationLng: r.locationLng,
       videoUrl: r.videoUrl,
       municipality: r.municipality,
     })),

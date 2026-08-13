@@ -87,6 +87,8 @@
   "itinerary": {
     "heading": "Itinerary",
     "subtitle": "Auto-generated from your saved spots",
+    "viewList": "List",
+    "viewMap": "Map",
     "loading": "Loading...",
     "empty": "No saved spots yet. Bookmark a post you like and your route will show up here.",
     "emptyCta": "Browse posts",
@@ -217,6 +219,7 @@
     "modeTaxi": "Taxi",
     "estimateDisclaimer": "Train/bus/taxi times and fares are distance-based estimates, not real schedule data. Whichever of walk/car could be matched to a real route from what you entered reflects that real result.",
     "mapUnavailable": "Couldn't load a map (schematic only)",
+    "mapSchematicNote": "Simplified diagram — not real map data.",
     "tagWeatherProof": "Not much affected by weather",
     "tagStationWalk": "Includes a walk to the station",
     "tagCheapFare": "Lower fare",

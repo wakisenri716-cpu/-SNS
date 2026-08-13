@@ -4,9 +4,12 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { TRANSIT_MODE_LABEL_KEY } from "../lib/transitModeLabels";
+import SchematicRouteMap from "./SchematicRouteMap";
+import { projectLatLngToUnitSquare } from "../lib/schematicMap";
 import type { Itinerary } from "../types";
 
 const LEG_MODE_ICON: Record<string, string> = { walk: "🚶", drive: "🚗", train: "🚃", bus: "🚌" };
+type ItineraryView = "list" | "map";
 
 // しおり (itinerary): a persistent rail in the page's right-hand margin —
 // present only on wide screens, where the centered page content already
@@ -19,6 +22,7 @@ export default function ItineraryRail() {
   const { t } = useTranslation();
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<ItineraryView>("list");
 
   // Only for plain traveler accounts — municipality/company accounts manage
   // posts, not a personal travel plan, so this rail has nothing for them.
@@ -51,7 +55,33 @@ export default function ItineraryRail() {
         </div>
       ) : (
         <div className="mt-5 flex flex-col">
-          {itinerary.stops.map((stop, i) => {
+          <div className="mb-4 flex gap-1.5">
+            {(["list", "map"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setView(v)}
+                className={`rounded-full px-3 py-1 text-xs font-medium ${
+                  view === v ? "bg-teal-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {t(v === "list" ? "itinerary.viewList" : "itinerary.viewMap")}
+              </button>
+            ))}
+          </div>
+
+          {view === "map" && (
+            <SchematicRouteMap
+              className="mb-4 aspect-square w-full"
+              captionKey="reelAccessPage.mapSchematicNote"
+              points={projectLatLngToUnitSquare(itinerary.stops.map((s) => ({ lat: s.locationLat, lng: s.locationLng }))).map(
+                (pt, i) => ({ ...pt, label: itinerary.stops[i].locationName || itinerary.stops[i].caption })
+              )}
+            />
+          )}
+
+          {view === "list" &&
+          itinerary.stops.map((stop, i) => {
             const leg = itinerary.legs[i];
             const isLast = i === itinerary.stops.length - 1;
             const legMode = leg?.legs[0]?.mode;

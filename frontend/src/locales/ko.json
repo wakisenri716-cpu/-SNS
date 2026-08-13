@@ -87,6 +87,8 @@
   "itinerary": {
     "heading": "여행 수첩",
     "subtitle": "저장한 장소를 바탕으로 자동 생성됩니다",
+    "viewList": "목록",
+    "viewMap": "지도",
     "loading": "불러오는 중...",
     "empty": "아직 저장된 장소가 없습니다. 마음에 드는 게시물을 북마크하면 이곳에 여행 경로가 표시됩니다.",
     "emptyCta": "게시물 둘러보기",
@@ -217,6 +219,7 @@
     "modeTaxi": "택시",
     "estimateDisclaimer": "전철・버스・택시의 시간과 요금은 실제 운행 데이터가 아닌 거리 기반 추정치입니다. 도보 또는 자동차 중 입력하신 내용으로 실제 경로 데이터를 가져올 수 있었던 경우 그 결과를 반영합니다.",
     "mapUnavailable": "지도를 표시할 수 없습니다（간이 도식）",
+    "mapSchematicNote": "간이 도식입니다（실제 지도 데이터가 아닙니다）.",
     "tagWeatherProof": "날씨의 영향을 덜 받음",
     "tagStationWalk": "역까지 도보 이동 포함",
     "tagCheapFare": "요금이 저렴한 편",

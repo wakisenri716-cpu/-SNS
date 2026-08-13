@@ -137,6 +137,8 @@ export interface ItineraryStop {
   caption: string;
   category: ReelCategory;
   locationName: string | null;
+  locationLat: number;
+  locationLng: number;
   videoUrl: string;
   municipality: { id: string; name: string; avatarUrl: string | null; prefecture: string };
 }

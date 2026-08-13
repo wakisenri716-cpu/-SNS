@@ -87,6 +87,8 @@
   "itinerary": {
     "heading": "行程手册",
     "subtitle": "根据收藏的地点自动生成",
+    "viewList": "列表",
+    "viewMap": "地图",
     "loading": "加载中...",
     "empty": "尚未收藏任何地点。收藏喜欢的投稿后，路线会显示在这里。",
     "emptyCta": "浏览投稿",
@@ -217,6 +219,7 @@
     "modeTaxi": "出租车",
     "estimateDisclaimer": "电车・巴士・出租车的时间和票价是基于距离的估算，并非实际运行数据。步行或驾车中，若能匹配到您输入内容的真实路线，则会反映该实际结果。",
     "mapUnavailable": "无法显示地图（仅为简易示意图）",
+    "mapSchematicNote": "简易示意图（并非实际地图数据）。",
     "tagWeatherProof": "较少受天气影响",
     "tagStationWalk": "含步行至车站的路程",
     "tagCheapFare": "票价较低",

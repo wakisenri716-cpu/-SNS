@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import AutoplayVideo from "../components/AutoplayVideo";
+import SchematicRouteMap from "../components/SchematicRouteMap";
 import { formatDateTime, localDateTimeToIso, nowAsDatetimeLocalValue } from "../lib/departureTime";
 import {
   deriveModeEstimates,
@@ -62,23 +63,19 @@ function GroupSizeToggle({ value, onChange }: { value: GroupSize; onChange: (v: 
 // geocodable, or the request just failed), rather than showing nothing or
 // silently pretending the schematic is a real map.
 function RouteMap({ reelId, origin, destinationLabel }: { reelId: string; origin: string; destinationLabel: string }) {
-  const { t } = useTranslation();
   const [failed, setFailed] = useState(false);
   const src = `/api/reels/${reelId}/access-map?origin=${encodeURIComponent(origin)}`;
 
   if (failed) {
     return (
-      <div className="mt-2 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
-        <svg viewBox="0 0 300 110" className="h-28 w-full" preserveAspectRatio="none" aria-hidden="true">
-          <line x1="24" y1="82" x2="276" y2="28" stroke="#0d9488" strokeWidth="2" strokeDasharray="4 6" strokeLinecap="round" />
-          <circle cx="24" cy="82" r="5" fill="#0f766e" />
-          <circle cx="276" cy="28" r="5" fill="#d6293c" />
-        </svg>
-        <div className="flex items-center justify-between gap-2 px-3 pb-1 text-[10px] font-medium text-gray-500">
-          <span className="min-w-0 truncate">{origin}</span>
-          <span className="min-w-0 truncate text-right">{destinationLabel}</span>
-        </div>
-        <p className="px-3 pb-2 text-[10px] text-gray-400">{t("reelAccessPage.mapUnavailable")}</p>
+      <div className="mt-2 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-2">
+        <SchematicRouteMap
+          className="h-28 md:h-36"
+          points={[
+            { x: 15, y: 80, label: origin },
+            { x: 85, y: 20, label: destinationLabel },
+          ]}
+        />
       </div>
     );
   }
