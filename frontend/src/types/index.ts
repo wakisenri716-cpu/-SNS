@@ -130,3 +130,20 @@ export interface Comment {
   createdAt: string;
   user: { id: string; name: string };
 }
+
+// One stop in the しおり (itinerary) rail — see GET /reels/itinerary.
+export interface ItineraryStop {
+  id: string;
+  caption: string;
+  category: ReelCategory;
+  locationName: string | null;
+  videoUrl: string;
+  municipality: { id: string; name: string; avatarUrl: string | null; prefecture: string };
+}
+
+export interface Itinerary {
+  stops: ItineraryStop[];
+  // legs[i] is the travel estimate from stops[i] to stops[i+1] — always
+  // legs.length === stops.length - 1.
+  legs: TransitSuggestion[];
+}

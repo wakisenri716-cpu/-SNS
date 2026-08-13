@@ -84,6 +84,15 @@
     "loading": "Loading...",
     "emptyLiked": "No liked reels yet. Try liking a post you find interesting in the feed."
   },
+  "itinerary": {
+    "heading": "Itinerary",
+    "subtitle": "Auto-generated from your saved spots",
+    "loading": "Loading...",
+    "empty": "No saved spots yet. Bookmark a post you like and your route will show up here.",
+    "emptyCta": "Browse posts",
+    "legSummary": "{{duration}} by {{mode}}",
+    "disclaimer": "Travel times are estimates and may differ from actual durations."
+  },
   "dashboard": {
     "tabPosts": "Posts",
     "tabTourism": "Tourism Info",

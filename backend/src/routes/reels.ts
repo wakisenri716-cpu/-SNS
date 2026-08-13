@@ -123,6 +123,54 @@ router.get("/saved", requireAuth, async (req, res) => {
   });
 });
 
+// しおり (itinerary): chains the signed-in user's saved/bookmarked reels, in
+// the order they were saved, into a route — each consecutive pair gets a
+// real-or-mock travel estimate between them (see getTransitSuggestion),
+// reusing the exact same mock fallback this app uses everywhere else. Unlike
+// the per-reel "アクセス" planner, no origin needs to be typed/geocoded here:
+// both ends of each leg are already-known reel coordinates. Only reels with
+// location data can be chained, so ones without are silently skipped — must
+// be registered before "/:id" so "itinerary" isn't matched as a reel id.
+router.get("/itinerary", requireAuth, async (req, res) => {
+  const saves = await prisma.savedReel.findMany({
+    where: { userId: req.auth!.userId },
+    orderBy: { createdAt: "asc" },
+    include: {
+      reel: {
+        include: { municipality: { select: { id: true, name: true, avatarUrl: true, prefecture: true } } },
+      },
+    },
+  });
+
+  const stops = saves.map((s) => s.reel).filter((r) => r.locationLat != null && r.locationLng != null);
+
+  const legs = [];
+  for (let i = 0; i < stops.length - 1; i++) {
+    const from = stops[i];
+    const to = stops[i + 1];
+    legs.push(
+      await getTransitSuggestion(
+        to.locationName || to.municipality.name,
+        to.locationLat!,
+        to.locationLng!,
+        { label: from.locationName || from.municipality.name, lat: from.locationLat!, lng: from.locationLng! }
+      )
+    );
+  }
+
+  res.json({
+    stops: stops.map((r) => ({
+      id: r.id,
+      caption: r.caption,
+      category: r.category,
+      locationName: r.locationName,
+      videoUrl: r.videoUrl,
+      municipality: r.municipality,
+    })),
+    legs,
+  });
+});
+
 // Reels from municipalities/companies the signed-in user follows — the feed's
 // "フォロー中" tab. Following a municipality surfaces all reels under its name
 // (including its linked companies' posts, matching the attribution shown

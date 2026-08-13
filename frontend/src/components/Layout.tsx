@@ -2,6 +2,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../auth/AuthContext";
 import JazibaLogo from "./JazibaLogo";
+import ItineraryRail from "./ItineraryRail";
 
 function NavItem({ to, label }: { to: string; label: string }) {
   return (
@@ -108,6 +109,8 @@ export default function Layout() {
       <main className="min-w-0 flex-1">
         <Outlet />
       </main>
+
+      <ItineraryRail />
     </div>
   );
 }

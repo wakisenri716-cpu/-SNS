@@ -84,6 +84,15 @@
     "loading": "加载中...",
     "emptyLiked": "还没有点赞过的短视频。快去信息流中给感兴趣的投稿点赞吧。"
   },
+  "itinerary": {
+    "heading": "行程手册",
+    "subtitle": "根据收藏的地点自动生成",
+    "loading": "加载中...",
+    "empty": "尚未收藏任何地点。收藏喜欢的投稿后，路线会显示在这里。",
+    "emptyCta": "浏览投稿",
+    "legSummary": "{{mode}}・{{duration}}",
+    "disclaimer": "※移动时间为估算值，可能与实际所需时间有出入。"
+  },
   "dashboard": {
     "tabPosts": "投稿",
     "tabTourism": "观光信息",

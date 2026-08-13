@@ -84,6 +84,15 @@
     "loading": "読み込み中...",
     "emptyLiked": "まだいいねしたリールがありません。フィードで気になる投稿にいいねしてみましょう。"
   },
+  "itinerary": {
+    "heading": "しおり",
+    "subtitle": "保存した場所から自動生成されます",
+    "loading": "読み込み中...",
+    "empty": "まだ行き先が保存されていません。気になる投稿をブックマークすると、ここに旅のルートが表示されます。",
+    "emptyCta": "投稿を探す",
+    "legSummary": "{{mode}}で{{duration}}",
+    "disclaimer": "※移動時間は概算です。実際の所要時間とは異なる場合があります。"
+  },
   "dashboard": {
     "tabPosts": "投稿",
     "tabTourism": "観光情報",

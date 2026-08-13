@@ -84,6 +84,15 @@
     "loading": "불러오는 중...",
     "emptyLiked": "아직 좋아요한 릴이 없습니다. 피드에서 마음에 드는 게시물에 좋아요를 눌러보세요."
   },
+  "itinerary": {
+    "heading": "여행 수첩",
+    "subtitle": "저장한 장소를 바탕으로 자동 생성됩니다",
+    "loading": "불러오는 중...",
+    "empty": "아직 저장된 장소가 없습니다. 마음에 드는 게시물을 북마크하면 이곳에 여행 경로가 표시됩니다.",
+    "emptyCta": "게시물 둘러보기",
+    "legSummary": "{{mode}}로 {{duration}}",
+    "disclaimer": "※이동 시간은 추정치이며 실제 소요 시간과 다를 수 있습니다."
+  },
   "dashboard": {
     "tabPosts": "게시물",
     "tabTourism": "관광 정보",
