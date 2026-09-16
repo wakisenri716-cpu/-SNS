@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
-  <rect width="48" height="48" rx="12" fill="#D6293C" />
+  <rect width="48" height="48" rx="12" fill="#111827" />
   <text x="24" y="35" font-family="'Baloo 2', 'Arial Rounded MT Bold', system-ui, sans-serif" font-weight="800" font-size="30" fill="#ffffff" text-anchor="middle">J</text>
+  <circle cx="38" cy="10" r="7" fill="#D6293C" />
 </svg>
