@@ -12,7 +12,9 @@
     "logout": "Log Out",
     "login": "Log In",
     "municipalitySuffix": " (Municipality)",
-    "companySuffix": " (Company)"
+    "companySuffix": " (Company)",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "auth": {
     "sessionExpired": "Your session has expired. Please log in again."
@@ -96,7 +98,8 @@
     "empty": "No saved spots yet. Bookmark a post you like and your route will show up here.",
     "emptyCta": "Browse posts",
     "legSummary": "{{duration}} by {{mode}}",
-    "disclaimer": "Travel times are estimates and may differ from actual durations."
+    "disclaimer": "Travel times are estimates and may differ from actual durations.",
+    "loginCta": "Log in to build an itinerary from the places you save"
   },
   "dashboard": {
     "tabPosts": "Posts",

@@ -84,12 +84,12 @@ export default function FeedPage() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <div className="flex flex-wrap gap-2 border-b border-gray-200 p-3">
+      <div className="flex gap-2 overflow-x-auto border-b border-gray-200 p-3 md:flex-wrap">
         {CATEGORY_TABS.map((c) => (
           <button
             key={c}
             onClick={() => setTab(c)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium ${
+            className={`shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium ${
               tab === c ? "bg-teal-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
@@ -101,7 +101,7 @@ export default function FeedPage() {
             <button
               key={s}
               onClick={() => setTab(s)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium ${
+              className={`shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium ${
                 tab === s ? "bg-teal-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >

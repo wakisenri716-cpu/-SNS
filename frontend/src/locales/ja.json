@@ -12,7 +12,9 @@
     "logout": "ログアウト",
     "login": "ログイン",
     "municipalitySuffix": "（自治体）",
-    "companySuffix": "（企業）"
+    "companySuffix": "（企業）",
+    "openMenu": "メニューを開く",
+    "closeMenu": "メニューを閉じる"
   },
   "auth": {
     "sessionExpired": "セッションが切れました。もう一度ログインしてください。"
@@ -96,7 +98,8 @@
     "empty": "まだ行き先が保存されていません。気になる投稿をブックマークすると、ここに旅のルートが表示されます。",
     "emptyCta": "投稿を探す",
     "legSummary": "{{mode}}で{{duration}}",
-    "disclaimer": "※移動時間は概算です。実際の所要時間とは異なる場合があります。"
+    "disclaimer": "※移動時間は概算です。実際の所要時間とは異なる場合があります。",
+    "loginCta": "ログインすると、保存した場所からしおりが作られます"
   },
   "dashboard": {
     "tabPosts": "投稿",

@@ -12,7 +12,9 @@
     "logout": "退出登录",
     "login": "登录",
     "municipalitySuffix": "（自治体）",
-    "companySuffix": "（企业）"
+    "companySuffix": "（企业）",
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单"
   },
   "auth": {
     "sessionExpired": "登录已过期，请重新登录。"
@@ -96,7 +98,8 @@
     "empty": "尚未收藏任何地点。收藏喜欢的投稿后，路线会显示在这里。",
     "emptyCta": "浏览投稿",
     "legSummary": "{{mode}}・{{duration}}",
-    "disclaimer": "※移动时间为估算值，可能与实际所需时间有出入。"
+    "disclaimer": "※移动时间为估算值，可能与实际所需时间有出入。",
+    "loginCta": "登录后即可根据保存的地点生成行程"
   },
   "dashboard": {
     "tabPosts": "投稿",

@@ -11,36 +11,32 @@ import type { Itinerary } from "../types";
 const LEG_MODE_ICON: Record<string, string> = { walk: "🚶", drive: "🚗", train: "🚃", bus: "🚌" };
 type ItineraryView = "list" | "map";
 
-// しおり (itinerary): a persistent rail in the page's right-hand margin —
-// present only on wide screens, where the centered page content already
-// leaves that space empty — chaining the signed-in user's saved/bookmarked
-// reels into a route with real-or-mock travel time between each consecutive
-// stop (see GET /reels/itinerary). Lives in Layout so it survives page
-// navigation instead of re-fetching on every route change.
-export default function ItineraryRail() {
+// Only plain traveler accounts have a しおり — municipality/company accounts
+// manage posts, not a personal travel plan.
+export function useIsTraveler() {
   const { user, municipality, company } = useAuth();
+  return !!user && !municipality && !company;
+}
+
+// しおり (itinerary) content: chains the signed-in traveler's saved/bookmarked
+// reels into a route with real-or-mock travel time between each consecutive
+// stop (see GET /reels/itinerary). Rendered both as the wide-screen rail below
+// and as the /itinerary page used on narrower screens.
+export function ItineraryPanel() {
   const { t } = useTranslation();
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<ItineraryView>("list");
 
-  // Only for plain traveler accounts — municipality/company accounts manage
-  // posts, not a personal travel plan, so this rail has nothing for them.
-  const isTraveler = !!user && !municipality && !company;
-
   useEffect(() => {
-    if (!isTraveler) return;
-    setLoading(true);
     api
       .get("/reels/itinerary")
       .then(({ data }) => setItinerary(data))
       .finally(() => setLoading(false));
-  }, [isTraveler]);
-
-  if (!isTraveler) return null;
+  }, []);
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-80 shrink-0 flex-col overflow-y-auto border-l border-gray-200 bg-white px-5 py-6 xl:flex">
+    <>
       <h2 className="text-base font-bold text-gray-900">📖 {t("itinerary.heading")}</h2>
       <p className="mt-1 text-xs text-gray-400">{t("itinerary.subtitle")}</p>
 
@@ -84,7 +80,9 @@ export default function ItineraryRail() {
           itinerary.stops.map((stop, i) => {
             const leg = itinerary.legs[i];
             const isLast = i === itinerary.stops.length - 1;
-            const legMode = leg?.legs[0]?.mode;
+            // A leg can be several sub-legs (e.g. walk 9分 + train 44分); label it
+            // by the one that takes longest, not just the first.
+            const legMode = leg?.legs.reduce((a, b) => (b.durationMin > a.durationMin ? b : a), leg.legs[0])?.mode;
             return (
               <div key={stop.id} className="flex gap-3">
                 <div className="flex flex-col items-center">
@@ -123,6 +121,20 @@ export default function ItineraryRail() {
           <p className="mt-1 text-[11px] leading-relaxed text-gray-400">{t("itinerary.disclaimer")}</p>
         </div>
       )}
+    </>
+  );
+}
+
+// The しおり as a persistent rail in the page's right-hand margin — only on
+// wide screens, where the centered page content already leaves that space
+// empty. Lives in Layout so it survives page navigation instead of
+// re-fetching on every route change.
+export default function ItineraryRail() {
+  const isTraveler = useIsTraveler();
+  if (!isTraveler) return null;
+  return (
+    <aside className="sticky top-0 hidden h-screen w-80 shrink-0 flex-col overflow-y-auto border-l border-gray-200 bg-white px-5 py-6 xl:flex">
+      <ItineraryPanel />
     </aside>
   );
 }
