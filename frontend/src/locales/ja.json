@@ -232,7 +232,12 @@
     "tagLongDistanceHard": "距離が長いと大変",
     "tagAccessibilityFriendly": "バリアフリー対応の車両を選びやすい",
     "tagGroupFriendly": "グループでの移動に向いている",
-    "tagNoCarNeeded": "マイカーなしでもOK"
+    "tagNoCarNeeded": "マイカーなしでもOK",
+    "nearbyHeading": "近くの観光スポット",
+    "nearbySubtitle": "この場所の近くにある他の投稿です",
+    "nearbyEmpty": "近くに他の投稿はまだありません",
+    "nearbyDistance": "{{km}}km先",
+    "nearbyDistanceMeters": "{{m}}m先"
   },
   "settings": {
     "title": "設定",

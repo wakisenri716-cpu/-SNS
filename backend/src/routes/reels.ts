@@ -5,7 +5,7 @@ import { optionalAuth, requireAuth, requireRole } from "../middleware/auth";
 import { upload } from "../middleware/upload";
 import { anonymousViewerState, reelInclude, serializeReel, type ReelViewerState } from "../lib/reelSerializer";
 import { getFollowedIds } from "../lib/followState";
-import { geocode, getRouteEstimate, getStaticMapImage, isGoogleMapsConfigured } from "../services/googleMaps";
+import { geocode, getRouteEstimate, getStaticMapImage, haversineMeters, isGoogleMapsConfigured } from "../services/googleMaps";
 import { getTransitSuggestion } from "../services/maasProvider";
 import { parseDepartureTime } from "../lib/parseDepartureTime";
 import { AGE_BUCKETS, REEL_CATEGORIES, ageBucketFromBirthYear } from "../types";
@@ -284,6 +284,48 @@ router.get("/:id", optionalAuth, async (req, res) => {
   ]);
 
   res.json(await serializeReel(reel, viewerStateFor(reel, followed)));
+});
+
+// Pitch deck item "(1) 近隣の観光スポットの掲載": while looking at one post, surface
+// other posts located nearby (regardless of which municipality/company posted
+// them) so a viewer who's found one spot can discover more around it. Distance
+// is computed in-process with the haversine helper rather than in SQL — the
+// dataset is small and SQLite has no built-in geo distance function.
+const NEARBY_RADIUS_METERS = 50_000;
+const NEARBY_LIMIT = 6;
+
+router.get("/:id/nearby", optionalAuth, async (req, res) => {
+  const reel = await prisma.reel.findUnique({ where: { id: req.params.id } });
+  if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
+  if (reel.locationLat == null || reel.locationLng == null) {
+    return res.json({ items: [] });
+  }
+  const origin = { lat: reel.locationLat, lng: reel.locationLng };
+
+  const followed = await getFollowedIds(req.auth?.userId);
+  const candidates = await prisma.reel.findMany({
+    where: { id: { not: reel.id }, locationLat: { not: null }, locationLng: { not: null } },
+    include: {
+      ...reelInclude,
+      likes: req.auth ? { where: { userId: req.auth.userId }, select: { id: true } } : false,
+      saves: req.auth ? { where: { userId: req.auth.userId }, select: { id: true } } : false,
+    },
+  });
+
+  const nearby = candidates
+    .map((r) => ({ reel: r, distanceMeters: haversineMeters(origin, { lat: r.locationLat!, lng: r.locationLng! }) }))
+    .filter((r) => r.distanceMeters <= NEARBY_RADIUS_METERS)
+    .sort((a, b) => a.distanceMeters - b.distanceMeters)
+    .slice(0, NEARBY_LIMIT);
+
+  res.json({
+    items: await Promise.all(
+      nearby.map(async ({ reel: r, distanceMeters }) => ({
+        ...(await serializeReel(r, viewerStateFor(r, followed))),
+        distanceMeters: Math.round(distanceMeters),
+      }))
+    ),
+  });
 });
 
 const createSchema = z.object({

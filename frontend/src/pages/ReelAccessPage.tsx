@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import AutoplayVideo from "../components/AutoplayVideo";
 import SchematicRouteMap from "../components/SchematicRouteMap";
+import NearbySpots from "../components/NearbySpots";
 import { formatDateTime, localDateTimeToIso, nowAsDatetimeLocalValue } from "../lib/departureTime";
 import {
   deriveModeEstimates,
@@ -217,8 +218,14 @@ function ModeCard({
 // Only one row per search is ever backed by the real Directions API result;
 // the rest are consistent, clearly-labeled estimates — see the comment on
 // deriveModeEstimates for why the app can't offer 5 real quotes at once.
+// Keyed by id so moving between spots (e.g. via 近くの観光スポット) resets all
+// per-reel state instead of reusing the previous spot's form and results.
 export default function ReelAccessPage() {
   const { id } = useParams<{ id: string }>();
+  return <ReelAccessPageInner key={id} id={id} />;
+}
+
+function ReelAccessPageInner({ id }: { id: string | undefined }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -375,6 +382,8 @@ export default function ReelAccessPage() {
           {reel.municipality.name}
         </Link>
       </p>
+
+      <NearbySpots reelId={reel.id} />
     </div>
   );
 }

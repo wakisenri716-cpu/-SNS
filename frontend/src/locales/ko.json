@@ -232,7 +232,12 @@
     "tagLongDistanceHard": "장거리는 힘들 수 있음",
     "tagAccessibilityFriendly": "무장애 차량을 고르기 쉬움",
     "tagGroupFriendly": "단체 이동에 적합",
-    "tagNoCarNeeded": "자가용 없이도 OK"
+    "tagNoCarNeeded": "자가용 없이도 OK",
+    "nearbyHeading": "주변 관광 스팟",
+    "nearbySubtitle": "이 장소 근처의 다른 게시물입니다",
+    "nearbyEmpty": "아직 근처에 다른 게시물이 없습니다",
+    "nearbyDistance": "{{km}}km 거리",
+    "nearbyDistanceMeters": "{{m}}m 거리"
   },
   "settings": {
     "title": "설정",

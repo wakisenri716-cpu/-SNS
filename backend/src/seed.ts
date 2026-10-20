@@ -29,7 +29,7 @@ interface SeedMunicipality {
   nearestStationName: string;
   nearestStationLat: number;
   nearestStationLng: number;
-  reels: { caption: string; locationName: string; lat: number; lng: number; category: string }[];
+  reels: { caption: string; locationName: string; lat: number; lng: number; category: string; video: string }[];
 }
 
 // Single real destination (not a placeholder town): 上高地 (Kamikochi), the
@@ -60,14 +60,16 @@ const MUNICIPALITIES: SeedMunicipality[] = [
     nearestStationLat: 36.238,
     nearestStationLng: 137.972,
     reels: [
-      { caption: "河童橋から望む穂高連峰は圧巻です⛰️", locationName: "上高地 河童橋", lat: 36.251, lng: 137.6389, category: "nature" },
+      { caption: "国宝 松本城。現存する五重六階の天守としては日本最古です🏯", locationName: "松本城", lat: 36.2371, lng: 137.97, category: "culture", video: "matsumotojo.webm" },
+      { caption: "河童橋から望む穂高連峰は圧巻です⛰️", locationName: "上高地 河童橋", lat: 36.251, lng: 137.6389, category: "nature", video: "kamikochi.webm" },
+      { caption: "河童橋を眺めながら信州そばのランチはいかが？🍜", locationName: "五千尺キッチン", lat: 36.2508, lng: 137.6387, category: "restaurant", video: "gosenjaku.webm" },
+      { caption: "大正池のほとりに佇む、上高地を代表するクラシックホテルです🏨", locationName: "上高地帝国ホテル", lat: 36.2427, lng: 137.6284, category: "lodging", video: "teikoku.webm" },
     ],
   },
 ];
 
-// Placeholder clip (no real Kamikochi footage available) — a short "上高地"
-// title card generated with ffmpeg, see the commit that added it.
-const VIDEO_FILES = ["kamikochi.webm"];
+// Each reel's `video` is a placeholder clip in seed-assets/ (no real footage
+// available) — a short title card with the spot's name, generated with ffmpeg.
 const SEED_PASSWORD = "password123";
 
 // Demo "tourist" accounts with varied nationality/birth year, used only to
@@ -94,7 +96,6 @@ export async function seedIfEmpty() {
 
   console.log("[seed] Database is empty, creating demo municipalities and reels...");
   const passwordHash = await bcrypt.hash(SEED_PASSWORD, 10);
-  let clipIndex = 0;
   const allReelIds: string[] = [];
 
   for (const m of MUNICIPALITIES) {
@@ -124,8 +125,7 @@ export async function seedIfEmpty() {
     const municipalityId = user.municipality!.id;
 
     for (const r of m.reels) {
-      const videoUrl = copySeedVideo(VIDEO_FILES[clipIndex % VIDEO_FILES.length]);
-      clipIndex++;
+      const videoUrl = copySeedVideo(r.video);
       const reel = await prisma.reel.create({
         data: {
           municipalityId,

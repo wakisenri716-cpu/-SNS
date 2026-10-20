@@ -232,7 +232,12 @@
     "tagLongDistanceHard": "距离远时较辛苦",
     "tagAccessibilityFriendly": "较容易选到无障碍车辆",
     "tagGroupFriendly": "适合团体出行",
-    "tagNoCarNeeded": "无需私家车"
+    "tagNoCarNeeded": "无需私家车",
+    "nearbyHeading": "附近的观光景点",
+    "nearbySubtitle": "这个地点附近的其他投稿",
+    "nearbyEmpty": "附近暂时还没有其他投稿",
+    "nearbyDistance": "距离{{km}}公里",
+    "nearbyDistanceMeters": "距离{{m}}米"
   },
   "settings": {
     "title": "设置",

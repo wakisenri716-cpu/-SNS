@@ -124,6 +124,12 @@ export interface Reel {
   transitSuggestion: TransitSuggestion | null;
 }
 
+// A nearby-spots result row — a regular Reel plus its distance from the spot
+// the viewer was just looking at. See GET /reels/:id/nearby.
+export interface NearbyReel extends Reel {
+  distanceMeters: number;
+}
+
 export interface Comment {
   id: string;
   body: string;

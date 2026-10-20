@@ -232,7 +232,12 @@
     "tagLongDistanceHard": "Tough over long distances",
     "tagAccessibilityFriendly": "Easier to find an accessible vehicle",
     "tagGroupFriendly": "Good for group travel",
-    "tagNoCarNeeded": "No car needed"
+    "tagNoCarNeeded": "No car needed",
+    "nearbyHeading": "Nearby spots",
+    "nearbySubtitle": "Other posts near this location",
+    "nearbyEmpty": "No other posts nearby yet",
+    "nearbyDistance": "{{km}}km away",
+    "nearbyDistanceMeters": "{{m}}m away"
   },
   "settings": {
     "title": "Settings",
