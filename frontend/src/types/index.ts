@@ -158,7 +158,10 @@ export interface TravelReportGroup {
   averageMin: number;
 }
 export interface TravelReports {
+  // Only starting points enough different users share (backend
+  // lib/travelReports.ts); reports from rarer ones are just counted.
   summary: TravelReportGroup[];
+  hiddenCount: number;
   mine: { mode: TravelMode; durationMin: number; originLabel: string }[];
 }
 

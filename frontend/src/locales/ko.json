@@ -395,7 +395,15 @@
     "audienceNote": "국적・출생 연도를 등록한 상태로 로그인하여 시청한 경우만 집계됩니다. 로그아웃 상태이거나 미등록인 시청은 “알 수 없음”으로 분류됩니다.",
     "byNationalityHeading": "국적별",
     "byAgeHeading": "연령대별",
-    "audienceEmpty": "아직 데이터가 없습니다."
+    "audienceEmpty": "아직 데이터가 없습니다.",
+    "totalSaves": "저장(일정) 수",
+    "totalTravelReports": "실측 기록 수",
+    "originsHeading": "여행자는 어디에서 오는가",
+    "originsNote": "여행자가 기록한 「실제 소요 시간」의 출발 지점입니다. 개인이 특정되지 않도록 2명 이상이 기록한 출발 지점만 표시합니다.",
+    "originsEmpty": "아직 표시할 기록이 없습니다",
+    "reportCount": "{{count}}건",
+    "originsHidden": "그 외 기록한 사람이 적어 표시하지 않은 출발 지점 {{count}}건",
+    "sortSaves": "저장 수 순"
   },
   "nationality": {
     "japan": "일본",
@@ -444,7 +452,11 @@
     "updated": "기록을 업데이트했습니다 (포인트는 첫 기록만, 합계 {{total}}pt)",
     "saveError": "기록하지 못했습니다",
     "cardLine": "모두의 실측 ({{origin}}에서) 평균 {{minutes}}분・{{count}}건",
-    "disclaimer": "※사용자가 직접 신고한 기록으로 정확성을 보장하지 않습니다. 포인트는 시험 기능이라 아직 사용처가 없습니다."
+    "disclaimer": "※사용자가 직접 신고한 기록으로 정확성을 보장하지 않습니다. 포인트는 시험 기능이라 아직 사용처가 없습니다.",
+    "hiddenCount": "그 외 기록한 사람이 적은 출발 지점의 기록 {{count}}건 (개인 정보 보호를 위해 비표시)",
+    "mineHeading": "내 기록",
+    "mineDuration": "{{minutes}}분",
+    "originPrivacyNote": "출발 지점은 다른 사용자에게도 표시됩니다. 집 주소 대신 역 이름 등을 입력해 주세요."
   },
   "travelerTag": {
     "barrierFree": "배리어프리",

@@ -2,9 +2,18 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
-import { REEL_CATEGORIES, type Demographics, type Reel } from "../types";
+import { REEL_CATEGORIES, type Demographics, type Reel, type TravelMode } from "../types";
+import { TRAVEL_MODE_ICON, TRAVEL_MODE_LABEL_KEY } from "../components/TravelReportSection";
 
-type SortKey = "views" | "likes" | "comments" | "date";
+type SortKey = "views" | "likes" | "comments" | "saves" | "date";
+
+// GET /reels/mine/trip-planning
+interface TripPlanning {
+  totals: { saves: number; travelReports: number };
+  byReel: Record<string, { saves: number; travelReports: number }>;
+  origins: { originLabel: string; reportCount: number; modeCounts: Partial<Record<TravelMode, number>> }[];
+  hiddenCount: number;
+}
 
 function AudienceBar({ label, count, max }: { label: string; count: number; max: number }) {
   return (
@@ -34,6 +43,7 @@ export default function InsightsPage() {
   const [loading, setLoading] = useState(true);
   const [sortKey, setSortKey] = useState<SortKey>("views");
   const [demographics, setDemographics] = useState<Demographics | null>(null);
+  const [tripPlanning, setTripPlanning] = useState<TripPlanning | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -42,6 +52,7 @@ export default function InsightsPage() {
       .then(({ data }: { data: { items: Reel[] } }) => setReels(data.items))
       .finally(() => setLoading(false));
     api.get("/reels/mine/demographics").then(({ data }: { data: Demographics }) => setDemographics(data));
+    api.get("/reels/mine/trip-planning").then(({ data }: { data: TripPlanning }) => setTripPlanning(data));
   }, [municipality?.id, company?.id]);
 
   const totals = useMemo(
@@ -79,10 +90,12 @@ export default function InsightsPage() {
       if (sortKey === "views") return b.viewCount - a.viewCount;
       if (sortKey === "likes") return b.likeCount - a.likeCount;
       if (sortKey === "comments") return b.commentCount - a.commentCount;
+      if (sortKey === "saves")
+        return (tripPlanning?.byReel[b.id]?.saves ?? 0) - (tripPlanning?.byReel[a.id]?.saves ?? 0);
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
     return copy;
-  }, [reels, sortKey]);
+  }, [reels, sortKey, tripPlanning]);
 
   if (!municipality && !company) return null;
 
@@ -101,12 +114,49 @@ export default function InsightsPage() {
         </p>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <SummaryCard label={t("insights.totalPosts")} value={reels.length} />
             <SummaryCard label={t("insights.totalViews")} value={totals.views} />
             <SummaryCard label={t("insights.totalLikes")} value={totals.likes} />
             <SummaryCard label={t("insights.totalComments")} value={totals.comments} />
+            {tripPlanning && (
+              <>
+                <SummaryCard label={t("insights.totalSaves")} value={tripPlanning.totals.saves} />
+                <SummaryCard label={t("insights.totalTravelReports")} value={tripPlanning.totals.travelReports} />
+              </>
+            )}
           </div>
+
+          {tripPlanning && (
+            <section>
+              <h3 className="mb-1 text-sm font-semibold text-gray-600">{t("insights.originsHeading")}</h3>
+              <p className="mb-2 text-xs text-gray-400">{t("insights.originsNote")}</p>
+              <div className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4">
+                {tripPlanning.origins.length === 0 ? (
+                  <p className="text-xs text-gray-400">{t("insights.originsEmpty")}</p>
+                ) : (
+                  tripPlanning.origins.map((o) => (
+                    <div key={o.originLabel} className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+                      <span className="min-w-0 flex-1 truncate text-gray-700">{o.originLabel}</span>
+                      <span className="flex gap-2 text-xs text-gray-500">
+                        {(Object.entries(o.modeCounts) as [TravelMode, number][]).map(([mode, count]) => (
+                          <span key={mode} title={t(TRAVEL_MODE_LABEL_KEY[mode])}>
+                            {TRAVEL_MODE_ICON[mode]} {count}
+                          </span>
+                        ))}
+                      </span>
+                      <span className="w-14 shrink-0 text-right text-xs text-gray-400">
+                        {t("insights.reportCount", { count: o.reportCount })}
+                      </span>
+                    </div>
+                  ))
+                )}
+                {tripPlanning.hiddenCount > 0 && (
+                  <p className="text-[11px] text-gray-400">{t("insights.originsHidden", { count: tripPlanning.hiddenCount })}</p>
+                )}
+              </div>
+            </section>
+          )}
 
           <section>
             <h3 className="mb-2 text-sm font-semibold text-gray-600">{t("insights.byCategoryHeading")}</h3>
@@ -178,6 +228,7 @@ export default function InsightsPage() {
                 <option value="views">{t("insights.sortViews")}</option>
                 <option value="likes">{t("insights.sortLikes")}</option>
                 <option value="comments">{t("insights.sortComments")}</option>
+                <option value="saves">{t("insights.sortSaves")}</option>
                 <option value="date">{t("insights.sortDate")}</option>
               </select>
             </div>
@@ -200,6 +251,12 @@ export default function InsightsPage() {
                     <span>👁 {reel.viewCount}</span>
                     <span>❤️ {reel.likeCount}</span>
                     <span>💬 {reel.commentCount}</span>
+                    {tripPlanning && (
+                      <>
+                        <span title={t("insights.totalSaves")}>🔖 {tripPlanning.byReel[reel.id]?.saves ?? 0}</span>
+                        <span title={t("insights.totalTravelReports")}>⏱ {tripPlanning.byReel[reel.id]?.travelReports ?? 0}</span>
+                      </>
+                    )}
                   </div>
                 </div>
               ))}

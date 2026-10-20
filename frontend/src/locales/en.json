@@ -395,7 +395,16 @@
     "audienceNote": "Only counts viewers who were logged in and had registered a nationality/birth year. Logged-out or unregistered views are grouped as \"Unknown\".",
     "byNationalityHeading": "By Nationality",
     "byAgeHeading": "By Age",
-    "audienceEmpty": "No data yet."
+    "audienceEmpty": "No data yet.",
+    "totalSaves": "Bookmarks (itineraries)",
+    "totalTravelReports": "Travel time reports",
+    "originsHeading": "Where travelers come from",
+    "originsNote": "Starting points from travelers' actual travel time reports. To avoid identifying anyone, only starting points reported by 2 or more people are shown.",
+    "originsEmpty": "No reports to show yet",
+    "reportCount_one": "{{count}} report",
+    "reportCount_other": "{{count}} reports",
+    "originsHidden": "{{count}} more reports from starting points with too few reporters to show",
+    "sortSaves": "Most bookmarked"
   },
   "nationality": {
     "japan": "Japan",
@@ -445,7 +454,11 @@
     "updated": "Record updated (points are for the first report only, total {{total}}pt)",
     "saveError": "Could not save your record",
     "cardLine": "Travelers' actual time (from {{origin}}): avg. {{minutes}} min · {{count}} reports",
-    "disclaimer": "* Self-reported by users; accuracy is not guaranteed. Points are a prototype and can't be used for anything yet."
+    "disclaimer": "* Self-reported by users; accuracy is not guaranteed. Points are a prototype and can't be used for anything yet.",
+    "hiddenCount": "{{count}} more reports from starting points with too few reporters (hidden to protect privacy)",
+    "mineHeading": "Your reports",
+    "mineDuration": "{{minutes}} min",
+    "originPrivacyNote": "Starting points are shown to other users. Enter a station name or similar, not your home address."
   },
   "travelerTag": {
     "barrierFree": "Barrier-free",

@@ -395,7 +395,15 @@
     "audienceNote": "仅统计登录且已登记国籍・出生年份的观众。未登录或未登记的观看将归为“未知”。",
     "byNationalityHeading": "按国籍",
     "byAgeHeading": "按年龄段",
-    "audienceEmpty": "暂无数据。"
+    "audienceEmpty": "暂无数据。",
+    "totalSaves": "收藏（行程）数",
+    "totalTravelReports": "实测记录数",
+    "originsHeading": "旅行者从哪里来",
+    "originsNote": "旅行者记录的「实际所需时间」的出发地点。为避免识别个人，仅显示2人以上记录过的出发地点。",
+    "originsEmpty": "暂无可显示的记录",
+    "reportCount": "{{count}}条",
+    "originsHidden": "另有{{count}}条记录因记录人数较少而未显示出发地点",
+    "sortSaves": "按收藏数"
   },
   "nationality": {
     "japan": "日本",
@@ -444,7 +452,11 @@
     "updated": "已更新记录（积分仅限首次，共{{total}}pt）",
     "saveError": "记录失败",
     "cardLine": "大家的实测（从{{origin}}出发）平均{{minutes}}分钟・{{count}}条",
-    "disclaimer": "※为用户自行申报的记录，不保证准确。积分为试用功能，目前尚无用途。"
+    "disclaimer": "※为用户自行申报的记录，不保证准确。积分为试用功能，目前尚无用途。",
+    "hiddenCount": "另有{{count}}条来自记录人数较少的出发地点的记录（为保护隐私未显示）",
+    "mineHeading": "您的记录",
+    "mineDuration": "{{minutes}}分钟",
+    "originPrivacyNote": "出发地点也会显示给其他用户。请勿输入住址，请输入车站名等。"
   },
   "travelerTag": {
     "barrierFree": "无障碍",

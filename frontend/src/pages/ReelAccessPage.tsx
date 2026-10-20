@@ -266,7 +266,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
     api
       .get<TravelReports>(`/reels/${id}/travel-reports`)
       .then(({ data }) => setTravelReports(data))
-      .catch(() => setTravelReports({ summary: [], mine: [] }));
+      .catch(() => setTravelReports({ summary: [], hiddenCount: 0, mine: [] }));
   }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(loadTravelReports, [id]);

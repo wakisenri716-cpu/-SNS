@@ -11,6 +11,7 @@ import { parseDepartureTime } from "../lib/parseDepartureTime";
 import { AGE_BUCKETS, REEL_CATEGORIES, TRAVEL_MODES, ageBucketFromBirthYear, parseTravelerTags } from "../types";
 import { POINTS_PER_TRAVEL_REPORT, getUserPoints } from "../lib/points";
 import { hasTravelStyle, scoreReel } from "../lib/personalize";
+import { summarizeByOriginAndMode, summarizeOrigins } from "../lib/travelReports";
 
 const PERSONALIZED_POOL = 100;
 
@@ -347,6 +348,44 @@ router.get("/mine", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (
   res.json({ items: await Promise.all(reels.map((r) => serializeReel(r, anonymousViewerState()))) });
 });
 
+// Trip-planning signals for the posts a municipality/company manages: how many
+// travelers bookmarked each one (bookmarks are what build a しおり), how many
+// recorded an actual travel time, and where travelers say they came from —
+// origins only once enough different users share them (lib/travelReports.ts).
+// Must be registered before "/:id" so "mine" isn't matched as a reel id.
+router.get("/mine/trip-planning", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (req, res) => {
+  const poster = await resolvePosterContext(req, res);
+  if (!poster) return;
+
+  const reels = await prisma.reel.findMany({
+    where: poster.companyId ? { companyId: poster.companyId } : { municipalityId: poster.municipalityId },
+    select: { id: true },
+  });
+  const reelIds = reels.map((r) => r.id);
+
+  const [saveCounts, reports] = await Promise.all([
+    prisma.savedReel.groupBy({ by: ["reelId"], where: { reelId: { in: reelIds } }, _count: { _all: true } }),
+    prisma.travelTimeReport.findMany({
+      where: { reelId: { in: reelIds } },
+      select: { reelId: true, userId: true, mode: true, durationMin: true, originLabel: true },
+    }),
+  ]);
+
+  const byReel: Record<string, { saves: number; travelReports: number }> = {};
+  for (const id of reelIds) byReel[id] = { saves: 0, travelReports: 0 };
+  for (const s of saveCounts) byReel[s.reelId].saves = s._count._all;
+  for (const r of reports) byReel[r.reelId].travelReports++;
+
+  res.json({
+    totals: {
+      saves: saveCounts.reduce((sum, s) => sum + s._count._all, 0),
+      travelReports: reports.length,
+    },
+    byReel,
+    ...summarizeOrigins(reports),
+  });
+});
+
 // Aggregated, anonymized audience breakdown (nationality / age bucket) across all
 // reels the signed-in municipality/company account can manage — built from the
 // ReelView log rather than viewCount so it can be attributed to individual
@@ -458,31 +497,17 @@ router.get("/:id/nearby", optionalAuth, async (req, res) => {
 // this reel's location, grouped by starting point + mode — a single average
 // across all origins would be meaningless (小田原から vs 松本駅から differ by
 // hours). Origins are matched by normalized text, so "小田原駅" and "小田原"
-// count as different starting points. Also returns the signed-in viewer's own
-// reports so the form can show what they already recorded.
+// count as different starting points, and only shown once enough different
+// users share them (see lib/travelReports.ts). Also returns the signed-in
+// viewer's own reports, which they can always see.
 router.get("/:id/travel-reports", optionalAuth, async (req, res) => {
   const reports = await prisma.travelTimeReport.findMany({
     where: { reelId: req.params.id },
     select: { userId: true, mode: true, durationMin: true, originLabel: true },
   });
 
-  const groups = new Map<string, { originLabel: string; mode: string; durations: number[] }>();
-  for (const r of reports) {
-    const key = `${r.originLabel}\u0000${r.mode}`;
-    const group = groups.get(key) ?? { originLabel: r.originLabel, mode: r.mode, durations: [] };
-    group.durations.push(r.durationMin);
-    groups.set(key, group);
-  }
-
   res.json({
-    summary: [...groups.values()]
-      .map((g) => ({
-        originLabel: g.originLabel,
-        mode: g.mode,
-        count: g.durations.length,
-        averageMin: Math.round(g.durations.reduce((a, b) => a + b, 0) / g.durations.length),
-      }))
-      .sort((a, b) => b.count - a.count),
+    ...summarizeByOriginAndMode(reports),
     mine: req.auth
       ? reports
           .filter((r) => r.userId === req.auth!.userId)

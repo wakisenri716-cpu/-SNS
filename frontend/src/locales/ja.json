@@ -395,7 +395,15 @@
     "audienceNote": "国籍・生まれた年を登録した状態でログインして視聴した人のみ集計対象です。未ログイン・未登録の視聴は「不明」に分類されます。",
     "byNationalityHeading": "国籍別",
     "byAgeHeading": "年代別",
-    "audienceEmpty": "まだデータがありません。"
+    "audienceEmpty": "まだデータがありません。",
+    "totalSaves": "保存（しおり）数",
+    "totalTravelReports": "実測の記録数",
+    "originsHeading": "旅行者はどこから来ているか",
+    "originsNote": "旅行者が記録した「実際にかかった時間」の出発地点です。個人の特定につながらないよう、2人以上が同じ出発地点を記録したものだけを表示しています。",
+    "originsEmpty": "まだ表示できる記録はありません",
+    "reportCount": "{{count}}件",
+    "originsHidden": "ほか、記録した人が少ないため非表示の出発地点 {{count}}件",
+    "sortSaves": "保存数順"
   },
   "nationality": {
     "japan": "日本",
@@ -444,7 +452,11 @@
     "updated": "記録を更新しました（ポイントは初回のみ・合計 {{total}}pt）",
     "saveError": "記録できませんでした",
     "cardLine": "みんなの実測（{{origin}}から）平均{{minutes}}分・{{count}}件",
-    "disclaimer": "※ユーザーの自己申告による記録で、正確さは保証されません。ポイントは試作のため、まだ使い道はありません。"
+    "disclaimer": "※ユーザーの自己申告による記録で、正確さは保証されません。ポイントは試作のため、まだ使い道はありません。",
+    "hiddenCount": "ほか、記録した人が少ない出発地点からの記録 {{count}}件（個人の特定を防ぐため非表示）",
+    "mineHeading": "あなたの記録",
+    "mineDuration": "{{minutes}}分",
+    "originPrivacyNote": "出発地点は他のユーザーにも表示されます。自宅の住所などは入力せず、駅名などを入力してください。"
   },
   "travelerTag": {
     "barrierFree": "バリアフリー対応",

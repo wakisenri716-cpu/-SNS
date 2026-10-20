@@ -102,6 +102,22 @@ export default function TravelReportSection({
       ) : (
         <p className="mt-3 text-xs text-gray-400">{t("travelReport.noReports")}</p>
       )}
+      {(reports?.hiddenCount ?? 0) > 0 && (
+        <p className="mt-1.5 text-[11px] text-gray-400">{t("travelReport.hiddenCount", { count: reports!.hiddenCount })}</p>
+      )}
+      {(reports?.mine.length ?? 0) > 0 && (
+        <div className="mt-3 rounded-lg bg-gray-50 px-3 py-2">
+          <p className="text-[11px] font-semibold text-gray-500">{t("travelReport.mineHeading")}</p>
+          <ul className="mt-1 flex flex-col gap-0.5">
+            {reports!.mine.map((m) => (
+              <li key={m.mode} className="text-xs text-gray-600">
+                {t("travelReport.fromOrigin", { origin: m.originLabel })} {TRAVEL_MODE_ICON[m.mode]}{" "}
+                {t(TRAVEL_MODE_LABEL_KEY[m.mode])} {t("travelReport.mineDuration", { minutes: m.durationMin })}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="mt-4 border-t border-gray-100 pt-4">
         {!user ? (
@@ -123,6 +139,7 @@ export default function TravelReportSection({
                 placeholder={t("accessPlanner.originPlaceholder")}
                 className="w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
               />
+              <span className="text-[11px] leading-relaxed text-amber-700">{t("travelReport.originPrivacyNote")}</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {MODES.map((m) => (
