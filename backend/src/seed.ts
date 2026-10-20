@@ -57,14 +57,15 @@ const MUNICIPALITIES: SeedMunicipality[] = [
     lodgingInfo: "上高地帝国ホテルや上高地温泉ホテルなど、梓川沿いの山岳リゾートホテルが点在しています。",
     restaurantInfo: "河童橋周辺には信州そばや岩魚料理を提供する食堂・カフェが並びます。",
     nearestStationName: "松本駅",
-    nearestStationLat: 36.238,
-    nearestStationLng: 137.972,
+    // Coordinates per Wikipedia (松本駅 36.2305, 137.9639; 松本城 36.2391, 137.9691).
+    nearestStationLat: 36.2305,
+    nearestStationLng: 137.9639,
     // Only subjective "who it suits" tags here. barrierFree / multilingual are
     // factual claims about real facilities that haven't been verified, and a
     // wrong barrier-free tag could genuinely mislead someone, so the seed
     // leaves those for the municipality to set.
     reels: [
-      { caption: "国宝 松本城。現存する五重六階の天守としては日本最古です🏯", locationName: "松本城", lat: 36.2371, lng: 137.97, category: "culture", video: "matsumotojo.webm", tags: ["familyFriendly", "friends"] },
+      { caption: "国宝 松本城。現存する五重六階の天守としては日本最古です🏯", locationName: "松本城", lat: 36.2391, lng: 137.9691, category: "culture", video: "matsumotojo.webm", tags: ["familyFriendly", "friends"] },
       { caption: "河童橋から望む穂高連峰は圧巻です⛰️", locationName: "上高地 河童橋", lat: 36.251, lng: 137.6389, category: "nature", video: "kamikochi.webm", tags: ["familyFriendly", "couples", "friends"] },
       { caption: "河童橋を眺めながら信州そばのランチはいかが？🍜", locationName: "五千尺キッチン", lat: 36.2508, lng: 137.6387, category: "restaurant", video: "gosenjaku.webm", tags: ["couples", "friends"] },
       { caption: "大正池のほとりに佇む、上高地を代表するクラシックホテルです🏨", locationName: "上高地帝国ホテル", lat: 36.2427, lng: 137.6284, category: "lodging", video: "teikoku.webm", tags: ["couples"] },

@@ -106,7 +106,22 @@
     "emptyCta": "浏览投稿",
     "legSummary": "{{mode}}・{{duration}}",
     "disclaimer": "※移动时间为估算值，可能与实际所需时间有出入。",
-    "loginCta": "登录后即可根据保存的地点生成行程"
+    "loginCta": "登录后即可根据保存的地点生成行程",
+    "nextDay": "次日{{time}}",
+    "tripSettings": "出发地点・出发时间",
+    "originPlaceholder": "出发地点（例：东京站）",
+    "startTimeLabel": "出发时间",
+    "apply": "应用",
+    "depart": "{{time}} 出发",
+    "noOrigin": "（未设置出发地点）",
+    "moveUp": "上移",
+    "moveDown": "下移",
+    "remove": "从行程中移除（取消保存）",
+    "arriveDepart": "{{arrive}} 到达 → {{depart}} 出发",
+    "stayLabel": "停留",
+    "stayMinutes": "{{minutes}}分钟",
+    "finish": "约{{time}}离开最后一个地点",
+    "originNotLocated": "无法确定出发地点的位置，因此未包含前往第一个地点的交通时间（按出发时间到达第一个地点计算）。"
   },
   "dashboard": {
     "tabPosts": "投稿",

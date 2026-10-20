@@ -106,7 +106,22 @@
     "emptyCta": "Browse posts",
     "legSummary": "{{duration}} by {{mode}}",
     "disclaimer": "Travel times are estimates and may differ from actual durations.",
-    "loginCta": "Log in to build an itinerary from the places you save"
+    "loginCta": "Log in to build an itinerary from the places you save",
+    "nextDay": "next day {{time}}",
+    "tripSettings": "Starting point & time",
+    "originPlaceholder": "Starting point (e.g. Tokyo Station)",
+    "startTimeLabel": "Start time",
+    "apply": "Apply",
+    "depart": "Depart {{time}}",
+    "noOrigin": "(no starting point set)",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "remove": "Remove from itinerary (unsave)",
+    "arriveDepart": "Arrive {{arrive}} → leave {{depart}}",
+    "stayLabel": "Stay",
+    "stayMinutes": "{{minutes}} min",
+    "finish": "Leave the last stop around {{time}}",
+    "originNotLocated": "Couldn't locate the starting point, so travel time to the first stop isn't included (times assume you reach the first stop at the start time)."
   },
   "dashboard": {
     "tabPosts": "Posts",

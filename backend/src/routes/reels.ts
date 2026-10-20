@@ -161,26 +161,67 @@ router.get("/saved", requireAuth, async (req, res) => {
   });
 });
 
-// しおり (itinerary): chains the signed-in user's saved/bookmarked reels, in
-// the order they were saved, into a route — each consecutive pair gets a
-// real-or-mock travel estimate between them (see getTransitSuggestion),
-// reusing the exact same mock fallback this app uses everywhere else. Unlike
-// the per-reel "アクセス" planner, no origin needs to be typed/geocoded here:
-// both ends of each leg are already-known reel coordinates. Only reels with
-// location data can be chained, so ones without are silently skipped — must
-// be registered before "/:id" so "itinerary" isn't matched as a reel id.
+// しおり (itinerary): chains the signed-in user's saved/bookmarked reels into
+// a route — in the order they arranged (PUT /reels/itinerary/order), falling
+// back to save order — with a real-or-mock travel estimate between each
+// consecutive pair (see getTransitSuggestion), reusing the exact same mock
+// fallback this app uses everywhere else. Both ends of those legs are known
+// reel coordinates, so nothing needs geocoding; only the optional leg from the
+// user's typed trip origin to the first stop does, like the access planner.
+// Reels without location data can't be chained and are skipped. The frontend
+// turns the legs + each stop's stayMinutes + the start time into a timeline.
+// Must be registered before "/:id" so "itinerary" isn't matched as a reel id.
 router.get("/itinerary", requireAuth, async (req, res) => {
-  const saves = await prisma.savedReel.findMany({
-    where: { userId: req.auth!.userId },
-    orderBy: { createdAt: "asc" },
-    include: {
-      reel: {
-        include: { municipality: { select: { id: true, name: true, avatarUrl: true, prefecture: true } } },
+  const [user, saves] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: req.auth!.userId },
+      select: { itineraryOrigin: true, itineraryStartTime: true },
+    }),
+    prisma.savedReel.findMany({
+      where: { userId: req.auth!.userId },
+      include: {
+        reel: {
+          include: { municipality: { select: { id: true, name: true, avatarUrl: true, prefecture: true } } },
+        },
       },
-    },
-  });
+    }),
+  ]);
 
-  const stops = saves.map((s) => s.reel).filter((r) => r.locationLat != null && r.locationLng != null);
+  const ordered = saves
+    .filter((s) => s.reel.locationLat != null && s.reel.locationLng != null)
+    .sort(
+      (a, b) =>
+        (a.position ?? Number.MAX_SAFE_INTEGER) - (b.position ?? Number.MAX_SAFE_INTEGER) ||
+        a.createdAt.getTime() - b.createdAt.getTime()
+    );
+  const stops = ordered.map((s) => s.reel);
+
+  const originLabel = user?.itineraryOrigin ?? "";
+  let originLeg = null;
+  if (originLabel && stops.length > 0) {
+    let originCoords: { lat: number; lng: number } | null = null;
+    if (isGoogleMapsConfigured()) {
+      try {
+        const geocoded = await geocode(originLabel);
+        if (geocoded) originCoords = { lat: geocoded.lat, lng: geocoded.lng };
+      } catch (err) {
+        console.error("[reels] Geocoding itinerary origin failed:", err);
+      }
+    }
+    // Without coordinates for the typed origin, the only fallback would be the
+    // name-hash mock, which can be hours off — and on a timeline that error
+    // shifts every clock time after it. So leave the leg out instead, and let
+    // the client say why (originLocated: false).
+    if (originCoords) {
+      const first = stops[0];
+      originLeg = await getTransitSuggestion(
+        first.locationName || first.municipality.name,
+        first.locationLat!,
+        first.locationLng!,
+        { label: originLabel, ...originCoords }
+      );
+    }
+  }
 
   const legs = [];
   for (let i = 0; i < stops.length - 1; i++) {
@@ -197,7 +238,11 @@ router.get("/itinerary", requireAuth, async (req, res) => {
   }
 
   res.json({
-    stops: stops.map((r) => ({
+    originLabel,
+    startTime: user?.itineraryStartTime ?? "09:00",
+    originLeg,
+    originLocated: originLeg != null,
+    stops: ordered.map(({ reel: r, stayMinutes }) => ({
       id: r.id,
       caption: r.caption,
       category: r.category,
@@ -206,9 +251,52 @@ router.get("/itinerary", requireAuth, async (req, res) => {
       locationLng: r.locationLng,
       videoUrl: r.videoUrl,
       municipality: r.municipality,
+      stayMinutes,
     })),
     legs,
   });
+});
+
+const itineraryOrderSchema = z.object({ reelIds: z.array(z.string()).max(200) });
+
+// Rearrange the しおり: positions follow the given order. Ids the user hasn't
+// saved are ignored rather than rejected, so a stale client list can't fail.
+router.put("/itinerary/order", requireAuth, async (req, res) => {
+  const parsed = itineraryOrderSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
+
+  await prisma.$transaction(
+    parsed.data.reelIds.map((reelId, position) =>
+      prisma.savedReel.updateMany({ where: { userId: req.auth!.userId, reelId }, data: { position } })
+    )
+  );
+  res.status(204).end();
+});
+
+const itinerarySettingsSchema = z.object({
+  originLabel: z
+    .string()
+    .transform((v) => v.trim().replace(/\s+/g, " "))
+    .pipe(z.string().max(100))
+    .optional(),
+  startTime: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+    .optional(),
+});
+
+router.put("/itinerary/settings", requireAuth, async (req, res) => {
+  const parsed = itinerarySettingsSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
+
+  await prisma.user.update({
+    where: { id: req.auth!.userId },
+    data: {
+      ...(parsed.data.originLabel !== undefined ? { itineraryOrigin: parsed.data.originLabel } : {}),
+      ...(parsed.data.startTime !== undefined ? { itineraryStartTime: parsed.data.startTime } : {}),
+    },
+  });
+  res.status(204).end();
 });
 
 // Reels from municipalities/companies the signed-in user follows — the feed's
@@ -580,6 +668,21 @@ router.post("/:id/save", requireAuth, async (req, res) => {
     create: { userId: req.auth!.userId, reelId: reel.id },
     update: {},
   });
+  res.status(204).end();
+});
+
+const stayMinutesSchema = z.object({ stayMinutes: z.coerce.number().int().min(0).max(24 * 60) });
+
+// Planned stay at one しおり stop.
+router.patch("/:id/save", requireAuth, async (req, res) => {
+  const parsed = stayMinutesSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
+
+  const { count } = await prisma.savedReel.updateMany({
+    where: { userId: req.auth!.userId, reelId: req.params.id },
+    data: { stayMinutes: parsed.data.stayMinutes },
+  });
+  if (count === 0) return res.status(404).json({ error: "保存されていない投稿です" });
   res.status(204).end();
 });
 

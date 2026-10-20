@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
+import { fetchSavedReelIds, notifySavesChanged, onSavesChanged } from "../lib/savesChanged";
 import { useAuth } from "../auth/AuthContext";
 import AutoplayVideo from "../components/AutoplayVideo";
 import ReelThumb from "../components/ReelGrid";
@@ -65,6 +66,15 @@ export default function MunicipalityProfilePage() {
     });
   }, [id]);
 
+  // See FeedPage: re-sync savedByMe after saves/unsaves made elsewhere.
+  useEffect(() => {
+    if (!token) return;
+    return onSavesChanged(async () => {
+      const ids = await fetchSavedReelIds();
+      setReels((prev) => prev.map((r) => ({ ...r, savedByMe: ids.has(r.id) })));
+    });
+  }, [token]);
+
   async function toggleLike(reel: Reel) {
     if (!token) return;
     if (reel.likedByMe) {
@@ -88,6 +98,7 @@ export default function MunicipalityProfilePage() {
     } else {
       await api.post(`/reels/${reel.id}/save`);
     }
+    notifySavesChanged();
     setReels((prev) => prev.map((r) => (r.id === reel.id ? { ...r, savedByMe: !r.savedByMe } : r)));
   }
 

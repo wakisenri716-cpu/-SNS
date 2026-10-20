@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
+import { fetchSavedReelIds, notifySavesChanged, onSavesChanged } from "../lib/savesChanged";
 import { useAuth } from "../auth/AuthContext";
 import ReelThumb from "../components/ReelGrid";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
@@ -36,6 +37,18 @@ export default function FeedPage() {
       .finally(() => setLoading(false));
   }, [token, tab]);
 
+  // Keep savedByMe in sync when a save/unsave happens elsewhere (e.g. removing
+  // a stop from the しおり), so the 🔖 button doesn't act on a stale state.
+  useEffect(() => {
+    if (!token) return;
+    return onSavesChanged(async () => {
+      const ids = await fetchSavedReelIds();
+      setReels((prev) =>
+        tab === "saved" ? prev.filter((r) => ids.has(r.id)) : prev.map((r) => ({ ...r, savedByMe: ids.has(r.id) }))
+      );
+    });
+  }, [token, tab]);
+
   async function toggleLike(reel: Reel) {
     if (!token) return;
     if (reel.likedByMe) {
@@ -59,6 +72,7 @@ export default function FeedPage() {
     } else {
       await api.post(`/reels/${reel.id}/save`);
     }
+    notifySavesChanged();
     setReels((prev) => {
       const next = prev.map((r) => (r.id === reel.id ? { ...r, savedByMe: !r.savedByMe } : r));
       // Unsaving while viewing the "saved" tab should drop it from view immediately.

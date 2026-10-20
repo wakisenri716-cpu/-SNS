@@ -1,4 +1,4 @@
-import { getRouteEstimate, isGoogleMapsConfigured } from "./googleMaps";
+import { getRouteEstimate, haversineMeters, isGoogleMapsConfigured } from "./googleMaps";
 
 export interface TransitLeg {
   mode: "walk" | "train" | "bus" | "drive";
@@ -40,14 +40,62 @@ function estimateFareYen(distanceMeters: number, mode: "walk" | "drive"): number
   return Math.round(raw / 10) * 10;
 }
 
+// Mock assumptions for when both ends have coordinates: actual routes run
+// roughly 1.4x the straight-line distance, walking ~4.5km/h, and a typical
+// regional train/bus trip averages ~30km/h door to door.
+const ROUTE_DETOUR_FACTOR = 1.4;
+const MOCK_WALK_KMH = 4.5;
+const MOCK_TRANSIT_KMH = 30;
+const MOCK_WALK_ONLY_KM = 2;
+
 function getMockTransitSuggestion(
   originLabel: string,
   destinationLabel: string,
   destinationLat: number,
   destinationLng: number,
-  departureAt: Date
+  departureAt: Date,
+  originCoords: { lat: number; lng: number } | null
 ): TransitSuggestion {
-  // Deterministic pseudo-duration derived from the origin+destination names so
+  // With both coordinates known (e.g. between two しおり stops), base the mock
+  // on the real straight-line distance, so two spots 30m apart don't get a
+  // 50-minute leg. Still a mock: no real route, timetable, or fare lookup.
+  if (originCoords) {
+    const straightKm = haversineMeters(originCoords, { lat: destinationLat, lng: destinationLng }) / 1000;
+    const routeKm = straightKm * ROUTE_DETOUR_FACTOR;
+    const legs: TransitLeg[] =
+      straightKm <= MOCK_WALK_ONLY_KM
+        ? [
+            {
+              mode: "walk",
+              description: `${destinationLabel}まで徒歩`,
+              durationMin: Math.max(1, Math.round((routeKm / MOCK_WALK_KMH) * 60)),
+            },
+          ]
+        : [
+            { mode: "walk", description: `${originLabel}から最寄り駅・バス停まで徒歩`, durationMin: 10 },
+            {
+              mode: "train",
+              description: `${destinationLabel}方面へ電車・バス`,
+              durationMin: Math.round((routeKm / MOCK_TRANSIT_KMH) * 60),
+            },
+          ];
+    const totalDurationMin = legs.reduce((sum, l) => sum + l.durationMin, 0);
+    return {
+      originLabel,
+      destinationLabel,
+      destinationLat,
+      destinationLng,
+      totalDurationMin,
+      legs,
+      estimatedFareYen: straightKm <= MOCK_WALK_ONLY_KM ? 0 : estimateFareYen(routeKm * 1000, "drive"),
+      departureAt: departureAt.toISOString(),
+      arrivalAt: new Date(departureAt.getTime() + totalDurationMin * 60000).toISOString(),
+      isMock: true,
+    };
+  }
+
+  // No origin coordinates (e.g. a typed place name that couldn't be geocoded):
+  // deterministic pseudo-duration derived from the origin+destination names so
   // repeated calls for the same pair return the same mock numbers.
   let seed = 0;
   for (const ch of originLabel + destinationLabel) seed = (seed * 31 + ch.charCodeAt(0)) % 97;
@@ -139,6 +187,7 @@ export async function getTransitSuggestion(
     destinationLabel,
     destinationLat,
     destinationLng,
-    departureAt
+    departureAt,
+    origin && origin.lat != null && origin.lng != null ? { lat: origin.lat, lng: origin.lng } : null
   );
 }

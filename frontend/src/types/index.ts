@@ -179,9 +179,20 @@ export interface ItineraryStop {
   locationLng: number;
   videoUrl: string;
   municipality: { id: string; name: string; avatarUrl: string | null; prefecture: string };
+  // Planned stay at this stop (PATCH /reels/:id/save).
+  stayMinutes: number;
 }
 
 export interface Itinerary {
+  // Trip settings (PUT /reels/itinerary/settings): where the trip starts —
+  // "" if unset — and the start time of day, "HH:MM".
+  originLabel: string;
+  startTime: string;
+  // Travel estimate from originLabel to the first stop.
+  // Null without an origin, or when the origin couldn't be located (then
+  // originLocated is false and the timeline starts at the first stop).
+  originLeg: TransitSuggestion | null;
+  originLocated: boolean;
   stops: ItineraryStop[];
   // legs[i] is the travel estimate from stops[i] to stops[i+1] — always
   // legs.length === stops.length - 1.

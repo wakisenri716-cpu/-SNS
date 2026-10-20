@@ -106,7 +106,22 @@
     "emptyCta": "投稿を探す",
     "legSummary": "{{mode}}で{{duration}}",
     "disclaimer": "※移動時間は概算です。実際の所要時間とは異なる場合があります。",
-    "loginCta": "ログインすると、保存した場所からしおりが作られます"
+    "loginCta": "ログインすると、保存した場所からしおりが作られます",
+    "nextDay": "翌{{time}}",
+    "tripSettings": "出発地点・出発時刻",
+    "originPlaceholder": "出発地点（例：東京駅）",
+    "startTimeLabel": "出発時刻",
+    "apply": "反映",
+    "depart": "{{time}} 発",
+    "noOrigin": "（出発地点は未設定）",
+    "moveUp": "上へ移動",
+    "moveDown": "下へ移動",
+    "remove": "しおりから外す（保存を解除）",
+    "arriveDepart": "{{arrive}} 着 → {{depart}} 発",
+    "stayLabel": "滞在",
+    "stayMinutes": "{{minutes}}分",
+    "finish": "{{time}} ごろ最後の場所を出発",
+    "originNotLocated": "出発地点の場所を特定できなかったため、最初の場所までの移動時間は含めていません（出発時刻に最初の場所へ着く想定で計算しています）"
   },
   "dashboard": {
     "tabPosts": "投稿",

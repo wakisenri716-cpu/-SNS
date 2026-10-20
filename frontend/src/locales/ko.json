@@ -106,7 +106,22 @@
     "emptyCta": "게시물 둘러보기",
     "legSummary": "{{mode}}로 {{duration}}",
     "disclaimer": "※이동 시간은 추정치이며 실제 소요 시간과 다를 수 있습니다.",
-    "loginCta": "로그인하면 저장한 장소로 여행 일정이 만들어집니다"
+    "loginCta": "로그인하면 저장한 장소로 여행 일정이 만들어집니다",
+    "nextDay": "다음 날 {{time}}",
+    "tripSettings": "출발 지점・출발 시각",
+    "originPlaceholder": "출발 지점 (예: 도쿄역)",
+    "startTimeLabel": "출발 시각",
+    "apply": "적용",
+    "depart": "{{time}} 출발",
+    "noOrigin": "(출발 지점 미설정)",
+    "moveUp": "위로 이동",
+    "moveDown": "아래로 이동",
+    "remove": "일정에서 제외 (저장 해제)",
+    "arriveDepart": "{{arrive}} 도착 → {{depart}} 출발",
+    "stayLabel": "체류",
+    "stayMinutes": "{{minutes}}분",
+    "finish": "{{time}}경 마지막 장소 출발",
+    "originNotLocated": "출발 지점의 위치를 특정할 수 없어 첫 장소까지의 이동 시간은 포함하지 않았습니다 (출발 시각에 첫 장소에 도착하는 것으로 계산합니다)."
   },
   "dashboard": {
     "tabPosts": "게시물",

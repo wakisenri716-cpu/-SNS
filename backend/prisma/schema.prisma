@@ -35,6 +35,10 @@ model User {
   needsBarrierFree   Boolean  @default(false)
   needsMultilingual  Boolean  @default(false)
   favoriteCategories String   @default("")
+  // しおり trip settings: where the trip starts (free text, like the access
+  // planner's origin) and the start time of day ("HH:MM").
+  itineraryOrigin    String   @default("")
+  itineraryStartTime String   @default("09:00")
   createdAt    DateTime @default(now())
 
   municipality Municipality?
@@ -174,6 +178,11 @@ model SavedReel {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   reelId    String
   reel      Reel     @relation(fields: [reelId], references: [id], onDelete: Cascade)
+  // しおり order set by the user (PUT /reels/itinerary/order). Null until they
+  // reorder; unpositioned saves sort after positioned ones, by save time.
+  position    Int?
+  // How long the user plans to stay at this stop — drives the しおり timeline.
+  stayMinutes Int      @default(60)
   createdAt DateTime @default(now())
 
   @@unique([userId, reelId])
