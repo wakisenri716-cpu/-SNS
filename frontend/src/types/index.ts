@@ -104,12 +104,18 @@ export interface TransitSuggestion {
   isMock: boolean;
 }
 
+// Who/what a posted spot suits, set by the posting municipality/company.
+// Mirrors TRAVELER_TAGS in backend/src/types.ts.
+export const TRAVELER_TAGS = ["barrierFree", "familyFriendly", "couples", "friends", "multilingual"] as const;
+export type TravelerTag = (typeof TRAVELER_TAGS)[number];
+
 export interface Reel {
   id: string;
   videoUrl: string;
   thumbnailUrl: string | null;
   caption: string;
   category: ReelCategory;
+  travelerTags: TravelerTag[];
   locationName: string | null;
   locationLat: number | null;
   locationLng: number | null;

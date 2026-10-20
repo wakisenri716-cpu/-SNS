@@ -1,0 +1,61 @@
+import { useTranslation } from "react-i18next";
+import { TRAVELER_TAGS, type TravelerTag } from "../types";
+
+export const TRAVELER_TAG_ICON: Record<TravelerTag, string> = {
+  barrierFree: "♿",
+  familyFriendly: "👨‍👩‍👧",
+  couples: "💑",
+  friends: "👫",
+  multilingual: "🌐",
+};
+
+// Read-only chips showing who a post's spot suits. `dark` is for use over video.
+export function TravelerTagChips({ tags, dark = false }: { tags: TravelerTag[]; dark?: boolean }) {
+  const { t } = useTranslation();
+  if (tags.length === 0) return null;
+  return (
+    <div className="flex flex-wrap gap-1">
+      {tags.map((tag) => (
+        <span
+          key={tag}
+          className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${
+            dark ? "bg-white/20 text-white backdrop-blur" : "bg-teal-50 text-teal-800"
+          }`}
+        >
+          {TRAVELER_TAG_ICON[tag]} {t(`travelerTag.${tag}`)}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+// Toggle chips for choosing tags (uploader / post editor).
+export function TravelerTagPicker({
+  value,
+  onChange,
+}: {
+  value: TravelerTag[];
+  onChange: (tags: TravelerTag[]) => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {TRAVELER_TAGS.map((tag) => {
+        const on = value.includes(tag);
+        return (
+          <button
+            key={tag}
+            type="button"
+            aria-pressed={on}
+            onClick={() => onChange(on ? value.filter((v) => v !== tag) : TRAVELER_TAGS.filter((v) => v === tag || value.includes(v)))}
+            className={`rounded-full px-3 py-1 text-xs font-medium ${
+              on ? "bg-teal-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            }`}
+          >
+            {TRAVELER_TAG_ICON[tag]} {t(`travelerTag.${tag}`)}
+          </button>
+        );
+      })}
+    </div>
+  );
+}

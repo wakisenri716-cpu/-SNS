@@ -190,7 +190,8 @@
     "categoryLabel": "カテゴリ",
     "uploading": "アップロード中... {{percent}}%",
     "fileTooLargeError": "動画ファイルが大きすぎます（200MB以下にしてください）",
-    "processing": "処理中..."
+    "processing": "処理中...",
+    "travelerTagsLabel": "どんな人に向いている場所か（任意・複数選択可）"
   },
   "reelManageGrid": {
     "empty": "まだ投稿がありません。",
@@ -410,5 +411,18 @@
     "saveError": "記録できませんでした",
     "cardLine": "みんなの実測（{{origin}}から）平均{{minutes}}分・{{count}}件",
     "disclaimer": "※ユーザーの自己申告による記録で、正確さは保証されません。ポイントは試作のため、まだ使い道はありません。"
+  },
+  "travelerTag": {
+    "barrierFree": "バリアフリー対応",
+    "familyFriendly": "家族・子連れ向け",
+    "couples": "カップル向け",
+    "friends": "友人グループ向け",
+    "multilingual": "外国語対応"
+  },
+  "reelTagEditor": {
+    "heading": "対応・おすすめ相手",
+    "note": "「バリアフリー対応」「外国語対応」は、実際の設備・対応状況を確認したうえで設定してください。",
+    "save": "保存",
+    "saveError": "保存できませんでした"
   }
 }

@@ -117,6 +117,9 @@ model Reel {
   // One of: "nature" | "culture" | "activity" | "lodging" | "restaurant" — chosen by
   // the poster at upload time, used to filter the main feed into category tabs.
   category       String   @default("nature")
+  // Comma-separated subset of TRAVELER_TAGS (see src/types.ts), e.g.
+  // "barrierFree,familyFriendly" — who/what the spot suits, set by the poster.
+  travelerTags   String   @default("")
   viewCount      Int      @default(0)
   createdAt      DateTime @default(now())
 

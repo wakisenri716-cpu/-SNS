@@ -190,7 +190,8 @@
     "categoryLabel": "分类",
     "uploading": "上传中... {{percent}}%",
     "fileTooLargeError": "视频文件过大（请控制在200MB以内）",
-    "processing": "处理中..."
+    "processing": "处理中...",
+    "travelerTagsLabel": "适合哪些人（可选・可多选）"
   },
   "reelManageGrid": {
     "empty": "还没有任何投稿。",
@@ -410,5 +411,18 @@
     "saveError": "记录失败",
     "cardLine": "大家的实测（从{{origin}}出发）平均{{minutes}}分钟・{{count}}条",
     "disclaimer": "※为用户自行申报的记录，不保证准确。积分为试用功能，目前尚无用途。"
+  },
+  "travelerTag": {
+    "barrierFree": "无障碍",
+    "familyFriendly": "适合家庭・带孩子",
+    "couples": "适合情侣",
+    "friends": "适合朋友结伴",
+    "multilingual": "支持外语"
+  },
+  "reelTagEditor": {
+    "heading": "适合人群・服务",
+    "note": "请在确认实际设施和服务情况后再设置「无障碍」「支持外语」。",
+    "save": "保存",
+    "saveError": "保存失败"
   }
 }

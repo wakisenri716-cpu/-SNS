@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import ReelUploader from "../components/ReelUploader";
+import ReelTagEditor from "../components/ReelTagEditor";
+import { TravelerTagChips } from "../components/TravelerTagChips";
 import AutoplayVideo from "../components/AutoplayVideo";
 import type { Municipality, Reel, TourismSpot } from "../types";
 
@@ -298,10 +300,12 @@ function PostsGrid({
   reels,
   onUpload,
   onDelete,
+  onEditTags,
 }: {
   reels: Reel[];
   onUpload: () => void;
   onDelete: (reelId: string) => void;
+  onEditTags: (reel: Reel) => void;
 }) {
   const { t } = useTranslation();
   return (
@@ -320,9 +324,17 @@ function PostsGrid({
               {t("dashboard.postedBy", { name: reel.postedByCompany.name })}
             </p>
           )}
+          {/* Always visible on touch screens, which have no hover. */}
+          <button
+            onClick={() => onEditTags(reel)}
+            title={t("reelTagEditor.heading")}
+            className="absolute left-1 top-1 rounded-full bg-black/60 px-2 py-1 text-xs text-white md:opacity-0 md:group-hover:opacity-100"
+          >
+            🏷{reel.travelerTags.length > 0 ? ` ${reel.travelerTags.length}` : ""}
+          </button>
           <button
             onClick={() => onDelete(reel.id)}
-            className="absolute right-1 top-1 rounded-full bg-black/60 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100"
+            className="absolute right-1 top-1 rounded-full bg-black/60 px-2 py-1 text-xs text-white md:opacity-0 md:group-hover:opacity-100"
           >
             {t("dashboard.deleteReel")}
           </button>
@@ -338,6 +350,7 @@ export default function DashboardPage() {
   const [reels, setReels] = useState<Reel[]>([]);
   const [companies, setCompanies] = useState<{ id: string; name: string; createdAt: string }[]>([]);
   const [showUploader, setShowUploader] = useState(false);
+  const [editingReel, setEditingReel] = useState<Reel | null>(null);
   const [tab, setTab] = useState<TabKey>("posts");
 
   useEffect(() => {
@@ -374,7 +387,26 @@ export default function DashboardPage() {
     <div className="mx-auto my-6 w-full max-w-2xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:max-w-4xl">
       <div className="relative aspect-[3/1] w-full bg-gradient-to-br from-teal-100 to-cyan-100">
         {featured ? (
-          <AutoplayVideo src={featured.videoUrl} className="h-full w-full object-cover" />
+          <>
+            <AutoplayVideo src={featured.videoUrl} className="h-full w-full object-cover" />
+            <div className="absolute right-2 top-2 flex gap-1.5">
+              <button
+                onClick={() => setEditingReel(featured)}
+                className="rounded-full bg-black/60 px-2.5 py-1 text-xs text-white hover:bg-black/75"
+              >
+                🏷 {t("reelTagEditor.heading")}
+              </button>
+              <button
+                onClick={() => deleteReel(featured.id)}
+                className="rounded-full bg-black/60 px-2.5 py-1 text-xs text-white hover:bg-black/75"
+              >
+                {t("dashboard.deleteReel")}
+              </button>
+            </div>
+            <div className="absolute left-2 top-2 max-w-[50%]">
+              <TravelerTagChips tags={featured.travelerTags} dark />
+            </div>
+          </>
         ) : (
           <button
             onClick={() => setShowUploader(true)}
@@ -445,7 +477,12 @@ export default function DashboardPage() {
       </div>
 
       {tab === "posts" && (
-        <PostsGrid reels={featured ? rest : []} onUpload={() => setShowUploader(true)} onDelete={deleteReel} />
+        <PostsGrid
+          reels={featured ? rest : []}
+          onUpload={() => setShowUploader(true)}
+          onDelete={deleteReel}
+          onEditTags={setEditingReel}
+        />
       )}
       {tab === "tourismInfo" && (
         <TourismSpotsEditor key={municipality.id} initialSpots={municipality.tourismSpots} />
@@ -479,6 +516,14 @@ export default function DashboardPage() {
           </ul>
         )}
       </div>
+
+      {editingReel && (
+        <ReelTagEditor
+          reel={editingReel}
+          onClose={() => setEditingReel(null)}
+          onSaved={(updated) => setReels((prev) => prev.map((r) => (r.id === updated.id ? updated : r)))}
+        />
+      )}
 
       {showUploader && (
         <div

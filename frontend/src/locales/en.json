@@ -190,7 +190,8 @@
     "categoryLabel": "Category",
     "uploading": "Uploading... {{percent}}%",
     "fileTooLargeError": "The video file is too large (please keep it under 200MB)",
-    "processing": "Processing..."
+    "processing": "Processing...",
+    "travelerTagsLabel": "Who is this spot good for? (optional, choose any)"
   },
   "reelManageGrid": {
     "empty": "No posts yet.",
@@ -411,5 +412,18 @@
     "saveError": "Could not save your record",
     "cardLine": "Travelers' actual time (from {{origin}}): avg. {{minutes}} min · {{count}} reports",
     "disclaimer": "* Self-reported by users; accuracy is not guaranteed. Points are a prototype and can't be used for anything yet."
+  },
+  "travelerTag": {
+    "barrierFree": "Barrier-free",
+    "familyFriendly": "Family-friendly",
+    "couples": "For couples",
+    "friends": "For groups of friends",
+    "multilingual": "Multilingual support"
+  },
+  "reelTagEditor": {
+    "heading": "Suitable for",
+    "note": "Only set \"Barrier-free\" and \"Multilingual support\" after confirming the actual facilities and services.",
+    "save": "Save",
+    "saveError": "Could not save"
   }
 }

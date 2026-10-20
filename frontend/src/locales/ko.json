@@ -190,7 +190,8 @@
     "categoryLabel": "카테고리",
     "uploading": "업로드 중... {{percent}}%",
     "fileTooLargeError": "동영상 파일이 너무 큽니다（200MB 이하로 해주세요）",
-    "processing": "처리 중..."
+    "processing": "처리 중...",
+    "travelerTagsLabel": "어떤 사람에게 맞는 장소인가요? (선택・복수 선택 가능)"
   },
   "reelManageGrid": {
     "empty": "아직 게시물이 없습니다.",
@@ -410,5 +411,18 @@
     "saveError": "기록하지 못했습니다",
     "cardLine": "모두의 실측 ({{origin}}에서) 평균 {{minutes}}분・{{count}}건",
     "disclaimer": "※사용자가 직접 신고한 기록으로 정확성을 보장하지 않습니다. 포인트는 시험 기능이라 아직 사용처가 없습니다."
+  },
+  "travelerTag": {
+    "barrierFree": "배리어프리",
+    "familyFriendly": "가족・아이 동반 추천",
+    "couples": "커플 추천",
+    "friends": "친구 그룹 추천",
+    "multilingual": "외국어 지원"
+  },
+  "reelTagEditor": {
+    "heading": "대응・추천 대상",
+    "note": "「배리어프리」「외국어 지원」은 실제 시설・대응 상황을 확인한 후 설정해 주세요.",
+    "save": "저장",
+    "saveError": "저장하지 못했습니다"
   }
 }

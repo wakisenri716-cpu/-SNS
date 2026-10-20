@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AutoplayVideo from "./AutoplayVideo";
+import { TravelerTagChips } from "./TravelerTagChips";
 import type { Reel } from "../types";
 
 function ReelOverlayInfo({
@@ -48,6 +49,11 @@ function ReelOverlayInfo({
         <p className="text-sm text-white drop-shadow">{reel.caption}</p>
         {reel.locationName && (
           <p className="mt-1.5 text-xs text-white/80 drop-shadow">📍 {reel.locationName}</p>
+        )}
+        {reel.travelerTags.length > 0 && (
+          <div className="mt-1.5">
+            <TravelerTagChips tags={reel.travelerTags} dark />
+          </div>
         )}
         {reel.locationLat != null && reel.locationLng != null && (
           <Link

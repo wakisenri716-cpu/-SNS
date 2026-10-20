@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
-import { REEL_CATEGORIES, type Reel, type ReelCategory } from "../types";
+import { REEL_CATEGORIES, type Reel, type ReelCategory, type TravelerTag } from "../types";
+import { TravelerTagPicker } from "./TravelerTagChips";
 
 const inputClass =
   "rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-teal-500";
@@ -15,6 +16,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
   const { t } = useTranslation();
   const [caption, setCaption] = useState("");
   const [category, setCategory] = useState<ReelCategory>("nature");
+  const [travelerTags, setTravelerTags] = useState<TravelerTag[]>([]);
   const [locationName, setLocationName] = useState("");
   const [locationLat, setLocationLat] = useState("");
   const [locationLng, setLocationLng] = useState("");
@@ -41,6 +43,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
       fd.append("video", file);
       fd.append("caption", caption);
       fd.append("category", category);
+      fd.append("travelerTags", travelerTags.join(","));
       if (locationName) fd.append("locationName", locationName);
       if (locationLat) fd.append("locationLat", locationLat);
       if (locationLng) fd.append("locationLng", locationLng);
@@ -51,6 +54,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
       });
       onCreated(data);
       setCaption("");
+      setTravelerTags([]);
       setLocationName("");
       setLocationLat("");
       setLocationLng("");
@@ -93,6 +97,12 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
           ))}
         </select>
       </label>
+      <div className="text-xs font-medium text-gray-500">
+        {t("reelUploader.travelerTagsLabel")}
+        <div className="mt-1">
+          <TravelerTagPicker value={travelerTags} onChange={setTravelerTags} />
+        </div>
+      </div>
       <div className="grid grid-cols-3 gap-2">
         <input
           placeholder={t("reelUploader.locationNamePlaceholder")}

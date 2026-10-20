@@ -8,7 +8,7 @@ import { getFollowedIds } from "../lib/followState";
 import { geocode, getRouteEstimate, getStaticMapImage, haversineMeters, isGoogleMapsConfigured } from "../services/googleMaps";
 import { getTransitSuggestion } from "../services/maasProvider";
 import { parseDepartureTime } from "../lib/parseDepartureTime";
-import { AGE_BUCKETS, REEL_CATEGORIES, TRAVEL_MODES, ageBucketFromBirthYear } from "../types";
+import { AGE_BUCKETS, REEL_CATEGORIES, TRAVEL_MODES, ageBucketFromBirthYear, parseTravelerTags } from "../types";
 import { POINTS_PER_TRAVEL_REPORT, getUserPoints } from "../lib/points";
 
 // Builds the per-viewer state (liked/saved/followed) for one reel row fetched
@@ -399,9 +399,12 @@ router.post("/:id/travel-reports", requireAuth, requireRole("USER"), async (req,
   });
 });
 
+const travelerTagsField = z.preprocess(parseTravelerTags, z.array(z.string()));
+
 const createSchema = z.object({
   caption: z.string().max(2000).optional().default(""),
   category: z.enum(REEL_CATEGORIES),
+  travelerTags: travelerTagsField.optional().default([]),
   locationName: z.string().max(200).optional(),
   locationLat: z.coerce.number().optional(),
   locationLng: z.coerce.number().optional(),
@@ -447,6 +450,7 @@ router.post(
         videoUrl: `/uploads/${req.file.filename}`,
         caption: parsed.data.caption,
         category: parsed.data.category,
+        travelerTags: parsed.data.travelerTags.join(","),
         locationName: parsed.data.locationName,
         locationLat,
         locationLng,
@@ -461,6 +465,7 @@ router.post(
 const updateSchema = z.object({
   caption: z.string().max(2000).optional(),
   category: z.enum(REEL_CATEGORIES).optional(),
+  travelerTags: travelerTagsField.optional(),
   locationName: z.string().max(200).optional(),
   locationLat: z.coerce.number().optional(),
   locationLng: z.coerce.number().optional(),
@@ -488,9 +493,10 @@ router.put("/:id", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (r
     return res.status(404).json({ error: "投稿が見つかりません" });
   }
 
+  const { travelerTags, ...rest } = parsed.data;
   const updated = await prisma.reel.update({
     where: { id: reel.id },
-    data: parsed.data,
+    data: { ...rest, ...(travelerTags ? { travelerTags: travelerTags.join(",") } : {}) },
     include: reelInclude,
   });
   res.json(await serializeReel(updated, anonymousViewerState()));

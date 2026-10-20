@@ -7,6 +7,20 @@ export type ReelCategory = (typeof REEL_CATEGORIES)[number];
 // five the access page compares (see frontend lib/accessModeEstimate.ts).
 export const TRAVEL_MODES = ["train", "bus", "car", "taxi", "walk"] as const;
 
+// Who/what a posted spot suits, chosen by the posting municipality/company —
+// the pitch deck's 子供連れ・カップル・外国人・障害の有無に合わせた情報.
+export const TRAVELER_TAGS = ["barrierFree", "familyFriendly", "couples", "friends", "multilingual"] as const;
+export type TravelerTag = (typeof TRAVELER_TAGS)[number];
+
+// Accepts the tags as an array (JSON body) or a comma-separated string
+// (multipart upload form), keeping only known tags, deduplicated and in
+// canonical order.
+export function parseTravelerTags(input: unknown): TravelerTag[] {
+  const raw = Array.isArray(input) ? input : typeof input === "string" ? input.split(",") : [];
+  const wanted = new Set(raw.map((v) => String(v).trim()));
+  return TRAVELER_TAGS.filter((tag) => wanted.has(tag));
+}
+
 // Self-reported at registration or from Settings (optional). Covers Japan's top
 // inbound-tourism source countries plus a few other common ones, with "other" as
 // a catch-all — see GET /reels/mine/demographics for how this is aggregated.
