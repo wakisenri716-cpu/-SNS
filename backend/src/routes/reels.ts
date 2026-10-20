@@ -10,6 +10,9 @@ import { getTransitSuggestion } from "../services/maasProvider";
 import { parseDepartureTime } from "../lib/parseDepartureTime";
 import { AGE_BUCKETS, REEL_CATEGORIES, TRAVEL_MODES, ageBucketFromBirthYear, parseTravelerTags } from "../types";
 import { POINTS_PER_TRAVEL_REPORT, getUserPoints } from "../lib/points";
+import { hasTravelStyle, scoreReel } from "../lib/personalize";
+
+const PERSONALIZED_POOL = 100;
 
 // Builds the per-viewer state (liked/saved/followed) for one reel row fetched
 // with the `likes`/`saves` conditional includes below, layered on top of the
@@ -59,6 +62,40 @@ router.get("/", optionalAuth, async (req, res) => {
   const take = 10;
 
   const followed = await getFollowedIds(req.auth?.userId);
+
+  // Personalized おすすめ: on the unfiltered tab, a signed-in user with a
+  // travel style set gets posts ranked by how well they match it (ties stay
+  // newest-first), each tagged with why. Ranking needs the whole candidate
+  // set, so this returns the latest PERSONALIZED_POOL posts in one page
+  // instead of cursor-paginating.
+  if (req.auth && !category && !cursor) {
+    const style = await prisma.user.findUnique({
+      where: { id: req.auth.userId },
+      select: { travelCompanion: true, needsBarrierFree: true, needsMultilingual: true, favoriteCategories: true },
+    });
+    if (style && hasTravelStyle(style)) {
+      const pool = await prisma.reel.findMany({
+        take: PERSONALIZED_POOL,
+        orderBy: { createdAt: "desc" },
+        include: {
+          ...reelInclude,
+          likes: { where: { userId: req.auth.userId }, select: { id: true } },
+          saves: { where: { userId: req.auth.userId }, select: { id: true } },
+        },
+      });
+      const ranked = pool
+        .map((reel, index) => ({ reel, index, ...scoreReel(reel, style) }))
+        .sort((a, b) => b.score - a.score || a.index - b.index);
+      const items = await Promise.all(
+        ranked.map(async ({ reel, reasons }) => ({
+          ...(await serializeReel(reel, viewerStateFor(reel, followed))),
+          recommendReasons: reasons,
+        }))
+      );
+      return res.json({ items, nextCursor: null, personalized: true });
+    }
+  }
+
   const reels = await prisma.reel.findMany({
     take,
     ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
@@ -73,7 +110,7 @@ router.get("/", optionalAuth, async (req, res) => {
 
   const items = await Promise.all(reels.map((r) => serializeReel(r, viewerStateFor(r, followed))));
   const nextCursor = reels.length === take ? reels[reels.length - 1].id : null;
-  res.json({ items, nextCursor });
+  res.json({ items, nextCursor, personalized: false });
 });
 
 // Reels the signed-in user has liked (used by the read-only tourist "マイページ").

@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { isDataSaverEnabled, setDataSaverEnabled } from "../components/AutoplayVideo";
 import { SUPPORTED_LANGUAGES, setAppLanguage, type SupportedLanguage } from "../i18n";
-import { NATIONALITIES } from "../types";
+import { NATIONALITIES, REEL_CATEGORIES, TRAVEL_COMPANIONS, type AuthUser } from "../types";
 
 function AvatarSection() {
   const { t } = useTranslation();
@@ -226,6 +226,91 @@ function NotificationSection() {
             setNotifyOnComment(v);
             save({ notifyOnComment: v });
           }}
+        />
+      </div>
+      {saving && <p className="mt-1 text-xs text-gray-400">{t("settings.saving")}</p>}
+    </section>
+  );
+}
+
+// 旅行スタイル: used only to rank the おすすめ feed (backend lib/personalize.ts).
+// Each change saves immediately, like the notification toggles above.
+function TravelStyleSection() {
+  const { t } = useTranslation();
+  const { user, updateUser } = useAuth();
+  const location = useLocation();
+  const ref = useRef<HTMLElement>(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (location.hash === "#travel-style") ref.current?.scrollIntoView({ block: "start" });
+  }, [location.hash]);
+
+  if (!user) return null;
+
+  async function save(next: Partial<Pick<AuthUser, "travelCompanion" | "needsBarrierFree" | "needsMultilingual" | "favoriteCategories">>) {
+    setSaving(true);
+    try {
+      const { data } = await api.put("/auth/me", next);
+      updateUser(data);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const chip = (on: boolean) =>
+    `rounded-full px-3 py-1 text-xs font-medium ${on ? "bg-teal-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`;
+
+  return (
+    <section ref={ref} id="travel-style" className="scroll-mt-16 border-b border-gray-200 p-4 lg:p-6">
+      <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("settings.travelStyleHeading")}</h2>
+      <p className="mb-3 text-xs text-gray-400">{t("settings.travelStyleDescription")}</p>
+
+      <p className="mb-1.5 text-xs font-semibold text-gray-500">{t("settings.travelCompanionLabel")}</p>
+      <div className="mb-4 flex flex-wrap gap-1.5">
+        {TRAVEL_COMPANIONS.map((c) => (
+          <button
+            key={c}
+            type="button"
+            aria-pressed={user.travelCompanion === c}
+            onClick={() => save({ travelCompanion: user.travelCompanion === c ? null : c })}
+            className={chip(user.travelCompanion === c)}
+          >
+            {t(`settings.companion.${c}`)}
+          </button>
+        ))}
+      </div>
+
+      <p className="mb-1.5 text-xs font-semibold text-gray-500">{t("settings.favoriteCategoriesLabel")}</p>
+      <div className="mb-3 flex flex-wrap gap-1.5">
+        {REEL_CATEGORIES.map((c) => {
+          const on = user.favoriteCategories.includes(c);
+          return (
+            <button
+              key={c}
+              type="button"
+              aria-pressed={on}
+              onClick={() =>
+                save({ favoriteCategories: on ? user.favoriteCategories.filter((v) => v !== c) : [...user.favoriteCategories, c] })
+              }
+              className={chip(on)}
+            >
+              {t(`category.${c}`)}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="divide-y divide-gray-100 lg:max-w-md">
+        <ToggleRow
+          label={t("settings.needsBarrierFreeLabel")}
+          checked={user.needsBarrierFree}
+          onChange={(v) => save({ needsBarrierFree: v })}
+        />
+        <ToggleRow
+          label={t("settings.needsMultilingualLabel")}
+          checked={user.needsMultilingual}
+          onChange={(v) => save({ needsMultilingual: v })}
         />
       </div>
       {saving && <p className="mt-1 text-xs text-gray-400">{t("settings.saving")}</p>}
@@ -494,6 +579,7 @@ export default function SettingsPage() {
         <>
           <AvatarSection />
           <ProfileSection />
+          {user.role === "USER" && <TravelStyleSection />}
           <NotificationSection />
           <CommentsPermissionSection />
         </>

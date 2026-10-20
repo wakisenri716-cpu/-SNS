@@ -71,7 +71,14 @@
     "loading": "読み込み中...",
     "empty": "まだ投稿がありません。自治体アカウントで最初のリールを投稿してみましょう。",
     "emptySaved": "まだ保存した動画がありません。動画を再生して🔖アイコンをタップすると保存できます。",
-    "emptyFollowing": "まだフォロー中のアカウントの投稿がありません。動画を再生して自治体・企業をフォローしてみましょう。"
+    "emptyFollowing": "まだフォロー中のアカウントの投稿がありません。動画を再生して自治体・企業をフォローしてみましょう。",
+    "personalizedNote": "あなたの旅行スタイルに合う投稿を先に表示しています",
+    "personalizedChange": "旅行スタイルを変更",
+    "personalizeCta": "旅行スタイルを設定すると、あなたに合う投稿が先に表示されます",
+    "personalizeSet": "設定する",
+    "reasonPrefix": "おすすめ理由：",
+    "reasonFavoriteCategory": "興味のあるカテゴリ（{{category}}）",
+    "reasonCompanion": "「{{who}}」の旅行向け"
   },
   "search": {
     "placeholder": "地域名・キーワードで検索",
@@ -293,7 +300,19 @@
     "deleteError": "削除に失敗しました",
     "contactLink": "お問い合わせ ↗",
     "notLoggedIn": "ログインしていません。アカウントに関する設定（プロフィール画像・通知・パスワードなど）を利用するにはログインしてください。",
-    "demographicsNote": "国籍・生まれた年は任意です。自治体・企業向けの視聴者データ集計にのみ利用されます。"
+    "demographicsNote": "国籍・生まれた年は任意です。自治体・企業向けの視聴者データ集計にのみ利用されます。",
+    "travelStyleHeading": "旅行スタイル",
+    "travelStyleDescription": "「おすすめ」の並び順に使います。設定した内容に合う投稿が先に表示されます（ほかの人には公開されません）。",
+    "travelCompanionLabel": "よく一緒に行く人",
+    "companion": {
+      "solo": "ひとり",
+      "couple": "カップル・夫婦",
+      "family": "家族・子連れ",
+      "friends": "友人グループ"
+    },
+    "favoriteCategoriesLabel": "興味のあるカテゴリ（複数選択可）",
+    "needsBarrierFreeLabel": "バリアフリー対応の場所を優先する",
+    "needsMultilingualLabel": "外国語対応の場所を優先する"
   },
   "privacyPolicy": {
     "title": "プライバシーポリシー",

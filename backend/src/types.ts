@@ -7,6 +7,11 @@ export type ReelCategory = (typeof REEL_CATEGORIES)[number];
 // five the access page compares (see frontend lib/accessModeEstimate.ts).
 export const TRAVEL_MODES = ["train", "bus", "car", "taxi", "walk"] as const;
 
+// Who a traveler usually travels with — Settings' 旅行スタイル, matched against
+// posts' travelerTags to personalize the おすすめ feed.
+export const TRAVEL_COMPANIONS = ["solo", "couple", "family", "friends"] as const;
+export type TravelCompanion = (typeof TRAVEL_COMPANIONS)[number];
+
 // Who/what a posted spot suits, chosen by the posting municipality/company —
 // the pitch deck's 子供連れ・カップル・外国人・障害の有無に合わせた情報.
 export const TRAVELER_TAGS = ["barrierFree", "familyFriendly", "couples", "friends", "multilingual"] as const;

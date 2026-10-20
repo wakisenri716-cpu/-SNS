@@ -39,7 +39,17 @@ export interface AuthUser {
   birthYear: number | null;
   notifyOnLike: boolean;
   notifyOnComment: boolean;
+  travelCompanion: TravelCompanion | null;
+  needsBarrierFree: boolean;
+  needsMultilingual: boolean;
+  favoriteCategories: ReelCategory[];
 }
+
+// Settings' 旅行スタイル — mirrors TRAVEL_COMPANIONS in backend/src/types.ts.
+export const TRAVEL_COMPANIONS = ["solo", "couple", "family", "friends"] as const;
+export type TravelCompanion = (typeof TRAVEL_COMPANIONS)[number];
+// Why the personalized おすすめ feed ranked a post up (backend lib/personalize.ts).
+export type RecommendReason = "favoriteCategory" | "companion" | "barrierFree" | "multilingual";
 
 export interface Demographics {
   totalViews: number;
@@ -128,6 +138,8 @@ export interface Reel {
   likedByMe: boolean;
   savedByMe: boolean;
   transitSuggestion: TransitSuggestion | null;
+  // Only on items from the personalized おすすめ feed.
+  recommendReasons?: RecommendReason[];
 }
 
 // A nearby-spots result row — a regular Reel plus its distance from the spot

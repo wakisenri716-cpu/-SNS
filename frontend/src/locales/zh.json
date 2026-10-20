@@ -71,7 +71,14 @@
     "loading": "加载中...",
     "empty": "还没有任何投稿。快来发布第一条自治体短视频吧。",
     "emptySaved": "还没有保存的短视频。观看短视频时点击🔖图标即可保存。",
-    "emptyFollowing": "还没有已关注账号的投稿。观看短视频时可以关注自治体或企业账号。"
+    "emptyFollowing": "还没有已关注账号的投稿。观看短视频时可以关注自治体或企业账号。",
+    "personalizedNote": "正在优先显示符合您旅行风格的投稿",
+    "personalizedChange": "更改旅行风格",
+    "personalizeCta": "设置旅行风格后，适合您的投稿会优先显示",
+    "personalizeSet": "去设置",
+    "reasonPrefix": "推荐理由：",
+    "reasonFavoriteCategory": "感兴趣的类别（{{category}}）",
+    "reasonCompanion": "适合「{{who}}」旅行"
   },
   "search": {
     "placeholder": "按地区名或关键词搜索",
@@ -293,7 +300,19 @@
     "deleteError": "删除失败",
     "contactLink": "联系我们 ↗",
     "notLoggedIn": "您尚未登录。请登录以使用账号相关设置（头像、通知、密码等）。",
-    "demographicsNote": "国籍和出生年份为选填项，仅用于向自治体・企业账号展示的汇总观众数据。"
+    "demographicsNote": "国籍和出生年份为选填项，仅用于向自治体・企业账号展示的汇总观众数据。",
+    "travelStyleHeading": "旅行风格",
+    "travelStyleDescription": "用于「推荐」的排序，符合设置的投稿会优先显示（不会公开给其他人）。",
+    "travelCompanionLabel": "常和谁一起旅行",
+    "companion": {
+      "solo": "独自一人",
+      "couple": "情侣・夫妻",
+      "family": "家庭・带孩子",
+      "friends": "朋友结伴"
+    },
+    "favoriteCategoriesLabel": "感兴趣的类别（可多选）",
+    "needsBarrierFreeLabel": "优先显示无障碍的地点",
+    "needsMultilingualLabel": "优先显示支持外语的地点"
   },
   "privacyPolicy": {
     "title": "隐私政策",

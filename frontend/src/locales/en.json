@@ -71,7 +71,14 @@
     "loading": "Loading...",
     "empty": "No posts yet. Municipality accounts can post the first reel.",
     "emptySaved": "No saved reels yet. Tap the 🔖 icon while watching a reel to save it.",
-    "emptyFollowing": "No posts from accounts you follow yet. Try following a municipality or company while watching a reel."
+    "emptyFollowing": "No posts from accounts you follow yet. Try following a municipality or company while watching a reel.",
+    "personalizedNote": "Showing posts that match your travel style first",
+    "personalizedChange": "Change travel style",
+    "personalizeCta": "Set your travel style to see posts that suit you first",
+    "personalizeSet": "Set it up",
+    "reasonPrefix": "Why recommended: ",
+    "reasonFavoriteCategory": "a category you like ({{category}})",
+    "reasonCompanion": "good for traveling with: {{who}}"
   },
   "search": {
     "placeholder": "Search by region or keyword",
@@ -293,7 +300,19 @@
     "deleteError": "Failed to delete account",
     "contactLink": "Contact Us ↗",
     "notLoggedIn": "You're not logged in. Log in to access account settings (profile picture, notifications, password, etc.).",
-    "demographicsNote": "Nationality and birth year are optional. They're only used for aggregated audience data shown to municipality/company accounts."
+    "demographicsNote": "Nationality and birth year are optional. They're only used for aggregated audience data shown to municipality/company accounts.",
+    "travelStyleHeading": "Travel style",
+    "travelStyleDescription": "Used to order the Recommended feed: posts that match these settings are shown first (not visible to anyone else).",
+    "travelCompanionLabel": "Who you usually travel with",
+    "companion": {
+      "solo": "Solo",
+      "couple": "Partner",
+      "family": "Family / kids",
+      "friends": "Friends"
+    },
+    "favoriteCategoriesLabel": "Categories you're interested in (choose any)",
+    "needsBarrierFreeLabel": "Prioritize barrier-free spots",
+    "needsMultilingualLabel": "Prioritize spots with multilingual support"
   },
   "privacyPolicy": {
     "title": "Privacy Policy",

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../auth/AuthContext";
 import AutoplayVideo from "./AutoplayVideo";
 import { TravelerTagChips } from "./TravelerTagChips";
 import type { Reel } from "../types";
@@ -17,7 +18,15 @@ function ReelOverlayInfo({
   onToggleFollow: (reel: Reel) => void;
 }) {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const poster = reel.postedByCompany ?? reel.municipality;
+  const reasonLabels = (reel.recommendReasons ?? []).map((reason) =>
+    reason === "favoriteCategory"
+      ? t("feed.reasonFavoriteCategory", { category: t(`category.${reel.category}`) })
+      : reason === "companion"
+        ? t("feed.reasonCompanion", { who: t(`settings.companion.${user?.travelCompanion ?? "solo"}`) })
+        : t(`travelerTag.${reason}`)
+  );
   return (
     <>
       <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-black/60 to-transparent p-4 pr-16">
@@ -49,6 +58,12 @@ function ReelOverlayInfo({
         <p className="text-sm text-white drop-shadow">{reel.caption}</p>
         {reel.locationName && (
           <p className="mt-1.5 text-xs text-white/80 drop-shadow">📍 {reel.locationName}</p>
+        )}
+        {reasonLabels.length > 0 && (
+          <p className="mt-1.5 text-xs font-semibold text-amber-200 drop-shadow">
+            ✨ {t("feed.reasonPrefix")}
+            {reasonLabels.join("・")}
+          </p>
         )}
         {reel.travelerTags.length > 0 && (
           <div className="mt-1.5">

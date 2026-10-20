@@ -6,7 +6,8 @@ import { prisma } from "../prisma";
 import { JWT_SECRET, requireAuth } from "../middleware/auth";
 import { upload } from "../middleware/upload";
 import { guessNationalityFromIp } from "../services/geoLookup";
-import { NATIONALITIES, type Role } from "../types";
+import { NATIONALITIES, TRAVEL_COMPANIONS, type Role } from "../types";
+import { parseFavoriteCategories } from "../lib/personalize";
 import { municipalityDetailInclude, serializeMunicipality } from "./municipalities";
 import { getUserPoints } from "../lib/points";
 
@@ -22,6 +23,10 @@ function serializeUser(user: {
   birthYear: number | null;
   notifyOnLike: boolean;
   notifyOnComment: boolean;
+  travelCompanion: string | null;
+  needsBarrierFree: boolean;
+  needsMultilingual: boolean;
+  favoriteCategories: string;
 }) {
   return {
     id: user.id,
@@ -33,6 +38,10 @@ function serializeUser(user: {
     birthYear: user.birthYear,
     notifyOnLike: user.notifyOnLike,
     notifyOnComment: user.notifyOnComment,
+    travelCompanion: user.travelCompanion,
+    needsBarrierFree: user.needsBarrierFree,
+    needsMultilingual: user.needsMultilingual,
+    favoriteCategories: parseFavoriteCategories(user.favoriteCategories),
   };
 }
 
@@ -256,6 +265,13 @@ const updateMeSchema = z.object({
   birthYear: z.coerce.number().int().min(1900).max(currentYear - 5).optional(),
   notifyOnLike: z.boolean().optional(),
   notifyOnComment: z.boolean().optional(),
+  travelCompanion: z.enum(TRAVEL_COMPANIONS).nullable().optional(),
+  needsBarrierFree: z.boolean().optional(),
+  needsMultilingual: z.boolean().optional(),
+  favoriteCategories: z
+    .array(z.string())
+    .transform((v) => parseFavoriteCategories(v.join(",")).join(","))
+    .optional(),
 });
 
 // Account settings: update the signed-in user's own name/email/notification

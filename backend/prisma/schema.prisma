@@ -27,6 +27,14 @@ model User {
   // (push/email) yet, so these currently have no visible effect.
   notifyOnLike    Boolean  @default(true)
   notifyOnComment Boolean  @default(true)
+  // Optional travel style, set from Settings, used only to personalize the
+  // おすすめ feed (see lib/personalize.ts). travelCompanion is one of
+  // TRAVEL_COMPANIONS; favoriteCategories is a comma-separated subset of
+  // REEL_CATEGORIES.
+  travelCompanion    String?
+  needsBarrierFree   Boolean  @default(false)
+  needsMultilingual  Boolean  @default(false)
+  favoriteCategories String   @default("")
   createdAt    DateTime @default(now())
 
   municipality Municipality?

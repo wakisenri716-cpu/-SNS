@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
@@ -17,17 +18,21 @@ function feedRequest(tab: Tab) {
 }
 
 export default function FeedPage() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const { t } = useTranslation();
   const [tab, setTab] = useState<Tab>("all");
   const [reels, setReels] = useState<Reel[]>([]);
   const [loading, setLoading] = useState(true);
   const [openReelId, setOpenReelId] = useState<string | null>(null);
+  const [personalized, setPersonalized] = useState(false);
 
   useEffect(() => {
     setLoading(true);
     feedRequest(tab)
-      .then(({ data }) => setReels(data.items))
+      .then(({ data }) => {
+        setReels(data.items);
+        setPersonalized(!!data.personalized);
+      })
       .finally(() => setLoading(false));
   }, [token, tab]);
 
@@ -109,6 +114,15 @@ export default function FeedPage() {
             </button>
           ))}
       </div>
+
+      {tab === "all" && user?.role === "USER" && !loading && (
+        <p className="flex flex-wrap items-center gap-x-2 border-b border-gray-100 px-4 py-2 text-xs text-gray-500">
+          <span>{personalized ? `✨ ${t("feed.personalizedNote")}` : t("feed.personalizeCta")}</span>
+          <Link to="/settings#travel-style" className="font-semibold text-teal-600 hover:underline">
+            {personalized ? t("feed.personalizedChange") : t("feed.personalizeSet")}
+          </Link>
+        </p>
+      )}
 
       {loading ? (
         <p className="p-10 text-center text-gray-400">{t("feed.loading")}</p>

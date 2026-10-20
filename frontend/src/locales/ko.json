@@ -71,7 +71,14 @@
     "loading": "불러오는 중...",
     "empty": "아직 게시물이 없습니다. 지자체 계정으로 첫 릴을 게시해 보세요.",
     "emptySaved": "아직 저장한 릴이 없습니다. 릴을 재생하면서 🔖 아이콘을 눌러 저장해 보세요.",
-    "emptyFollowing": "아직 팔로우한 계정의 게시물이 없습니다. 릴을 재생하면서 지자체・기업을 팔로우해 보세요."
+    "emptyFollowing": "아직 팔로우한 계정의 게시물이 없습니다. 릴을 재생하면서 지자체・기업을 팔로우해 보세요.",
+    "personalizedNote": "회원님의 여행 스타일에 맞는 게시물을 먼저 표시하고 있습니다",
+    "personalizedChange": "여행 스타일 변경",
+    "personalizeCta": "여행 스타일을 설정하면 회원님에게 맞는 게시물이 먼저 표시됩니다",
+    "personalizeSet": "설정하기",
+    "reasonPrefix": "추천 이유: ",
+    "reasonFavoriteCategory": "관심 카테고리({{category}})",
+    "reasonCompanion": "「{{who}}」 여행에 적합"
   },
   "search": {
     "placeholder": "지역명・키워드로 검색",
@@ -293,7 +300,19 @@
     "deleteError": "삭제에 실패했습니다",
     "contactLink": "문의하기 ↗",
     "notLoggedIn": "로그인되어 있지 않습니다. 프로필 사진・알림・비밀번호 등 계정 설정을 이용하려면 로그인해 주세요.",
-    "demographicsNote": "국적・출생 연도는 선택 사항입니다. 지자체・기업 계정에 표시되는 집계된 오디언스 데이터에만 사용됩니다."
+    "demographicsNote": "국적・출생 연도는 선택 사항입니다. 지자체・기업 계정에 표시되는 집계된 오디언스 데이터에만 사용됩니다.",
+    "travelStyleHeading": "여행 스타일",
+    "travelStyleDescription": "「추천」의 정렬 순서에 사용됩니다. 설정에 맞는 게시물이 먼저 표시됩니다(다른 사람에게는 공개되지 않습니다).",
+    "travelCompanionLabel": "주로 함께 가는 사람",
+    "companion": {
+      "solo": "혼자",
+      "couple": "커플・부부",
+      "family": "가족・아이 동반",
+      "friends": "친구 그룹"
+    },
+    "favoriteCategoriesLabel": "관심 있는 카테고리(복수 선택 가능)",
+    "needsBarrierFreeLabel": "배리어프리 장소 우선",
+    "needsMultilingualLabel": "외국어 지원 장소 우선"
   },
   "privacyPolicy": {
     "title": "개인정보 처리방침",
