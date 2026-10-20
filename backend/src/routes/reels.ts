@@ -8,7 +8,8 @@ import { getFollowedIds } from "../lib/followState";
 import { geocode, getRouteEstimate, getStaticMapImage, haversineMeters, isGoogleMapsConfigured } from "../services/googleMaps";
 import { getTransitSuggestion } from "../services/maasProvider";
 import { parseDepartureTime } from "../lib/parseDepartureTime";
-import { AGE_BUCKETS, REEL_CATEGORIES, ageBucketFromBirthYear } from "../types";
+import { AGE_BUCKETS, REEL_CATEGORIES, TRAVEL_MODES, ageBucketFromBirthYear } from "../types";
+import { POINTS_PER_TRAVEL_REPORT, getUserPoints } from "../lib/points";
 
 // Builds the per-viewer state (liked/saved/followed) for one reel row fetched
 // with the `likes`/`saves` conditional includes below, layered on top of the
@@ -325,6 +326,76 @@ router.get("/:id/nearby", optionalAuth, async (req, res) => {
         distanceMeters: Math.round(distanceMeters),
       }))
     ),
+  });
+});
+
+// 「みんなの実測」: average of travelers' self-reported actual travel times to
+// this reel's location, grouped by starting point + mode — a single average
+// across all origins would be meaningless (小田原から vs 松本駅から differ by
+// hours). Origins are matched by normalized text, so "小田原駅" and "小田原"
+// count as different starting points. Also returns the signed-in viewer's own
+// reports so the form can show what they already recorded.
+router.get("/:id/travel-reports", optionalAuth, async (req, res) => {
+  const reports = await prisma.travelTimeReport.findMany({
+    where: { reelId: req.params.id },
+    select: { userId: true, mode: true, durationMin: true, originLabel: true },
+  });
+
+  const groups = new Map<string, { originLabel: string; mode: string; durations: number[] }>();
+  for (const r of reports) {
+    const key = `${r.originLabel}\u0000${r.mode}`;
+    const group = groups.get(key) ?? { originLabel: r.originLabel, mode: r.mode, durations: [] };
+    group.durations.push(r.durationMin);
+    groups.set(key, group);
+  }
+
+  res.json({
+    summary: [...groups.values()]
+      .map((g) => ({
+        originLabel: g.originLabel,
+        mode: g.mode,
+        count: g.durations.length,
+        averageMin: Math.round(g.durations.reduce((a, b) => a + b, 0) / g.durations.length),
+      }))
+      .sort((a, b) => b.count - a.count),
+    mine: req.auth
+      ? reports
+          .filter((r) => r.userId === req.auth!.userId)
+          .map((r) => ({ mode: r.mode, durationMin: r.durationMin, originLabel: r.originLabel }))
+      : [],
+  });
+});
+
+const travelReportSchema = z.object({
+  mode: z.enum(TRAVEL_MODES),
+  durationMin: z.coerce.number().int().min(1).max(24 * 60),
+  originLabel: z
+    .string()
+    .transform((v) => v.trim().replace(/\s+/g, " "))
+    .pipe(z.string().min(1).max(100)),
+});
+
+// Record "it actually took me N minutes" — traveler accounts only, since the
+// point of the data is real trips. Upserts per (user, reel, mode): a first
+// report earns points, re-recording just corrects the time without earning more.
+router.post("/:id/travel-reports", requireAuth, requireRole("USER"), async (req, res) => {
+  const parsed = travelReportSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
+
+  const reel = await prisma.reel.findUnique({ where: { id: req.params.id }, select: { id: true } });
+  if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
+
+  const key = { userId: req.auth!.userId, reelId: reel.id, mode: parsed.data.mode };
+  const existing = await prisma.travelTimeReport.findUnique({ where: { userId_reelId_mode: key } });
+  await prisma.travelTimeReport.upsert({
+    where: { userId_reelId_mode: key },
+    create: { ...key, durationMin: parsed.data.durationMin, originLabel: parsed.data.originLabel },
+    update: { durationMin: parsed.data.durationMin, originLabel: parsed.data.originLabel },
+  });
+
+  res.status(existing ? 200 : 201).json({
+    pointsAwarded: existing ? 0 : POINTS_PER_TRAVEL_REPORT,
+    ...(await getUserPoints(req.auth!.userId)),
   });
 });
 

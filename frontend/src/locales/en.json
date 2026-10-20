@@ -82,7 +82,10 @@
     "viewOnlyNotice": "This is a view-only page for visitor accounts. You can't create or edit posts (only municipality accounts can).",
     "likedHeading": "Liked Reels ({{count}})",
     "loading": "Loading...",
-    "emptyLiked": "No liked reels yet. Try liking a post you find interesting in the feed."
+    "emptyLiked": "No liked reels yet. Try liking a post you find interesting in the feed.",
+    "pointsLabel": "Points",
+    "pointsValue": "{{points}}pt",
+    "pointsNote": "{{count}} travel time reports. Points are a prototype and can't be used for anything yet."
   },
   "itinerary": {
     "heading": "Itinerary",
@@ -384,5 +387,26 @@
     "50s": "50s",
     "60plus": "60+",
     "unknown": "Unknown (logged out / not set)"
+  },
+  "travelReport": {
+    "heading": "Actual travel times (from travelers)",
+    "subtitle": "Travel times recorded by users who actually went here, averaged per starting point.",
+    "fromOrigin": "From {{origin}}",
+    "average": "avg. {{minutes}} min",
+    "count_one": "({{count}} report)",
+    "count_other": "({{count}} reports)",
+    "noReports": "No reports yet",
+    "loginCta": "Log in to record how long your trip took and earn points",
+    "travelersOnly": "Only traveler accounts can record travel times",
+    "pointsNote": "Been here? Record your travel time for 10 points (once per spot and mode)",
+    "originLabel": "Starting point",
+    "hours": "h",
+    "minutes": "min",
+    "submit": "Record",
+    "earned": "+{{points}} points! (total {{total}}pt)",
+    "updated": "Record updated (points are for the first report only, total {{total}}pt)",
+    "saveError": "Could not save your record",
+    "cardLine": "Travelers' actual time (from {{origin}}): avg. {{minutes}} min · {{count}} reports",
+    "disclaimer": "* Self-reported by users; accuracy is not guaranteed. Points are a prototype and can't be used for anything yet."
   }
 }

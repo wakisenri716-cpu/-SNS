@@ -10,12 +10,14 @@ export default function MyPage() {
   const { t } = useTranslation();
   const [likedReels, setLikedReels] = useState<Reel[]>([]);
   const [loading, setLoading] = useState(true);
+  const [points, setPoints] = useState<{ points: number; reportCount: number } | null>(null);
 
   useEffect(() => {
     api
       .get("/reels/liked")
       .then(({ data }) => setLikedReels(data.items))
       .finally(() => setLoading(false));
+    api.get("/auth/me/points").then(({ data }) => setPoints(data));
   }, []);
 
   if (!user) return null;
@@ -33,6 +35,20 @@ export default function MyPage() {
       </div>
 
       <p className="mt-3 text-xs text-gray-400">{t("myPage.viewOnlyNotice")}</p>
+
+      {points && (
+        <div className="mt-6 flex items-center gap-4 rounded-lg border border-teal-100 bg-teal-50 px-4 py-3">
+          <div>
+            <p className="text-xs font-semibold text-teal-700">{t("myPage.pointsLabel")}</p>
+            <p className="text-2xl font-extrabold tabular-nums text-teal-800">
+              {t("myPage.pointsValue", { points: points.points })}
+            </p>
+          </div>
+          <p className="text-xs leading-relaxed text-teal-800/80">
+            {t("myPage.pointsNote", { count: points.reportCount })}
+          </p>
+        </div>
+      )}
 
       <div className="mt-8">
         <h2 className="mb-3 text-sm font-semibold text-gray-600">

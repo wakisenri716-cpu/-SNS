@@ -82,7 +82,10 @@
     "viewOnlyNotice": "这是游客账号的只读页面。无法创建或编辑投稿（仅自治体账号可以）。",
     "likedHeading": "已点赞的短视频（{{count}}条）",
     "loading": "加载中...",
-    "emptyLiked": "还没有点赞过的短视频。快去信息流中给感兴趣的投稿点赞吧。"
+    "emptyLiked": "还没有点赞过的短视频。快去信息流中给感兴趣的投稿点赞吧。",
+    "pointsLabel": "积分",
+    "pointsValue": "{{points}}pt",
+    "pointsNote": "所需时间记录{{count}}条。积分为试用功能，目前尚无用途。"
   },
   "itinerary": {
     "heading": "行程手册",
@@ -384,5 +387,25 @@
     "50s": "50多岁",
     "60plus": "60岁以上",
     "unknown": "未知（未登录・未登记）"
+  },
+  "travelReport": {
+    "heading": "实际所需时间（大家的实测）",
+    "subtitle": "由实际去过这里的用户记录的所需时间，按出发地点分别取平均值。",
+    "fromOrigin": "从{{origin}}出发",
+    "average": "平均{{minutes}}分钟",
+    "count": "（{{count}}条）",
+    "noReports": "暂无记录",
+    "loginCta": "登录后即可记录实际所需时间并获得积分",
+    "travelersOnly": "仅普通用户账号可以记录",
+    "pointsNote": "去过这里后记录所需时间可获得10积分（同一地点、同一交通方式限1次）",
+    "originLabel": "出发地点",
+    "hours": "小时",
+    "minutes": "分钟",
+    "submit": "记录",
+    "earned": "获得{{points}}积分！（共{{total}}pt）",
+    "updated": "已更新记录（积分仅限首次，共{{total}}pt）",
+    "saveError": "记录失败",
+    "cardLine": "大家的实测（从{{origin}}出发）平均{{minutes}}分钟・{{count}}条",
+    "disclaimer": "※为用户自行申报的记录，不保证准确。积分为试用功能，目前尚无用途。"
   }
 }

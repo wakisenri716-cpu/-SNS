@@ -5,6 +5,7 @@ import { api } from "../api/client";
 import AutoplayVideo from "../components/AutoplayVideo";
 import SchematicRouteMap from "../components/SchematicRouteMap";
 import NearbySpots from "../components/NearbySpots";
+import TravelReportSection, { normalizeOrigin } from "../components/TravelReportSection";
 import { formatDateTime, localDateTimeToIso, nowAsDatetimeLocalValue } from "../lib/departureTime";
 import {
   deriveModeEstimates,
@@ -14,7 +15,7 @@ import {
   type GroupSize,
   type ModeEstimate,
 } from "../lib/accessModeEstimate";
-import type { Reel, TransitSuggestion } from "../types";
+import type { Reel, TransitSuggestion, TravelReportGroup, TravelReports } from "../types";
 
 const MODE_ICON: Record<AccessMode, string> = { train: "🚃", bus: "🚌", car: "🚗", taxi: "🚕", walk: "🚶" };
 const MODE_LABEL_KEY: Record<AccessMode, string> = {
@@ -119,6 +120,7 @@ function ModeCard({
   accessibility,
   hasCar,
   groupSize,
+  reported,
 }: {
   estimate: ModeEstimate;
   recommended: boolean;
@@ -129,6 +131,7 @@ function ModeCard({
   accessibility: boolean;
   hasCar: boolean;
   groupSize: GroupSize;
+  reported?: TravelReportGroup;
 }) {
   const { t, i18n } = useTranslation();
   const [expanded, setExpanded] = useState(false);
@@ -191,6 +194,17 @@ function ModeCard({
         </button>
       </div>
 
+      {reported && (
+        <p className="mt-2.5 rounded-lg bg-teal-50 px-3 py-2 text-xs text-teal-800">
+          👥{" "}
+          {t("travelReport.cardLine", {
+            origin: reported.originLabel,
+            minutes: reported.averageMin,
+            count: reported.count,
+          })}
+        </p>
+      )}
+
       {reservationKey && (
         <div className="mt-2.5 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
           <span className="text-xs text-amber-800">{t(reservationKey)}</span>
@@ -243,6 +257,18 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
   const [error, setError] = useState<string | null>(null);
   const [estimates, setEstimates] = useState<ModeEstimate[] | null>(null);
   const [departureAt, setDepartureAt] = useState<Date | null>(null);
+  const [searchedOrigin, setSearchedOrigin] = useState("");
+  const [travelReports, setTravelReports] = useState<TravelReports | null>(null);
+
+  function loadTravelReports() {
+    if (!id) return;
+    api
+      .get<TravelReports>(`/reels/${id}/travel-reports`)
+      .then(({ data }) => setTravelReports(data))
+      .catch(() => setTravelReports({ summary: [], mine: [] }));
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(loadTravelReports, [id]);
 
   useEffect(() => {
     if (stateReel || !id) return;
@@ -265,6 +291,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
       });
       setEstimates(deriveModeEstimates(origin.trim(), reel.locationName || reel.municipality.name, data));
       setDepartureAt(new Date(data.departureAt));
+      setSearchedOrigin(normalizeOrigin(origin));
     } catch (err: any) {
       setError(err?.response?.data?.error ?? t("accessPlanner.genericError"));
     } finally {
@@ -369,6 +396,9 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
               accessibility={accessibility}
               hasCar={hasCar}
               groupSize={groupSize}
+              reported={travelReports?.summary.find(
+                (g) => g.mode === estimate.mode && g.originLabel === searchedOrigin
+              )}
             />
           ))}
           <p className="px-1 text-[11px] leading-relaxed text-gray-400 md:col-span-2">
@@ -376,6 +406,13 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
           </p>
         </div>
       )}
+
+      <TravelReportSection
+        reelId={reel.id}
+        defaultOrigin={origin}
+        reports={travelReports}
+        onSaved={loadTravelReports}
+      />
 
       <p className="mt-5 text-center text-xs text-gray-400">
         <Link to={`/municipalities/${reel.municipality.id}`} className="hover:underline">

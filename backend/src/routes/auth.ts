@@ -8,6 +8,7 @@ import { upload } from "../middleware/upload";
 import { guessNationalityFromIp } from "../services/geoLookup";
 import { NATIONALITIES, type Role } from "../types";
 import { municipalityDetailInclude, serializeMunicipality } from "./municipalities";
+import { getUserPoints } from "../lib/points";
 
 const router = Router();
 
@@ -241,6 +242,11 @@ router.get("/me", requireAuth, async (req, res) => {
     municipality: user.municipality ? serializeMunicipality(user.municipality) : null,
     company: user.company ?? null,
   });
+});
+
+// The signed-in user's points balance (see lib/points.ts) — shown on MyPage.
+router.get("/me/points", requireAuth, async (req, res) => {
+  res.json(await getUserPoints(req.auth!.userId));
 });
 
 const updateMeSchema = z.object({

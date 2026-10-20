@@ -36,6 +36,7 @@ model User {
   reelViews    ReelView[]
   savedReels   SavedReel[]
   follows      Follow[]
+  travelReports TravelTimeReport[]
 }
 
 model Municipality {
@@ -123,6 +124,7 @@ model Reel {
   comments Comment[]
   views    ReelView[]
   saves    SavedReel[]
+  travelReports TravelTimeReport[]
 }
 
 // One row per reel view, kept (rather than just incrementing a counter) so
@@ -204,4 +206,29 @@ model Inquiry {
   email     String
   message   String
   createdAt DateTime @default(now())
+}
+
+// A traveler's self-reported "it actually took me N minutes" for getting to a
+// reel's location by one transport mode — the pitch deck's 「平均所要時間はユーザー
+// 自身がポイント獲得のために計測」. Each report earns points (see lib/points.ts),
+// and reports are aggregated per starting point + mode into the 「みんなの実測」
+// averages shown on the access page. One row per (user, reel, mode): re-recording overwrites it,
+// so repeating the same report can't farm extra points.
+model TravelTimeReport {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reelId      String
+  reel        Reel     @relation(fields: [reelId], references: [id], onDelete: Cascade)
+  // "train" | "bus" | "car" | "taxi" | "walk" — same set as the access page's mode cards.
+  mode        String
+  durationMin Int
+  // Where the trip started, as typed (normalized whitespace) — averages are
+  // grouped by it, since actual times only compare from the same origin.
+  originLabel String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, reelId, mode])
+  @@index([reelId])
 }

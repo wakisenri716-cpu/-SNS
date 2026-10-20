@@ -130,6 +130,20 @@ export interface NearbyReel extends Reel {
   distanceMeters: number;
 }
 
+// 「みんなの実測」: travelers' self-reported actual travel times to one reel's
+// location, averaged per starting point + mode. See GET /reels/:id/travel-reports.
+export type TravelMode = "train" | "bus" | "car" | "taxi" | "walk";
+export interface TravelReportGroup {
+  originLabel: string;
+  mode: TravelMode;
+  count: number;
+  averageMin: number;
+}
+export interface TravelReports {
+  summary: TravelReportGroup[];
+  mine: { mode: TravelMode; durationMin: number; originLabel: string }[];
+}
+
 export interface Comment {
   id: string;
   body: string;

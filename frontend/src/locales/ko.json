@@ -82,7 +82,10 @@
     "viewOnlyNotice": "관광객 계정 전용 열람 페이지입니다. 게시물 작성・수정은 할 수 없습니다（지자체 계정만 가능）。",
     "likedHeading": "좋아요한 릴（{{count}}건）",
     "loading": "불러오는 중...",
-    "emptyLiked": "아직 좋아요한 릴이 없습니다. 피드에서 마음에 드는 게시물에 좋아요를 눌러보세요."
+    "emptyLiked": "아직 좋아요한 릴이 없습니다. 피드에서 마음에 드는 게시물에 좋아요를 눌러보세요.",
+    "pointsLabel": "포인트",
+    "pointsValue": "{{points}}pt",
+    "pointsNote": "소요 시간 기록 {{count}}건. 포인트는 시험 기능이라 아직 사용처가 없습니다."
   },
   "itinerary": {
     "heading": "여행 수첩",
@@ -384,5 +387,25 @@
     "50s": "50대",
     "60plus": "60대 이상",
     "unknown": "알 수 없음（로그아웃・미등록）"
+  },
+  "travelReport": {
+    "heading": "실제 소요 시간 (모두의 실측)",
+    "subtitle": "실제로 이곳에 다녀온 사용자가 기록한 소요 시간입니다. 출발 지점별로 평균을 냈습니다.",
+    "fromOrigin": "{{origin}}에서",
+    "average": "평균 {{minutes}}분",
+    "count": "({{count}}건)",
+    "noReports": "아직 기록이 없습니다",
+    "loginCta": "로그인하면 실제 소요 시간을 기록하고 포인트를 받을 수 있습니다",
+    "travelersOnly": "일반 사용자 계정만 기록할 수 있습니다",
+    "pointsNote": "다녀왔다면 소요 시간을 기록하고 10포인트 (같은 장소·같은 이동수단은 1회까지)",
+    "originLabel": "출발 지점",
+    "hours": "시간",
+    "minutes": "분",
+    "submit": "기록하기",
+    "earned": "+{{points}}포인트 획득! (합계 {{total}}pt)",
+    "updated": "기록을 업데이트했습니다 (포인트는 첫 기록만, 합계 {{total}}pt)",
+    "saveError": "기록하지 못했습니다",
+    "cardLine": "모두의 실측 ({{origin}}에서) 평균 {{minutes}}분・{{count}}건",
+    "disclaimer": "※사용자가 직접 신고한 기록으로 정확성을 보장하지 않습니다. 포인트는 시험 기능이라 아직 사용처가 없습니다."
   }
 }

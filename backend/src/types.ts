@@ -3,6 +3,10 @@ export type Role = "USER" | "MUNICIPALITY" | "COMPANY";
 export const REEL_CATEGORIES = ["nature", "culture", "activity", "lodging", "restaurant"] as const;
 export type ReelCategory = (typeof REEL_CATEGORIES)[number];
 
+// Transport modes a traveler can report an actual travel time for — the same
+// five the access page compares (see frontend lib/accessModeEstimate.ts).
+export const TRAVEL_MODES = ["train", "bus", "car", "taxi", "walk"] as const;
+
 // Self-reported at registration or from Settings (optional). Covers Japan's top
 // inbound-tourism source countries plus a few other common ones, with "other" as
 // a catch-all — see GET /reels/mine/demographics for how this is aggregated.
