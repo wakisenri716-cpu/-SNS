@@ -486,5 +486,10 @@
     "registerTraveler": "旅行者として登録（無料）",
     "forMunicipality": "自治体の方はこちら",
     "close": "閉じる"
+  },
+  "stayInfo": {
+    "heading": "{{name}}の宿・飲食店情報",
+    "profileLink": "{{name}}のページで詳しく見る →",
+    "otaNote": "外部の予約サイトの検索結果が開きます。予約はそれぞれのサイトで行ってください。"
   }
 }

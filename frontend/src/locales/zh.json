@@ -486,5 +486,10 @@
     "registerTraveler": "以游客身份注册（免费）",
     "forMunicipality": "地方政府请点这里",
     "close": "关闭"
+  },
+  "stayInfo": {
+    "heading": "{{name}}的住宿・餐饮信息",
+    "profileLink": "在{{name}}页面查看详情 →",
+    "otaNote": "将打开外部预订网站的搜索结果，请在各网站上完成预订。"
   }
 }

@@ -5,6 +5,7 @@ import { api } from "../api/client";
 import AutoplayVideo from "../components/AutoplayVideo";
 import SchematicRouteMap from "../components/SchematicRouteMap";
 import NearbySpots from "../components/NearbySpots";
+import MunicipalityStayInfo from "../components/MunicipalityStayInfo";
 import { TravelerTagChips } from "../components/TravelerTagChips";
 import TravelReportSection, { normalizeOrigin } from "../components/TravelReportSection";
 import { formatDateTime, localDateTimeToIso, nowAsDatetimeLocalValue } from "../lib/departureTime";
@@ -427,6 +428,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
       </p>
 
       <NearbySpots reelId={reel.id} />
+      <MunicipalityStayInfo municipalityId={reel.municipality.id} />
     </div>
   );
 }

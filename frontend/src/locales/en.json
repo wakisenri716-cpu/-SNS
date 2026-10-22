@@ -488,5 +488,10 @@
     "registerTraveler": "Sign up as a traveler (free)",
     "forMunicipality": "For municipalities",
     "close": "Close"
+  },
+  "stayInfo": {
+    "heading": "Lodging & restaurants in {{name}}",
+    "profileLink": "See more on the {{name}} page →",
+    "otaNote": "Opens search results on an external booking site; booking is done on that site."
   }
 }
