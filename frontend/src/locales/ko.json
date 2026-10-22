@@ -85,7 +85,9 @@
     "municipalitiesHeading": "지자체",
     "postsHeading": "게시물",
     "noResults": "일치하는 결과를 찾을 수 없습니다",
-    "recommendHeading": "AI 추천（인기・신규 기반）"
+    "recommendHeading": "AI 추천（인기・신규 기반）",
+    "tagFilterLabel": "조건으로 좁히기 (모두 충족하는 게시물)",
+    "noTaggedPosts": "조건에 맞는 게시물이 없습니다"
   },
   "myPage": {
     "viewOnlyNotice": "관광객 계정 전용 열람 페이지입니다. 게시물 작성・수정은 할 수 없습니다（지자체 계정만 가능）。",

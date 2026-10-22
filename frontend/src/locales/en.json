@@ -85,7 +85,9 @@
     "municipalitiesHeading": "Municipalities",
     "postsHeading": "Posts",
     "noResults": "No matching results found",
-    "recommendHeading": "AI Recommendations (popular & new)"
+    "recommendHeading": "AI Recommendations (popular & new)",
+    "tagFilterLabel": "Filter by (posts matching all)",
+    "noTaggedPosts": "No posts match these filters"
   },
   "myPage": {
     "viewOnlyNotice": "This is a view-only page for visitor accounts. You can't create or edit posts (only municipality accounts can).",

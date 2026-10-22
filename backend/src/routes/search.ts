@@ -1,39 +1,58 @@
 import { Router } from "express";
 import { prisma } from "../prisma";
 import { optionalAuth } from "../middleware/auth";
+import { anonymousViewerState, reelInclude, serializeReel } from "../lib/reelSerializer";
+import { parseTravelerTags } from "../types";
 
 const router = Router();
 
-// Keyword search across municipalities and reel captions.
+const SEARCH_LIMIT = 20;
+// Tag-only searches scan this many recent posts; plenty for the current scale.
+const TAG_SEARCH_POOL = 200;
+
+// Keyword search across municipalities and reel captions/place names, and/or
+// a ?tags= filter (comma-separated TRAVELER_TAGS; a post must have all of
+// them) — e.g. "♿ バリアフリー対応" alone finds every barrier-free post. Tags
+// are matched in code rather than with SQL LIKE on the comma-separated
+// column, so one tag name can never accidentally match inside another.
 router.get("/", async (req, res) => {
   const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
-  if (!q) return res.json({ municipalities: [], reels: [] });
+  const tags = parseTravelerTags(req.query.tags);
+  if (!q && tags.length === 0) return res.json({ municipalities: [], reels: [] });
 
-  const [municipalities, reels] = await Promise.all([
-    prisma.municipality.findMany({
-      where: {
-        OR: [
-          { name: { contains: q } },
-          { prefecture: { contains: q } },
-          { description: { contains: q } },
-          { tourismSpots: { some: { OR: [{ name: { contains: q } }, { description: { contains: q } }] } } },
-        ],
-      },
-      take: 20,
-    }),
+  const [municipalities, candidates] = await Promise.all([
+    q
+      ? prisma.municipality.findMany({
+          where: {
+            OR: [
+              { name: { contains: q } },
+              { prefecture: { contains: q } },
+              { description: { contains: q } },
+              { tourismSpots: { some: { OR: [{ name: { contains: q } }, { description: { contains: q } }] } } },
+            ],
+          },
+          take: SEARCH_LIMIT,
+        })
+      : Promise.resolve([]),
     prisma.reel.findMany({
-      where: {
-        OR: [{ caption: { contains: q } }, { locationName: { contains: q } }],
-      },
-      take: 20,
+      where: q ? { OR: [{ caption: { contains: q } }, { locationName: { contains: q } }] } : {},
+      take: tags.length > 0 ? TAG_SEARCH_POOL : SEARCH_LIMIT,
       orderBy: { createdAt: "desc" },
-      include: {
-        municipality: { select: { id: true, name: true, avatarUrl: true, prefecture: true } },
-      },
+      include: reelInclude,
     }),
   ]);
 
-  res.json({ municipalities, reels });
+  const matching = candidates
+    .filter((r) => {
+      const reelTags = parseTravelerTags(r.travelerTags);
+      return tags.every((tag) => reelTags.includes(tag));
+    })
+    .slice(0, SEARCH_LIMIT);
+
+  res.json({
+    municipalities,
+    reels: await Promise.all(matching.map((r) => serializeReel(r, anonymousViewerState()))),
+  });
 });
 
 /**

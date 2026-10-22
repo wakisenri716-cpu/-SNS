@@ -85,7 +85,9 @@
     "municipalitiesHeading": "自治体",
     "postsHeading": "投稿",
     "noResults": "該当する結果が見つかりませんでした",
-    "recommendHeading": "AIレコメンド（人気・新着ベース）"
+    "recommendHeading": "AIレコメンド（人気・新着ベース）",
+    "tagFilterLabel": "条件で絞り込む（すべて満たす投稿）",
+    "noTaggedPosts": "条件に合う投稿はありません"
   },
   "myPage": {
     "viewOnlyNotice": "観光客アカウントの閲覧専用ページです。投稿の作成・編集はできません（自治体アカウントのみ可能です）。",
