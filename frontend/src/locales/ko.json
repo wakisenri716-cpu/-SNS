@@ -268,7 +268,9 @@
     "nearbySubtitle": "이 장소 근처의 다른 게시물입니다",
     "nearbyEmpty": "아직 근처에 다른 게시물이 없습니다",
     "nearbyDistance": "{{km}}km 거리",
-    "nearbyDistanceMeters": "{{m}}m 거리"
+    "nearbyDistanceMeters": "{{m}}m 거리",
+    "nearbyAll": "전체",
+    "nearbyEmptyCategory": "아직 근처에 「{{category}}」 게시물이 없습니다"
   },
   "settings": {
     "title": "설정",

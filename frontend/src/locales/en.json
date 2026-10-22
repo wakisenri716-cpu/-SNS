@@ -268,7 +268,9 @@
     "nearbySubtitle": "Other posts near this location",
     "nearbyEmpty": "No other posts nearby yet",
     "nearbyDistance": "{{km}}km away",
-    "nearbyDistanceMeters": "{{m}}m away"
+    "nearbyDistanceMeters": "{{m}}m away",
+    "nearbyAll": "All",
+    "nearbyEmptyCategory": "No nearby {{category}} posts yet"
   },
   "settings": {
     "title": "Settings",

@@ -268,7 +268,9 @@
     "nearbySubtitle": "这个地点附近的其他投稿",
     "nearbyEmpty": "附近暂时还没有其他投稿",
     "nearbyDistance": "距离{{km}}公里",
-    "nearbyDistanceMeters": "距离{{m}}米"
+    "nearbyDistanceMeters": "距离{{m}}米",
+    "nearbyAll": "全部",
+    "nearbyEmptyCategory": "附近暂时还没有「{{category}}」的投稿"
   },
   "settings": {
     "title": "设置",

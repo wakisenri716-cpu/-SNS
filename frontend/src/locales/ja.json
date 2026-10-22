@@ -268,7 +268,9 @@
     "nearbySubtitle": "この場所の近くにある他の投稿です",
     "nearbyEmpty": "近くに他の投稿はまだありません",
     "nearbyDistance": "{{km}}km先",
-    "nearbyDistanceMeters": "{{m}}m先"
+    "nearbyDistanceMeters": "{{m}}m先",
+    "nearbyAll": "すべて",
+    "nearbyEmptyCategory": "近くに「{{category}}」の投稿はまだありません"
   },
   "settings": {
     "title": "設定",

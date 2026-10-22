@@ -459,7 +459,12 @@ router.get("/:id", optionalAuth, async (req, res) => {
 const NEARBY_RADIUS_METERS = 50_000;
 const NEARBY_LIMIT = 6;
 
+// Optional ?category= narrows it to one kind of place (e.g. 近くの宿).
 router.get("/:id/nearby", optionalAuth, async (req, res) => {
+  const category =
+    typeof req.query.category === "string" && (REEL_CATEGORIES as readonly string[]).includes(req.query.category)
+      ? req.query.category
+      : undefined;
   const reel = await prisma.reel.findUnique({ where: { id: req.params.id } });
   if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
   if (reel.locationLat == null || reel.locationLng == null) {
@@ -469,7 +474,7 @@ router.get("/:id/nearby", optionalAuth, async (req, res) => {
 
   const followed = await getFollowedIds(req.auth?.userId);
   const candidates = await prisma.reel.findMany({
-    where: { id: { not: reel.id }, locationLat: { not: null }, locationLng: { not: null } },
+    where: { id: { not: reel.id }, locationLat: { not: null }, locationLng: { not: null }, ...(category ? { category } : {}) },
     include: {
       ...reelInclude,
       likes: req.auth ? { where: { userId: req.auth.userId }, select: { id: true } } : false,

@@ -3,20 +3,21 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import AutoplayVideo from "./AutoplayVideo";
-import type { NearbyReel } from "../types";
+import { REEL_CATEGORIES, type NearbyReel, type ReelCategory } from "../types";
 
 // Pitch deck item "(1) 近隣の観光スポットの掲載": while looking at one post's access
 // info, let the viewer discover other posts located near it, regardless of
-// which municipality/company posted them. See GET /reels/:id/nearby.
+// which municipality/company posted them, optionally narrowed to one category
+// (近くの宿・飲食店…). See GET /reels/:id/nearby.
 export default function NearbySpots({ reelId }: { reelId: string }) {
   const { t } = useTranslation();
   const [items, setItems] = useState<NearbyReel[] | null>(null);
+  const [category, setCategory] = useState<ReelCategory | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    setItems(null);
     api
-      .get<{ items: NearbyReel[] }>(`/reels/${reelId}/nearby`)
+      .get<{ items: NearbyReel[] }>(`/reels/${reelId}/nearby`, { params: category ? { category } : {} })
       .then(({ data }) => {
         if (!cancelled) setItems(data.items);
       })
@@ -26,7 +27,7 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
     return () => {
       cancelled = true;
     };
-  }, [reelId]);
+  }, [reelId, category]);
 
   if (items == null) return null;
 
@@ -34,9 +35,25 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
     <div className="mt-6 border-t border-gray-100 pt-5">
       <h2 className="text-sm font-bold text-gray-900">📍 {t("reelAccessPage.nearbyHeading")}</h2>
       <p className="mt-0.5 text-xs text-gray-400">{t("reelAccessPage.nearbySubtitle")}</p>
+      <div className="mt-3 flex gap-1.5 overflow-x-auto pb-1">
+        {[null, ...REEL_CATEGORIES].map((c) => (
+          <button
+            key={c ?? "all"}
+            type="button"
+            onClick={() => setCategory(c)}
+            className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium ${
+              category === c ? "bg-teal-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            }`}
+          >
+            {c ? t(`category.${c}`) : t("reelAccessPage.nearbyAll")}
+          </button>
+        ))}
+      </div>
 
       {items.length === 0 ? (
-        <p className="mt-3 text-xs text-gray-400">{t("reelAccessPage.nearbyEmpty")}</p>
+        <p className="mt-3 text-xs text-gray-400">
+          {category ? t("reelAccessPage.nearbyEmptyCategory", { category: t(`category.${category}`) }) : t("reelAccessPage.nearbyEmpty")}
+        </p>
       ) : (
         <div className="mt-3 flex gap-3 overflow-x-auto pb-1">
           {items.map((item) => (
