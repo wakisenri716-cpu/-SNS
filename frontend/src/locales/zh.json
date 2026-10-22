@@ -465,10 +465,15 @@
     "friends": "适合朋友结伴",
     "multilingual": "支持外语"
   },
-  "reelTagEditor": {
-    "heading": "适合人群・服务",
-    "note": "请在确认实际设施和服务情况后再设置「无障碍」「支持外语」。",
+  "reelEditor": {
+    "heading": "编辑投稿",
+    "captionLabel": "说明文字",
+    "locationLabel": "地点",
+    "coordsNote": "如果纬度和经度都留空后保存，将根据地点名称重新自动设置位置（设置失败时将没有位置信息，不会出现在交通、行程和附近景点中）。",
+    "coordsError": "请将纬度和经度都输入为数字，或都留空",
+    "tagsNote": "请在确认实际设施和服务情况后再设置「无障碍」「支持外语」。",
     "save": "保存",
-    "saveError": "保存失败"
+    "saveError": "保存失败",
+    "deleteConfirm": "确定要删除这条投稿吗？删除后无法恢复。"
   }
 }

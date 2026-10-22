@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
-import ReelTagEditor from "./ReelTagEditor";
+import ReelEditor from "./ReelEditor";
 import { TravelerTagChips } from "./TravelerTagChips";
 import type { Reel } from "../types";
 
@@ -18,6 +18,7 @@ export default function ReelManageGrid({
   const [editingReel, setEditingReel] = useState<Reel | null>(null);
 
   async function removeReel(id: string) {
+    if (!window.confirm(t("reelEditor.deleteConfirm"))) return;
     await api.delete(`/reels/${id}`);
     onRemoved(id);
   }
@@ -33,7 +34,7 @@ export default function ReelManageGrid({
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
       {editingReel && (
-        <ReelTagEditor reel={editingReel} onClose={() => setEditingReel(null)} onSaved={onUpdated} />
+        <ReelEditor reel={editingReel} onClose={() => setEditingReel(null)} onSaved={onUpdated} />
       )}
       {reels.map((reel) => (
         <div key={reel.id} className="overflow-hidden rounded-xl border border-gray-200 bg-white">
@@ -42,10 +43,10 @@ export default function ReelManageGrid({
             <p className="flex-1 truncate text-xs text-gray-700">{reel.caption || t("reelManageGrid.untitled")}</p>
             <button
               onClick={() => setEditingReel(reel)}
-              title={t("reelTagEditor.heading")}
+              title={t("reelEditor.heading")}
               className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200"
             >
-              🏷
+              ✏️
             </button>
             <button
               onClick={() => removeReel(reel.id)}

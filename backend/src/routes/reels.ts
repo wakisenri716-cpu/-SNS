@@ -556,8 +556,8 @@ const createSchema = z.object({
   category: z.enum(REEL_CATEGORIES),
   travelerTags: travelerTagsField.optional().default([]),
   locationName: z.string().max(200).optional(),
-  locationLat: z.coerce.number().optional(),
-  locationLng: z.coerce.number().optional(),
+  locationLat: z.coerce.number().min(-90).max(90).optional(),
+  locationLng: z.coerce.number().min(-180).max(180).optional(),
 });
 
 // Create reel. Only municipality accounts and companies linked to a municipality
@@ -612,13 +612,19 @@ router.post(
   }
 );
 
+// JSON body (unlike the multipart create form): coordinates may be explicitly
+// null to clear them, which also asks the server to geocode the place name.
 const updateSchema = z.object({
   caption: z.string().max(2000).optional(),
   category: z.enum(REEL_CATEGORIES).optional(),
   travelerTags: travelerTagsField.optional(),
-  locationName: z.string().max(200).optional(),
-  locationLat: z.coerce.number().optional(),
-  locationLng: z.coerce.number().optional(),
+  locationName: z
+    .string()
+    .max(200)
+    .transform((v) => v.trim() || null)
+    .optional(),
+  locationLat: z.number().min(-90).max(90).nullable().optional(),
+  locationLng: z.number().min(-180).max(180).nullable().optional(),
 });
 
 // A municipality may edit/delete any reel under its name (including ones posted by
@@ -643,10 +649,35 @@ router.put("/:id", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (r
     return res.status(404).json({ error: "投稿が見つかりません" });
   }
 
-  const { travelerTags, ...rest } = parsed.data;
+  const { travelerTags, locationLat, locationLng, ...rest } = parsed.data;
+  const coords: { locationLat?: number | null; locationLng?: number | null } = {};
+  if (locationLat !== undefined || locationLng !== undefined) {
+    const latMissing = locationLat == null;
+    const lngMissing = locationLng == null;
+    if (latMissing !== lngMissing) {
+      return res.status(400).json({ error: "緯度と経度は両方入力するか、両方空にしてください" });
+    }
+    coords.locationLat = locationLat ?? null;
+    coords.locationLng = locationLng ?? null;
+    // Cleared coordinates + a place name: locate it, as POST /reels does. A
+    // failed lookup leaves the post without coordinates rather than failing.
+    const placeName = rest.locationName !== undefined ? rest.locationName : reel.locationName;
+    if (coords.locationLat === null && placeName && isGoogleMapsConfigured()) {
+      try {
+        const result = await geocode(placeName);
+        if (result) {
+          coords.locationLat = result.lat;
+          coords.locationLng = result.lng;
+        }
+      } catch (err) {
+        console.error("[reels] Geocoding on update failed, saving without coordinates:", err);
+      }
+    }
+  }
+
   const updated = await prisma.reel.update({
     where: { id: reel.id },
-    data: { ...rest, ...(travelerTags ? { travelerTags: travelerTags.join(",") } : {}) },
+    data: { ...rest, ...coords, ...(travelerTags ? { travelerTags: travelerTags.join(",") } : {}) },
     include: reelInclude,
   });
   res.json(await serializeReel(updated, anonymousViewerState()));

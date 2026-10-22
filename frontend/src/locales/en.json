@@ -467,10 +467,15 @@
     "friends": "For groups of friends",
     "multilingual": "Multilingual support"
   },
-  "reelTagEditor": {
-    "heading": "Suitable for",
-    "note": "Only set \"Barrier-free\" and \"Multilingual support\" after confirming the actual facilities and services.",
+  "reelEditor": {
+    "heading": "Edit post",
+    "captionLabel": "Caption",
+    "locationLabel": "Place",
+    "coordsNote": "Save with both latitude and longitude empty to re-locate the post from the place name (if that fails, the post has no location and won't appear in access info, itineraries or nearby spots).",
+    "coordsError": "Enter both latitude and longitude as numbers, or leave both empty",
+    "tagsNote": "Only set \"Barrier-free\" and \"Multilingual support\" after confirming the actual facilities and services.",
     "save": "Save",
-    "saveError": "Could not save"
+    "saveError": "Could not save",
+    "deleteConfirm": "Delete this post? This can't be undone."
   }
 }
