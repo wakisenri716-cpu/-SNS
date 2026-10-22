@@ -157,7 +157,11 @@
     "postedBy": "发布者：{{name}}",
     "deleteReel": "删除",
     "linkedCompaniesHeading": "关联企业（{{count}}个）",
-    "noLinkedCompanies": "目前还没有关联到该自治体的企业账号。"
+    "noLinkedCompanies": "目前还没有关联到该自治体的企业账号。",
+    "spotCoordsNote": "填写纬度・经度（可选）后会显示在「附近的观光景点」中。两者都留空时，将根据景点名称和地方政府名称自动查找位置（找不到时为无位置）。",
+    "spotHasLocation": "有位置",
+    "spotNoLocation": "无位置",
+    "deleteSpotConfirm": "确定要删除这个观光景点吗？删除后无法恢复。"
   },
   "companyDashboard": {
     "manageScreen": "{{name}} 管理页面",
@@ -270,7 +274,8 @@
     "nearbyDistance": "距离{{km}}公里",
     "nearbyDistanceMeters": "距离{{m}}米",
     "nearbyAll": "全部",
-    "nearbyEmptyCategory": "附近暂时还没有「{{category}}」的投稿"
+    "nearbyEmptyCategory": "附近暂时还没有「{{category}}」的投稿",
+    "nearbySpotsHeading": "来自地方政府的观光信息"
   },
   "settings": {
     "title": "设置",

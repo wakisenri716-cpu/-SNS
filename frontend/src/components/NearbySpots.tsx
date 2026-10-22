@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import AutoplayVideo from "./AutoplayVideo";
-import { REEL_CATEGORIES, type NearbyReel, type ReelCategory } from "../types";
+import { REEL_CATEGORIES, type NearbyReel, type NearbyTourismSpot, type ReelCategory } from "../types";
 
 // Pitch deck item "(1) 近隣の観光スポットの掲載": while looking at one post's access
 // info, let the viewer discover other posts located near it, regardless of
@@ -12,17 +12,24 @@ import { REEL_CATEGORIES, type NearbyReel, type ReelCategory } from "../types";
 export default function NearbySpots({ reelId }: { reelId: string }) {
   const { t } = useTranslation();
   const [items, setItems] = useState<NearbyReel[] | null>(null);
+  const [spots, setSpots] = useState<NearbyTourismSpot[]>([]);
   const [category, setCategory] = useState<ReelCategory | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     api
-      .get<{ items: NearbyReel[] }>(`/reels/${reelId}/nearby`, { params: category ? { category } : {} })
+      .get<{ items: NearbyReel[]; spots: NearbyTourismSpot[] }>(`/reels/${reelId}/nearby`, {
+        params: category ? { category } : {},
+      })
       .then(({ data }) => {
-        if (!cancelled) setItems(data.items);
+        if (cancelled) return;
+        setItems(data.items);
+        setSpots(data.spots);
       })
       .catch(() => {
-        if (!cancelled) setItems([]);
+        if (cancelled) return;
+        setItems([]);
+        setSpots([]);
       });
     return () => {
       cancelled = true;
@@ -30,6 +37,11 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
   }, [reelId, category]);
 
   if (items == null) return null;
+
+  const distanceLabel = (meters: number) =>
+    meters < 1000
+      ? t("reelAccessPage.nearbyDistanceMeters", { m: Math.max(10, Math.round(meters / 10) * 10) })
+      : t("reelAccessPage.nearbyDistance", { km: (meters / 1000).toFixed(1) });
 
   return (
     <div className="mt-6 border-t border-gray-100 pt-5">
@@ -66,9 +78,7 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
               <div className="relative aspect-square w-full bg-gray-900">
                 <AutoplayVideo src={item.videoUrl} className="h-full w-full object-cover" />
                 <span className="absolute bottom-1 right-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white">
-                  {item.distanceMeters < 1000
-                    ? t("reelAccessPage.nearbyDistanceMeters", { m: Math.max(10, Math.round(item.distanceMeters / 10) * 10) })
-                    : t("reelAccessPage.nearbyDistance", { km: (item.distanceMeters / 1000).toFixed(1) })}
+                  {distanceLabel(item.distanceMeters)}
                 </span>
               </div>
               <div className="p-2">
@@ -79,6 +89,28 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
               </div>
             </Link>
           ))}
+        </div>
+      )}
+
+      {spots.length > 0 && (
+        <div className="mt-4">
+          <p className="text-xs font-semibold text-gray-500">{t("reelAccessPage.nearbySpotsHeading")}</p>
+          <div className="mt-2 flex flex-col gap-2">
+            {spots.map((spot) => (
+              <Link
+                key={spot.id}
+                to={`/municipalities/${spot.municipality.id}`}
+                className="block rounded-lg border border-gray-200 bg-white p-3 hover:border-teal-300"
+              >
+                <div className="flex items-baseline gap-2">
+                  <p className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-900">📍 {spot.name}</p>
+                  <span className="shrink-0 text-[11px] text-gray-400">{distanceLabel(spot.distanceMeters)}</span>
+                </div>
+                <p className="text-[11px] text-gray-400">{spot.municipality.name}</p>
+                {spot.description && <p className="mt-1 line-clamp-2 text-xs text-gray-600">{spot.description}</p>}
+              </Link>
+            ))}
+          </div>
         </div>
       )}
     </div>

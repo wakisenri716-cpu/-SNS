@@ -78,7 +78,19 @@ export interface TourismSpot {
   id: string;
   name: string;
   description: string;
+  // Optional; lets the spot appear in 近くの観光スポット.
+  locationLat: number | null;
+  locationLng: number | null;
   createdAt: string;
+}
+
+// A located 観光情報 spot near a post (GET /reels/:id/nearby → spots).
+export interface NearbyTourismSpot {
+  id: string;
+  name: string;
+  description: string;
+  municipality: { id: string; name: string };
+  distanceMeters: number;
 }
 
 export interface Municipality {

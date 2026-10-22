@@ -157,7 +157,11 @@
     "postedBy": "게시자: {{name}}",
     "deleteReel": "삭제",
     "linkedCompaniesHeading": "연결된 기업（{{count}}개）",
-    "noLinkedCompanies": "아직 이 지자체에 연결된 기업 계정이 없습니다."
+    "noLinkedCompanies": "아직 이 지자체에 연결된 기업 계정이 없습니다.",
+    "spotCoordsNote": "위도・경도(선택)를 입력하면 「주변 관광 스팟」에 표시됩니다. 둘 다 비우면 스팟 이름과 지자체 이름으로 위치를 자동으로 찾습니다 (찾지 못하면 위치 없음).",
+    "spotHasLocation": "위치 있음",
+    "spotNoLocation": "위치 없음",
+    "deleteSpotConfirm": "이 관광 스팟을 삭제하시겠습니까? 되돌릴 수 없습니다."
   },
   "companyDashboard": {
     "manageScreen": "{{name}} 관리 화면",
@@ -270,7 +274,8 @@
     "nearbyDistance": "{{km}}km 거리",
     "nearbyDistanceMeters": "{{m}}m 거리",
     "nearbyAll": "전체",
-    "nearbyEmptyCategory": "아직 근처에 「{{category}}」 게시물이 없습니다"
+    "nearbyEmptyCategory": "아직 근처에 「{{category}}」 게시물이 없습니다",
+    "nearbySpotsHeading": "지자체 관광 정보에서"
   },
   "settings": {
     "title": "설정",

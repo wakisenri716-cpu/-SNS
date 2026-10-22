@@ -91,6 +91,11 @@ model TourismSpot {
   municipality   Municipality @relation(fields: [municipalityId], references: [id], onDelete: Cascade)
   name           String
   description    String       @default("")
+  // Optional location, so the spot can show up in 近くの観光スポット. Set by the
+  // municipality, or looked up from the spot + municipality name when
+  // Google Maps is configured (see lib/locateTourismSpot.ts).
+  locationLat    Float?
+  locationLng    Float?
   createdAt      DateTime     @default(now())
 }
 

@@ -157,7 +157,11 @@
     "postedBy": "Posted by: {{name}}",
     "deleteReel": "Delete",
     "linkedCompaniesHeading": "Linked Companies ({{count}})",
-    "noLinkedCompanies": "No company accounts are linked to this municipality yet."
+    "noLinkedCompanies": "No company accounts are linked to this municipality yet.",
+    "spotCoordsNote": "Add latitude/longitude (optional) to show the spot in Nearby spots. Leave both empty to look it up from the spot and municipality names (no location if not found).",
+    "spotHasLocation": "Has location",
+    "spotNoLocation": "No location",
+    "deleteSpotConfirm": "Delete this sightseeing spot? This can't be undone."
   },
   "companyDashboard": {
     "manageScreen": "{{name}} Admin",
@@ -270,7 +274,8 @@
     "nearbyDistance": "{{km}}km away",
     "nearbyDistanceMeters": "{{m}}m away",
     "nearbyAll": "All",
-    "nearbyEmptyCategory": "No nearby {{category}} posts yet"
+    "nearbyEmptyCategory": "No nearby {{category}} posts yet",
+    "nearbySpotsHeading": "From municipalities' sightseeing info"
   },
   "settings": {
     "title": "Settings",

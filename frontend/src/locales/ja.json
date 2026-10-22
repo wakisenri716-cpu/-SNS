@@ -157,7 +157,11 @@
     "postedBy": "投稿: {{name}}",
     "deleteReel": "削除",
     "linkedCompaniesHeading": "紐づいている企業（{{count}}件）",
-    "noLinkedCompanies": "まだこの自治体に紐づいた企業アカウントはありません。"
+    "noLinkedCompanies": "まだこの自治体に紐づいた企業アカウントはありません。",
+    "spotCoordsNote": "緯度・経度（任意）を入れると「近くの観光スポット」に表示されます。両方空にすると、スポット名と自治体名から位置を自動で探します（見つからなければ位置なしになります）。",
+    "spotHasLocation": "位置あり",
+    "spotNoLocation": "位置なし",
+    "deleteSpotConfirm": "この観光スポットを削除しますか？元に戻せません。"
   },
   "companyDashboard": {
     "manageScreen": "{{name}} 管理画面",
@@ -270,7 +274,8 @@
     "nearbyDistance": "{{km}}km先",
     "nearbyDistanceMeters": "{{m}}m先",
     "nearbyAll": "すべて",
-    "nearbyEmptyCategory": "近くに「{{category}}」の投稿はまだありません"
+    "nearbyEmptyCategory": "近くに「{{category}}」の投稿はまだありません",
+    "nearbySpotsHeading": "自治体の観光情報より"
   },
   "settings": {
     "title": "設定",

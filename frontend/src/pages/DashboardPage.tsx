@@ -63,6 +63,39 @@ function TextInfoEditor({
   );
 }
 
+// Optional latitude/longitude pair for a 観光情報 spot. Both empty = look the
+// spot up from its name on the server (when Google Maps is configured).
+function parseCoords(lat: string, lng: string): { locationLat: number | null; locationLng: number | null } | null {
+  const latNum = lat.trim() === "" ? null : Number(lat);
+  const lngNum = lng.trim() === "" ? null : Number(lng);
+  if ((latNum === null) !== (lngNum === null) || Number.isNaN(latNum) || Number.isNaN(lngNum)) return null;
+  return { locationLat: latNum, locationLng: lngNum };
+}
+
+function CoordsFields({
+  lat,
+  lng,
+  onLat,
+  onLng,
+}: {
+  lat: string;
+  lng: string;
+  onLat: (v: string) => void;
+  onLng: (v: string) => void;
+}) {
+  const { t } = useTranslation();
+  const cls = "rounded-lg border border-gray-300 p-2 text-sm text-gray-900 outline-none focus:border-teal-500";
+  return (
+    <div>
+      <div className="grid grid-cols-2 gap-2">
+        <input value={lat} onChange={(e) => onLat(e.target.value)} placeholder={t("reelUploader.latPlaceholder")} inputMode="decimal" className={cls} />
+        <input value={lng} onChange={(e) => onLng(e.target.value)} placeholder={t("reelUploader.lngPlaceholder")} inputMode="decimal" className={cls} />
+      </div>
+      <p className="mt-1 text-[11px] leading-relaxed text-gray-400">{t("dashboard.spotCoordsNote")}</p>
+    </div>
+  );
+}
+
 // 観光情報タブ: 自治体管轄内の観光スポットを1件ずつ登録・編集・削除できる
 // CRUD一覧（旧・単一のtourismInfoフリーテキストを置き換え）。
 function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
@@ -71,25 +104,37 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
   const [adding, setAdding] = useState(false);
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");
+  const [newLat, setNewLat] = useState("");
+  const [newLng, setNewLng] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editDescription, setEditDescription] = useState("");
+  const [editLat, setEditLat] = useState("");
+  const [editLng, setEditLng] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function addSpot(e: FormEvent) {
     e.preventDefault();
     if (!newName.trim()) return;
+    const coords = parseCoords(newLat, newLng);
+    if (!coords) {
+      setError(t("reelEditor.coordsError"));
+      return;
+    }
     setSaving(true);
     setError(null);
     try {
       const { data } = await api.post("/municipalities/me/tourism-spots", {
         name: newName.trim(),
         description: newDescription.trim(),
+        ...coords,
       });
       setSpots((prev) => [...prev, data]);
       setNewName("");
       setNewDescription("");
+      setNewLat("");
+      setNewLng("");
       setAdding(false);
     } catch (err: any) {
       setError(err?.response?.data?.error ?? t("dashboard.spotSaveError"));
@@ -102,17 +147,25 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
     setEditingId(spot.id);
     setEditName(spot.name);
     setEditDescription(spot.description);
+    setEditLat(spot.locationLat?.toString() ?? "");
+    setEditLng(spot.locationLng?.toString() ?? "");
     setError(null);
   }
 
   async function saveEdit(spotId: string) {
     if (!editName.trim()) return;
+    const coords = parseCoords(editLat, editLng);
+    if (!coords) {
+      setError(t("reelEditor.coordsError"));
+      return;
+    }
     setSaving(true);
     setError(null);
     try {
       const { data } = await api.put(`/municipalities/me/tourism-spots/${spotId}`, {
         name: editName.trim(),
         description: editDescription.trim(),
+        ...coords,
       });
       setSpots((prev) => prev.map((s) => (s.id === spotId ? data : s)));
       setEditingId(null);
@@ -124,6 +177,7 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
   }
 
   async function deleteSpot(spotId: string) {
+    if (!window.confirm(t("dashboard.deleteSpotConfirm"))) return;
     await api.delete(`/municipalities/me/tourism-spots/${spotId}`);
     setSpots((prev) => prev.filter((s) => s.id !== spotId));
   }
@@ -149,6 +203,7 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
                 placeholder={t("dashboard.spotDescriptionPlaceholder")}
                 className="rounded-lg border border-gray-300 p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
               />
+              <CoordsFields lat={editLat} lng={editLng} onLat={setEditLat} onLng={setEditLng} />
               <div className="flex gap-2">
                 <button
                   onClick={() => saveEdit(spot.id)}
@@ -168,7 +223,16 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
           ) : (
             <div key={spot.id} className="flex items-start justify-between gap-3 rounded-lg border border-gray-200 p-3">
               <div className="min-w-0">
-                <p className="text-sm font-bold text-gray-900">{spot.name}</p>
+                <p className="text-sm font-bold text-gray-900">
+                  {spot.name}
+                  <span
+                    className={`ml-2 rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                      spot.locationLat != null ? "bg-teal-50 text-teal-700" : "bg-gray-100 text-gray-400"
+                    }`}
+                  >
+                    {spot.locationLat != null ? t("dashboard.spotHasLocation") : t("dashboard.spotNoLocation")}
+                  </span>
+                </p>
                 {spot.description && (
                   <p className="mt-1 whitespace-pre-wrap text-xs text-gray-600">{spot.description}</p>
                 )}
@@ -206,6 +270,7 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
             placeholder={t("dashboard.spotDescriptionPlaceholder")}
             className="rounded-lg border border-gray-300 p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
           />
+          <CoordsFields lat={newLat} lng={newLng} onLat={setNewLat} onLng={setNewLng} />
           <div className="flex gap-2">
             <button
               type="submit"

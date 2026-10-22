@@ -468,7 +468,7 @@ router.get("/:id/nearby", optionalAuth, async (req, res) => {
   const reel = await prisma.reel.findUnique({ where: { id: req.params.id } });
   if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
   if (reel.locationLat == null || reel.locationLng == null) {
-    return res.json({ items: [] });
+    return res.json({ items: [], spots: [] });
   }
   const origin = { lat: reel.locationLat, lng: reel.locationLng };
 
@@ -488,6 +488,24 @@ router.get("/:id/nearby", optionalAuth, async (req, res) => {
     .sort((a, b) => a.distanceMeters - b.distanceMeters)
     .slice(0, NEARBY_LIMIT);
 
+  // Municipalities' 観光情報 spots that have a location — text-only entries
+  // (no video), and uncategorized, so only on the unfiltered list.
+  const spots = category
+    ? []
+    : (
+        await prisma.tourismSpot.findMany({
+          where: { locationLat: { not: null }, locationLng: { not: null } },
+          include: { municipality: { select: { id: true, name: true } } },
+        })
+      )
+        .map((spot) => ({
+          spot,
+          distanceMeters: haversineMeters(origin, { lat: spot.locationLat!, lng: spot.locationLng! }),
+        }))
+        .filter((s) => s.distanceMeters <= NEARBY_RADIUS_METERS)
+        .sort((a, b) => a.distanceMeters - b.distanceMeters)
+        .slice(0, NEARBY_LIMIT);
+
   res.json({
     items: await Promise.all(
       nearby.map(async ({ reel: r, distanceMeters }) => ({
@@ -495,6 +513,13 @@ router.get("/:id/nearby", optionalAuth, async (req, res) => {
         distanceMeters: Math.round(distanceMeters),
       }))
     ),
+    spots: spots.map(({ spot, distanceMeters }) => ({
+      id: spot.id,
+      name: spot.name,
+      description: spot.description,
+      municipality: spot.municipality,
+      distanceMeters: Math.round(distanceMeters),
+    })),
   });
 });
 

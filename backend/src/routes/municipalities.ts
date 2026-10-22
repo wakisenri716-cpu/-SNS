@@ -10,6 +10,7 @@ import { getFollowedIds } from "../lib/followState";
 import { geocode, isGoogleMapsConfigured } from "../services/googleMaps";
 import { getTransitSuggestion } from "../services/maasProvider";
 import { parseDepartureTime } from "../lib/parseDepartureTime";
+import { locateTourismSpot } from "../lib/locateTourismSpot";
 
 const router = Router();
 
@@ -30,7 +31,14 @@ export function serializeMunicipality(
     commentsEnabled: boolean;
     createdAt: Date;
     _count?: { followers: number };
-    tourismSpots?: { id: string; name: string; description: string; createdAt: Date }[];
+    tourismSpots?: {
+      id: string;
+      name: string;
+      description: string;
+      locationLat: number | null;
+      locationLng: number | null;
+      createdAt: Date;
+    }[];
   },
   viewer: { isFollowing: boolean } = { isFollowing: false }
 ) {
@@ -250,10 +258,18 @@ router.post(
   }
 );
 
+// Coordinates are optional; both null (or omitted on create) means "look it up
+// from the name" — same convention as editing a post (PUT /reels/:id).
 const tourismSpotSchema = z.object({
   name: z.string().min(1, "スポット名を入力してください").max(100),
   description: z.string().max(2000).optional().default(""),
+  locationLat: z.number().min(-90).max(90).nullable().optional(),
+  locationLng: z.number().min(-180).max(180).nullable().optional(),
 });
+
+function coordsGivenTogether(data: { locationLat?: number | null; locationLng?: number | null }) {
+  return (data.locationLat == null) === (data.locationLng == null);
+}
 
 // Tourism spots CRUD (municipality-only, own municipality) — each entry is one
 // attraction within the municipality's jurisdiction, replacing the old
@@ -262,12 +278,20 @@ const tourismSpotSchema = z.object({
 router.post("/me/tourism-spots", requireAuth, requireRole("MUNICIPALITY"), async (req, res) => {
   const parsed = tourismSpotSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+  if (!coordsGivenTogether(parsed.data)) {
+    return res.status(400).json({ error: "緯度と経度は両方入力するか、両方空にしてください" });
+  }
 
   const municipality = await prisma.municipality.findUnique({ where: { userId: req.auth!.userId } });
   if (!municipality) return res.status(404).json({ error: "自治体プロフィールが見つかりません" });
 
+  const { locationLat, locationLng, ...fields } = parsed.data;
+  const coords =
+    locationLat != null && locationLng != null
+      ? { locationLat, locationLng }
+      : await locateTourismSpot(fields.name, municipality.name);
   const spot = await prisma.tourismSpot.create({
-    data: { municipalityId: municipality.id, name: parsed.data.name, description: parsed.data.description },
+    data: { municipalityId: municipality.id, ...fields, ...coords },
   });
   res.status(201).json(spot);
 });
@@ -284,7 +308,22 @@ router.put("/me/tourism-spots/:spotId", requireAuth, requireRole("MUNICIPALITY")
     return res.status(404).json({ error: "観光スポットが見つかりません" });
   }
 
-  const updated = await prisma.tourismSpot.update({ where: { id: spot.id }, data: parsed.data });
+  if (!coordsGivenTogether(parsed.data)) {
+    return res.status(400).json({ error: "緯度と経度は両方入力するか、両方空にしてください" });
+  }
+  const { locationLat, locationLng, ...fields } = parsed.data;
+  let coords: { locationLat: number | null; locationLng: number | null } | undefined;
+  if (locationLat !== undefined || locationLng !== undefined) {
+    coords =
+      locationLat != null && locationLng != null
+        ? { locationLat, locationLng }
+        : ((await locateTourismSpot(fields.name ?? spot.name, municipality.name)) ?? {
+            locationLat: null,
+            locationLng: null,
+          });
+  }
+
+  const updated = await prisma.tourismSpot.update({ where: { id: spot.id }, data: { ...fields, ...coords } });
   res.json(updated);
 });
 

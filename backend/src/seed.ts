@@ -3,6 +3,7 @@ import fs from "fs";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
+import { locateTourismSpot } from "./lib/locateTourismSpot";
 
 const SEED_ASSETS_DIR = path.resolve(__dirname, "../seed-assets");
 const UPLOAD_DIR = process.env.UPLOAD_DIR || "./uploads";
@@ -19,7 +20,7 @@ interface SeedMunicipality {
   name: string;
   prefecture: string;
   description: string;
-  tourismSpots: { name: string; description: string }[];
+  tourismSpots: { name: string; description: string; locationLat?: number; locationLng?: number }[];
   accessInfo: string;
   lodgingInfo: string;
   restaurantInfo: string;
@@ -45,6 +46,11 @@ const MUNICIPALITIES: SeedMunicipality[] = [
     tourismSpots: [
       {
         name: "河童橋",
+        // Same point as the 河童橋 post below. 大正池 has no hard-coded
+        // coordinates (none verified); it's looked up at seed time when Google
+        // Maps is configured, and otherwise just has no location.
+        locationLat: 36.251,
+        locationLng: 137.6389,
         description: "上高地のシンボルとなっている木製の吊り橋。橋の上から穂高連峰を一望できます。例年4月中旬〜11月中旬が開山期間で、冬期は閉鎖されます。",
       },
       {
@@ -128,6 +134,11 @@ export async function seedIfEmpty() {
       include: { municipality: true },
     });
     const municipalityId = user.municipality!.id;
+
+    for (const spot of await prisma.tourismSpot.findMany({ where: { municipalityId, locationLat: null } })) {
+      const coords = await locateTourismSpot(spot.name, m.name);
+      if (coords) await prisma.tourismSpot.update({ where: { id: spot.id }, data: coords });
+    }
 
     for (const r of m.reels) {
       const videoUrl = copySeedVideo(r.video);
