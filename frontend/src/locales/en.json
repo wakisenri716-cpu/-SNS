@@ -481,5 +481,12 @@
     "save": "Save",
     "saveError": "Could not save",
     "deleteConfirm": "Delete this post? This can't be undone."
+  },
+  "welcome": {
+    "heading": "Jaziba is a tourism-only social app where only municipalities and businesses post",
+    "body": "Discover places in regional Japan you've never seen through photos and videos, then plan your trip here — access, lodging, restaurants, all the way to an itinerary.",
+    "registerTraveler": "Sign up as a traveler (free)",
+    "forMunicipality": "For municipalities",
+    "close": "Close"
   }
 }

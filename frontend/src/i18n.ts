@@ -35,3 +35,10 @@ export function setAppLanguage(lang: SupportedLanguage) {
 }
 
 export default i18n;
+
+// Keep <html lang> matching the UI language: screen readers, the browser's
+// translate prompt, and CJK glyph selection (ja vs zh forms) all rely on it.
+document.documentElement.lang = i18n.language;
+i18n.on("languageChanged", (lng) => {
+  document.documentElement.lang = lng;
+});

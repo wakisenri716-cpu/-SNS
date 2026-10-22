@@ -6,6 +6,7 @@ import { fetchSavedReelIds, notifySavesChanged, onSavesChanged } from "../lib/sa
 import { useAuth } from "../auth/AuthContext";
 import ReelThumb from "../components/ReelGrid";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
+import WelcomeIntro from "../components/WelcomeIntro";
 import { REEL_CATEGORIES, type Reel } from "../types";
 
 const CATEGORY_TABS = ["all", ...REEL_CATEGORIES] as const;
@@ -103,6 +104,7 @@ export default function FeedPage() {
 
   return (
     <div className="mx-auto max-w-6xl">
+      <WelcomeIntro />
       <div className="flex gap-2 overflow-x-auto border-b border-gray-200 p-3 md:flex-wrap">
         {CATEGORY_TABS.map((c) => (
           <button
