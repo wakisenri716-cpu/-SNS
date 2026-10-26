@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { lazy, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Layout from "./components/Layout";
@@ -7,22 +7,25 @@ import RequireCompany from "./components/RequireCompany";
 import RequireAuth from "./components/RequireAuth";
 import RequirePoster from "./components/RequirePoster";
 import FeedPage from "./pages/FeedPage";
-import LoginPage from "./pages/LoginPage";
-import RegisterUserPage from "./pages/RegisterUserPage";
-import RegisterMunicipalityPage from "./pages/RegisterMunicipalityPage";
-import RegisterCompanyPage from "./pages/RegisterCompanyPage";
-import MunicipalityProfilePage from "./pages/MunicipalityProfilePage";
-import DashboardPage from "./pages/DashboardPage";
-import CompanyDashboardPage from "./pages/CompanyDashboardPage";
-import SearchPage from "./pages/SearchPage";
-import MyPage from "./pages/MyPage";
-import SettingsPage from "./pages/SettingsPage";
-import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
-import ContactPage from "./pages/ContactPage";
-import InsightsPage from "./pages/InsightsPage";
-import ReelAccessPage from "./pages/ReelAccessPage";
-import ItineraryPage from "./pages/ItineraryPage";
-import NotificationsPage from "./pages/NotificationsPage";
+
+// The feed is the landing page, so it ships in the main bundle; every other
+// screen is fetched the first time it's opened (Suspense in Layout).
+const LoginPage = lazy(() => import("./pages/LoginPage"));
+const RegisterUserPage = lazy(() => import("./pages/RegisterUserPage"));
+const RegisterMunicipalityPage = lazy(() => import("./pages/RegisterMunicipalityPage"));
+const RegisterCompanyPage = lazy(() => import("./pages/RegisterCompanyPage"));
+const MunicipalityProfilePage = lazy(() => import("./pages/MunicipalityProfilePage"));
+const DashboardPage = lazy(() => import("./pages/DashboardPage"));
+const CompanyDashboardPage = lazy(() => import("./pages/CompanyDashboardPage"));
+const SearchPage = lazy(() => import("./pages/SearchPage"));
+const MyPage = lazy(() => import("./pages/MyPage"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const InsightsPage = lazy(() => import("./pages/InsightsPage"));
+const ReelAccessPage = lazy(() => import("./pages/ReelAccessPage"));
+const ItineraryPage = lazy(() => import("./pages/ItineraryPage"));
+const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
 
 function App() {
   const { t, i18n } = useTranslation();

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../auth/AuthContext";
@@ -190,7 +190,9 @@ export default function Layout() {
       )}
 
       <main className="min-w-0 flex-1">
-        <Outlet />
+        <Suspense fallback={<p className="p-10 text-center text-sm text-gray-400">{t("feed.loading")}</p>}>
+          <Outlet />
+        </Suspense>
       </main>
 
       <ItineraryRail />

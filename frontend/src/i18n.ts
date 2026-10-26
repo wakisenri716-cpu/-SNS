@@ -1,9 +1,6 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import ja from "./locales/ja.json";
-import en from "./locales/en.json";
-import zh from "./locales/zh.json";
-import ko from "./locales/ko.json";
 
 export const LANGUAGE_STORAGE_KEY = "tourism-sns-language";
 export const SUPPORTED_LANGUAGES = ["ja", "en", "zh", "ko"] as const;
@@ -17,21 +14,38 @@ function getInitialLanguage(): SupportedLanguage {
   return "ja";
 }
 
+// Japanese (the default and fallback) is bundled; the other languages are
+// separate chunks fetched only when someone actually uses them.
+const LOADERS: Record<Exclude<SupportedLanguage, "ja">, () => Promise<{ default: object }>> = {
+  en: () => import("./locales/en.json"),
+  zh: () => import("./locales/zh.json"),
+  ko: () => import("./locales/ko.json"),
+};
+
+async function ensureLanguageLoaded(lang: SupportedLanguage) {
+  if (lang === "ja" || i18n.hasResourceBundle(lang, "translation")) return;
+  const { default: messages } = await LOADERS[lang]();
+  i18n.addResourceBundle(lang, "translation", messages);
+}
+
 i18n.use(initReactI18next).init({
-  resources: {
-    ja: { translation: ja },
-    en: { translation: en },
-    zh: { translation: zh },
-    ko: { translation: ko },
-  },
-  lng: getInitialLanguage(),
+  resources: { ja: { translation: ja } },
+  lng: "ja",
   fallbackLng: "ja",
   interpolation: { escapeValue: false },
 });
 
-export function setAppLanguage(lang: SupportedLanguage) {
+// A returning visitor who chose another language: switch once it's loaded
+// (the page shows Japanese for that moment rather than blocking on it).
+const initial = getInitialLanguage();
+if (initial !== "ja") {
+  void ensureLanguageLoaded(initial).then(() => i18n.changeLanguage(initial));
+}
+
+export async function setAppLanguage(lang: SupportedLanguage) {
   localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
-  i18n.changeLanguage(lang);
+  await ensureLanguageLoaded(lang);
+  await i18n.changeLanguage(lang);
 }
 
 export default i18n;
