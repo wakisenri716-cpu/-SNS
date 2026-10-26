@@ -415,7 +415,13 @@
     "originsEmpty": "暂无可显示的记录",
     "reportCount": "{{count}}条",
     "originsHidden": "另有{{count}}条记录因记录人数较少而未显示出发地点",
-    "sortSaves": "按收藏数"
+    "sortSaves": "按收藏数",
+    "csvDownload": "保存为CSV",
+    "csvDate": "投稿日期",
+    "csvPlace": "地点",
+    "csvCaption": "说明文字",
+    "csvCategory": "类别",
+    "csvPostedBy": "投稿者"
   },
   "nationality": {
     "japan": "日本",

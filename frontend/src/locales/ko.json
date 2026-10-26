@@ -415,7 +415,13 @@
     "originsEmpty": "아직 표시할 기록이 없습니다",
     "reportCount": "{{count}}건",
     "originsHidden": "그 외 기록한 사람이 적어 표시하지 않은 출발 지점 {{count}}건",
-    "sortSaves": "저장 수 순"
+    "sortSaves": "저장 수 순",
+    "csvDownload": "CSV로 저장",
+    "csvDate": "게시일",
+    "csvPlace": "장소",
+    "csvCaption": "설명",
+    "csvCategory": "카테고리",
+    "csvPostedBy": "게시자"
   },
   "nationality": {
     "japan": "일본",

@@ -4,6 +4,7 @@ import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { REEL_CATEGORIES, type Demographics, type Reel, type TravelMode } from "../types";
 import { TRAVEL_MODE_ICON, TRAVEL_MODE_LABEL_KEY } from "../components/TravelReportSection";
+import { downloadCsv } from "../lib/csv";
 
 type SortKey = "views" | "likes" | "comments" | "saves" | "date";
 
@@ -98,6 +99,37 @@ export default function InsightsPage() {
   }, [reels, sortKey, tripPlanning]);
 
   if (!municipality && !company) return null;
+
+  function exportCsv() {
+    const today = new Date().toISOString().slice(0, 10);
+    downloadCsv(
+      `jaziba-insights-${today}.csv`,
+      [
+        t("insights.csvDate"),
+        t("insights.csvPlace"),
+        t("insights.csvCaption"),
+        t("insights.csvCategory"),
+        t("insights.csvPostedBy"),
+        t("insights.totalViews"),
+        t("insights.totalLikes"),
+        t("insights.totalComments"),
+        t("insights.totalSaves"),
+        t("insights.totalTravelReports"),
+      ],
+      sortedReels.map((r) => [
+        new Date(r.createdAt).toLocaleDateString(i18n.language),
+        r.locationName ?? "",
+        r.caption,
+        t(`category.${r.category}`),
+        r.postedByCompany?.name ?? municipality?.name ?? company?.name ?? "",
+        r.viewCount,
+        r.likeCount,
+        r.commentCount,
+        tripPlanning?.byReel[r.id]?.saves ?? 0,
+        tripPlanning?.byReel[r.id]?.travelReports ?? 0,
+      ])
+    );
+  }
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
@@ -220,6 +252,13 @@ export default function InsightsPage() {
           <section>
             <div className="mb-2 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-gray-600">{t("insights.byReelHeading")}</h3>
+              <button
+                type="button"
+                onClick={exportCsv}
+                className="ml-auto mr-2 rounded-lg border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-50"
+              >
+                ⬇ {t("insights.csvDownload")}
+              </button>
               <select
                 value={sortKey}
                 onChange={(e) => setSortKey(e.target.value as SortKey)}

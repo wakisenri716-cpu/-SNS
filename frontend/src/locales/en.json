@@ -416,7 +416,13 @@
     "reportCount_one": "{{count}} report",
     "reportCount_other": "{{count}} reports",
     "originsHidden": "{{count}} more reports from starting points with too few reporters to show",
-    "sortSaves": "Most bookmarked"
+    "sortSaves": "Most bookmarked",
+    "csvDownload": "Download CSV",
+    "csvDate": "Posted on",
+    "csvPlace": "Place",
+    "csvCaption": "Caption",
+    "csvCategory": "Category",
+    "csvPostedBy": "Posted by"
   },
   "nationality": {
     "japan": "Japan",
