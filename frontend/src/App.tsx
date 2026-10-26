@@ -22,6 +22,7 @@ import ContactPage from "./pages/ContactPage";
 import InsightsPage from "./pages/InsightsPage";
 import ReelAccessPage from "./pages/ReelAccessPage";
 import ItineraryPage from "./pages/ItineraryPage";
+import NotificationsPage from "./pages/NotificationsPage";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -42,6 +43,14 @@ function App() {
         <Route path="/municipalities/:id" element={<MunicipalityProfilePage />} />
         <Route path="/reels/:id/access" element={<ReelAccessPage />} />
         <Route path="/itinerary" element={<ItineraryPage />} />
+        <Route
+          path="/notifications"
+          element={
+            <RequirePoster>
+              <NotificationsPage />
+            </RequirePoster>
+          }
+        />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route

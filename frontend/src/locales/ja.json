@@ -291,7 +291,7 @@
     "saveSuccess": "保存しました",
     "saveError": "保存に失敗しました",
     "notificationHeading": "通知設定",
-    "notificationDisclaimer": "現在このアプリにはプッシュ通知・メール通知の送信機能がないため、ここでの設定は将来の通知機能のための保存のみで、今は挙動に影響しません。",
+    "notificationDisclaimer": "いいね・コメントがあると、メニューの「🔔 お知らせ」に表示されます（スマホへのプッシュ通知やメールでのお知らせには、まだ対応していません）。",
     "notifyLikeLabel": "いいね通知",
     "notifyLikeDescription": "自分の投稿にいいねが付いたときに通知を受け取る",
     "notifyCommentLabel": "コメント通知",
@@ -508,5 +508,13 @@
     "deleteConfirm": "このコメントを削除しますか？",
     "error": "送信できませんでした",
     "close": "閉じる"
+  },
+  "notifications": {
+    "heading": "お知らせ",
+    "subtitle": "あなたの投稿へのいいね・コメントです",
+    "empty": "まだお知らせはありません",
+    "liked": "{{name}}さんが「{{post}}」にいいねしました",
+    "commented": "{{name}}さんが「{{post}}」にコメントしました",
+    "deletedUser": "退会したユーザー"
   }
 }

@@ -11,6 +11,7 @@ import { parseDepartureTime } from "../lib/parseDepartureTime";
 import { AGE_BUCKETS, REEL_CATEGORIES, TRAVEL_MODES, ageBucketFromBirthYear, parseTravelerTags } from "../types";
 import { POINTS_PER_TRAVEL_REPORT, getUserPoints } from "../lib/points";
 import { hasTravelStyle, scoreReel } from "../lib/personalize";
+import { notifyPoster } from "../lib/notifications";
 import { summarizeByOriginAndMode, summarizeOrigins } from "../lib/travelReports";
 
 const PERSONALIZED_POOL = 100;
@@ -731,11 +732,12 @@ router.post("/:id/like", requireAuth, async (req, res) => {
   const reel = await prisma.reel.findUnique({ where: { id: req.params.id } });
   if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
 
-  await prisma.like.upsert({
-    where: { userId_reelId: { userId: req.auth!.userId, reelId: reel.id } },
-    create: { userId: req.auth!.userId, reelId: reel.id },
-    update: {},
-  });
+  const key = { userId: req.auth!.userId, reelId: reel.id };
+  const alreadyLiked = await prisma.like.findUnique({ where: { userId_reelId: key }, select: { id: true } });
+  if (!alreadyLiked) {
+    await prisma.like.upsert({ where: { userId_reelId: key }, create: key, update: {} });
+    await notifyPoster({ reelId: reel.id, actorId: req.auth!.userId, type: "like" });
+  }
   res.status(204).end();
 });
 
@@ -916,6 +918,7 @@ router.post("/:id/comments", requireAuth, async (req, res) => {
     data: { body: parsed.data.body, reelId: reel.id, userId: req.auth!.userId },
     include: { user: { select: { id: true, name: true } } },
   });
+  await notifyPoster({ reelId: reel.id, actorId: req.auth!.userId, type: "comment", commentId: comment.id });
   res.status(201).json({ ...comment, canDelete: true });
 });
 

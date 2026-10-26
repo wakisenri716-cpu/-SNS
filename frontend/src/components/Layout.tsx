@@ -4,8 +4,19 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../auth/AuthContext";
 import JazibaLogo from "./JazibaLogo";
 import ItineraryRail, { useIsTraveler } from "./ItineraryRail";
+import { useUnreadNotificationCount } from "../lib/unreadNotifications";
 
-function NavItem({ to, label, className = "" }: { to: string; label: string; className?: string }) {
+function NavItem({
+  to,
+  label,
+  className = "",
+  badge = 0,
+}: {
+  to: string;
+  label: string;
+  className?: string;
+  badge?: number;
+}) {
   return (
     <NavLink
       to={to}
@@ -15,14 +26,21 @@ function NavItem({ to, label, className = "" }: { to: string; label: string; cla
         } ${className}`
       }
     >
-      {label}
+      <span className="flex items-center justify-between gap-2">
+        {label}
+        {badge > 0 && (
+          <span className="min-w-5 rounded-full bg-red-500 px-1.5 text-center text-[11px] font-bold leading-5 text-white">
+            {badge > 99 ? "99+" : badge}
+          </span>
+        )}
+      </span>
     </NavLink>
   );
 }
 
 // The menu itself — rendered in the fixed sidebar on tablet/desktop and in the
 // slide-in drawer on phones, so both always offer the same links.
-function MenuContent() {
+function MenuContent({ unreadCount }: { unreadCount: number }) {
   const { user, municipality, company, logout } = useAuth();
   const isTraveler = useIsTraveler();
   const { t } = useTranslation();
@@ -42,11 +60,13 @@ function MenuContent() {
           <>
             <NavItem to="/dashboard" label={t("nav.dashboardMunicipality")} />
             <NavItem to="/insights" label={t("nav.insights")} />
+            <NavItem to="/notifications" label={`🔔 ${t("notifications.heading")}`} badge={unreadCount} />
           </>
         ) : company ? (
           <>
             <NavItem to="/company-dashboard" label={t("nav.dashboardCompany")} />
             <NavItem to="/insights" label={t("nav.insights")} />
+            <NavItem to="/notifications" label={`🔔 ${t("notifications.heading")}`} badge={unreadCount} />
           </>
         ) : (
           <>
@@ -115,6 +135,9 @@ function MenuContent() {
 
 export default function Layout() {
   const { t } = useTranslation();
+  const { municipality, company } = useAuth();
+  // Only municipality/company accounts post, so only they receive お知らせ.
+  const unreadCount = useUnreadNotificationCount(!!municipality || !!company);
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -138,14 +161,15 @@ export default function Layout() {
           onClick={() => setMenuOpen(true)}
           aria-label={t("nav.openMenu")}
           aria-expanded={menuOpen}
-          className="flex h-9 w-9 items-center justify-center rounded-lg text-xl text-gray-700 hover:bg-gray-100"
+          className="relative flex h-9 w-9 items-center justify-center rounded-lg text-xl text-gray-700 hover:bg-gray-100"
         >
           ☰
+          {unreadCount > 0 && <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-red-500" />}
         </button>
       </header>
 
       <aside className="sticky top-0 hidden h-screen w-56 shrink-0 flex-col border-r border-gray-200 bg-white px-4 py-6 md:flex">
-        <MenuContent />
+        <MenuContent unreadCount={unreadCount} />
       </aside>
 
       {menuOpen && (
@@ -160,7 +184,7 @@ export default function Layout() {
             >
               ✕
             </button>
-            <MenuContent />
+            <MenuContent unreadCount={unreadCount} />
           </div>
         </div>
       )}

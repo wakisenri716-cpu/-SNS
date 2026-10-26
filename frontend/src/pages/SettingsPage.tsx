@@ -580,7 +580,7 @@ export default function SettingsPage() {
           <AvatarSection />
           <ProfileSection />
           {user.role === "USER" && <TravelStyleSection />}
-          <NotificationSection />
+          {(municipality || company) && <NotificationSection />}
           <CommentsPermissionSection />
         </>
       )}

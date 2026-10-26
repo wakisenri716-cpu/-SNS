@@ -49,6 +49,8 @@ model User {
   savedReels   SavedReel[]
   follows      Follow[]
   travelReports TravelTimeReport[]
+  notifications       Notification[] @relation("NotificationRecipient")
+  notificationsCaused Notification[] @relation("NotificationActor")
 }
 
 model Municipality {
@@ -145,6 +147,7 @@ model Reel {
   views    ReelView[]
   saves    SavedReel[]
   travelReports TravelTimeReport[]
+  notifications Notification[]
 }
 
 // One row per reel view, kept (rather than just incrementing a counter) so
@@ -220,6 +223,7 @@ model Comment {
   reel      Reel     @relation(fields: [reelId], references: [id], onDelete: Cascade)
   body      String
   createdAt DateTime @default(now())
+  notifications Notification[]
 }
 
 // Public contact-form submissions (no login required to send one). There's no
@@ -256,4 +260,27 @@ model TravelTimeReport {
 
   @@unique([userId, reelId, mode])
   @@index([reelId])
+}
+
+// In-app お知らせ for the account that posted a reel: someone liked it or
+// commented on it. Only created when the recipient's notifyOnLike /
+// notifyOnComment setting is on, and never for their own actions. There is
+// no push/email delivery — this table is the whole mechanism.
+model Notification {
+  id          String    @id @default(cuid())
+  recipientId String
+  recipient   User      @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  // "like" | "comment"
+  type        String
+  reelId      String
+  reel        Reel      @relation(fields: [reelId], references: [id], onDelete: Cascade)
+  actorId     String?
+  actor       User?     @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
+  // Set for comment notifications; deleting the comment removes the notification.
+  commentId   String?
+  comment     Comment?  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([recipientId, createdAt])
 }

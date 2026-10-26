@@ -291,7 +291,7 @@
     "saveSuccess": "已保存",
     "saveError": "保存失败",
     "notificationHeading": "通知设置",
-    "notificationDisclaimer": "本应用目前尚未提供推送通知和邮件通知功能，此处的设置仅为将来的通知功能预先保存，目前不会产生实际效果。",
+    "notificationDisclaimer": "收到点赞或评论时，会显示在菜单的「🔔 通知」中（尚不支持手机推送通知和邮件通知）。",
     "notifyLikeLabel": "点赞通知",
     "notifyLikeDescription": "当有人给自己的投稿点赞时接收通知",
     "notifyCommentLabel": "评论通知",
@@ -508,5 +508,13 @@
     "deleteConfirm": "确定要删除这条评论吗？",
     "error": "发送失败",
     "close": "关闭"
+  },
+  "notifications": {
+    "heading": "通知",
+    "subtitle": "您的投稿收到的点赞和评论",
+    "empty": "暂无通知",
+    "liked": "{{name}} 赞了「{{post}}」",
+    "commented": "{{name}} 评论了「{{post}}」",
+    "deletedUser": "已注销的用户"
   }
 }

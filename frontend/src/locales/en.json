@@ -291,7 +291,7 @@
     "saveSuccess": "Saved",
     "saveError": "Failed to save",
     "notificationHeading": "Notifications",
-    "notificationDisclaimer": "This app doesn't send push or email notifications yet, so these settings are only saved for future use and have no effect right now.",
+    "notificationDisclaimer": "Likes and comments appear under “🔔 Notifications” in the menu (push and email notifications aren't supported yet).",
     "notifyLikeLabel": "Like notifications",
     "notifyLikeDescription": "Get notified when someone likes your posts",
     "notifyCommentLabel": "Comment notifications",
@@ -510,5 +510,13 @@
     "deleteConfirm": "Delete this comment?",
     "error": "Could not send",
     "close": "Close"
+  },
+  "notifications": {
+    "heading": "Notifications",
+    "subtitle": "Likes and comments on your posts",
+    "empty": "No notifications yet",
+    "liked": "{{name}} liked “{{post}}”",
+    "commented": "{{name}} commented on “{{post}}”",
+    "deletedUser": "A deleted user"
   }
 }

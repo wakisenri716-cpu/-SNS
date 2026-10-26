@@ -291,7 +291,7 @@
     "saveSuccess": "저장했습니다",
     "saveError": "저장에 실패했습니다",
     "notificationHeading": "알림 설정",
-    "notificationDisclaimer": "현재 이 앱에는 푸시 알림・이메일 알림 전송 기능이 없어, 이 설정은 향후 알림 기능을 위한 저장일 뿐 지금은 동작에 영향을 주지 않습니다.",
+    "notificationDisclaimer": "좋아요・댓글이 달리면 메뉴의 「🔔 알림」에 표시됩니다 (스마트폰 푸시 알림이나 이메일 알림은 아직 지원하지 않습니다).",
     "notifyLikeLabel": "좋아요 알림",
     "notifyLikeDescription": "내 게시물에 좋아요가 달렸을 때 알림 받기",
     "notifyCommentLabel": "댓글 알림",
@@ -508,5 +508,13 @@
     "deleteConfirm": "이 댓글을 삭제하시겠습니까?",
     "error": "보내지 못했습니다",
     "close": "닫기"
+  },
+  "notifications": {
+    "heading": "알림",
+    "subtitle": "내 게시물에 달린 좋아요・댓글입니다",
+    "empty": "아직 알림이 없습니다",
+    "liked": "{{name}}님이 「{{post}}」에 좋아요를 눌렀습니다",
+    "commented": "{{name}}님이 「{{post}}」에 댓글을 달았습니다",
+    "deletedUser": "탈퇴한 사용자"
   }
 }
