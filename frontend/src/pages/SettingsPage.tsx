@@ -38,7 +38,7 @@ function AvatarSection() {
   return (
     <section className="border-b border-gray-200 p-4 lg:p-6">
       <h2 className="mb-3 text-sm font-semibold text-gray-600">{t("settings.avatarHeading")}</h2>
-      <label className="group relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-teal-50 text-2xl font-semibold text-teal-700 ring-1 ring-gray-200">
+      <label className="group relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-orange-300 text-2xl font-bold text-white ring-1 ring-gray-200">
         {avatarUrl ? (
           <img src={avatarUrl} className="h-full w-full rounded-full object-cover" />
         ) : (
@@ -103,7 +103,7 @@ function ProfileSection() {
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+            className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
           />
         </label>
         <label className="text-xs font-medium text-gray-500">
@@ -112,7 +112,7 @@ function ProfileSection() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+            className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
           />
         </label>
         {user?.role === "USER" && (
@@ -123,7 +123,7 @@ function ProfileSection() {
               <select
                 value={nationality}
                 onChange={(e) => setNationality(e.target.value)}
-                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+                className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
               >
                 <option value="">{t("registerUser.nationalityPlaceholder")}</option>
                 {NATIONALITIES.map((n) => (
@@ -141,7 +141,7 @@ function ProfileSection() {
                 max={new Date().getFullYear()}
                 value={birthYear}
                 onChange={(e) => setBirthYear(e.target.value)}
-                className="mt-1 block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+                className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
               />
             </label>
           </>
@@ -149,11 +149,11 @@ function ProfileSection() {
         <button
           onClick={save}
           disabled={saving}
-          className="w-fit rounded-lg bg-teal-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+          className="w-fit rounded-full bg-brand-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
         >
           {t("settings.save")}
         </button>
-        {message && <p className="text-xs text-teal-600">{message}</p>}
+        {message && <p className="text-xs text-brand-600">{message}</p>}
         {error && <p className="text-xs text-red-500">{error}</p>}
       </div>
     </section>
@@ -181,7 +181,7 @@ function ToggleRow({
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="mt-1 h-4 w-4 shrink-0 accent-teal-600"
+        className="mt-1 h-4 w-4 shrink-0 accent-brand-600"
       />
     </label>
   );
@@ -259,7 +259,7 @@ function TravelStyleSection() {
   }
 
   const chip = (on: boolean) =>
-    `rounded-full px-3 py-1 text-xs font-medium ${on ? "bg-teal-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`;
+    `rounded-full px-3 py-1 text-xs font-medium ${on ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`;
 
   return (
     <section ref={ref} id="travel-style" className="scroll-mt-16 border-b border-gray-200 p-4 lg:p-6">
@@ -399,7 +399,7 @@ function LanguageSection() {
             onClick={() => setAppLanguage(lang)}
             className={`rounded-lg px-3 py-1.5 text-sm font-medium ${
               i18n.language === lang
-                ? "bg-teal-600 text-white"
+                ? "bg-gray-900 text-white"
                 : "border border-gray-200 text-gray-600 hover:bg-gray-50"
             }`}
           >
@@ -451,7 +451,7 @@ function PasswordSection() {
             type="password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
-            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+            className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
           />
         </label>
         <label className="text-xs font-medium text-gray-500">
@@ -460,7 +460,7 @@ function PasswordSection() {
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+            className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
           />
         </label>
         <label className="text-xs font-medium text-gray-500">
@@ -469,17 +469,17 @@ function PasswordSection() {
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="mt-1 block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+            className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
           />
         </label>
         <button
           onClick={save}
           disabled={saving || !currentPassword || !newPassword}
-          className="w-fit rounded-lg bg-teal-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+          className="w-fit rounded-full bg-brand-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
         >
           {t("settings.changePassword")}
         </button>
-        {message && <p className="text-xs text-teal-600">{message}</p>}
+        {message && <p className="text-xs text-brand-600">{message}</p>}
         {error && <p className="text-xs text-red-500">{error}</p>}
       </div>
     </section>
@@ -526,7 +526,7 @@ function DeleteAccountSection() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-red-500"
+              className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-red-500"
             />
           </label>
           <div className="flex gap-2">
@@ -543,7 +543,7 @@ function DeleteAccountSection() {
                 setPassword("");
                 setError(null);
               }}
-              className="rounded-lg border border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
+              className="rounded-xl border border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
             >
               {t("settings.deleteCancelButton")}
             </button>
@@ -561,7 +561,7 @@ export default function SettingsPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="mx-auto my-6 w-full max-w-2xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:max-w-3xl">
+    <div className="mx-auto w-full max-w-2xl overflow-hidden border-gray-200 bg-white sm:my-6 sm:rounded-3xl sm:border shadow-sm lg:max-w-3xl">
       <div className="border-b border-gray-200 p-4 lg:p-6">
         <h1 className="text-xl font-bold text-gray-900">{t("settings.title")}</h1>
         <p className="mt-1 text-sm text-gray-500">
@@ -593,11 +593,11 @@ export default function SettingsPage() {
       <div className="flex flex-col items-start gap-2 border-b border-gray-200 p-4 lg:p-6">
         <button
           onClick={() => navigate("/privacy-policy")}
-          className="text-sm font-medium text-teal-700 hover:underline"
+          className="text-sm font-medium text-brand-700 hover:underline"
         >
           {t("settings.privacyPolicyLink")}
         </button>
-        <button onClick={() => navigate("/contact")} className="text-sm font-medium text-teal-700 hover:underline">
+        <button onClick={() => navigate("/contact")} className="text-sm font-medium text-brand-700 hover:underline">
           {t("settings.contactLink")}
         </button>
       </div>
@@ -606,14 +606,14 @@ export default function SettingsPage() {
         {user ? (
           <button
             onClick={() => logout()}
-            className="rounded-lg border border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
+            className="rounded-xl border border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
           >
             {t("settings.logout")}
           </button>
         ) : (
           <button
             onClick={() => navigate("/login")}
-            className="rounded-lg bg-teal-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-teal-700"
+            className="rounded-full bg-brand-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
           >
             {t("nav.login")}
           </button>

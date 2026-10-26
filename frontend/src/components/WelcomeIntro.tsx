@@ -33,24 +33,24 @@ export default function WelcomeIntro() {
   }
 
   return (
-    <div className="relative m-3 rounded-xl border border-teal-100 bg-teal-50 p-4 pr-10">
+    <div className="relative mx-4 mt-4 overflow-hidden rounded-3xl bg-gray-900 p-5 pr-12 text-white shadow-lg lg:mx-6">
       <button
         type="button"
         onClick={dismiss}
         aria-label={t("welcome.close")}
-        className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full text-teal-700 hover:bg-teal-100"
+        className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full text-white/70 hover:bg-white/10"
       >
         ✕
       </button>
-      <p className="text-sm font-bold text-teal-900">{t("welcome.heading")}</p>
-      <p className="mt-1 text-xs leading-relaxed text-teal-900/80">{t("welcome.body")}</p>
+      <p className="text-base font-extrabold leading-snug">{t("welcome.heading")}</p>
+      <p className="mt-1.5 text-xs leading-relaxed text-white/75">{t("welcome.body")}</p>
       <div className="mt-3 flex flex-wrap gap-2">
-        <Link to="/register" className="rounded-lg bg-teal-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-teal-700">
+        <Link to="/register" className="rounded-full bg-brand-600 px-4 py-2 text-xs font-bold text-white hover:bg-brand-500">
           {t("welcome.registerTraveler")}
         </Link>
         <Link
           to="/register-municipality"
-          className="rounded-lg border border-teal-300 bg-white px-3 py-1.5 text-xs font-semibold text-teal-700 hover:bg-teal-100"
+          className="rounded-full bg-white/10 px-4 py-2 text-xs font-bold text-white ring-1 ring-white/30 hover:bg-white/20"
         >
           {t("welcome.forMunicipality")}
         </Link>

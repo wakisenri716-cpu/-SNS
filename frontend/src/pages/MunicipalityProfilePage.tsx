@@ -155,14 +155,14 @@ export default function MunicipalityProfilePage() {
   const featured = reels[0];
 
   return (
-    <div className="mx-auto my-6 w-full max-w-2xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:max-w-4xl">
-      <div className="relative aspect-[3/1] w-full bg-gradient-to-br from-teal-100 to-cyan-100">
+    <div className="mx-auto w-full max-w-2xl overflow-hidden border-gray-200 bg-white sm:my-6 sm:rounded-3xl sm:border shadow-sm lg:max-w-4xl">
+      <div className="relative aspect-[3/1] w-full bg-gradient-to-br from-brand-100 to-orange-100">
         {featured && <AutoplayVideo src={featured.videoUrl} className="h-full w-full object-cover" />}
       </div>
 
       <div className="px-4 lg:px-6">
         <div className="-mt-10 flex items-end justify-between lg:-mt-12">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-teal-50 text-2xl font-semibold text-teal-700 ring-4 ring-white lg:h-24 lg:w-24">
+          <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-orange-300 text-2xl font-bold text-white shadow-md ring-4 ring-white lg:h-24 lg:w-24">
             {municipality.avatarUrl ? (
               <img src={municipality.avatarUrl} className="h-full w-full rounded-full object-cover" />
             ) : (
@@ -173,7 +173,7 @@ export default function MunicipalityProfilePage() {
 
         <div className="mt-3 flex items-center gap-2">
           <h1 className="text-xl font-bold text-gray-900">{municipality.name}</h1>
-          <span className="inline-flex items-center gap-1 rounded-full bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
+          <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700">
             {t("municipalityProfile.officialBadge")}
           </span>
           {token && (
@@ -182,7 +182,7 @@ export default function MunicipalityProfilePage() {
               className={`ml-auto rounded-full px-4 py-1.5 text-sm font-medium ${
                 municipality.isFollowing
                   ? "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                  : "bg-teal-600 text-white hover:bg-teal-700"
+                  : "bg-brand-600 text-white hover:bg-brand-700"
               }`}
             >
               {municipality.isFollowing ? t("municipalityProfile.following") : t("municipalityProfile.follow")}
@@ -216,8 +216,8 @@ export default function MunicipalityProfilePage() {
           <button
             key={tabItem.key}
             onClick={() => setTab(tabItem.key)}
-            className={`flex-1 py-3 text-sm font-medium hover:bg-teal-50/50 ${
-              tab === tabItem.key ? "border-b-2 border-teal-500 text-gray-900" : "text-gray-500"
+            className={`flex-1 py-3 text-sm font-medium hover:bg-brand-50/50 ${
+              tab === tabItem.key ? "border-b-2 border-brand-500 text-gray-900" : "text-gray-500"
             }`}
           >
             {tabItem.label}
@@ -253,7 +253,7 @@ export default function MunicipalityProfilePage() {
             <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 bg-gray-50 px-4 py-3 text-xs text-gray-600 lg:px-6">
               <span>{t("municipalityProfile.stationLabel", { name: municipality.nearestStationName })}</span>
               {municipality.maasConfigured ? (
-                <span className="rounded-full bg-teal-50 px-2 py-0.5 font-medium text-teal-700">
+                <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-medium text-emerald-700">
                   {t("municipalityProfile.realData")}
                 </span>
               ) : (
@@ -277,7 +277,7 @@ export default function MunicipalityProfilePage() {
                 href={link.url}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 hover:border-teal-300 hover:bg-teal-50"
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 hover:border-brand-300 hover:bg-brand-50"
               >
                 {link.label} ↗
               </a>
@@ -286,7 +286,7 @@ export default function MunicipalityProfilePage() {
         </div>
       )}
 
-      <div className="grid grid-cols-3">
+      <div className="grid grid-cols-1 gap-x-5 gap-y-7 p-4 sm:grid-cols-2 lg:p-6">
         {reels.map((reel) => (
           <ReelThumb key={reel.id} reel={reel} onOpen={(r) => setOpenReelId(r.id)} />
         ))}

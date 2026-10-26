@@ -50,12 +50,12 @@ function TextInfoEditor({
         onChange={(e) => setValue(e.target.value)}
         rows={4}
         placeholder={t("dashboard.tabPlaceholder", { label })}
-        className="block w-full rounded-lg border border-gray-300 bg-white p-3 text-sm text-gray-900 outline-none focus:border-teal-500"
+        className="block w-full rounded-xl border border-gray-300 bg-white p-3 text-sm text-gray-900 outline-none focus:border-brand-500"
       />
       <button
         onClick={save}
         disabled={saving}
-        className="mt-2 rounded-lg bg-teal-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+        className="mt-2 rounded-full bg-brand-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
       >
         {t("dashboard.saveTab")}
       </button>
@@ -84,7 +84,7 @@ function CoordsFields({
   onLng: (v: string) => void;
 }) {
   const { t } = useTranslation();
-  const cls = "rounded-lg border border-gray-300 p-2 text-sm text-gray-900 outline-none focus:border-teal-500";
+  const cls = "rounded-xl border border-gray-300 p-2 text-sm text-gray-900 outline-none focus:border-brand-500";
   return (
     <div>
       <div className="grid grid-cols-2 gap-2">
@@ -189,32 +189,32 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
       <div className="mt-3 flex flex-col gap-3">
         {spots.map((spot) =>
           editingId === spot.id ? (
-            <div key={spot.id} className="flex flex-col gap-2 rounded-lg border border-teal-500 p-3">
+            <div key={spot.id} className="flex flex-col gap-2 rounded-lg border border-brand-500 p-3">
               <input
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
                 placeholder={t("dashboard.spotNamePlaceholder")}
-                className="rounded-lg border border-gray-300 p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+                className="rounded-xl border border-gray-300 p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
               />
               <textarea
                 value={editDescription}
                 onChange={(e) => setEditDescription(e.target.value)}
                 rows={3}
                 placeholder={t("dashboard.spotDescriptionPlaceholder")}
-                className="rounded-lg border border-gray-300 p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+                className="rounded-xl border border-gray-300 p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
               />
               <CoordsFields lat={editLat} lng={editLng} onLat={setEditLat} onLng={setEditLng} />
               <div className="flex gap-2">
                 <button
                   onClick={() => saveEdit(spot.id)}
                   disabled={saving || !editName.trim()}
-                  className="rounded-lg bg-teal-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+                  className="rounded-full bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700 disabled:opacity-50"
                 >
                   {t("dashboard.saveTab")}
                 </button>
                 <button
                   onClick={() => setEditingId(null)}
-                  className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50"
+                  className="rounded-xl border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50"
                 >
                   {t("dashboard.cancel")}
                 </button>
@@ -227,7 +227,7 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
                   {spot.name}
                   <span
                     className={`ml-2 rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                      spot.locationLat != null ? "bg-teal-50 text-teal-700" : "bg-gray-100 text-gray-400"
+                      spot.locationLat != null ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-400"
                     }`}
                   >
                     {spot.locationLat != null ? t("dashboard.spotHasLocation") : t("dashboard.spotNoLocation")}
@@ -238,7 +238,7 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
                 )}
               </div>
               <div className="flex shrink-0 gap-3">
-                <button onClick={() => startEdit(spot)} className="text-xs font-medium text-teal-600 hover:text-teal-700">
+                <button onClick={() => startEdit(spot)} className="text-xs font-medium text-brand-600 hover:text-brand-700">
                   {t("dashboard.editSpot")}
                 </button>
                 <button onClick={() => deleteSpot(spot.id)} className="text-xs font-medium text-red-500 hover:text-red-600">
@@ -256,33 +256,33 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
       </div>
 
       {adding ? (
-        <form onSubmit={addSpot} className="mt-3 flex flex-col gap-2 rounded-lg border border-teal-500 p-3">
+        <form onSubmit={addSpot} className="mt-3 flex flex-col gap-2 rounded-lg border border-brand-500 p-3">
           <input
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder={t("dashboard.spotNamePlaceholder")}
-            className="rounded-lg border border-gray-300 p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+            className="rounded-xl border border-gray-300 p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
           />
           <textarea
             value={newDescription}
             onChange={(e) => setNewDescription(e.target.value)}
             rows={3}
             placeholder={t("dashboard.spotDescriptionPlaceholder")}
-            className="rounded-lg border border-gray-300 p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+            className="rounded-xl border border-gray-300 p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
           />
           <CoordsFields lat={newLat} lng={newLng} onLat={setNewLat} onLng={setNewLng} />
           <div className="flex gap-2">
             <button
               type="submit"
               disabled={saving || !newName.trim()}
-              className="rounded-lg bg-teal-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+              className="rounded-full bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700 disabled:opacity-50"
             >
               {t("dashboard.addSpot")}
             </button>
             <button
               type="button"
               onClick={() => setAdding(false)}
-              className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50"
+              className="rounded-xl border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50"
             >
               {t("dashboard.cancel")}
             </button>
@@ -291,7 +291,7 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
       ) : (
         <button
           onClick={() => setAdding(true)}
-          className="mt-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-sm font-medium text-gray-400 hover:border-teal-400 hover:text-teal-500"
+          className="mt-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-sm font-medium text-gray-400 hover:border-brand-400 hover:text-brand-500"
         >
           ＋ {t("dashboard.addSpot")}
         </button>
@@ -331,7 +331,7 @@ function MaasStationEditor({
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-sm font-semibold text-gray-600">{t("dashboard.maasHeading")}</h3>
         {municipality.maasConfigured ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
+          <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700">
             {t("dashboard.maasReal")}
           </span>
         ) : (
@@ -346,12 +346,12 @@ function MaasStationEditor({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder={t("dashboard.stationPlaceholder")}
-          className="block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+          className="block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
         />
         <button
           onClick={save}
           disabled={saving}
-          className="shrink-0 rounded-lg bg-teal-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+          className="shrink-0 rounded-full bg-brand-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
         >
           {t("dashboard.save")}
         </button>
@@ -377,7 +377,7 @@ function PostsGrid({
     <div className="grid grid-cols-3 gap-2 p-3 lg:grid-cols-4 lg:gap-3 lg:p-4">
       <button
         onClick={onUpload}
-        className="flex aspect-square w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-300 hover:border-teal-400 hover:text-teal-500"
+        className="flex aspect-square w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-300 hover:border-brand-400 hover:text-brand-500"
       >
         <span className="text-4xl leading-none">＋</span>
       </button>
@@ -451,8 +451,8 @@ export default function DashboardPage() {
   const [featured, ...rest] = reels;
 
   return (
-    <div className="mx-auto my-6 w-full max-w-2xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:max-w-4xl">
-      <div className="relative aspect-[3/1] w-full bg-gradient-to-br from-teal-100 to-cyan-100">
+    <div className="mx-auto w-full max-w-2xl overflow-hidden border-gray-200 bg-white sm:my-6 sm:rounded-3xl sm:border shadow-sm lg:max-w-4xl">
+      <div className="relative aspect-[3/1] w-full bg-gradient-to-br from-brand-100 to-orange-100">
         {featured ? (
           <>
             <AutoplayVideo src={featured.videoUrl} className="h-full w-full object-cover" />
@@ -477,7 +477,7 @@ export default function DashboardPage() {
         ) : (
           <button
             onClick={() => setShowUploader(true)}
-            className="flex h-full w-full items-center justify-center text-teal-400 hover:text-teal-500"
+            className="flex h-full w-full items-center justify-center text-brand-400 hover:text-brand-500"
           >
             <span className="text-5xl leading-none">＋</span>
           </button>
@@ -486,7 +486,7 @@ export default function DashboardPage() {
 
       <div className="px-4 lg:px-6">
         <div className="-mt-10 flex items-end justify-between lg:-mt-12">
-          <label className="group relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-teal-50 text-2xl font-semibold text-teal-700 ring-4 ring-white lg:h-24 lg:w-24">
+          <label className="group relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-orange-300 text-2xl font-bold text-white shadow-md ring-4 ring-white lg:h-24 lg:w-24">
             {municipality.avatarUrl ? (
               <img src={municipality.avatarUrl} className="h-full w-full rounded-full object-cover" />
             ) : (
@@ -509,7 +509,7 @@ export default function DashboardPage() {
 
         <div className="mt-3 flex items-center gap-2">
           <h1 className="text-xl font-bold text-gray-900">{municipality.name}</h1>
-          <span className="inline-flex items-center gap-1 rounded-full bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
+          <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700">
             {t("dashboard.officialBadge")}
           </span>
         </div>
@@ -534,8 +534,8 @@ export default function DashboardPage() {
           <button
             key={tabItem.key}
             onClick={() => setTab(tabItem.key)}
-            className={`flex-1 py-3 text-xs font-medium hover:bg-teal-50/50 lg:text-sm ${
-              tab === tabItem.key ? "border-b-2 border-teal-500 text-gray-900" : "text-gray-500"
+            className={`flex-1 py-3 text-xs font-medium hover:bg-brand-50/50 lg:text-sm ${
+              tab === tabItem.key ? "border-b-2 border-brand-500 text-gray-900" : "text-gray-500"
             }`}
           >
             {tabItem.label}
@@ -576,7 +576,7 @@ export default function DashboardPage() {
         ) : (
           <ul className="flex flex-col gap-2 lg:flex-row lg:flex-wrap">
             {companies.map((c) => (
-              <li key={c.id} className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700">
+              <li key={c.id} className="rounded-2xl border border-gray-200/80 bg-white shadow-sm px-3 py-2 text-sm text-gray-700">
                 {c.name}
               </li>
             ))}

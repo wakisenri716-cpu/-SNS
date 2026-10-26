@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+/* Brand palette, built around the logo's red dot (#D6293C = brand-600).
+   Body text uses Tailwind's gray-900 navy, matching the logo lettering. */
+@theme {
+  --color-brand-50: #fff1f2;
+  --color-brand-100: #ffe1e4;
+  --color-brand-200: #ffc7cd;
+  --color-brand-300: #ff9ba6;
+  --color-brand-400: #f7637a;
+  --color-brand-500: #e8384f;
+  --color-brand-600: #d6293c;
+  --color-brand-700: #b41e31;
+  --color-brand-800: #951b2e;
+  --color-brand-900: #7c1b2c;
+
+  --font-sans: "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", system-ui, "Segoe UI", Roboto, sans-serif;
+}
+
 html,
 body,
 #root {
@@ -8,5 +25,17 @@ body,
 
 body {
   margin: 0;
-  font-family: system-ui, "Hiragino Sans", "Noto Sans JP", "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-sans);
+  background: #f7f7f8;
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Horizontal chip rows scroll without a visible scrollbar. */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }

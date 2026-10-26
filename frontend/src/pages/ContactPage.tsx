@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 
 const inputClass =
-  "rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-teal-500";
+  "rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-brand-500";
 
 const CONTACT_EMAIL = "wakisenri726@gmail.com";
 
@@ -34,12 +34,12 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="mx-auto my-6 w-full max-w-sm rounded-xl border border-gray-200 bg-white p-8 shadow-sm lg:max-w-md">
+    <div className="mx-4 my-6 rounded-3xl border border-gray-200/80 bg-white p-7 shadow-sm sm:mx-auto sm:w-full sm:max-w-sm sm:p-8 lg:max-w-md">
       <h1 className="mb-2 text-center text-xl font-bold text-gray-900">{t("contact.title")}</h1>
       <p className="mb-6 text-center text-sm text-gray-500">{t("contact.description")}</p>
 
       {success ? (
-        <p className="rounded-lg bg-teal-50 px-3 py-3 text-center text-sm text-teal-700">{t("contact.success")}</p>
+        <p className="rounded-xl bg-emerald-50 px-3 py-3 text-center text-sm text-emerald-700">{t("contact.success")}</p>
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
@@ -69,7 +69,7 @@ export default function ContactPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-lg bg-teal-600 py-2 font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+            className="rounded-full bg-brand-600 py-2 font-medium text-white hover:bg-brand-700 disabled:opacity-50"
           >
             {t("contact.submit")}
           </button>
@@ -79,7 +79,7 @@ export default function ContactPage() {
       <p className="mt-4 text-center text-xs text-gray-400">
         {t("contact.directEmailNote")}
         <br />
-        <a href={`mailto:${CONTACT_EMAIL}`} className="text-teal-700 hover:underline">
+        <a href={`mailto:${CONTACT_EMAIL}`} className="text-brand-700 hover:underline">
           {CONTACT_EMAIL}
         </a>
       </p>

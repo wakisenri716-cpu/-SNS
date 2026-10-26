@@ -50,7 +50,7 @@ export default function SearchPage() {
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder={t("search.placeholder")}
-        className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-teal-500"
+        className="w-full rounded-xl border border-gray-300 bg-white p-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-brand-500"
       />
       <div className="mt-3">
         <p className="mb-1.5 text-xs font-semibold text-gray-500">{t("search.tagFilterLabel")}</p>
@@ -67,7 +67,7 @@ export default function SearchPage() {
                   <Link
                     key={m.id}
                     to={`/municipalities/${m.id}`}
-                    className="rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-800 hover:bg-gray-50"
+                    className="rounded-2xl border border-gray-200/80 bg-white shadow-sm p-3 text-sm text-gray-800 hover:bg-gray-50"
                   >
                     {m.name}（{m.prefecture}）
                   </Link>
@@ -84,7 +84,7 @@ export default function SearchPage() {
                     key={r.id}
                     to={`/reels/${r.id}/access`}
                     state={{ reel: r }}
-                    className="block overflow-hidden rounded-lg border border-gray-200 bg-white hover:border-teal-300"
+                    className="block overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm hover:border-brand-300"
                   >
                     <video src={r.videoUrl} className="aspect-video w-full bg-gray-200 object-cover" muted />
                     <div className="flex flex-col gap-1 p-2">

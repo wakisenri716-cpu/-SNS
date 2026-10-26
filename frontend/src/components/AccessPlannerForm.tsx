@@ -42,18 +42,18 @@ export default function AccessPlannerForm({ endpoint }: { endpoint: string }) {
           value={origin}
           onChange={(e) => setOrigin(e.target.value)}
           placeholder={t("accessPlanner.originPlaceholder")}
-          className="block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500 lg:max-w-xs"
+          className="block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500 lg:max-w-xs"
         />
         <input
           type="datetime-local"
           value={departureLocal}
           onChange={(e) => setDepartureLocal(e.target.value)}
-          className="block rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+          className="block rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
         />
         <button
           type="submit"
           disabled={loading || !origin.trim()}
-          className="shrink-0 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+          className="shrink-0 rounded-full bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
         >
           {loading ? t("accessPlanner.searching") : t("accessPlanner.search")}
         </button>
@@ -80,7 +80,7 @@ export default function AccessPlannerForm({ endpoint }: { endpoint: string }) {
               {t("municipalityProfile.mockData")}
             </span>
           ) : (
-            <span className="rounded-full bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
+            <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
               {t("municipalityProfile.realData")}
             </span>
           )}

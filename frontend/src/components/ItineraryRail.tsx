@@ -44,7 +44,7 @@ function LegRow({ leg }: { leg: TransitSuggestion }) {
   const { t } = useTranslation();
   const mode = mainMode(leg);
   return (
-    <p className="my-1.5 ml-9 flex flex-wrap items-center gap-1 text-xs text-teal-700">
+    <p className="my-1.5 ml-9 flex flex-wrap items-center gap-1 text-xs text-gray-600">
       <span>{mode ? LEG_MODE_ICON[mode] : ""}</span>
       <span>
         {t("itinerary.legSummary", {
@@ -147,7 +147,7 @@ export function ItineraryPanel() {
       ) : !itinerary || itinerary.stops.length === 0 ? (
         <div className="mt-6 rounded-lg border border-dashed border-gray-300 p-4 text-center">
           <p className="text-xs text-gray-400">{t("itinerary.empty")}</p>
-          <Link to="/" className="mt-2 inline-block text-xs font-medium text-teal-600 hover:underline">
+          <Link to="/" className="mt-2 inline-block text-xs font-medium text-brand-600 hover:underline">
             {t("itinerary.emptyCta")}
           </Link>
         </div>
@@ -159,7 +159,7 @@ export function ItineraryPanel() {
               value={originDraft}
               onChange={(e) => setOriginDraft(e.target.value)}
               placeholder={t("itinerary.originPlaceholder")}
-              className="w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+              className="w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
             />
             <div className="flex items-center gap-2">
               <input
@@ -167,12 +167,12 @@ export function ItineraryPanel() {
                 value={startDraft}
                 onChange={(e) => setStartDraft(e.target.value)}
                 aria-label={t("itinerary.startTimeLabel")}
-                className="rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+                className="rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
               />
               <button
                 type="submit"
                 disabled={busy || (originDraft.trim() === itinerary.originLabel && startDraft === itinerary.startTime)}
-                className="ml-auto rounded-lg bg-teal-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-teal-700 disabled:opacity-40"
+                className="ml-auto rounded-full bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700 disabled:opacity-40"
               >
                 {t("itinerary.apply")}
               </button>
@@ -186,7 +186,7 @@ export function ItineraryPanel() {
                 type="button"
                 onClick={() => setView(v)}
                 className={`rounded-full px-3 py-1 text-xs font-medium ${
-                  view === v ? "bg-teal-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  view === v ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
                 {t(v === "list" ? "itinerary.viewList" : "itinerary.viewMap")}
@@ -223,10 +223,10 @@ export function ItineraryPanel() {
                 return (
                   <div key={stop.id}>
                     <div className="mt-1.5 flex gap-2">
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-teal-600 text-xs font-bold text-white">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-600 text-xs font-bold text-white">
                         {i + 1}
                       </span>
-                      <div className="min-w-0 flex-1 rounded-lg border border-gray-200 bg-white p-2">
+                      <div className="min-w-0 flex-1 rounded-2xl border border-gray-200/80 bg-white shadow-sm p-2">
                         <div className="flex items-start gap-1">
                           <Link to={`/reels/${stop.id}/access`} className="min-w-0 flex-1 hover:underline">
                             <p className="truncate text-sm font-semibold text-gray-900">{stop.locationName || stop.caption}</p>

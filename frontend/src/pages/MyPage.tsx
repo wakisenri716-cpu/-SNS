@@ -37,14 +37,14 @@ export default function MyPage() {
       <p className="mt-3 text-xs text-gray-400">{t("myPage.viewOnlyNotice")}</p>
 
       {points && (
-        <div className="mt-6 flex items-center gap-4 rounded-lg border border-teal-100 bg-teal-50 px-4 py-3">
+        <div className="mt-6 flex items-center gap-4 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3">
           <div>
-            <p className="text-xs font-semibold text-teal-700">{t("myPage.pointsLabel")}</p>
-            <p className="text-2xl font-extrabold tabular-nums text-teal-800">
+            <p className="whitespace-nowrap text-xs font-semibold text-amber-700">🪙 {t("myPage.pointsLabel")}</p>
+            <p className="text-2xl font-extrabold tabular-nums text-amber-800">
               {t("myPage.pointsValue", { points: points.points })}
             </p>
           </div>
-          <p className="text-xs leading-relaxed text-teal-800/80">
+          <p className="text-xs leading-relaxed text-amber-900/70">
             {t("myPage.pointsNote", { count: points.reportCount })}
           </p>
         </div>

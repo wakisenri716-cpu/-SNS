@@ -6,6 +6,7 @@ import AutoplayVideo from "./AutoplayVideo";
 import CommentsSheet from "./CommentsSheet";
 import ShareButton from "./ShareButton";
 import { TravelerTagChips } from "./TravelerTagChips";
+import { Bookmark, Compass, Heart, MapPin, MessageCircle, Sparkles, X } from "lucide-react";
 import type { Reel } from "../types";
 
 function ReelOverlayInfo({
@@ -31,47 +32,101 @@ function ReelOverlayInfo({
         ? t("feed.reasonCompanion", { who: t(`settings.companion.${user?.travelCompanion ?? "solo"}`) })
         : t(`travelerTag.${reason}`)
   );
+  const railButton = "flex h-12 w-12 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-md transition active:scale-90";
   return (
     <>
-      <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-black/60 to-transparent p-4 pr-16">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20 text-sm font-semibold text-white ring-2 ring-white/40">
-          {reel.municipality.avatarUrl ? (
-            <img src={reel.municipality.avatarUrl} className="h-full w-full rounded-full object-cover" />
-          ) : (
-            reel.municipality.name.slice(0, 1)
-          )}
-        </div>
-        <Link to={`/municipalities/${reel.municipality.id}`} className="pointer-events-auto min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-white drop-shadow">{reel.municipality.name}</p>
-          <p className="truncate text-xs text-white/80 drop-shadow">
-            {reel.municipality.prefecture}
-            {reel.postedByCompany && t("reelViewer.postedBy", { name: reel.postedByCompany.name })}
-          </p>
-        </Link>
+      {/* Right-hand action rail (TikTok style). */}
+      <div className="pointer-events-auto absolute bottom-32 right-3 z-10 flex flex-col items-center gap-4 text-white">
         <button
-          onClick={() => onToggleFollow(reel)}
-          aria-pressed={poster.isFollowing}
-          className={`pointer-events-auto shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${
-            poster.isFollowing ? "bg-white/20 text-white" : "bg-white text-gray-900"
-          }`}
+          type="button"
+          onClick={() => onToggleLike(reel)}
+          aria-label={t("reelViewer.likeLabel")}
+          aria-pressed={reel.likedByMe}
+          className="flex flex-col items-center gap-1"
         >
-          {poster.isFollowing ? t("reelViewer.following") : t("reelViewer.follow")}
+          <span className={railButton}>
+            <Heart className={`h-6 w-6 ${reel.likedByMe ? "fill-brand-500 text-brand-500" : ""}`} />
+          </span>
+          <span className="text-xs font-semibold drop-shadow">{reel.likeCount}</span>
         </button>
+        <button
+          type="button"
+          onClick={() => onOpenComments(reel)}
+          aria-label={t("comments.heading")}
+          className="flex flex-col items-center gap-1"
+        >
+          <span className={railButton}>
+            <MessageCircle className="h-6 w-6" />
+          </span>
+          <span className="text-xs font-semibold drop-shadow">{reel.commentCount}</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => onToggleSave(reel)}
+          aria-label={t("reelViewer.saveLabel")}
+          aria-pressed={reel.savedByMe}
+          className="flex flex-col items-center gap-1"
+        >
+          <span className={railButton}>
+            <Bookmark className={`h-6 w-6 ${reel.savedByMe ? "fill-amber-400 text-amber-400" : ""}`} />
+          </span>
+          <span className="text-xs font-semibold drop-shadow">{t("reelViewer.saveShort")}</span>
+        </button>
+        <ShareButton
+          path={`/reels/${reel.id}/access`}
+          title={`${reel.locationName || reel.municipality.name} | ${t("brand.name")}`}
+          variant="rail"
+        />
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 pt-10">
-        <p className="text-sm text-white drop-shadow">{reel.caption}</p>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent p-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pr-20 pt-24">
+        <div className="pointer-events-auto flex items-center gap-2.5">
+          <Link
+            to={`/municipalities/${reel.municipality.id}`}
+            className="flex min-w-0 items-center gap-2.5"
+          >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-400 to-orange-300 text-sm font-bold text-white ring-2 ring-white">
+              {reel.municipality.avatarUrl ? (
+                <img src={reel.municipality.avatarUrl} alt="" className="h-full w-full object-cover" />
+              ) : (
+                reel.municipality.name.slice(0, 1)
+              )}
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-[15px] font-bold text-white drop-shadow">{poster.name}</span>
+              <span className="block truncate text-xs text-white/75 drop-shadow">
+                {reel.postedByCompany ? reel.municipality.name : reel.municipality.prefecture}
+              </span>
+            </span>
+          </Link>
+          <button
+            onClick={() => onToggleFollow(reel)}
+            aria-pressed={poster.isFollowing}
+            className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
+              poster.isFollowing ? "bg-white/20 text-white ring-1 ring-white/50" : "bg-white text-gray-900"
+            }`}
+          >
+            {poster.isFollowing ? t("reelViewer.following") : t("reelViewer.follow")}
+          </button>
+        </div>
+
+        <p className="mt-3 text-sm leading-relaxed text-white drop-shadow">{reel.caption}</p>
         {reel.locationName && (
-          <p className="mt-1.5 text-xs text-white/80 drop-shadow">📍 {reel.locationName}</p>
+          <p className="mt-2 flex items-center gap-1 text-xs font-semibold text-white/90 drop-shadow">
+            <MapPin className="h-3.5 w-3.5" /> {reel.locationName}
+          </p>
         )}
         {reasonLabels.length > 0 && (
-          <p className="mt-1.5 text-xs font-semibold text-amber-200 drop-shadow">
-            ✨ {t("feed.reasonPrefix")}
-            {reasonLabels.join("・")}
+          <p className="mt-2 flex items-start gap-1 text-xs font-semibold text-amber-200 drop-shadow">
+            <Sparkles className="mt-px h-3.5 w-3.5 shrink-0" />
+            <span>
+              {t("feed.reasonPrefix")}
+              {reasonLabels.join("・")}
+            </span>
           </p>
         )}
         {reel.travelerTags.length > 0 && (
-          <div className="mt-1.5">
+          <div className="mt-2">
             <TravelerTagChips tags={reel.travelerTags} dark />
           </div>
         )}
@@ -79,50 +134,11 @@ function ReelOverlayInfo({
           <Link
             to={`/reels/${reel.id}/access`}
             state={{ reel }}
-            className="pointer-events-auto mt-1.5 inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white backdrop-blur hover:bg-white/30"
+            className="pointer-events-auto mt-3 inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-bold text-gray-900 shadow-lg transition active:scale-95"
           >
-            🧭 {t("reelViewer.accessButton")}
+            <Compass className="h-4 w-4 text-brand-600" /> {t("reelViewer.accessButton")}
           </Link>
         )}
-        <div className="pointer-events-auto mt-2 flex items-center gap-4">
-          <button
-            type="button"
-            onClick={() => onToggleLike(reel)}
-            aria-label={t("reelViewer.likeLabel")}
-            aria-pressed={reel.likedByMe}
-            className="flex items-center gap-1.5"
-          >
-            <span className={`text-xl ${reel.likedByMe ? "text-red-500" : "text-white"}`}>
-              {reel.likedByMe ? "♥" : "♡"}
-            </span>
-            <span className="text-sm text-white">{reel.likeCount}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onOpenComments(reel)}
-            aria-label={t("comments.heading")}
-            className="flex items-center gap-1.5"
-          >
-            <span className="text-xl text-white">💬</span>
-            <span className="text-sm text-white">{reel.commentCount}</span>
-          </button>
-          <ShareButton
-            path={`/reels/${reel.id}/access`}
-            title={`${reel.locationName || reel.municipality.name} | ${t("brand.name")}`}
-            variant="dark"
-          />
-          <button
-            type="button"
-            onClick={() => onToggleSave(reel)}
-            aria-label={t("reelViewer.saveLabel")}
-            aria-pressed={reel.savedByMe}
-            className="ml-auto flex items-center gap-1.5"
-          >
-            <span className={`text-xl ${reel.savedByMe ? "text-yellow-400" : "text-white"}`}>
-              {reel.savedByMe ? "🔖" : "📑"}
-            </span>
-          </button>
-        </div>
       </div>
     </>
   );
@@ -164,9 +180,9 @@ export default function ReelFullscreenViewer({
       <button
         onClick={onClose}
         aria-label={t("reelViewer.closeLabel")}
-        className="fixed right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70"
+        className="fixed right-4 top-[max(1rem,env(safe-area-inset-top))] z-20 flex h-10 w-10 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-md hover:bg-black/50"
       >
-        ✕
+        <X className="h-5 w-5" />
       </button>
 
       <div className="h-full snap-y snap-mandatory overflow-y-scroll">

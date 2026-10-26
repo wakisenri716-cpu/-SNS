@@ -13,7 +13,7 @@ export default function ItineraryPage() {
         <ItineraryPanel />
       ) : (
         <p className="text-sm text-gray-500">
-          <Link to="/login" className="font-semibold text-teal-600 hover:underline">
+          <Link to="/login" className="font-semibold text-brand-600 hover:underline">
             {t("itinerary.loginCta")}
           </Link>
         </p>

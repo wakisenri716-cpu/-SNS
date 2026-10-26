@@ -19,7 +19,7 @@ export function TravelerTagChips({ tags, dark = false }: { tags: TravelerTag[]; 
         <span
           key={tag}
           className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${
-            dark ? "bg-white/20 text-white backdrop-blur" : "bg-teal-50 text-teal-800"
+            dark ? "bg-white/20 text-white backdrop-blur" : "bg-gray-100 text-gray-700"
           }`}
         >
           {TRAVELER_TAG_ICON[tag]} {t(`travelerTag.${tag}`)}
@@ -49,7 +49,7 @@ export function TravelerTagPicker({
             aria-pressed={on}
             onClick={() => onChange(on ? value.filter((v) => v !== tag) : TRAVELER_TAGS.filter((v) => v === tag || value.includes(v)))}
             className={`rounded-full px-3 py-1 text-xs font-medium ${
-              on ? "bg-teal-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              on ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
             {TRAVELER_TAG_ICON[tag]} {t(`travelerTag.${tag}`)}

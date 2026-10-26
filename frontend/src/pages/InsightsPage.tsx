@@ -21,7 +21,7 @@ function AudienceBar({ label, count, max }: { label: string; count: number; max:
     <div className="flex items-center gap-3 text-sm">
       <span className="w-28 shrink-0 truncate text-gray-600">{label}</span>
       <div className="h-2 flex-1 overflow-hidden rounded-full bg-gray-100">
-        <div className="h-full rounded-full bg-cyan-500" style={{ width: `${max > 0 ? (count / max) * 100 : 0}%` }} />
+        <div className="h-full rounded-full bg-brand-400" style={{ width: `${max > 0 ? (count / max) * 100 : 0}%` }} />
       </div>
       <span className="w-10 shrink-0 text-right text-xs text-gray-400">{count}</span>
     </div>
@@ -30,7 +30,7 @@ function AudienceBar({ label, count, max }: { label: string; count: number; max:
 
 function SummaryCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4">
+    <div className="rounded-2xl border border-gray-200/80 bg-white shadow-sm p-4">
       <p className="text-xs text-gray-400">{label}</p>
       <p className="mt-1 text-2xl font-bold text-gray-900">{value.toLocaleString()}</p>
     </div>
@@ -163,7 +163,7 @@ export default function InsightsPage() {
             <section>
               <h3 className="mb-1 text-sm font-semibold text-gray-600">{t("insights.originsHeading")}</h3>
               <p className="mb-2 text-xs text-gray-400">{t("insights.originsNote")}</p>
-              <div className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4">
+              <div className="flex flex-col gap-2 rounded-2xl border border-gray-200/80 bg-white shadow-sm p-4">
                 {tripPlanning.origins.length === 0 ? (
                   <p className="text-xs text-gray-400">{t("insights.originsEmpty")}</p>
                 ) : (
@@ -192,13 +192,13 @@ export default function InsightsPage() {
 
           <section>
             <h3 className="mb-2 text-sm font-semibold text-gray-600">{t("insights.byCategoryHeading")}</h3>
-            <div className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4">
+            <div className="flex flex-col gap-2 rounded-2xl border border-gray-200/80 bg-white shadow-sm p-4">
               {byCategory.map((c) => (
                 <div key={c.category} className="flex items-center gap-3 text-sm">
                   <span className="w-24 shrink-0 text-gray-600">{t(`category.${c.category}`)}</span>
                   <div className="h-2 flex-1 overflow-hidden rounded-full bg-gray-100">
                     <div
-                      className="h-full rounded-full bg-teal-500"
+                      className="h-full rounded-full bg-brand-500"
                       style={{ width: `${(c.views / maxCategoryViews) * 100}%` }}
                     />
                   </div>
@@ -215,7 +215,7 @@ export default function InsightsPage() {
               <h3 className="mb-1 text-sm font-semibold text-gray-600">{t("insights.audienceHeading")}</h3>
               <p className="mb-2 text-xs text-gray-400">{t("insights.audienceNote")}</p>
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4">
+                <div className="flex flex-col gap-2 rounded-2xl border border-gray-200/80 bg-white shadow-sm p-4">
                   <h4 className="mb-1 text-xs font-semibold text-gray-500">{t("insights.byNationalityHeading")}</h4>
                   {demographics.byNationality.length === 0 ? (
                     <p className="text-xs text-gray-400">{t("insights.audienceEmpty")}</p>
@@ -230,7 +230,7 @@ export default function InsightsPage() {
                     ))
                   )}
                 </div>
-                <div className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4">
+                <div className="flex flex-col gap-2 rounded-2xl border border-gray-200/80 bg-white shadow-sm p-4">
                   <h4 className="mb-1 text-xs font-semibold text-gray-500">{t("insights.byAgeHeading")}</h4>
                   {demographics.totalViews === 0 ? (
                     <p className="text-xs text-gray-400">{t("insights.audienceEmpty")}</p>
@@ -255,14 +255,14 @@ export default function InsightsPage() {
               <button
                 type="button"
                 onClick={exportCsv}
-                className="ml-auto mr-2 rounded-lg border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-50"
+                className="ml-auto mr-2 rounded-xl border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-50"
               >
                 ⬇ {t("insights.csvDownload")}
               </button>
               <select
                 value={sortKey}
                 onChange={(e) => setSortKey(e.target.value as SortKey)}
-                className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 outline-none focus:border-teal-500"
+                className="rounded-xl border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 outline-none focus:border-brand-500"
               >
                 <option value="views">{t("insights.sortViews")}</option>
                 <option value="likes">{t("insights.sortLikes")}</option>
@@ -273,7 +273,7 @@ export default function InsightsPage() {
             </div>
             <div className="flex flex-col gap-2">
               {sortedReels.map((reel) => (
-                <div key={reel.id} className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-2">
+                <div key={reel.id} className="flex items-center gap-3 rounded-2xl border border-gray-200/80 bg-white shadow-sm p-2">
                   <video
                     src={reel.videoUrl}
                     className="aspect-square h-14 w-14 shrink-0 rounded-lg bg-gray-200 object-cover"

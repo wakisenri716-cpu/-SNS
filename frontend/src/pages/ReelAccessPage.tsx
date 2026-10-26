@@ -52,7 +52,7 @@ function GroupSizeToggle({ value, onChange }: { value: GroupSize; onChange: (v: 
           type="button"
           onClick={() => onChange(o.key)}
           className={`rounded-full px-3 py-1 text-xs font-medium ${
-            value === o.key ? "bg-teal-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            value === o.key ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
           }`}
         >
           {t(o.labelKey)}
@@ -100,11 +100,11 @@ function Switch({ active, onToggle, label }: { active: boolean; onToggle: () => 
         role="switch"
         aria-checked={active}
         onClick={onToggle}
-        className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${active ? "bg-teal-600" : "bg-gray-300"}`}
+        className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${active ? "bg-gray-900" : "bg-gray-300"}`}
       >
         <span
-          className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${
-            active ? "translate-x-4" : "translate-x-0.5"
+          className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+            active ? "translate-x-5" : "translate-x-0"
           }`}
         />
       </button>
@@ -144,10 +144,10 @@ function ModeCard({
 
   return (
     <div
-      className={`relative rounded-lg border bg-white p-4 ${recommended ? "border-teal-600 md:col-span-2" : "border-gray-200"}`}
+      className={`relative rounded-lg border bg-white p-4 ${recommended ? "border-brand-600 md:col-span-2" : "border-gray-200"}`}
     >
       {recommended && (
-        <span className="absolute left-0 top-0 rounded-br-lg rounded-tl-lg bg-teal-600 px-2.5 py-0.5 text-[10px] font-bold text-white">
+        <span className="absolute left-0 top-0 rounded-br-lg rounded-tl-lg bg-brand-600 px-2.5 py-0.5 text-[10px] font-bold text-white">
           {t("reelAccessPage.recommendedBadge")}
         </span>
       )}
@@ -180,7 +180,7 @@ function ModeCard({
           </span>
         ))}
         {estimate.isReal ? (
-          <span className="rounded-full bg-teal-50 px-2 py-0.5 text-[11px] font-medium text-teal-700">
+          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
             {t("municipalityProfile.realData")}
           </span>
         ) : (
@@ -198,7 +198,7 @@ function ModeCard({
       </div>
 
       {reported && (
-        <p className="mt-2.5 rounded-lg bg-teal-50 px-3 py-2 text-xs text-teal-800">
+        <p className="mt-2.5 rounded-xl bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
           👥{" "}
           {t("travelReport.cardLine", {
             origin: reported.originLabel,
@@ -346,12 +346,12 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
       <div className="mb-4 flex items-center justify-between gap-2 border-b border-gray-200 pb-3">
         <h1 className="text-lg font-bold text-gray-900">{t("reelAccessPage.heading")}</h1>
         <span className="flex items-center gap-1.5 text-xs font-medium text-gray-400">
-          <span className="h-1.5 w-1.5 rounded-full bg-teal-600" />
+          <span className="h-1.5 w-1.5 rounded-full bg-brand-600" />
           {t("reelAccessPage.basis")}
         </span>
       </div>
 
-      <div className="mb-4 rounded-lg border border-gray-200 bg-white p-4 lg:p-5">
+      <div className="mb-4 rounded-2xl border border-gray-200/80 bg-white shadow-sm p-4 lg:p-5">
         <p className="text-sm font-bold text-gray-900">{t("reelAccessPage.conditionsHeading")}</p>
         <p className="mt-0.5 text-xs text-gray-400">{t("reelAccessPage.conditionsSub")}</p>
 
@@ -367,7 +367,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
               value={origin}
               onChange={(e) => setOrigin(e.target.value)}
               placeholder={t("accessPlanner.originPlaceholder")}
-              className="w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+              className="w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -376,13 +376,13 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
               type="datetime-local"
               value={departureLocal}
               onChange={(e) => setDepartureLocal(e.target.value)}
-              className="rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+              className="rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
             />
           </div>
           <button
             type="submit"
             disabled={loading || !origin.trim()}
-            className="shrink-0 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+            className="shrink-0 rounded-full bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
           >
             {loading ? t("accessPlanner.searching") : t("accessPlanner.search")}
           </button>

@@ -14,7 +14,9 @@
     "municipalitySuffix": " (Municipality)",
     "companySuffix": " (Company)",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "manage": "Manage",
+    "tabBar": "Main menu"
   },
   "auth": {
     "sessionExpired": "Your session has expired. Please log in again."
@@ -234,7 +236,8 @@
     "following": "Following",
     "likeLabel": "Like",
     "saveLabel": "Save (add to itinerary)",
-    "closeLabel": "Close"
+    "closeLabel": "Close",
+    "saveShort": "Save"
   },
   "reelAccessPage": {
     "back": "Back",
@@ -531,6 +534,7 @@
   "share": {
     "label": "Share",
     "copied": "Link copied",
-    "copyManually": "Copy this link"
+    "copyManually": "Copy this link",
+    "copiedShort": "Copied"
   }
 }

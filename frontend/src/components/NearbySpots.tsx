@@ -54,7 +54,7 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
             type="button"
             onClick={() => setCategory(c)}
             className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium ${
-              category === c ? "bg-teal-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              category === c ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
             {c ? t(`category.${c}`) : t("reelAccessPage.nearbyAll")}
@@ -73,7 +73,7 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
               key={item.id}
               to={`/reels/${item.id}/access`}
               state={{ reel: item }}
-              className="block w-32 shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-white hover:border-teal-300 md:w-40"
+              className="block w-32 shrink-0 overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm hover:border-brand-300 md:w-40"
             >
               <div className="relative aspect-square w-full bg-gray-900">
                 <AutoplayVideo src={item.videoUrl} className="h-full w-full object-cover" />
@@ -100,7 +100,7 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
               <Link
                 key={spot.id}
                 to={`/municipalities/${spot.municipality.id}`}
-                className="block rounded-lg border border-gray-200 bg-white p-3 hover:border-teal-300"
+                className="block rounded-2xl border border-gray-200/80 bg-white shadow-sm p-3 hover:border-brand-300"
               >
                 <div className="flex items-baseline gap-2">
                   <p className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-900">📍 {spot.name}</p>

@@ -29,7 +29,7 @@ export default function MunicipalityStayInfo({ municipalityId }: { municipalityI
   const text = municipality[tab];
 
   return (
-    <div className="mt-6 rounded-lg border border-gray-200 bg-white p-4 lg:p-5">
+    <div className="mt-6 rounded-2xl border border-gray-200/80 bg-white shadow-sm p-4 lg:p-5">
       <h2 className="text-sm font-bold text-gray-900">🏨 {t("stayInfo.heading", { name: municipality.name })}</h2>
       <div className="mt-3 flex gap-1.5">
         {(["lodgingInfo", "restaurantInfo"] as const).map((key) => (
@@ -38,7 +38,7 @@ export default function MunicipalityStayInfo({ municipalityId }: { municipalityI
             type="button"
             onClick={() => setTab(key)}
             className={`rounded-full px-3 py-1 text-xs font-medium ${
-              tab === key ? "bg-teal-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              tab === key ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
             {t(key === "lodgingInfo" ? "dashboard.tabLodging" : "dashboard.tabRestaurant")}
@@ -48,7 +48,7 @@ export default function MunicipalityStayInfo({ municipalityId }: { municipalityI
       <p className="mt-3 line-clamp-5 whitespace-pre-wrap text-sm leading-relaxed text-gray-700">
         {text || t("municipalityProfile.noInfo")}
       </p>
-      <Link to={`/municipalities/${municipality.id}`} className="mt-2 inline-block text-xs font-semibold text-teal-600 hover:underline">
+      <Link to={`/municipalities/${municipality.id}`} className="mt-2 inline-block text-xs font-semibold text-brand-600 hover:underline">
         {t("stayInfo.profileLink", { name: municipality.name })}
       </Link>
 
@@ -62,7 +62,7 @@ export default function MunicipalityStayInfo({ municipalityId }: { municipalityI
                 href={link.url}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-gray-800 hover:border-teal-300 hover:bg-teal-50"
+                className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-gray-800 hover:border-brand-300 hover:bg-brand-50"
               >
                 {link.label} ↗
               </a>

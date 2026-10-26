@@ -14,7 +14,9 @@
     "municipalitySuffix": "（自治体）",
     "companySuffix": "（企業）",
     "openMenu": "メニューを開く",
-    "closeMenu": "メニューを閉じる"
+    "closeMenu": "メニューを閉じる",
+    "manage": "管理",
+    "tabBar": "メインメニュー"
   },
   "auth": {
     "sessionExpired": "セッションが切れました。もう一度ログインしてください。"
@@ -234,7 +236,8 @@
     "following": "フォロー中",
     "likeLabel": "いいね",
     "saveLabel": "保存（しおりに追加）",
-    "closeLabel": "閉じる"
+    "closeLabel": "閉じる",
+    "saveShort": "保存"
   },
   "reelAccessPage": {
     "back": "戻る",
@@ -529,6 +532,7 @@
   "share": {
     "label": "共有",
     "copied": "リンクをコピーしました",
-    "copyManually": "このリンクをコピーしてください"
+    "copyManually": "このリンクをコピーしてください",
+    "copiedShort": "コピー済み"
   }
 }

@@ -50,8 +50,8 @@ export default function NotificationsPage() {
             <li key={n.id}>
               <Link
                 to={`/reels/${n.reel.id}/access`}
-                className={`block rounded-xl border p-3 hover:border-teal-300 ${
-                  n.read ? "border-gray-200 bg-white" : "border-teal-200 bg-teal-50"
+                className={`block rounded-xl border p-3 hover:border-brand-300 ${
+                  n.read ? "border-gray-200 bg-white" : "border-brand-200 bg-brand-50"
                 }`}
               >
                 <p className="text-sm text-gray-800">

@@ -14,7 +14,9 @@
     "municipalitySuffix": "（自治体）",
     "companySuffix": "（企业）",
     "openMenu": "打开菜单",
-    "closeMenu": "关闭菜单"
+    "closeMenu": "关闭菜单",
+    "manage": "管理",
+    "tabBar": "主菜单"
   },
   "auth": {
     "sessionExpired": "登录已过期，请重新登录。"
@@ -234,7 +236,8 @@
     "following": "已关注",
     "likeLabel": "点赞",
     "saveLabel": "收藏（加入行程）",
-    "closeLabel": "关闭"
+    "closeLabel": "关闭",
+    "saveShort": "收藏"
   },
   "reelAccessPage": {
     "back": "返回",
@@ -529,6 +532,7 @@
   "share": {
     "label": "分享",
     "copied": "已复制链接",
-    "copyManually": "请复制此链接"
+    "copyManually": "请复制此链接",
+    "copiedShort": "已复制"
   }
 }

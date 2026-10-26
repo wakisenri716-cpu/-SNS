@@ -37,7 +37,7 @@ export default function ReelManageGrid({
         <ReelEditor reel={editingReel} onClose={() => setEditingReel(null)} onSaved={onUpdated} />
       )}
       {reels.map((reel) => (
-        <div key={reel.id} className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+        <div key={reel.id} className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm">
           <video src={reel.videoUrl} className="aspect-video w-full bg-gray-200 object-cover" muted />
           <div className="flex items-center gap-2 p-2">
             <p className="flex-1 truncate text-xs text-gray-700">{reel.caption || t("reelManageGrid.untitled")}</p>

@@ -7,6 +7,7 @@ import { useAuth } from "../auth/AuthContext";
 import ReelThumb from "../components/ReelGrid";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import WelcomeIntro from "../components/WelcomeIntro";
+import { CATEGORY_ICON } from "../lib/categoryIcons";
 import { REEL_CATEGORIES, type Reel } from "../types";
 
 const CATEGORY_TABS = ["all", ...REEL_CATEGORIES] as const;
@@ -142,49 +143,43 @@ export default function FeedPage() {
   return (
     <div className="mx-auto max-w-6xl">
       <WelcomeIntro />
-      <div className="flex gap-2 overflow-x-auto border-b border-gray-200 p-3 md:flex-wrap">
-        {CATEGORY_TABS.map((c) => (
-          <button
-            key={c}
-            onClick={() => setTab(c)}
-            className={`shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium ${
-              tab === c ? "bg-teal-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            {t(`category.${c}`)}
-          </button>
-        ))}
-        {token &&
-          SPECIAL_TABS.map((s) => (
+      <div className="sticky top-[61px] z-30 bg-[#f7f7f8]/85 backdrop-blur-xl md:top-0">
+        <div className="scrollbar-none flex gap-2 overflow-x-auto px-4 py-3 md:flex-wrap lg:px-6">
+          {[...CATEGORY_TABS, ...(token ? SPECIAL_TABS : [])].map((c) => (
             <button
-              key={s}
-              onClick={() => setTab(s)}
-              className={`shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium ${
-                tab === s ? "bg-teal-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              key={c}
+              onClick={() => setTab(c)}
+              aria-pressed={tab === c}
+              className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                tab === c
+                  ? "bg-gray-900 text-white shadow-sm"
+                  : "bg-white text-gray-600 ring-1 ring-gray-200 hover:bg-gray-50 hover:text-gray-900"
               }`}
             >
-              {t(`category.${s}`)}
+              <span className="mr-1">{CATEGORY_ICON[c]}</span>
+              {t(`category.${c}`)}
             </button>
           ))}
+        </div>
       </div>
 
       {tab === "all" && user?.role === "USER" && !loading && (
-        <p className="flex flex-wrap items-center gap-x-2 border-b border-gray-100 px-4 py-2 text-xs text-gray-500">
+        <div className="mx-4 mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-2xl bg-white px-4 py-3 text-xs text-gray-600 ring-1 ring-gray-200 lg:mx-6">
           <span>{personalized ? `✨ ${t("feed.personalizedNote")}` : t("feed.personalizeCta")}</span>
-          <Link to="/settings#travel-style" className="font-semibold text-teal-600 hover:underline">
-            {personalized ? t("feed.personalizedChange") : t("feed.personalizeSet")}
+          <Link to="/settings#travel-style" className="font-bold text-brand-600 hover:underline">
+            {personalized ? t("feed.personalizedChange") : t("feed.personalizeSet")} →
           </Link>
-        </p>
+        </div>
       )}
 
       {loading ? (
         <p className="p-10 text-center text-gray-400">{t("feed.loading")}</p>
       ) : reels.length === 0 ? (
-        <p className="m-6 rounded-xl border border-dashed border-gray-300 p-10 text-center text-gray-400">
+        <p className="m-4 rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center text-sm text-gray-400 lg:m-6">
           {tab === "saved" ? t("feed.emptySaved") : tab === "following" ? t("feed.emptyFollowing") : t("feed.empty")}
         </p>
       ) : (
-        <div className="grid grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-5 gap-y-7 px-4 pb-6 pt-3 sm:grid-cols-2 lg:px-6 2xl:grid-cols-3">
           {reels.map((reel) => (
             <ReelThumb key={reel.id} reel={reel} onOpen={(r) => setOpenReelId(r.id)} />
           ))}

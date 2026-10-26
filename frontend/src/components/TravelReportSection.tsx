@@ -80,7 +80,7 @@ export default function TravelReportSection({
   const summary = reports?.summary ?? [];
 
   return (
-    <div className="mt-6 rounded-lg border border-gray-200 bg-white p-4 lg:p-5">
+    <div className="mt-6 rounded-2xl border border-gray-200/80 bg-white shadow-sm p-4 lg:p-5">
       <h2 className="text-sm font-bold text-gray-900">⏱ {t("travelReport.heading")}</h2>
       <p className="mt-0.5 text-xs text-gray-400">{t("travelReport.subtitle")}</p>
 
@@ -92,7 +92,7 @@ export default function TravelReportSection({
               <span>
                 {TRAVEL_MODE_ICON[g.mode]} {t(TRAVEL_MODE_LABEL_KEY[g.mode])}
               </span>
-              <span className="font-bold tabular-nums text-teal-700">
+              <span className="font-bold tabular-nums text-gray-900">
                 {t("travelReport.average", { minutes: g.averageMin })}
               </span>
               <span className="text-gray-400">{t("travelReport.count", { count: g.count })}</span>
@@ -122,7 +122,7 @@ export default function TravelReportSection({
       <div className="mt-4 border-t border-gray-100 pt-4">
         {!user ? (
           <p className="text-xs text-gray-500">
-            <Link to="/login" className="font-semibold text-teal-600 hover:underline">
+            <Link to="/login" className="font-semibold text-brand-600 hover:underline">
               {t("travelReport.loginCta")}
             </Link>
           </p>
@@ -130,14 +130,14 @@ export default function TravelReportSection({
           <p className="text-xs text-gray-400">{t("travelReport.travelersOnly")}</p>
         ) : (
           <form onSubmit={submit} className="flex flex-col gap-3">
-            <p className="text-xs font-semibold text-teal-700">{t("travelReport.pointsNote")}</p>
+            <p className="text-xs font-semibold text-amber-700">🪙 {t("travelReport.pointsNote")}</p>
             <div className="flex flex-col gap-1">
               <span className="text-xs font-semibold text-gray-500">{t("travelReport.originLabel")}</span>
               <input
                 value={originValue}
                 onChange={(e) => setOrigin(e.target.value)}
                 placeholder={t("accessPlanner.originPlaceholder")}
-                className="w-full rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+                className="w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
               />
               <span className="text-[11px] leading-relaxed text-amber-700">{t("travelReport.originPrivacyNote")}</span>
             </div>
@@ -148,7 +148,7 @@ export default function TravelReportSection({
                   type="button"
                   onClick={() => setMode(m.mode)}
                   className={`rounded-full px-3 py-1 text-xs font-medium ${
-                    mode === m.mode ? "bg-teal-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    mode === m.mode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
                 >
                   {m.icon} {t(m.labelKey)}
@@ -163,7 +163,7 @@ export default function TravelReportSection({
                   max={23}
                   value={hours}
                   onChange={(e) => setHours(e.target.value)}
-                  className="w-16 rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+                  className="w-16 rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
                 />
                 {t("travelReport.hours")}
               </label>
@@ -174,20 +174,20 @@ export default function TravelReportSection({
                   max={59}
                   value={minutes}
                   onChange={(e) => setMinutes(e.target.value)}
-                  className="w-16 rounded-lg border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-teal-500"
+                  className="w-16 rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
                 />
                 {t("travelReport.minutes")}
               </label>
               <button
                 type="submit"
                 disabled={saving || !normalizeOrigin(originValue) || durationMin <= 0 || durationMin > 24 * 60}
-                className="ml-auto rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+                className="ml-auto rounded-full bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
               >
                 {t("travelReport.submit")}
               </button>
             </div>
             {result && (
-              <p className="text-xs font-semibold text-teal-700">
+              <p className="text-xs font-semibold text-emerald-700">
                 {result.pointsAwarded > 0
                   ? t("travelReport.earned", { points: result.pointsAwarded, total: result.points })
                   : t("travelReport.updated", { total: result.points })}

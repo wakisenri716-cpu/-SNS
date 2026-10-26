@@ -6,7 +6,7 @@ import { useAuth } from "../auth/AuthContext";
 import type { Municipality } from "../types";
 
 const inputClass =
-  "rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:border-teal-500";
+  "rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:border-brand-500";
 
 export default function RegisterCompanyPage() {
   const { registerCompany } = useAuth();
@@ -45,7 +45,7 @@ export default function RegisterCompanyPage() {
   }
 
   return (
-    <div className="mx-auto max-w-sm rounded-xl border border-gray-200 bg-white p-8 shadow-sm my-12">
+    <div className="mx-4 my-8 rounded-3xl border border-gray-200/80 bg-white p-7 shadow-sm sm:mx-auto sm:my-12 sm:max-w-sm sm:p-8">
       <h1 className="mb-2 text-center text-xl font-bold text-gray-900">{t("registerCompany.title")}</h1>
       <p className="mb-6 text-center text-sm text-gray-500">{t("registerCompany.description")}</p>
 
@@ -105,7 +105,7 @@ export default function RegisterCompanyPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-lg bg-teal-600 py-2 font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+            className="rounded-full bg-brand-600 py-2 font-medium text-white hover:bg-brand-700 disabled:opacity-50"
           >
             {t("registerCompany.submit")}
           </button>
