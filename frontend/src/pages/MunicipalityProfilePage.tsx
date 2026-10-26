@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { fetchSavedReelIds, notifySavesChanged, onSavesChanged } from "../lib/savesChanged";
 import { useAuth } from "../auth/AuthContext";
+import { showToast } from "../lib/toast";
 import Avatar from "../components/Avatar";
 import ReelThumb from "../components/ReelGrid";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
@@ -111,6 +112,7 @@ export default function MunicipalityProfilePage() {
       await api.post(`/reels/${reel.id}/save`);
     }
     notifySavesChanged();
+    if (!reel.savedByMe) showToast(t("feed.savedToast"), { label: t("feed.savedToastAction"), to: "/itinerary" });
     setReels((prev) => prev.map((r) => (r.id === reel.id ? { ...r, savedByMe: !r.savedByMe } : r)));
   }
 
@@ -169,10 +171,10 @@ export default function MunicipalityProfilePage() {
       <header className="px-4 pt-4 md:flex md:items-start md:gap-16 md:px-12 md:pb-10">
         <div className="flex items-center gap-6 md:block">
           <span className="md:hidden">
-            <Avatar name={municipality.name} src={municipality.avatarUrl} size={80} ring />
+            <Avatar name={municipality.name} src={municipality.avatarUrl} size={86} ring spin />
           </span>
           <span className="hidden md:block">
-            <Avatar name={municipality.name} src={municipality.avatarUrl} size={150} ring />
+            <Avatar name={municipality.name} src={municipality.avatarUrl} size={150} ring spin />
           </span>
           <div className="flex flex-1 justify-around text-center text-sm md:hidden">
             <span>

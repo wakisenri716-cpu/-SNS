@@ -86,7 +86,11 @@
     "viewComments": "查看全部 {{count}} 条评论",
     "addComment": "写评论",
     "openFullscreen": "全屏观看",
-    "storiesLabel": "地方政府"
+    "storiesLabel": "地方政府",
+    "savedToast": "已保存到行程手册",
+    "savedToastAction": "查看行程手册",
+    "soundOn": "打开声音",
+    "soundOff": "静音"
   },
   "search": {
     "placeholder": "按地区名或关键词搜索",
@@ -246,7 +250,8 @@
     "likeLabel": "点赞",
     "saveLabel": "收藏（加入行程）",
     "closeLabel": "关闭",
-    "saveShort": "收藏"
+    "saveShort": "收藏",
+    "playPause": "播放/暂停（双击点赞）"
   },
   "reelAccessPage": {
     "back": "返回",

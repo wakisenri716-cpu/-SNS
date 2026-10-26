@@ -86,7 +86,11 @@
     "viewComments": "댓글 {{count}}개 모두 보기",
     "addComment": "댓글 달기",
     "openFullscreen": "전체 화면으로 보기",
-    "storiesLabel": "지자체"
+    "storiesLabel": "지자체",
+    "savedToast": "여행 수첩에 저장했습니다",
+    "savedToastAction": "여행 수첩 보기",
+    "soundOn": "소리 켜기",
+    "soundOff": "음소거"
   },
   "search": {
     "placeholder": "지역명・키워드로 검색",
@@ -246,7 +250,8 @@
     "likeLabel": "좋아요",
     "saveLabel": "저장 (일정에 추가)",
     "closeLabel": "닫기",
-    "saveShort": "저장"
+    "saveShort": "저장",
+    "playPause": "재생/일시정지 (두 번 탭하면 좋아요)"
   },
   "reelAccessPage": {
     "back": "뒤로",

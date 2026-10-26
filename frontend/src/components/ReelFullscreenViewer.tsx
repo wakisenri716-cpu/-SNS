@@ -1,13 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../auth/AuthContext";
 import AutoplayVideo from "./AutoplayVideo";
 import Avatar from "./Avatar";
+import HeartBurst from "./HeartBurst";
 import CommentsSheet from "./CommentsSheet";
 import ShareButton from "./ShareButton";
 import { TravelerTagChips } from "./TravelerTagChips";
-import { Bookmark, Compass, Heart, MapPin, MessageCircle, Sparkles, X } from "lucide-react";
+import { Bookmark, Compass, Heart, MapPin, MessageCircle, Play, Sparkles, Volume2, VolumeX, X } from "lucide-react";
+import { toggleSound, useSoundOn } from "../lib/videoPlayback";
+import { useTapGestures } from "../lib/useTapGestures";
 import type { Reel } from "../types";
 
 function ReelOverlayInfo({
@@ -46,7 +49,7 @@ function ReelOverlayInfo({
           className="flex flex-col items-center gap-1"
         >
           <span className={railButton}>
-            <Heart className={`h-7 w-7 ${reel.likedByMe ? "fill-[#ff3040] text-[#ff3040]" : ""}`} strokeWidth={1.8} />
+            <Heart key={String(reel.likedByMe)} className={`h-7 w-7 ${reel.likedByMe ? "animate-like-pop fill-[#ff3040] text-[#ff3040]" : ""}`} strokeWidth={1.8} />
           </span>
           <span className="text-xs font-semibold drop-shadow">{reel.likeCount}</span>
         </button>
@@ -69,7 +72,7 @@ function ReelOverlayInfo({
           className="flex flex-col items-center gap-1"
         >
           <span className={railButton}>
-            <Bookmark className={`h-7 w-7 ${reel.savedByMe ? "fill-white" : ""}`} strokeWidth={1.8} />
+            <Bookmark key={String(reel.savedByMe)} className={`h-7 w-7 ${reel.savedByMe ? "animate-like-pop fill-white" : ""}`} strokeWidth={1.8} />
           </span>
           <span className="text-xs font-semibold drop-shadow">{t("reelViewer.saveShort")}</span>
         </button>
@@ -139,6 +142,79 @@ function ReelOverlayInfo({
   );
 }
 
+function SoundButton() {
+  const { t } = useTranslation();
+  const soundOn = useSoundOn();
+  return (
+    <button
+      onClick={toggleSound}
+      aria-label={soundOn ? t("feed.soundOff") : t("feed.soundOn")}
+      aria-pressed={soundOn}
+      className="fixed right-16 top-[max(0.75rem,env(safe-area-inset-top))] z-20 flex h-10 w-10 items-center justify-center text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
+    >
+      {soundOn ? <Volume2 className="h-6 w-6" strokeWidth={1.8} /> : <VolumeX className="h-6 w-6" strokeWidth={1.8} />}
+    </button>
+  );
+}
+
+// One reel's video: tap pauses/resumes, double tap likes with the big heart,
+// and a thin bar along the bottom shows playback progress.
+function ViewerVideo({ reel, onLike }: { reel: Reel; onLike: () => void }) {
+  const { t } = useTranslation();
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const barRef = useRef<HTMLSpanElement>(null);
+  const [paused, setPaused] = useState(false);
+  const [burst, setBurst] = useState(0);
+
+  useEffect(() => {
+    let frame = 0;
+    const tick = () => {
+      const v = videoRef.current;
+      if (v && barRef.current && v.duration) barRef.current.style.transform = `scaleX(${v.currentTime / v.duration})`;
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  const onTap = useTapGestures(
+    () => {
+      const v = videoRef.current;
+      if (!v) return;
+      if (v.paused) {
+        v.play().catch(() => {});
+        setPaused(false);
+      } else {
+        v.pause();
+        setPaused(true);
+      }
+    },
+    () => {
+      setBurst((n) => n + 1);
+      onLike();
+    }
+  );
+
+  return (
+    <>
+      <button type="button" onClick={onTap} className="block h-full w-full" aria-label={t("reelViewer.playPause")}>
+        <AutoplayVideo src={reel.videoUrl} className="h-full w-full object-cover" videoRef={videoRef} />
+      </button>
+      {burst > 0 && <HeartBurst key={burst} />}
+      {paused && (
+        <span className="pointer-events-none absolute inset-0 flex items-center justify-center" aria-hidden>
+          <span className="glass-dark animate-fade-in flex h-20 w-20 items-center justify-center rounded-full">
+            <Play className="ml-1 h-9 w-9 fill-white text-white" />
+          </span>
+        </span>
+      )}
+      <span className="absolute inset-x-0 bottom-0 z-20 h-[3px] bg-white/20" aria-hidden>
+        <span ref={barRef} className="block h-full origin-left scale-x-0 bg-white" />
+      </span>
+    </>
+  );
+}
+
 // Fullscreen, Instagram-Reels-style viewer: opens maximized on the clicked reel and
 // lets the viewer scroll down through the rest of the given reel list, one reel per
 // screen. Shared by the main feed and the municipality profile's post grid so both
@@ -164,14 +240,20 @@ export default function ReelFullscreenViewer({
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [commentsReelId, setCommentsReelId] = useState<string | null>(null);
 
-  useEffect(() => {
-    itemRefs.current[initialId]?.scrollIntoView({ block: "start" });
+  const scrollerRef = useRef<HTMLDivElement>(null);
+
+  // offsetTop rather than scrollIntoView: it isn't thrown off by the opening
+  // zoom animation, and runs before paint so there's no visible jump.
+  useLayoutEffect(() => {
+    const item = itemRefs.current[initialId];
+    if (item && scrollerRef.current) scrollerRef.current.scrollTop = item.offsetTop;
     // Only jump to the clicked reel once, when the viewer first opens.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black">
+    <div className="animate-viewer-in fixed inset-0 z-50 bg-black">
+      <SoundButton />
       <button
         onClick={onClose}
         aria-label={t("reelViewer.closeLabel")}
@@ -180,7 +262,7 @@ export default function ReelFullscreenViewer({
         <X className="h-7 w-7" strokeWidth={1.8} />
       </button>
 
-      <div className="h-full snap-y snap-mandatory overflow-y-scroll">
+      <div ref={scrollerRef} className="h-full snap-y snap-mandatory overflow-y-scroll">
         {reels.map((reel) => (
           <div
             key={reel.id}
@@ -189,7 +271,7 @@ export default function ReelFullscreenViewer({
             }}
             className="relative h-full w-full snap-start"
           >
-            <AutoplayVideo src={reel.videoUrl} className="h-full w-full object-cover" />
+            <ViewerVideo reel={reel} onLike={() => !reel.likedByMe && onToggleLike(reel)} />
             <ReelOverlayInfo
               reel={reel}
               onToggleLike={onToggleLike}

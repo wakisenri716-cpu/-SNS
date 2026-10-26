@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState, type ComponentType } from "react";
+import { Suspense, useEffect, useRef, useState, type ComponentType } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -21,6 +21,7 @@ import {
 import { useAuth } from "../auth/AuthContext";
 import Avatar from "./Avatar";
 import JazibaLogo from "./JazibaLogo";
+import Toaster from "./Toaster";
 import ItineraryRail, { useIsTraveler } from "./ItineraryRail";
 import { useUnreadNotificationCount } from "../lib/unreadNotifications";
 
@@ -143,6 +144,28 @@ function AccountChip() {
   );
 }
 
+// Phones: hide the top bar while scrolling down through content and bring it
+// back on any upward scroll, like Instagram. Sticky bars below it follow via
+// the --header-offset CSS variable.
+function useHideOnScroll() {
+  const [hidden, setHidden] = useState(false);
+  const lastY = useRef(0);
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (Math.abs(y - lastY.current) < 6) return;
+      setHidden(y > lastY.current && y > 80);
+      lastY.current = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  useEffect(() => {
+    document.documentElement.style.setProperty("--header-offset", hidden ? "0px" : "53px");
+  }, [hidden]);
+  return hidden;
+}
+
 export default function Layout() {
   const { t } = useTranslation();
   const { municipality, company } = useAuth();
@@ -152,6 +175,7 @@ export default function Layout() {
   const isTraveler = useIsTraveler();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const headerHidden = useHideOnScroll();
 
   useEffect(() => setMenuOpen(false), [location.pathname]);
 
@@ -165,7 +189,11 @@ export default function Layout() {
   return (
     <div className="flex min-h-screen w-full flex-col text-gray-900 md:flex-row">
       {/* Phones: frosted top bar + bottom tab bar (below). */}
-      <header className="sticky top-0 z-40 flex h-[53px] items-center justify-between border-b border-gray-200 bg-white px-4 md:hidden">
+      <header
+        className={`sticky top-0 z-40 flex h-[53px] items-center justify-between border-b border-gray-100 bg-white/80 px-4 backdrop-blur-xl backdrop-saturate-150 transition-transform duration-300 md:hidden ${
+          headerHidden ? "-translate-y-full" : ""
+        }`}
+      >
         <NavLink to="/" aria-label={t("brand.name")}>
           <JazibaLogo className="h-8 w-auto" />
         </NavLink>
@@ -198,8 +226,9 @@ export default function Layout() {
 
       {menuOpen && (
         <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setMenuOpen(false)} />
-          <div className="absolute inset-y-0 right-0 flex w-72 max-w-[85%] flex-col gap-4 overflow-y-auto bg-white px-3 py-5">
+          <div className="animate-fade-in absolute inset-0 bg-black/30 backdrop-blur-[2px]" onClick={() => setMenuOpen(false)} />
+          <div className="animate-sheet-in absolute inset-x-0 bottom-0 flex max-h-[85vh] flex-col gap-4 overflow-y-auto rounded-t-[28px] bg-white px-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3">
+            <span className="mx-auto h-1 w-10 rounded-full bg-gray-300" aria-hidden />
             <div className="flex items-center justify-between px-2">
               <AccountChip />
               <button
@@ -217,17 +246,22 @@ export default function Layout() {
       )}
 
       {/* pb on phones keeps content clear of the bottom tab bar. */}
-      <main className="min-w-0 flex-1 pb-16 md:pb-0">
+      <main className="min-w-0 flex-1 pb-28 md:pb-0">
         <Suspense fallback={<p className="p-10 text-center text-sm text-gray-400">{t("feed.loading")}</p>}>
-          <Outlet />
+          {/* Re-keyed per page so each one fades in. */}
+          <div key={location.pathname} className="animate-page-in">
+            <Outlet />
+          </div>
         </Suspense>
       </main>
+
+      <Toaster />
 
       <ItineraryRail />
 
       <nav
         aria-label={t("nav.tabBar")}
-        className="fixed inset-x-0 bottom-0 z-40 flex border-t border-gray-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden"
+        className="glass fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-1/2 z-40 flex h-16 w-[min(calc(100%-2rem),420px)] -translate-x-1/2 items-center gap-1 rounded-full px-2 md:hidden"
       >
         {primary.map(({ to, label, icon: IconC, badge = 0 }) => (
           <NavLink
@@ -235,11 +269,15 @@ export default function Layout() {
             to={to}
             end={to === "/"}
             aria-label={label}
-            className="relative flex h-12 flex-1 items-center justify-center text-gray-900"
+            className={({ isActive }) =>
+              `relative flex h-12 flex-1 items-center justify-center rounded-full text-gray-900 transition-all duration-300 active:scale-90 ${
+                isActive ? "bg-black/[0.06]" : ""
+              }`
+            }
           >
             {({ isActive }) => (
               <>
-                <IconC className="h-[26px] w-[26px]" strokeWidth={isActive ? 2.6 : 1.7} />
+                <IconC className="h-[25px] w-[25px]" strokeWidth={isActive ? 2.4 : 1.7} />
                 {badge > 0 && <Badge count={badge} className="absolute left-1/2 top-1 ml-1.5" />}
               </>
             )}

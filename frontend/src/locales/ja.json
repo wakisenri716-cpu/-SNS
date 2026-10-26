@@ -86,7 +86,11 @@
     "viewComments": "コメント{{count}}件をすべて見る",
     "addComment": "コメントする",
     "openFullscreen": "全画面で見る",
-    "storiesLabel": "自治体"
+    "storiesLabel": "自治体",
+    "savedToast": "しおりに保存しました",
+    "savedToastAction": "しおりを見る",
+    "soundOn": "音を出す",
+    "soundOff": "消音にする"
   },
   "search": {
     "placeholder": "地域名・キーワードで検索",
@@ -246,7 +250,8 @@
     "likeLabel": "いいね",
     "saveLabel": "保存（しおりに追加）",
     "closeLabel": "閉じる",
-    "saveShort": "保存"
+    "saveShort": "保存",
+    "playPause": "再生・一時停止（ダブルタップでいいね）"
   },
   "reelAccessPage": {
     "back": "戻る",

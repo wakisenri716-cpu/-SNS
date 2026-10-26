@@ -3,6 +3,14 @@
 /* Instagram-like look: white surfaces, near-black text, thin gray rules.
    Accent colors are used inline (#0095f6 follow/primary, #ff3040 likes). */
 @theme {
+  --animate-like-pop: like-pop 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+  --animate-heart-burst: heart-burst 0.9s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards;
+  --animate-toast-in: toast-in 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+  --animate-sheet-in: sheet-in 0.32s cubic-bezier(0.2, 0.9, 0.3, 1);
+  --animate-fade-in: fade-in 0.2s ease-out;
+  --animate-page-in: page-in 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+  --animate-viewer-in: viewer-in 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
+  --animate-ring-spin: ring-spin 6s linear infinite;
   --font-sans: "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", system-ui, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -27,4 +35,82 @@ body {
 }
 .scrollbar-none::-webkit-scrollbar {
   display: none;
+}
+
+/* ---- Motion ---------------------------------------------------------- */
+@keyframes like-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+@keyframes heart-burst {
+  0% { transform: scale(0); opacity: 0; }
+  15% { transform: scale(1.2); opacity: 1; }
+  30% { transform: scale(0.95); }
+  45%, 75% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.1) translateY(-24px); opacity: 0; }
+}
+@keyframes toast-in {
+  from { transform: translate(-50%, 24px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+@keyframes sheet-in {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes viewer-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes ring-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes shimmer {
+  from { background-position: 150% 0; }
+  to { background-position: -50% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Loading placeholder with a light sweep. */
+.skeleton {
+  display: block;
+  background: linear-gradient(90deg, #efefef 30%, #f8f8f8 50%, #efefef 70%);
+  background-size: 300% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* ---- Glass surfaces (floating bars, overlays on video) --------------- */
+.glass {
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 10px 40px -10px rgba(0, 0, 0, 0.22),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+}
+.glass-dark {
+  background: rgba(28, 28, 30, 0.55);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 10px 30px -8px rgba(0, 0, 0, 0.35);
 }

@@ -1,14 +1,19 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Bookmark, Heart, MessageCircle } from "lucide-react";
+import { Bookmark, Heart, MessageCircle, Volume2, VolumeX } from "lucide-react";
 import AutoplayVideo from "./AutoplayVideo";
 import Avatar from "./Avatar";
+import HeartBurst from "./HeartBurst";
 import ShareButton from "./ShareButton";
+import { toggleSound, useSoundOn } from "../lib/videoPlayback";
+import { useTapGestures } from "../lib/useTapGestures";
 import type { Reel } from "../types";
 
 // One post in the home feed, Instagram-style: header, media, action row,
-// likes, caption with hashtags, comments link, date. Tapping the video opens
-// the fullscreen viewer; everything else works in place.
+// likes, caption with hashtags, comments link, date. On the video: tap opens
+// the fullscreen viewer, double tap likes (with the big heart), and the corner
+// button switches sound on/off for every video.
 export default function FeedPost({
   reel,
   onOpen,
@@ -28,9 +33,21 @@ export default function FeedPost({
   const poster = reel.postedByCompany ?? reel.municipality;
   const hashtags = [t(`category.${reel.category}`), ...reel.travelerTags.map((tag) => t(`travelerTag.${tag}`))];
   const hasLocation = reel.locationLat != null && reel.locationLng != null;
+  const soundOn = useSoundOn();
+  const [burst, setBurst] = useState(0);
+  // Like Instagram, the media keeps its own shape, clamped between 4:5 (tall)
+  // and 1.91:1 (wide); 4:5 until the video reports its size.
+  const [ratio, setRatio] = useState(4 / 5);
+  const onTap = useTapGestures(
+    () => onOpen(reel),
+    () => {
+      setBurst((n) => n + 1);
+      if (!reel.likedByMe) onToggleLike(reel);
+    }
+  );
 
   return (
-    <article className="border-b border-gray-200 pb-5 md:mb-2">
+    <article className="border-b border-gray-100 pb-5 md:mb-4 md:border-0">
       <header className="flex items-center gap-3 px-3 py-3 md:px-0">
         <Link to={`/municipalities/${reel.municipality.id}`} aria-label={reel.municipality.name}>
           <Avatar name={reel.municipality.name} src={reel.municipality.avatarUrl} size={34} ring />
@@ -64,9 +81,21 @@ export default function FeedPost({
         </div>
       </header>
 
-      <button type="button" onClick={() => onOpen(reel)} className="block w-full bg-black md:overflow-hidden md:rounded-md" aria-label={t("feed.openFullscreen")}>
-        <AutoplayVideo src={reel.videoUrl} className="aspect-video w-full object-cover" />
-      </button>
+      <div className="relative overflow-hidden bg-gray-100 md:rounded-2xl" style={{ aspectRatio: Math.min(1.91, Math.max(0.8, ratio)) }}>
+        <button type="button" onClick={onTap} className="block h-full w-full" aria-label={t("feed.openFullscreen")}>
+          <AutoplayVideo src={reel.videoUrl} className="h-full w-full object-cover" onAspectRatio={setRatio} />
+        </button>
+        {burst > 0 && <HeartBurst key={burst} />}
+        <button
+          type="button"
+          onClick={toggleSound}
+          aria-label={soundOn ? t("feed.soundOff") : t("feed.soundOn")}
+          aria-pressed={soundOn}
+          className="glass-dark absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-full text-white transition active:scale-90"
+        >
+          {soundOn ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+        </button>
+      </div>
 
       <div className="flex items-center gap-4 px-3 pt-3 md:px-0">
         <button
@@ -77,7 +106,8 @@ export default function FeedPost({
           className="transition active:scale-90"
         >
           <Heart
-            className={`h-[26px] w-[26px] ${reel.likedByMe ? "fill-[#ff3040] text-[#ff3040]" : "text-gray-900 hover:text-gray-500"}`}
+            key={String(reel.likedByMe)}
+            className={`h-[26px] w-[26px] ${reel.likedByMe ? "animate-like-pop fill-[#ff3040] text-[#ff3040]" : "text-gray-900 hover:text-gray-500"}`}
             strokeWidth={1.8}
           />
         </button>
@@ -97,7 +127,8 @@ export default function FeedPost({
           className="ml-auto transition active:scale-90"
         >
           <Bookmark
-            className={`h-[26px] w-[26px] ${reel.savedByMe ? "fill-gray-900 text-gray-900" : "text-gray-900 hover:text-gray-500"}`}
+            key={String(reel.savedByMe)}
+            className={`h-[26px] w-[26px] ${reel.savedByMe ? "animate-like-pop fill-gray-900 text-gray-900" : "text-gray-900 hover:text-gray-500"}`}
             strokeWidth={1.8}
           />
         </button>

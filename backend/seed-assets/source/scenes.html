@@ -1,0 +1,289 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000}</style></head>
+<body><canvas id="c" width="720" height="1280"></canvas>
+<script>
+const W = 720, H = 1280;
+const c = document.getElementById('c');
+const g = c.getContext('2d');
+
+// Deterministic pseudo-random so each scene looks the same every run.
+function rng(seed) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+
+function lin(y0, y1, stops) {
+  const gr = g.createLinearGradient(0, y0, 0, y1);
+  stops.forEach(([o, col]) => gr.addColorStop(o, col));
+  return gr;
+}
+function ridge(seed, baseY, amp, rough, color, step = 6) {
+  const r = rng(seed);
+  const pts = [];
+  let y = baseY, v = 0;
+  for (let x = -20; x <= W + 20; x += step) {
+    v += (r() - 0.5) * rough; v *= 0.92;
+    y = baseY + Math.sin(x / 140 + seed) * amp * 0.5 + Math.sin(x / 53 + seed * 2) * amp * 0.25 + v * amp * 0.05;
+    pts.push([x, y]);
+  }
+  g.beginPath(); g.moveTo(-20, H);
+  pts.forEach(([x, yy]) => g.lineTo(x, yy));
+  g.lineTo(W + 20, H); g.closePath(); g.fillStyle = color; g.fill();
+  return pts;
+}
+function peaks(list, color, snow) {
+  // list of [x, y] apexes; draws a jagged alpine skyline down to the bottom.
+  g.beginPath(); g.moveTo(-20, H);
+  g.lineTo(-20, list[0][1] + 160);
+  list.forEach(([x, y]) => g.lineTo(x, y));
+  g.lineTo(W + 20, list[list.length - 1][1] + 160);
+  g.lineTo(W + 20, H); g.closePath(); g.fillStyle = color; g.fill();
+  if (snow) {
+    g.save(); g.clip();
+    list.forEach(([x, y], i) => {
+      if (y > 560) return;
+      g.beginPath(); g.moveTo(x, y);
+      g.lineTo(x - 46, y + 70); g.lineTo(x - 22, y + 58); g.lineTo(x - 8, y + 86); g.lineTo(x + 14, y + 60); g.lineTo(x + 40, y + 78);
+      g.closePath(); g.fillStyle = snow; g.fill();
+    });
+    g.restore();
+  }
+}
+function vignette(strength = 0.55) {
+  const gr = g.createRadialGradient(W / 2, H * 0.48, H * 0.25, W / 2, H * 0.5, H * 0.75);
+  gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, `rgba(0,0,0,${strength})`);
+  g.fillStyle = gr; g.fillRect(0, 0, W, H);
+}
+const grain = (() => {
+  const n = document.createElement('canvas'); n.width = n.height = 256;
+  const x = n.getContext('2d'); const d = x.createImageData(256, 256); const r = rng(7);
+  for (let i = 0; i < d.data.length; i += 4) { const v = r() * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 14; }
+  x.putImageData(d, 0, 0); return n;
+})();
+function filmGrain(t) {
+  g.save(); g.globalCompositeOperation = 'overlay';
+  const ox = (t * 997) % 256, oy = (t * 613) % 256;
+  g.translate(-ox, -oy);
+  g.fillStyle = g.createPattern(grain, 'repeat'); g.fillRect(0, 0, W + 256, H + 256);
+  g.restore();
+}
+function glow(x, y, r, col) {
+  const gr = g.createRadialGradient(x, y, 0, x, y, r);
+  gr.addColorStop(0, col); gr.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2);
+}
+
+// ---------- 1. Matsumoto Castle at dusk ----------
+const petals = (() => { const r = rng(11); return Array.from({ length: 46 }, () => ({ x: r() * W, y: r() * H, s: 4 + r() * 6, v: 40 + r() * 60, p: r() * 6.28 })); })();
+const stars = (() => { const r = rng(5); return Array.from({ length: 90 }, () => ({ x: r() * W, y: r() * 420, a: r(), p: r() * 6.28 })); })();
+function roofTier(cx, y, w, h, col) {
+  g.beginPath();
+  g.moveTo(cx - w / 2 - 26, y + h);
+  g.quadraticCurveTo(cx - w / 2 + 6, y + h - 6, cx - w / 2 + 16, y);
+  g.lineTo(cx + w / 2 - 16, y);
+  g.quadraticCurveTo(cx + w / 2 - 6, y + h - 6, cx + w / 2 + 26, y + h);
+  g.closePath(); g.fillStyle = col; g.fill();
+}
+function castle(cx, base, s) {
+  g.save(); g.translate(cx, base); g.scale(s, s); g.translate(-cx, -base);
+  // stone base
+  g.beginPath(); g.moveTo(cx - 170, base); g.lineTo(cx - 140, base - 90); g.lineTo(cx + 140, base - 90); g.lineTo(cx + 170, base); g.closePath();
+  g.fillStyle = lin(base - 90, base, [[0, '#3b3a40'], [1, '#1d1c22']]); g.fill();
+  // tiers: black walls with white bands, layered roofs
+  const tiers = [[260, 70], [220, 62], [180, 56], [140, 52], [104, 48]];
+  let y = base - 90;
+  tiers.forEach(([w, h], i) => {
+    g.fillStyle = '#121218'; g.fillRect(cx - w / 2 + 14, y - h, w - 28, h);
+    g.fillStyle = 'rgba(235,230,220,0.85)'; g.fillRect(cx - w / 2 + 14, y - h + 6, w - 28, 8);
+    // little lit windows
+    g.fillStyle = 'rgba(255,190,110,0.85)';
+    for (let k = 0; k < Math.max(2, 5 - i); k++) g.fillRect(cx - w / 2 + 30 + k * ((w - 60) / Math.max(1, 4 - i)), y - h + 26, 10, 14);
+    roofTier(cx, y - h - 16, w - 4, 22, '#0b0b10');
+    y -= h + 16;
+  });
+  // ridge ornaments (shachihoko)
+  g.fillStyle = '#c9a24a'; g.fillRect(cx - 44, y - 12, 8, 14); g.fillRect(cx + 36, y - 12, 8, 14);
+  g.restore();
+}
+function sceneCastle(t) {
+  g.fillStyle = lin(0, H, [[0, '#0d1b3d'], [0.32, '#3a2f6b'], [0.5, '#b3577a'], [0.6, '#f19a6b'], [0.66, '#ffd29a'], [1, '#1a1420']]);
+  g.fillRect(0, 0, W, H);
+  stars.forEach(s => { g.fillStyle = `rgba(255,255,255,${0.25 + 0.5 * Math.abs(Math.sin(t * 1.5 + s.p)) * s.a})`; g.fillRect(s.x, s.y, 2, 2); });
+  glow(W * 0.7, 820, 360, 'rgba(255,190,120,0.55)');
+  const zoom = 1 + t * 0.008;
+  g.save(); g.translate(W / 2, 860); g.scale(zoom, zoom); g.translate(-W / 2, -860);
+  peaks([[60, 700], [150, 640], [230, 690], [330, 610], [420, 660], [520, 600], [610, 650], [700, 620]], 'rgba(70,60,110,0.75)', 'rgba(220,210,240,0.55)');
+  ridge(3, 800, 60, 4, 'rgba(40,34,70,0.9)');
+  castle(W / 2, 930, 1.05);
+  // moat
+  g.fillStyle = lin(930, H, [[0, '#2a2040'], [1, '#0a0a14']]); g.fillRect(0, 930, W, H - 930);
+  // reflection
+  g.save(); g.globalAlpha = 0.35; g.translate(0, 1860); g.scale(1, -1); castle(W / 2, 930, 1.05); g.restore();
+  for (let i = 0; i < 40; i++) {
+    const yy = 940 + i * 9;
+    g.fillStyle = `rgba(255,200,150,${0.08 + 0.06 * Math.sin(t * 3 + i)})`;
+    g.fillRect(W / 2 - 150 + Math.sin(t * 2 + i * 1.3) * 20, yy, 300 - i * 4, 2);
+  }
+  // vermilion bridge
+  g.strokeStyle = '#d6293c'; g.lineWidth = 9;
+  g.beginPath(); g.moveTo(40, 1000); g.quadraticCurveTo(170, 960, 300, 1000); g.stroke();
+  g.lineWidth = 4; for (let x = 60; x < 300; x += 30) { g.beginPath(); g.moveTo(x, 1000 - Math.sin((x - 40) / 260 * Math.PI) * 30); g.lineTo(x, 1040); g.stroke(); }
+  g.restore();
+  // drifting cherry petals
+  petals.forEach(p => {
+    const y = (p.y + t * p.v) % (H + 40) - 20, x = p.x + Math.sin(t + p.p) * 30;
+    g.save(); g.translate(x, y); g.rotate(t + p.p);
+    g.fillStyle = 'rgba(255,190,210,0.9)'; g.beginPath(); g.ellipse(0, 0, p.s, p.s * 0.55, 0, 0, 6.28); g.fill(); g.restore();
+  });
+  vignette(0.5);
+}
+
+// ---------- 2. Kamikochi: Hotaka peaks and Kappa Bridge ----------
+const mist = (() => { const r = rng(21); return Array.from({ length: 8 }, () => ({ y: 720 + r() * 220, w: 300 + r() * 400, v: 10 + r() * 20, x: r() * W })); })();
+function trees(seed, baseY, count, hMin, hMax, color) {
+  const r = rng(seed);
+  for (let i = 0; i < count; i++) {
+    const x = r() * (W + 60) - 30, h = hMin + r() * (hMax - hMin), w = h * 0.32;
+    g.beginPath(); g.moveTo(x, baseY - h); g.lineTo(x - w, baseY); g.lineTo(x + w, baseY); g.closePath(); g.fillStyle = color; g.fill();
+  }
+}
+function sceneKamikochi(t) {
+  g.fillStyle = lin(0, 900, [[0, '#4f8fd6'], [0.6, '#a9d3f0'], [1, '#e8f3f7']]); g.fillRect(0, 0, W, H);
+  glow(560, 180, 300, 'rgba(255,250,220,0.8)');
+  const pan = Math.sin(t * 0.25) * 12;
+  g.save(); g.translate(pan, 0);
+  peaks([[-10, 520], [70, 430], [140, 470], [220, 330], [280, 400], [350, 300], [420, 380], [480, 340], [560, 420], [640, 360], [740, 460]], '#5e6f86', '#f4f7fb');
+  // rock shading
+  g.fillStyle = 'rgba(30,40,60,0.18)';
+  [[220, 330], [350, 300], [480, 340]].forEach(([x, y]) => { g.beginPath(); g.moveTo(x, y); g.lineTo(x + 70, y + 220); g.lineTo(x + 10, y + 220); g.closePath(); g.fill(); });
+  ridge(9, 690, 40, 4, '#3f6a58');
+  trees(31, 760, 70, 60, 120, '#2c5244');
+  trees(32, 840, 60, 90, 160, '#1f4034');
+  g.restore();
+  g.save(); g.filter = 'blur(14px)';
+  mist.forEach(m => {
+    const x = (m.x + t * m.v) % (W + m.w) - m.w;
+    const gr = g.createLinearGradient(x, 0, x + m.w, 0);
+    gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.5, 'rgba(255,255,255,0.45)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = gr; g.fillRect(x, m.y, m.w, 30);
+  });
+  g.restore();
+  // river
+  g.fillStyle = lin(860, H, [[0, '#5fc7c9'], [1, '#1c7f8c']]); g.fillRect(0, 860, W, H - 860);
+  for (let i = 0; i < 70; i++) {
+    const yy = 870 + ((i * 37) % 400), x = ((i * 113 + t * (60 + (i % 5) * 20)) % (W + 120)) - 60;
+    g.fillStyle = 'rgba(255,255,255,0.35)'; g.fillRect(x, yy, 40 + (i % 4) * 18, 2);
+  }
+  // banks
+  g.fillStyle = '#c9c2b0'; g.beginPath(); g.moveTo(0, 860); g.quadraticCurveTo(140, 900, 0, 1000); g.fill();
+  g.beginPath(); g.moveTo(W, 860); g.quadraticCurveTo(W - 160, 910, W, 1020); g.fill();
+  // Kappa Bridge (suspension)
+  g.strokeStyle = '#3a2a22'; g.lineWidth = 6;
+  g.beginPath(); g.moveTo(0, 850); g.quadraticCurveTo(W / 2, 880, W, 850); g.stroke();
+  g.lineWidth = 3; g.beginPath(); g.moveTo(0, 790); g.quadraticCurveTo(W / 2, 860, W, 790); g.stroke();
+  g.lineWidth = 2; for (let x = 20; x < W; x += 24) { const top = 790 + 70 * (1 - Math.pow((x - W / 2) / (W / 2), 2)) * 0.98; g.beginPath(); g.moveTo(x, top); g.lineTo(x, 850 + 30 * (1 - Math.pow((x - W / 2) / (W / 2), 2))); g.stroke(); }
+  vignette(0.35);
+}
+
+// ---------- 3. Soba with rising steam ----------
+const bokeh = (() => { const r = rng(41); return Array.from({ length: 26 }, () => ({ x: r() * W, y: r() * 600, s: 20 + r() * 50, v: 6 + r() * 12, h: r() })); })();
+function sceneSoba(t) {
+  g.fillStyle = lin(0, H, [[0, '#2a1a12'], [0.55, '#3d2618'], [1, '#160d08']]); g.fillRect(0, 0, W, H);
+  bokeh.forEach(b => {
+    const x = (b.x + Math.sin(t * 0.4 + b.h * 6) * 30), y = b.y + Math.cos(t * 0.3 + b.h * 6) * 15;
+    glow(x, y, b.s, `rgba(255,${170 + b.h * 60 | 0},${90 + b.h * 40 | 0},0.35)`);
+  });
+  // table
+  g.fillStyle = lin(700, H, [[0, '#6b4a2f'], [1, '#2b1b10']]); g.fillRect(0, 700, W, H - 700);
+  g.strokeStyle = 'rgba(0,0,0,0.15)'; g.lineWidth = 2;
+  for (let i = 0; i < 12; i++) { g.beginPath(); g.moveTo(0, 720 + i * 48); g.bezierCurveTo(240, 700 + i * 50, 480, 740 + i * 46, W, 716 + i * 48); g.stroke(); }
+  const cx = W / 2, cy = 900;
+  // bowl shadow, bowl, broth, noodles
+  g.fillStyle = 'rgba(0,0,0,0.35)'; g.beginPath(); g.ellipse(cx + 20, cy + 150, 280, 60, 0, 0, 6.28); g.fill();
+  g.fillStyle = lin(cy, cy + 170, [[0, '#1b1b1f'], [1, '#08080a']]);
+  g.beginPath(); g.moveTo(cx - 270, cy); g.bezierCurveTo(cx - 250, cy + 180, cx + 250, cy + 180, cx + 270, cy); g.closePath(); g.fill();
+  g.fillStyle = '#b81e2f'; g.beginPath(); g.ellipse(cx, cy, 270, 70, 0, 0, 6.28); g.fill();
+  g.fillStyle = '#5a3418'; g.beginPath(); g.ellipse(cx, cy + 4, 248, 60, 0, 0, 6.28); g.fill();
+  g.save(); g.beginPath(); g.ellipse(cx, cy + 4, 248, 60, 0, 0, 6.28); g.clip();
+  const r = rng(51);
+  for (let i = 0; i < 60; i++) {
+    g.strokeStyle = `rgba(${150 + r() * 40 | 0},${120 + r() * 30 | 0},${80 + r() * 20 | 0},0.95)`; g.lineWidth = 5;
+    const y0 = cy - 50 + r() * 100, x0 = cx - 240 + r() * 120;
+    g.beginPath(); g.moveTo(x0, y0); g.bezierCurveTo(x0 + 120, y0 - 30 + r() * 60, x0 + 240, y0 - 30 + r() * 60, x0 + 360, y0 + (r() - 0.5) * 40); g.stroke();
+  }
+  // toppings: green onion, nori
+  for (let i = 0; i < 18; i++) { g.fillStyle = '#7dbb4a'; g.beginPath(); g.arc(cx + 60 + r() * 120, cy - 20 + r() * 40, 7, 0, 6.28); g.fill(); }
+  g.fillStyle = '#16251a'; g.fillRect(cx - 150, cy - 40, 70, 90);
+  g.restore();
+  // chopsticks
+  g.save(); g.translate(cx + 120, cy - 10); g.rotate(-0.55);
+  g.fillStyle = '#d8b07a'; g.fillRect(0, -6, 420, 10); g.fillRect(0, 12, 420, 10); g.restore();
+  // steam
+  g.save(); g.filter = 'blur(10px)';
+  for (let k = 0; k < 7; k++) {
+    g.beginPath();
+    const baseX = cx - 150 + k * 50;
+    for (let i = 0; i <= 40; i++) {
+      const p = i / 40, y = cy - 30 - p * 520;
+      const x = baseX + Math.sin(p * 6 + t * 1.6 + k) * (18 + p * 40);
+      i ? g.lineTo(x, y) : g.moveTo(x, y);
+    }
+    g.strokeStyle = `rgba(255,255,255,${0.16 + 0.06 * Math.sin(t + k)})`; g.lineWidth = 26; g.lineCap = 'round'; g.stroke();
+  }
+  g.restore();
+  vignette(0.6);
+}
+
+// ---------- 4. Mountain hotel at night ----------
+const flies = (() => { const r = rng(61); return Array.from({ length: 50 }, () => ({ x: r() * W, y: 700 + r() * 500, p: r() * 6.28, s: 0.5 + r() })); })();
+const snow = (() => { const r = rng(62); return Array.from({ length: 120 }, () => ({ x: r() * W, y: r() * H, s: 1 + r() * 3, v: 30 + r() * 50 })); })();
+function sceneHotel(t) {
+  g.fillStyle = lin(0, H, [[0, '#0a1230'], [0.45, '#22305e'], [0.62, '#5b5a8a'], [1, '#0d0f1c']]); g.fillRect(0, 0, W, H);
+  glow(180, 220, 90, 'rgba(255,255,230,0.9)'); g.fillStyle = '#fffbe8'; g.beginPath(); g.arc(180, 220, 34, 0, 6.28); g.fill();
+  peaks([[-20, 600], [120, 470], [210, 540], [320, 420], [430, 510], [540, 440], [650, 520], [760, 480]], '#2d3558', 'rgba(220,228,255,0.7)');
+  trees(71, 860, 80, 80, 180, '#121a2e');
+  // lodge: steep red gable roofs over dark log walls
+  const bx = 150, by = 930, bw = 420;
+  g.fillStyle = '#2b1d16'; g.fillRect(bx, by - 170, bw, 170);
+  const gable = (x, w, top, col) => { g.beginPath(); g.moveTo(x - 20, by - 160); g.lineTo(x + w / 2, top); g.lineTo(x + w + 20, by - 160); g.closePath(); g.fillStyle = col; g.fill(); };
+  gable(bx, 200, by - 360, '#8a2a2a'); gable(bx + 200, 220, by - 330, '#7a2424'); gable(bx + 90, 120, by - 420, '#9b3030');
+  // half-timbering
+  g.strokeStyle = 'rgba(240,225,200,0.5)'; g.lineWidth = 3;
+  for (let x = bx + 20; x < bx + bw; x += 40) { g.beginPath(); g.moveTo(x, by - 165); g.lineTo(x, by); g.stroke(); }
+  // glowing windows
+  for (let row = 0; row < 3; row++) for (let col = 0; col < 8; col++) {
+    const flick = 0.75 + 0.25 * Math.sin(t * 3 + row * 2 + col * 1.7);
+    const x = bx + 26 + col * 50, y = by - 150 + row * 50;
+    glow(x + 10, y + 12, 40, `rgba(255,180,90,${0.25 * flick})`);
+    g.fillStyle = `rgba(255,${200 + 30 * flick | 0},120,${0.9 * flick})`; g.fillRect(x, y, 20, 26);
+  }
+  g.fillStyle = 'rgba(255,190,110,0.9)'; g.fillRect(bx + 190, by - 300, 26, 34);
+  // snowy ground and warm light spill
+  g.fillStyle = lin(by, H, [[0, '#cfd6ea'], [1, '#6b7393']]); g.fillRect(0, by, W, H - by);
+  glow(bx + bw / 2, by + 40, 300, 'rgba(255,170,80,0.35)');
+  trees(72, 1150, 18, 160, 260, '#0b1020');
+  snow.forEach(s => { const y = (s.y + t * s.v) % H, x = s.x + Math.sin(t + s.y) * 12; g.fillStyle = 'rgba(255,255,255,0.85)'; g.beginPath(); g.arc(x, y, s.s, 0, 6.28); g.fill(); });
+  vignette(0.55);
+}
+
+const SCENES = { matsumotojo: sceneCastle, kamikochi: sceneKamikochi, gosenjaku: sceneSoba, teikoku: sceneHotel };
+
+window.renderStill = (name, t) => { SCENES[name](t); filmGrain(t); return c.toDataURL('image/jpeg', 0.9); };
+
+window.record = (name, seconds) => new Promise((resolve) => {
+  const stream = c.captureStream(30);
+  const rec = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9', videoBitsPerSecond: 3_500_000 });
+  const chunks = [];
+  rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+  rec.onstop = async () => {
+    const buf = await new Blob(chunks, { type: 'video/webm' }).arrayBuffer();
+    let bin = ''; const bytes = new Uint8Array(buf);
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    resolve(btoa(bin));
+  };
+  const start = performance.now();
+  const frame = () => {
+    const t = (performance.now() - start) / 1000;
+    SCENES[name](t); filmGrain(t);
+    if (t < seconds) requestAnimationFrame(frame); else rec.stop();
+  };
+  rec.start(); frame();
+});
+</script></body></html>

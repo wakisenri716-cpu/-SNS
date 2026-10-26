@@ -88,7 +88,11 @@
     "viewComments_other": "View all {{count}} comments",
     "addComment": "Add a comment",
     "openFullscreen": "Open full screen",
-    "storiesLabel": "Municipalities"
+    "storiesLabel": "Municipalities",
+    "savedToast": "Saved to your itinerary",
+    "savedToastAction": "View itinerary",
+    "soundOn": "Turn sound on",
+    "soundOff": "Mute"
   },
   "search": {
     "placeholder": "Search by region or keyword",
@@ -248,7 +252,8 @@
     "likeLabel": "Like",
     "saveLabel": "Save (add to itinerary)",
     "closeLabel": "Close",
-    "saveShort": "Save"
+    "saveShort": "Save",
+    "playPause": "Play/pause (double-tap to like)"
   },
   "reelAccessPage": {
     "back": "Back",

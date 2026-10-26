@@ -80,7 +80,8 @@ const MUNICIPALITIES: SeedMunicipality[] = [
 ];
 
 // Each reel's `video` is a placeholder clip in seed-assets/ (no real footage
-// available) — a short title card with the spot's name, generated with ffmpeg.
+// available) — an 8-second animated illustration of the spot, drawn on a
+// canvas and encoded with ffmpeg by seed-assets/source/render.mjs.
 const SEED_PASSWORD = "password123";
 
 // Demo "tourist" accounts with varied nationality/birth year, used only to

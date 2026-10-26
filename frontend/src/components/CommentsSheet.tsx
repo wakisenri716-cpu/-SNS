@@ -73,14 +73,15 @@ export default function CommentsSheet({
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/40" onClick={onClose}>
+    <div className="animate-fade-in fixed inset-0 z-[60] flex items-end justify-center bg-black/40" onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-label={t("comments.heading")}
-        className="flex max-h-[75vh] w-full max-w-lg flex-col rounded-t-2xl bg-white"
+        className="animate-sheet-in flex max-h-[75vh] w-full max-w-lg flex-col rounded-t-[28px] bg-white pb-[env(safe-area-inset-bottom)]"
         onClick={(e) => e.stopPropagation()}
       >
+        <span className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-gray-300" aria-hidden />
         <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
           <h2 className="text-sm font-bold text-gray-900">
             {t("comments.heading")}

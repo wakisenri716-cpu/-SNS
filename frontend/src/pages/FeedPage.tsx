@@ -4,9 +4,11 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { fetchSavedReelIds, notifySavesChanged, onSavesChanged } from "../lib/savesChanged";
 import { useAuth } from "../auth/AuthContext";
+import { showToast } from "../lib/toast";
 import Avatar from "../components/Avatar";
 import CommentsSheet from "../components/CommentsSheet";
 import FeedPost from "../components/FeedPost";
+import FeedSkeleton from "../components/FeedSkeleton";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import WelcomeIntro from "../components/WelcomeIntro";
 import { REEL_CATEGORIES, type Reel } from "../types";
@@ -115,6 +117,7 @@ export default function FeedPage() {
       await api.post(`/reels/${reel.id}/save`);
     }
     notifySavesChanged();
+    if (!reel.savedByMe) showToast(t("feed.savedToast"), { label: t("feed.savedToastAction"), to: "/itinerary" });
     setReels((prev) => {
       const next = prev.map((r) => (r.id === reel.id ? { ...r, savedByMe: !r.savedByMe } : r));
       // Unsaving while viewing the "saved" tab should drop it from view immediately.
@@ -160,22 +163,22 @@ export default function FeedPage() {
       {stories.length > 0 && (
         <nav aria-label={t("feed.storiesLabel")} className="scrollbar-none flex gap-4 overflow-x-auto px-4 pb-2 pt-4 md:pt-8">
           {stories.map((m) => (
-            <Link key={m.id} to={`/municipalities/${m.id}`} className="flex w-[66px] shrink-0 flex-col items-center gap-1.5">
-              <Avatar name={m.name} src={m.avatarUrl} size={58} ring />
+            <Link key={m.id} to={`/municipalities/${m.id}`} className="flex w-[72px] shrink-0 flex-col items-center gap-1.5 transition active:scale-95">
+              <Avatar name={m.name} src={m.avatarUrl} size={62} ring spin />
               <span className="w-full truncate text-center text-xs text-gray-900">{m.name}</span>
             </Link>
           ))}
         </nav>
       )}
 
-      <div className="sticky top-[53px] z-30 border-b border-gray-200 bg-white/95 backdrop-blur-xl md:top-0">
+      <div className="sticky top-[var(--header-offset,53px)] z-30 border-b border-gray-100 bg-white/80 backdrop-blur-xl backdrop-saturate-150 transition-[top] duration-300 md:top-0">
         <div className="scrollbar-none flex gap-2 overflow-x-auto px-4 py-2.5">
           {[...CATEGORY_TABS, ...(token ? SPECIAL_TABS : [])].map((c) => (
             <button
               key={c}
               onClick={() => setTab(c)}
               aria-pressed={tab === c}
-              className={`shrink-0 whitespace-nowrap rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-colors ${
+              className={`shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-semibold transition active:scale-95 ${
                 tab === c ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900 hover:bg-gray-200"
               }`}
             >
@@ -195,7 +198,9 @@ export default function FeedPage() {
       )}
 
       {loading ? (
-        <p className="p-10 text-center text-sm text-gray-400">{t("feed.loading")}</p>
+        <div className="pt-2 md:pt-4">
+          <FeedSkeleton />
+        </div>
       ) : reels.length === 0 ? (
         <p className="px-6 py-16 text-center text-sm text-gray-500">
           {tab === "saved" ? t("feed.emptySaved") : tab === "following" ? t("feed.emptyFollowing") : t("feed.empty")}
@@ -216,7 +221,7 @@ export default function FeedPage() {
         </div>
       )}
       <div ref={sentinelRef} />
-      {loadingMore && <p className="p-4 text-center text-xs text-gray-400">{t("feed.loading")}</p>}
+      {loadingMore && <FeedSkeleton count={1} />}
 
       {openReelId && (
         <ReelFullscreenViewer
