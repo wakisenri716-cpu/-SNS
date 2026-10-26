@@ -300,6 +300,9 @@ export default function MunicipalityProfilePage() {
           onToggleLike={toggleLike}
           onToggleSave={toggleSave}
           onToggleFollow={toggleFollowFromReel}
+          onCommentCountChange={(reelId, count) =>
+            setReels((prev) => prev.map((r) => (r.id === reelId ? { ...r, commentCount: count } : r)))
+          }
         />
       )}
     </div>

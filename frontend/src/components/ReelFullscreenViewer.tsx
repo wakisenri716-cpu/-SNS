@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../auth/AuthContext";
 import AutoplayVideo from "./AutoplayVideo";
+import CommentsSheet from "./CommentsSheet";
 import { TravelerTagChips } from "./TravelerTagChips";
 import type { Reel } from "../types";
 
@@ -11,11 +12,13 @@ function ReelOverlayInfo({
   onToggleLike,
   onToggleSave,
   onToggleFollow,
+  onOpenComments,
 }: {
   reel: Reel;
   onToggleLike: (reel: Reel) => void;
   onToggleSave: (reel: Reel) => void;
   onToggleFollow: (reel: Reel) => void;
+  onOpenComments: (reel: Reel) => void;
 }) {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -86,10 +89,15 @@ function ReelOverlayInfo({
             </span>
             <span className="text-sm text-white">{reel.likeCount}</span>
           </button>
-          <span className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => onOpenComments(reel)}
+            aria-label={t("comments.heading")}
+            className="flex items-center gap-1.5"
+          >
             <span className="text-xl text-white">💬</span>
             <span className="text-sm text-white">{reel.commentCount}</span>
-          </span>
+          </button>
           <button onClick={() => onToggleSave(reel)} className="ml-auto flex items-center gap-1.5">
             <span className={`text-xl ${reel.savedByMe ? "text-yellow-400" : "text-white"}`}>
               {reel.savedByMe ? "🔖" : "📑"}
@@ -112,6 +120,7 @@ export default function ReelFullscreenViewer({
   onToggleLike,
   onToggleSave,
   onToggleFollow,
+  onCommentCountChange,
 }: {
   reels: Reel[];
   initialId: string;
@@ -119,8 +128,10 @@ export default function ReelFullscreenViewer({
   onToggleLike: (reel: Reel) => void;
   onToggleSave: (reel: Reel) => void;
   onToggleFollow: (reel: Reel) => void;
+  onCommentCountChange: (reelId: string, count: number) => void;
 }) {
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [commentsReelId, setCommentsReelId] = useState<string | null>(null);
 
   useEffect(() => {
     itemRefs.current[initialId]?.scrollIntoView({ block: "start" });
@@ -152,10 +163,19 @@ export default function ReelFullscreenViewer({
               onToggleLike={onToggleLike}
               onToggleSave={onToggleSave}
               onToggleFollow={onToggleFollow}
+              onOpenComments={(r) => setCommentsReelId(r.id)}
             />
           </div>
         ))}
       </div>
+
+      {commentsReelId && (
+        <CommentsSheet
+          reelId={commentsReelId}
+          onClose={() => setCommentsReelId(null)}
+          onCountChange={(count) => onCommentCountChange(commentsReelId, count)}
+        />
+      )}
     </div>
   );
 }

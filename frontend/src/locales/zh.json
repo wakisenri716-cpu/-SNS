@@ -496,5 +496,17 @@
     "heading": "{{name}}的住宿・餐饮信息",
     "profileLink": "在{{name}}页面查看详情 →",
     "otaNote": "将打开外部预订网站的搜索结果，请在各网站上完成预订。"
+  },
+  "comments": {
+    "heading": "评论",
+    "empty": "暂无评论",
+    "placeholder": "写评论（最多500字）",
+    "submit": "发送",
+    "loginCta": "登录后即可评论",
+    "disabled": "此投稿不接受评论",
+    "delete": "删除",
+    "deleteConfirm": "确定要删除这条评论吗？",
+    "error": "发送失败",
+    "close": "关闭"
   }
 }

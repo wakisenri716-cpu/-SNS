@@ -848,36 +848,67 @@ router.get("/:id/access-map", async (req, res) => {
 });
 
 // Comments
-const commentSchema = z.object({ body: z.string().min(1).max(500) });
+const commentSchema = z.object({ body: z.string().trim().min(1).max(500) });
 
-router.get("/:id/comments", async (req, res) => {
-  const comments = await prisma.comment.findMany({
-    where: { reelId: req.params.id },
-    orderBy: { createdAt: "asc" },
-    include: { user: { select: { id: true, name: true } } },
+// The municipality can turn off comments for everything under its name
+// (including its companies' posts, mirroring its moderation authority over
+// them elsewhere in the app); a company can additionally turn off comments
+// on just its own posts. Either "off" wins.
+function commentsEnabledFor(reel: {
+  municipality: { commentsEnabled: boolean };
+  company: { commentsEnabled: boolean } | null;
+}) {
+  return reel.municipality.commentsEnabled && (reel.company?.commentsEnabled ?? true);
+}
+
+const commentReelInclude = {
+  municipality: { select: { commentsEnabled: true } },
+  company: { select: { commentsEnabled: true } },
+} as const;
+
+// Whether the signed-in account manages this reel (and so may remove any
+// comment on it) — the same rule as editing/deleting the reel itself.
+async function canModerateComments(
+  auth: { userId: string; role: string } | undefined,
+  reel: { municipalityId: string; companyId: string | null }
+) {
+  if (!auth) return false;
+  if (auth.role === "MUNICIPALITY") {
+    const m = await prisma.municipality.findUnique({ where: { userId: auth.userId }, select: { id: true } });
+    return !!m && canManage(reel, { municipalityId: m.id, companyId: null });
+  }
+  if (auth.role === "COMPANY") {
+    const c = await prisma.company.findUnique({ where: { userId: auth.userId } });
+    return !!c && canManage(reel, { municipalityId: c.municipalityId, companyId: c.id });
+  }
+  return false;
+}
+
+router.get("/:id/comments", optionalAuth, async (req, res) => {
+  const reel = await prisma.reel.findUnique({ where: { id: req.params.id }, include: commentReelInclude });
+  if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
+
+  const [comments, moderator] = await Promise.all([
+    prisma.comment.findMany({
+      where: { reelId: reel.id },
+      orderBy: { createdAt: "asc" },
+      include: { user: { select: { id: true, name: true } } },
+    }),
+    canModerateComments(req.auth, reel),
+  ]);
+  res.json({
+    commentsEnabled: commentsEnabledFor(reel),
+    items: comments.map((c) => ({ ...c, canDelete: moderator || c.userId === req.auth?.userId })),
   });
-  res.json(comments);
 });
 
 router.post("/:id/comments", requireAuth, async (req, res) => {
   const parsed = commentSchema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+  if (!parsed.success) return res.status(400).json({ error: "コメントを入力してください（500文字まで）" });
 
-  const reel = await prisma.reel.findUnique({
-    where: { id: req.params.id },
-    include: {
-      municipality: { select: { commentsEnabled: true } },
-      company: { select: { commentsEnabled: true } },
-    },
-  });
+  const reel = await prisma.reel.findUnique({ where: { id: req.params.id }, include: commentReelInclude });
   if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
-
-  // The municipality can turn off comments for everything under its name
-  // (including its companies' posts, mirroring its moderation authority over
-  // them elsewhere in the app); a company can additionally turn off comments
-  // on just its own posts. Either "off" wins.
-  const commentsEnabled = reel.municipality.commentsEnabled && (reel.company?.commentsEnabled ?? true);
-  if (!commentsEnabled) {
+  if (!commentsEnabledFor(reel)) {
     return res.status(403).json({ error: "この投稿はコメントが許可されていません" });
   }
 
@@ -885,7 +916,24 @@ router.post("/:id/comments", requireAuth, async (req, res) => {
     data: { body: parsed.data.body, reelId: reel.id, userId: req.auth!.userId },
     include: { user: { select: { id: true, name: true } } },
   });
-  res.status(201).json(comment);
+  res.status(201).json({ ...comment, canDelete: true });
+});
+
+// Remove a comment: its author, or the account managing the reel (moderation).
+router.delete("/:id/comments/:commentId", requireAuth, async (req, res) => {
+  const comment = await prisma.comment.findUnique({
+    where: { id: req.params.commentId },
+    include: { reel: { select: { id: true, municipalityId: true, companyId: true } } },
+  });
+  if (!comment || comment.reel.id !== req.params.id) {
+    return res.status(404).json({ error: "コメントが見つかりません" });
+  }
+  if (comment.userId !== req.auth!.userId && !(await canModerateComments(req.auth, comment.reel))) {
+    return res.status(403).json({ error: "このコメントは削除できません" });
+  }
+
+  await prisma.comment.delete({ where: { id: comment.id } });
+  res.status(204).end();
 });
 
 export default router;

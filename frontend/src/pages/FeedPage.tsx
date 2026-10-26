@@ -162,6 +162,9 @@ export default function FeedPage() {
           onToggleLike={toggleLike}
           onToggleSave={toggleSave}
           onToggleFollow={toggleFollow}
+          onCommentCountChange={(reelId, count) =>
+            setReels((prev) => prev.map((r) => (r.id === reelId ? { ...r, commentCount: count } : r)))
+          }
         />
       )}
     </div>

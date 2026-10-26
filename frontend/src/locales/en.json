@@ -498,5 +498,17 @@
     "heading": "Lodging & restaurants in {{name}}",
     "profileLink": "See more on the {{name}} page →",
     "otaNote": "Opens search results on an external booking site; booking is done on that site."
+  },
+  "comments": {
+    "heading": "Comments",
+    "empty": "No comments yet",
+    "placeholder": "Write a comment (up to 500 characters)",
+    "submit": "Send",
+    "loginCta": "Log in to comment",
+    "disabled": "Comments are turned off for this post",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this comment?",
+    "error": "Could not send",
+    "close": "Close"
   }
 }
