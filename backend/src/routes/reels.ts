@@ -13,6 +13,7 @@ import { POINTS_PER_TRAVEL_REPORT, getUserPoints } from "../lib/points";
 import { hasTravelStyle, scoreReel } from "../lib/personalize";
 import { notifyPoster } from "../lib/notifications";
 import { summarizeByOriginAndMode, summarizeOrigins } from "../lib/travelReports";
+import { writeLimiter } from "../middleware/rateLimit";
 
 const PERSONALIZED_POOL = 100;
 
@@ -559,7 +560,7 @@ const travelReportSchema = z.object({
 // Record "it actually took me N minutes" — traveler accounts only, since the
 // point of the data is real trips. Upserts per (user, reel, mode): a first
 // report earns points, re-recording just corrects the time without earning more.
-router.post("/:id/travel-reports", requireAuth, requireRole("USER"), async (req, res) => {
+router.post("/:id/travel-reports", writeLimiter, requireAuth, requireRole("USER"), async (req, res) => {
   const parsed = travelReportSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
 
@@ -904,7 +905,7 @@ router.get("/:id/comments", optionalAuth, async (req, res) => {
   });
 });
 
-router.post("/:id/comments", requireAuth, async (req, res) => {
+router.post("/:id/comments", writeLimiter, requireAuth, async (req, res) => {
   const parsed = commentSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "コメントを入力してください（500文字まで）" });
 

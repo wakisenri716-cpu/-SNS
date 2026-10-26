@@ -10,6 +10,7 @@ import { NATIONALITIES, TRAVEL_COMPANIONS, type Role } from "../types";
 import { parseFavoriteCategories } from "../lib/personalize";
 import { municipalityDetailInclude, serializeMunicipality } from "./municipalities";
 import { getUserPoints } from "../lib/points";
+import { loginLimiter, registerLimiter } from "../middleware/rateLimit";
 
 const router = Router();
 
@@ -94,7 +95,7 @@ router.get("/suggest-nationality", (req, res) => {
   res.json({ nationality: guessNationalityFromIp(req.ip) });
 });
 
-router.post("/register", async (req, res) => {
+router.post("/register", registerLimiter, async (req, res) => {
   const parsed = registerUserSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.flatten() });
@@ -122,7 +123,7 @@ router.post("/register", async (req, res) => {
   });
 });
 
-router.post("/register-municipality", async (req, res) => {
+router.post("/register-municipality", registerLimiter, async (req, res) => {
   const parsed = registerMunicipalitySchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.flatten() });
@@ -162,7 +163,7 @@ router.post("/register-municipality", async (req, res) => {
 // Companies self-register and pick an existing, already-registered municipality to
 // post under. There's no approval step from the municipality — see the README for
 // the tradeoff this implies (anyone can claim affiliation with a real municipality).
-router.post("/register-company", async (req, res) => {
+router.post("/register-company", registerLimiter, async (req, res) => {
   const parsed = registerCompanySchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.flatten() });
@@ -204,7 +205,7 @@ router.post("/register-company", async (req, res) => {
   });
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", loginLimiter, async (req, res) => {
   const parsed = loginSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.flatten() });

@@ -16,10 +16,14 @@ import { seedIfEmpty } from "./seed";
 const app = express();
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
 
-// Render (and most PaaS hosts) sit behind a reverse proxy, so without this
-// req.ip would always be the proxy's address instead of the real client's —
-// this is needed for the IP-based nationality suggestion (see geoLookup.ts).
-app.set("trust proxy", true);
+// Render sits behind one reverse proxy, so without this req.ip would always
+// be the proxy's address instead of the real client's — needed for the
+// IP-based nationality suggestion (geoLookup.ts) and per-IP rate limits
+// (middleware/rateLimit.ts). Trust exactly one hop rather than `true`:
+// trusting every hop would let a client fake its IP with an X-Forwarded-For
+// header and dodge the rate limits. Override with TRUST_PROXY_HOPS if the
+// deployment adds another proxy (e.g. a CDN) in front.
+app.set("trust proxy", Number(process.env.TRUST_PROXY_HOPS ?? 1));
 
 app.use(cors());
 app.use(express.json());

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma";
+import { inquiryLimiter } from "../middleware/rateLimit";
 
 const router = Router();
 
@@ -11,7 +12,7 @@ const createSchema = z.object({
 });
 
 // Public contact form submission — no login required.
-router.post("/", async (req, res) => {
+router.post("/", inquiryLimiter, async (req, res) => {
   const parsed = createSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
 
