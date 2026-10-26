@@ -231,7 +231,10 @@
     "mockBadge": "交通信息为模拟数据",
     "accessButton": "交通方式",
     "follow": "关注",
-    "following": "已关注"
+    "following": "已关注",
+    "likeLabel": "点赞",
+    "saveLabel": "收藏（加入行程）",
+    "closeLabel": "关闭"
   },
   "reelAccessPage": {
     "back": "返回",
@@ -516,5 +519,10 @@
     "liked": "{{name}} 赞了「{{post}}」",
     "commented": "{{name}} 评论了「{{post}}」",
     "deletedUser": "已注销的用户"
+  },
+  "share": {
+    "label": "分享",
+    "copied": "已复制链接",
+    "copyManually": "请复制此链接"
   }
 }

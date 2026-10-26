@@ -5,6 +5,7 @@ import { api } from "../api/client";
 import AutoplayVideo from "../components/AutoplayVideo";
 import SchematicRouteMap from "../components/SchematicRouteMap";
 import NearbySpots from "../components/NearbySpots";
+import ShareButton from "../components/ShareButton";
 import MunicipalityStayInfo from "../components/MunicipalityStayInfo";
 import { TravelerTagChips } from "../components/TravelerTagChips";
 import TravelReportSection, { normalizeOrigin } from "../components/TravelReportSection";
@@ -315,9 +316,15 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
 
   return (
     <div className="mx-auto max-w-lg p-4 lg:max-w-3xl lg:p-8">
-      <button onClick={() => navigate(-1)} className="mb-4 text-sm text-gray-500 hover:text-gray-700">
-        ← {t("reelAccessPage.back")}
-      </button>
+      <div className="mb-4 flex items-center justify-between">
+        <button onClick={() => navigate(-1)} className="text-sm text-gray-500 hover:text-gray-700">
+          ← {t("reelAccessPage.back")}
+        </button>
+        <ShareButton
+          path={`/reels/${reel.id}/access`}
+          title={`${reel.locationName || reel.municipality.name} | ${t("brand.name")}`}
+        />
+      </div>
 
       <div className="relative mb-4 h-40 overflow-hidden rounded-lg bg-gray-900 lg:h-56">
         <AutoplayVideo src={reel.videoUrl} className="h-full w-full object-cover opacity-90" />

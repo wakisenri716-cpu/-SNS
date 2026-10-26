@@ -44,6 +44,7 @@ export default function ReelManageGrid({
             <button
               onClick={() => setEditingReel(reel)}
               title={t("reelEditor.heading")}
+              aria-label={t("reelEditor.heading")}
               className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200"
             >
               ✏️

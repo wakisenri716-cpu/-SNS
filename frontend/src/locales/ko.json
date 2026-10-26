@@ -231,7 +231,10 @@
     "mockBadge": "교통 정보는 임시 데이터입니다",
     "accessButton": "접근 방법",
     "follow": "팔로우",
-    "following": "팔로잉"
+    "following": "팔로잉",
+    "likeLabel": "좋아요",
+    "saveLabel": "저장 (일정에 추가)",
+    "closeLabel": "닫기"
   },
   "reelAccessPage": {
     "back": "뒤로",
@@ -516,5 +519,10 @@
     "liked": "{{name}}님이 「{{post}}」에 좋아요를 눌렀습니다",
     "commented": "{{name}}님이 「{{post}}」에 댓글을 달았습니다",
     "deletedUser": "탈퇴한 사용자"
+  },
+  "share": {
+    "label": "공유",
+    "copied": "링크를 복사했습니다",
+    "copyManually": "이 링크를 복사해 주세요"
   }
 }

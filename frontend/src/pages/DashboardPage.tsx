@@ -393,6 +393,7 @@ function PostsGrid({
           <button
             onClick={() => onEdit(reel)}
             title={t("reelEditor.heading")}
+            aria-label={t("reelEditor.heading")}
             className="absolute left-1 top-1 rounded-full bg-black/60 px-2 py-1 text-xs text-white md:opacity-0 md:group-hover:opacity-100"
           >
             ✏️

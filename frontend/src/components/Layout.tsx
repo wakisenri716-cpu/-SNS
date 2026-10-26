@@ -91,6 +91,7 @@ function MenuContent({ unreadCount }: { unreadCount: number }) {
               <NavLink
                 to="/settings"
                 title={t("nav.settings")}
+                aria-label={t("nav.settings")}
                 className={({ isActive }) =>
                   `flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-base ${
                     isActive ? "bg-teal-600 text-white" : "text-gray-500 hover:bg-gray-100"
@@ -118,6 +119,7 @@ function MenuContent({ unreadCount }: { unreadCount: number }) {
             <NavLink
               to="/settings"
               title={t("nav.settings")}
+              aria-label={t("nav.settings")}
               className={({ isActive }) =>
                 `flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-base ${
                   isActive ? "bg-teal-600 text-white" : "text-gray-500 hover:bg-gray-100"

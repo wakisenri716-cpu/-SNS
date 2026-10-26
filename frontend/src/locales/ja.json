@@ -231,7 +231,10 @@
     "mockBadge": "交通情報は仮データ",
     "accessButton": "アクセス",
     "follow": "フォロー",
-    "following": "フォロー中"
+    "following": "フォロー中",
+    "likeLabel": "いいね",
+    "saveLabel": "保存（しおりに追加）",
+    "closeLabel": "閉じる"
   },
   "reelAccessPage": {
     "back": "戻る",
@@ -516,5 +519,10 @@
     "liked": "{{name}}さんが「{{post}}」にいいねしました",
     "commented": "{{name}}さんが「{{post}}」にコメントしました",
     "deletedUser": "退会したユーザー"
+  },
+  "share": {
+    "label": "共有",
+    "copied": "リンクをコピーしました",
+    "copyManually": "このリンクをコピーしてください"
   }
 }

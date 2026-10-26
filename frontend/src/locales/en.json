@@ -231,7 +231,10 @@
     "mockBadge": "Transit info is mock data",
     "accessButton": "Access",
     "follow": "Follow",
-    "following": "Following"
+    "following": "Following",
+    "likeLabel": "Like",
+    "saveLabel": "Save (add to itinerary)",
+    "closeLabel": "Close"
   },
   "reelAccessPage": {
     "back": "Back",
@@ -518,5 +521,10 @@
     "liked": "{{name}} liked “{{post}}”",
     "commented": "{{name}} commented on “{{post}}”",
     "deletedUser": "A deleted user"
+  },
+  "share": {
+    "label": "Share",
+    "copied": "Link copied",
+    "copyManually": "Copy this link"
   }
 }

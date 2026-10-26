@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../auth/AuthContext";
 import AutoplayVideo from "./AutoplayVideo";
 import CommentsSheet from "./CommentsSheet";
+import ShareButton from "./ShareButton";
 import { TravelerTagChips } from "./TravelerTagChips";
 import type { Reel } from "../types";
 
@@ -49,6 +50,7 @@ function ReelOverlayInfo({
         </Link>
         <button
           onClick={() => onToggleFollow(reel)}
+          aria-pressed={poster.isFollowing}
           className={`pointer-events-auto shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${
             poster.isFollowing ? "bg-white/20 text-white" : "bg-white text-gray-900"
           }`}
@@ -83,7 +85,13 @@ function ReelOverlayInfo({
           </Link>
         )}
         <div className="pointer-events-auto mt-2 flex items-center gap-4">
-          <button onClick={() => onToggleLike(reel)} className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => onToggleLike(reel)}
+            aria-label={t("reelViewer.likeLabel")}
+            aria-pressed={reel.likedByMe}
+            className="flex items-center gap-1.5"
+          >
             <span className={`text-xl ${reel.likedByMe ? "text-red-500" : "text-white"}`}>
               {reel.likedByMe ? "♥" : "♡"}
             </span>
@@ -98,7 +106,18 @@ function ReelOverlayInfo({
             <span className="text-xl text-white">💬</span>
             <span className="text-sm text-white">{reel.commentCount}</span>
           </button>
-          <button onClick={() => onToggleSave(reel)} className="ml-auto flex items-center gap-1.5">
+          <ShareButton
+            path={`/reels/${reel.id}/access`}
+            title={`${reel.locationName || reel.municipality.name} | ${t("brand.name")}`}
+            variant="dark"
+          />
+          <button
+            type="button"
+            onClick={() => onToggleSave(reel)}
+            aria-label={t("reelViewer.saveLabel")}
+            aria-pressed={reel.savedByMe}
+            className="ml-auto flex items-center gap-1.5"
+          >
             <span className={`text-xl ${reel.savedByMe ? "text-yellow-400" : "text-white"}`}>
               {reel.savedByMe ? "🔖" : "📑"}
             </span>
@@ -130,6 +149,7 @@ export default function ReelFullscreenViewer({
   onToggleFollow: (reel: Reel) => void;
   onCommentCountChange: (reelId: string, count: number) => void;
 }) {
+  const { t } = useTranslation();
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [commentsReelId, setCommentsReelId] = useState<string | null>(null);
 
@@ -143,6 +163,7 @@ export default function ReelFullscreenViewer({
     <div className="fixed inset-0 z-50 bg-black">
       <button
         onClick={onClose}
+        aria-label={t("reelViewer.closeLabel")}
         className="fixed right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70"
       >
         ✕
