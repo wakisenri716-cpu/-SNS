@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
@@ -13,10 +13,13 @@ const CATEGORY_TABS = ["all", ...REEL_CATEGORIES] as const;
 const SPECIAL_TABS = ["saved", "following"] as const;
 type Tab = (typeof CATEGORY_TABS)[number] | (typeof SPECIAL_TABS)[number];
 
-function feedRequest(tab: Tab) {
+// saved/following return everything at once; the main feed is paged by cursor.
+function feedRequest(tab: Tab, cursor?: string) {
   if (tab === "saved") return api.get("/reels/saved");
   if (tab === "following") return api.get("/reels/following");
-  return api.get("/reels", { params: tab === "all" ? {} : { category: tab } });
+  return api.get("/reels", {
+    params: { ...(tab === "all" ? {} : { category: tab }), ...(cursor ? { cursor } : {}) },
+  });
 }
 
 export default function FeedPage() {
@@ -27,16 +30,50 @@ export default function FeedPage() {
   const [loading, setLoading] = useState(true);
   const [openReelId, setOpenReelId] = useState<string | null>(null);
   const [personalized, setPersonalized] = useState(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  // Bumped on every tab/login change so responses for a previous list are dropped.
+  const listVersion = useRef(0);
 
   useEffect(() => {
+    const version = ++listVersion.current;
     setLoading(true);
+    setNextCursor(null);
     feedRequest(tab)
       .then(({ data }) => {
+        if (version !== listVersion.current) return;
         setReels(data.items);
         setPersonalized(!!data.personalized);
+        setNextCursor(data.nextCursor ?? null);
       })
-      .finally(() => setLoading(false));
+      .finally(() => version === listVersion.current && setLoading(false));
   }, [token, tab]);
+
+  // Infinite scroll: fetch the next page when the sentinel below the grid
+  // comes near the viewport.
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !nextCursor || loadingMore) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0].isIntersecting) return;
+        observer.disconnect();
+        const version = listVersion.current;
+        setLoadingMore(true);
+        feedRequest(tab, nextCursor)
+          .then(({ data }) => {
+            if (version !== listVersion.current) return;
+            setReels((prev) => [...prev, ...data.items.filter((r: Reel) => !prev.some((p) => p.id === r.id))]);
+            setNextCursor(data.nextCursor ?? null);
+          })
+          .finally(() => setLoadingMore(false));
+      },
+      { rootMargin: "400px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [nextCursor, loadingMore, tab]);
 
   // Keep savedByMe in sync when a save/unsave happens elsewhere (e.g. removing
   // a stop from the しおり), so the 🔖 button doesn't act on a stale state.
@@ -153,6 +190,8 @@ export default function FeedPage() {
           ))}
         </div>
       )}
+      <div ref={sentinelRef} />
+      {loadingMore && <p className="p-4 text-center text-xs text-gray-400">{t("feed.loading")}</p>}
 
       {openReelId && (
         <ReelFullscreenViewer
