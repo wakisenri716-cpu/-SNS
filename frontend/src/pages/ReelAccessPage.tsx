@@ -19,8 +19,9 @@ import {
   type ModeEstimate,
 } from "../lib/accessModeEstimate";
 import type { Reel, TransitSuggestion, TravelReportGroup, TravelReports } from "../types";
+import ModeIcon from "../components/ModeIcon";
+import { ChevronLeft } from "lucide-react";
 
-const MODE_ICON: Record<AccessMode, string> = { train: "🚃", bus: "🚌", car: "🚗", taxi: "🚕", walk: "🚶" };
 const MODE_LABEL_KEY: Record<AccessMode, string> = {
   train: "accessPlanner.modeTrain",
   bus: "accessPlanner.modeBus",
@@ -144,17 +145,17 @@ function ModeCard({
 
   return (
     <div
-      className={`relative rounded-lg border bg-white p-4 ${recommended ? "border-brand-600 md:col-span-2" : "border-gray-200"}`}
+      className={`relative rounded-lg border bg-white p-4 ${recommended ? "border-gray-900 md:col-span-2" : "border-gray-200"}`}
     >
       {recommended && (
-        <span className="absolute left-0 top-0 rounded-br-lg rounded-tl-lg bg-brand-600 px-2.5 py-0.5 text-[10px] font-bold text-white">
+        <span className="absolute left-0 top-0 rounded-br-lg rounded-tl-lg bg-gray-900 px-2.5 py-0.5 text-[10px] font-bold text-white">
           {t("reelAccessPage.recommendedBadge")}
         </span>
       )}
       <div className={`flex flex-wrap items-start justify-between gap-x-3 gap-y-2 ${recommended ? "mt-3" : ""}`}>
         <div className="flex min-w-0 items-center gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-50 text-xl">
-            {MODE_ICON[estimate.mode]}
+            <ModeIcon mode={estimate.mode} className="h-5 w-5 text-gray-700" />
           </div>
           <div className="min-w-0">
             <p className="text-sm font-bold text-gray-900">{t(MODE_LABEL_KEY[estimate.mode])}</p>
@@ -199,7 +200,6 @@ function ModeCard({
 
       {reported && (
         <p className="mt-2.5 rounded-xl bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
-          👥{" "}
           {t("travelReport.cardLine", {
             origin: reported.originLabel,
             minutes: reported.averageMin,
@@ -217,8 +217,8 @@ function ModeCard({
       {expanded && (
         <div className="mt-3 border-t border-gray-100 pt-3 text-xs text-gray-500">
           <p>
-            🚉 {t("accessPlanner.departure", { time: formatDateTime(departureAt.toISOString(), i18n.language) })}
-            {" · "}🏁 {t("accessPlanner.arrival", { time: formatDateTime(arrival.toISOString(), i18n.language) })}
+            {t("accessPlanner.departure", { time: formatDateTime(departureAt.toISOString(), i18n.language) })}
+            {" · "}{t("accessPlanner.arrival", { time: formatDateTime(arrival.toISOString(), i18n.language) })}
           </p>
           <p className="mt-1.5 text-gray-400">{t("accessPlanner.fareDisclaimer")}</p>
           <p className="text-gray-400">{t("accessPlanner.noTimetableDisclaimer")}</p>
@@ -229,7 +229,7 @@ function ModeCard({
   );
 }
 
-// Redesigned "🧭 アクセス" destination: a full page (not the small popover
+// Redesigned "アクセス" destination: a full page (not the small popover
 // this replaced) that lets a visitor set trip conditions (group size,
 // accessibility, own car) and compares train/bus/car/taxi/walk side by side.
 // Only one row per search is ever backed by the real Directions API result;
@@ -317,8 +317,8 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
   return (
     <div className="mx-auto max-w-lg p-4 lg:max-w-3xl lg:p-8">
       <div className="mb-4 flex items-center justify-between">
-        <button onClick={() => navigate(-1)} className="text-sm text-gray-500 hover:text-gray-700">
-          ← {t("reelAccessPage.back")}
+        <button onClick={() => navigate(-1)} className="inline-flex items-center gap-0.5 text-sm text-gray-500 hover:text-gray-700">
+          <ChevronLeft className="h-4 w-4" /> {t("reelAccessPage.back")}
         </button>
         <ShareButton
           path={`/reels/${reel.id}/access`}
@@ -346,12 +346,12 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
       <div className="mb-4 flex items-center justify-between gap-2 border-b border-gray-200 pb-3">
         <h1 className="text-lg font-bold text-gray-900">{t("reelAccessPage.heading")}</h1>
         <span className="flex items-center gap-1.5 text-xs font-medium text-gray-400">
-          <span className="h-1.5 w-1.5 rounded-full bg-brand-600" />
+          <span className="h-1.5 w-1.5 rounded-full bg-gray-900" />
           {t("reelAccessPage.basis")}
         </span>
       </div>
 
-      <div className="mb-4 rounded-2xl border border-gray-200/80 bg-white shadow-sm p-4 lg:p-5">
+      <div className="mb-4 rounded-2xl border border-gray-200/80 bg-white p-4 lg:p-5">
         <p className="text-sm font-bold text-gray-900">{t("reelAccessPage.conditionsHeading")}</p>
         <p className="mt-0.5 text-xs text-gray-400">{t("reelAccessPage.conditionsSub")}</p>
 
@@ -367,7 +367,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
               value={origin}
               onChange={(e) => setOrigin(e.target.value)}
               placeholder={t("accessPlanner.originPlaceholder")}
-              className="w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
+              className="w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -376,13 +376,13 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
               type="datetime-local"
               value={departureLocal}
               onChange={(e) => setDepartureLocal(e.target.value)}
-              className="rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
+              className="rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
             />
           </div>
           <button
             type="submit"
             disabled={loading || !origin.trim()}
-            className="shrink-0 rounded-full bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+            className="shrink-0 rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
           >
             {loading ? t("accessPlanner.searching") : t("accessPlanner.search")}
           </button>

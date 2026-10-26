@@ -19,6 +19,7 @@ import {
   type LucideProps,
 } from "lucide-react";
 import { useAuth } from "../auth/AuthContext";
+import Avatar from "./Avatar";
 import JazibaLogo from "./JazibaLogo";
 import ItineraryRail, { useIsTraveler } from "./ItineraryRail";
 import { useUnreadNotificationCount } from "../lib/unreadNotifications";
@@ -36,7 +37,7 @@ function Badge({ count, className = "" }: { count: number; className?: string })
   if (count <= 0) return null;
   return (
     <span
-      className={`min-w-5 rounded-full bg-brand-600 px-1.5 text-center text-[11px] font-bold leading-5 text-white ${className}`}
+      className={`min-w-5 rounded-full bg-[#ff3040] px-1.5 text-center text-[11px] font-bold leading-5 text-white ${className}`}
     >
       {count > 99 ? "99+" : count}
     </span>
@@ -48,14 +49,14 @@ function SideNavItem({ to, label, icon: IconC, badge = 0, className = "" }: NavE
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] transition-colors ${
-          isActive ? "bg-brand-50 font-bold text-brand-700" : "font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+        `group flex items-center gap-4 rounded-lg p-3 text-[15px] text-gray-900 transition-colors hover:bg-gray-100 ${
+          isActive ? "font-bold" : "font-normal"
         } ${className}`
       }
     >
       {({ isActive }) => (
         <>
-          <IconC className="h-5 w-5 shrink-0" strokeWidth={isActive ? 2.5 : 2} />
+          <IconC className="h-6 w-6 shrink-0 transition-transform group-hover:scale-105" strokeWidth={isActive ? 2.6 : 1.8} />
           <span className="flex-1">{label}</span>
           <Badge count={badge} />
         </>
@@ -88,7 +89,7 @@ function usePrimaryNav(unreadCount: number): NavEntry[] {
   ];
 }
 
-// Less-used links: the lower part of the sidebar, and the ☰ drawer on phones.
+// Less-used links: the lower part of the sidebar, and the menu drawer on phones.
 function SecondaryNav() {
   const { user, municipality, company, logout } = useAuth();
   const { t } = useTranslation();
@@ -105,9 +106,9 @@ function SecondaryNav() {
         <button
           type="button"
           onClick={() => logout()}
-          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+          className="flex items-center gap-4 rounded-lg p-3 text-[15px] text-gray-900 hover:bg-gray-100"
         >
-          <LogOut className="h-5 w-5" />
+          <LogOut className="h-6 w-6" strokeWidth={1.8} />
           {t("nav.logout")}
         </button>
       )}
@@ -122,7 +123,7 @@ function AccountChip() {
     return (
       <NavLink
         to="/login"
-        className="block rounded-full bg-gray-900 px-4 py-2.5 text-center text-sm font-bold text-white hover:bg-gray-800"
+        className="block rounded-lg bg-[#0095f6] px-4 py-2 text-center text-sm font-semibold text-white hover:bg-[#1877f2]"
       >
         {t("nav.login")}
       </NavLink>
@@ -135,11 +136,9 @@ function AccountChip() {
       : user.name;
   const avatar = municipality?.avatarUrl ?? company?.avatarUrl ?? user.avatarUrl;
   return (
-    <div className="flex items-center gap-3 rounded-2xl bg-gray-50 p-2.5">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-400 to-orange-300 text-sm font-bold text-white">
-        {avatar ? <img src={avatar} alt="" className="h-full w-full object-cover" /> : name.slice(0, 1)}
-      </span>
-      <span className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-800">{name}</span>
+    <div className="flex min-w-0 items-center gap-3 px-3 py-2">
+      <Avatar name={name} src={avatar} size={28} />
+      <span className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-900">{name}</span>
     </div>
   );
 }
@@ -166,23 +165,23 @@ export default function Layout() {
   return (
     <div className="flex min-h-screen w-full flex-col text-gray-900 md:flex-row">
       {/* Phones: frosted top bar + bottom tab bar (below). */}
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-gray-200/70 bg-white/80 px-4 py-2.5 backdrop-blur-xl md:hidden">
+      <header className="sticky top-0 z-40 flex h-[53px] items-center justify-between border-b border-gray-200 bg-white px-4 md:hidden">
         <NavLink to="/" aria-label={t("brand.name")}>
-          <JazibaLogo className="h-7 w-auto" />
+          <JazibaLogo className="h-8 w-auto" />
         </NavLink>
         <button
           type="button"
           onClick={() => setMenuOpen(true)}
           aria-label={t("nav.openMenu")}
           aria-expanded={menuOpen}
-          className="flex h-10 w-10 items-center justify-center rounded-full text-gray-700 hover:bg-gray-100"
+          className="-mr-2 flex h-10 w-10 items-center justify-center text-gray-900"
         >
-          <Menu className="h-6 w-6" />
+          <Menu className="h-6 w-6" strokeWidth={1.8} />
         </button>
       </header>
 
-      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-gray-200/70 bg-white px-3 py-6 md:flex lg:w-64">
-        <NavLink to="/" className="mb-8 flex items-center px-3" aria-label={t("brand.name")}>
+      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-gray-200 bg-white px-3 pb-5 pt-8 md:flex lg:w-[244px]">
+        <NavLink to="/" className="mb-6 flex items-center px-3 pb-4" aria-label={t("brand.name")}>
           <JazibaLogo className="h-9 w-auto" />
         </NavLink>
         <nav className="flex flex-col gap-1">
@@ -199,15 +198,15 @@ export default function Layout() {
 
       {menuOpen && (
         <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true">
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setMenuOpen(false)} />
-          <div className="absolute inset-y-0 right-0 flex w-72 max-w-[85%] flex-col gap-4 overflow-y-auto rounded-l-3xl bg-white px-3 py-5 shadow-2xl">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setMenuOpen(false)} />
+          <div className="absolute inset-y-0 right-0 flex w-72 max-w-[85%] flex-col gap-4 overflow-y-auto bg-white px-3 py-5">
             <div className="flex items-center justify-between px-2">
               <AccountChip />
               <button
                 type="button"
                 onClick={() => setMenuOpen(false)}
                 aria-label={t("nav.closeMenu")}
-                className="ml-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100"
+                className="ml-2 flex h-9 w-9 shrink-0 items-center justify-center text-gray-900"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -218,7 +217,7 @@ export default function Layout() {
       )}
 
       {/* pb on phones keeps content clear of the bottom tab bar. */}
-      <main className="min-w-0 flex-1 pb-20 md:pb-0">
+      <main className="min-w-0 flex-1 pb-16 md:pb-0">
         <Suspense fallback={<p className="p-10 text-center text-sm text-gray-400">{t("feed.loading")}</p>}>
           <Outlet />
         </Suspense>
@@ -228,23 +227,19 @@ export default function Layout() {
 
       <nav
         aria-label={t("nav.tabBar")}
-        className="fixed inset-x-0 bottom-0 z-40 flex border-t border-gray-200/70 bg-white/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 flex border-t border-gray-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden"
       >
         {primary.map(({ to, label, icon: IconC, badge = 0 }) => (
           <NavLink
             key={to}
             to={to}
             end={to === "/"}
-            className={({ isActive }) =>
-              `relative flex flex-1 flex-col items-center gap-0.5 pb-1.5 pt-2 text-[10px] font-medium ${
-                isActive ? "text-brand-600" : "text-gray-500"
-              }`
-            }
+            aria-label={label}
+            className="relative flex h-12 flex-1 items-center justify-center text-gray-900"
           >
             {({ isActive }) => (
               <>
-                <IconC className="h-6 w-6" strokeWidth={isActive ? 2.5 : 1.8} />
-                <span className="max-w-full truncate px-1">{label}</span>
+                <IconC className="h-[26px] w-[26px]" strokeWidth={isActive ? 2.6 : 1.7} />
                 {badge > 0 && <Badge count={badge} className="absolute left-1/2 top-1 ml-1.5" />}
               </>
             )}

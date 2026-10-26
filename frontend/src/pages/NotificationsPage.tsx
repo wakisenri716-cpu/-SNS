@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { notifyNotificationsRead } from "../lib/unreadNotifications";
+import { Heart, MessageCircle } from "lucide-react";
 
 interface NotificationItem {
   id: string;
@@ -35,7 +36,7 @@ export default function NotificationsPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 lg:py-8">
-      <h1 className="text-lg font-bold text-gray-900">🔔 {t("notifications.heading")}</h1>
+      <h1 className="text-xl font-bold text-gray-900">{t("notifications.heading")}</h1>
       <p className="mt-1 text-xs text-gray-400">{t("notifications.subtitle")}</p>
 
       {items == null ? (
@@ -45,17 +46,22 @@ export default function NotificationsPage() {
           {t("notifications.empty")}
         </p>
       ) : (
-        <ul className="mt-4 flex flex-col gap-2">
+        <ul className="mt-2 flex flex-col">
           {items.map((n) => (
             <li key={n.id}>
               <Link
                 to={`/reels/${n.reel.id}/access`}
-                className={`block rounded-xl border p-3 hover:border-brand-300 ${
-                  n.read ? "border-gray-200 bg-white" : "border-brand-200 bg-brand-50"
-                }`}
+                className="flex gap-3 border-b border-gray-100 py-3.5 hover:bg-gray-50"
               >
-                <p className="text-sm text-gray-800">
-                  {n.type === "like" ? "❤️ " : "💬 "}
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100">
+                  {n.type === "like" ? (
+                    <Heart className="h-5 w-5 fill-[#ff3040] text-[#ff3040]" />
+                  ) : (
+                    <MessageCircle className="h-5 w-5 text-gray-900" />
+                  )}
+                </span>
+                <span className="min-w-0 flex-1">
+                <p className={`text-sm text-gray-900 ${n.read ? "" : "font-semibold"}`}>
                   {t(n.type === "like" ? "notifications.liked" : "notifications.commented", {
                     name: n.actorName ?? t("notifications.deletedUser"),
                     post: n.reel.locationName || n.reel.caption.slice(0, 20),
@@ -65,6 +71,8 @@ export default function NotificationsPage() {
                   <p className="mt-1 line-clamp-2 whitespace-pre-wrap text-xs text-gray-600">「{n.commentBody}」</p>
                 )}
                 <p className="mt-1 text-[11px] text-gray-400">{new Date(n.createdAt).toLocaleString(i18n.language)}</p>
+                </span>
+                {!n.read && <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#ff3040]" aria-hidden />}
               </Link>
             </li>
           ))}

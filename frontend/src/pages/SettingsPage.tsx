@@ -38,7 +38,7 @@ function AvatarSection() {
   return (
     <section className="border-b border-gray-200 p-4 lg:p-6">
       <h2 className="mb-3 text-sm font-semibold text-gray-600">{t("settings.avatarHeading")}</h2>
-      <label className="group relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-orange-300 text-2xl font-bold text-white ring-1 ring-gray-200">
+      <label className="group relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-gray-200 to-gray-300 text-2xl font-bold text-white ring-1 ring-gray-200">
         {avatarUrl ? (
           <img src={avatarUrl} className="h-full w-full rounded-full object-cover" />
         ) : (
@@ -103,7 +103,7 @@ function ProfileSection() {
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
+            className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
           />
         </label>
         <label className="text-xs font-medium text-gray-500">
@@ -112,7 +112,7 @@ function ProfileSection() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
+            className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
           />
         </label>
         {user?.role === "USER" && (
@@ -123,7 +123,7 @@ function ProfileSection() {
               <select
                 value={nationality}
                 onChange={(e) => setNationality(e.target.value)}
-                className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
+                className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
               >
                 <option value="">{t("registerUser.nationalityPlaceholder")}</option>
                 {NATIONALITIES.map((n) => (
@@ -141,7 +141,7 @@ function ProfileSection() {
                 max={new Date().getFullYear()}
                 value={birthYear}
                 onChange={(e) => setBirthYear(e.target.value)}
-                className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
+                className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
               />
             </label>
           </>
@@ -149,11 +149,11 @@ function ProfileSection() {
         <button
           onClick={save}
           disabled={saving}
-          className="w-fit rounded-full bg-brand-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+          className="w-fit rounded-full bg-gray-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
         >
           {t("settings.save")}
         </button>
-        {message && <p className="text-xs text-brand-600">{message}</p>}
+        {message && <p className="text-xs text-gray-900">{message}</p>}
         {error && <p className="text-xs text-red-500">{error}</p>}
       </div>
     </section>
@@ -181,7 +181,7 @@ function ToggleRow({
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="mt-1 h-4 w-4 shrink-0 accent-brand-600"
+        className="mt-1 h-4 w-4 shrink-0 accent-gray-900"
       />
     </label>
   );
@@ -451,7 +451,7 @@ function PasswordSection() {
             type="password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
-            className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
+            className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
           />
         </label>
         <label className="text-xs font-medium text-gray-500">
@@ -460,7 +460,7 @@ function PasswordSection() {
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
+            className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
           />
         </label>
         <label className="text-xs font-medium text-gray-500">
@@ -469,17 +469,17 @@ function PasswordSection() {
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
+            className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
           />
         </label>
         <button
           onClick={save}
           disabled={saving || !currentPassword || !newPassword}
-          className="w-fit rounded-full bg-brand-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+          className="w-fit rounded-full bg-gray-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
         >
           {t("settings.changePassword")}
         </button>
-        {message && <p className="text-xs text-brand-600">{message}</p>}
+        {message && <p className="text-xs text-gray-900">{message}</p>}
         {error && <p className="text-xs text-red-500">{error}</p>}
       </div>
     </section>
@@ -561,7 +561,7 @@ export default function SettingsPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="mx-auto w-full max-w-2xl overflow-hidden border-gray-200 bg-white sm:my-6 sm:rounded-3xl sm:border shadow-sm lg:max-w-3xl">
+    <div className="mx-auto w-full max-w-2xl overflow-hidden border-gray-200 bg-white sm:my-6 sm:rounded-xl sm:border lg:max-w-3xl">
       <div className="border-b border-gray-200 p-4 lg:p-6">
         <h1 className="text-xl font-bold text-gray-900">{t("settings.title")}</h1>
         <p className="mt-1 text-sm text-gray-500">
@@ -593,11 +593,11 @@ export default function SettingsPage() {
       <div className="flex flex-col items-start gap-2 border-b border-gray-200 p-4 lg:p-6">
         <button
           onClick={() => navigate("/privacy-policy")}
-          className="text-sm font-medium text-brand-700 hover:underline"
+          className="text-sm font-medium text-gray-900 hover:underline"
         >
           {t("settings.privacyPolicyLink")}
         </button>
-        <button onClick={() => navigate("/contact")} className="text-sm font-medium text-brand-700 hover:underline">
+        <button onClick={() => navigate("/contact")} className="text-sm font-medium text-gray-900 hover:underline">
           {t("settings.contactLink")}
         </button>
       </div>
@@ -613,7 +613,7 @@ export default function SettingsPage() {
         ) : (
           <button
             onClick={() => navigate("/login")}
-            className="rounded-full bg-brand-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
+            className="rounded-full bg-gray-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-gray-800"
           >
             {t("nav.login")}
           </button>

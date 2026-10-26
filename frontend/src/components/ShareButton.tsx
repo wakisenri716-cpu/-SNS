@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Share2 } from "lucide-react";
+import { Send, Share2 } from "lucide-react";
 
 // Shares a link to a post's page: the phone's share sheet (LINE, X, ...)
 // where the browser supports it, otherwise copies the link to the clipboard.
@@ -11,7 +11,7 @@ export default function ShareButton({
 }: {
   path: string;
   title: string;
-  variant?: "light" | "rail";
+  variant?: "light" | "rail" | "icon";
 }) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
@@ -36,11 +36,24 @@ export default function ShareButton({
     }
   }
 
+  if (variant === "icon") {
+    return (
+      <button type="button" onClick={share} aria-label={copied ? t("share.copied") : t("share.label")} className="relative">
+        <Send className="h-[26px] w-[26px] text-gray-900 hover:text-gray-500" strokeWidth={1.8} />
+        {copied && (
+          <span className="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-[11px] text-white">
+            {t("share.copied")}
+          </span>
+        )}
+      </button>
+    );
+  }
+
   if (variant === "rail") {
     return (
       <button type="button" onClick={share} aria-label={t("share.label")} className="flex flex-col items-center gap-1 text-white">
-        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-black/35 backdrop-blur-md transition active:scale-90">
-          <Share2 className="h-6 w-6" />
+        <span className="flex h-9 w-9 items-center justify-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] transition active:scale-90">
+          <Send className="h-7 w-7" strokeWidth={1.8} />
         </span>
         <span className="text-xs font-semibold drop-shadow">{copied ? t("share.copiedShort") : t("share.label")}</span>
       </button>

@@ -5,7 +5,7 @@ import { TravelerTagPicker } from "./TravelerTagChips";
 import { REEL_CATEGORIES, type Reel, type ReelCategory, type TravelerTag } from "../types";
 
 const inputClass =
-  "w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-brand-500";
+  "w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-gray-400";
 
 // Modal for editing an existing post's text, category, place and tags
 // (PUT /reels/:id). The video itself can't be replaced — delete and repost.
@@ -108,7 +108,7 @@ export default function ReelEditor({
           <button
             type="submit"
             disabled={saving}
-            className="rounded-full bg-brand-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+            className="rounded-full bg-gray-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
           >
             {t("reelEditor.save")}
           </button>

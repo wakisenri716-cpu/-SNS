@@ -1,14 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { TRAVELER_TAGS, type TravelerTag } from "../types";
 
-export const TRAVELER_TAG_ICON: Record<TravelerTag, string> = {
-  barrierFree: "♿",
-  familyFriendly: "👨‍👩‍👧",
-  couples: "💑",
-  friends: "👫",
-  multilingual: "🌐",
-};
-
 // Read-only chips showing who a post's spot suits. `dark` is for use over video.
 export function TravelerTagChips({ tags, dark = false }: { tags: TravelerTag[]; dark?: boolean }) {
   const { t } = useTranslation();
@@ -18,11 +10,11 @@ export function TravelerTagChips({ tags, dark = false }: { tags: TravelerTag[]; 
       {tags.map((tag) => (
         <span
           key={tag}
-          className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${
-            dark ? "bg-white/20 text-white backdrop-blur" : "bg-gray-100 text-gray-700"
+          className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+            dark ? "bg-white/15 text-white ring-1 ring-white/30" : "text-gray-700 ring-1 ring-gray-300"
           }`}
         >
-          {TRAVELER_TAG_ICON[tag]} {t(`travelerTag.${tag}`)}
+          {t(`travelerTag.${tag}`)}
         </span>
       ))}
     </div>
@@ -52,7 +44,7 @@ export function TravelerTagPicker({
               on ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
-            {TRAVELER_TAG_ICON[tag]} {t(`travelerTag.${tag}`)}
+            {t(`travelerTag.${tag}`)}
           </button>
         );
       })}

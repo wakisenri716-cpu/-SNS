@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import type { Comment } from "../types";
+import { X } from "lucide-react";
 
 type CommentRow = Comment & { canDelete: boolean };
 
@@ -82,7 +83,7 @@ export default function CommentsSheet({
       >
         <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
           <h2 className="text-sm font-bold text-gray-900">
-            💬 {t("comments.heading")}
+            {t("comments.heading")}
             {items && <span className="ml-1 font-normal text-gray-400">{items.length}</span>}
           </h2>
           <button
@@ -91,7 +92,7 @@ export default function CommentsSheet({
             aria-label={t("comments.close")}
             className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100"
           >
-            ✕
+            <X className="h-5 w-5" />
           </button>
         </div>
 
@@ -128,7 +129,7 @@ export default function CommentsSheet({
           {!enabled ? (
             <p className="text-xs text-gray-400">{t("comments.disabled")}</p>
           ) : !user ? (
-            <Link to="/login" className="text-xs font-semibold text-brand-600 hover:underline">
+            <Link to="/login" className="text-xs font-semibold text-gray-900 hover:underline">
               {t("comments.loginCta")}
             </Link>
           ) : (
@@ -139,12 +140,12 @@ export default function CommentsSheet({
                 maxLength={500}
                 rows={2}
                 placeholder={t("comments.placeholder")}
-                className="min-w-0 flex-1 resize-none rounded-xl border border-gray-300 p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
+                className="min-w-0 flex-1 resize-none rounded-xl border border-gray-300 p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
               />
               <button
                 type="submit"
                 disabled={sending || !body.trim()}
-                className="shrink-0 rounded-full bg-brand-600 px-3 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+                className="shrink-0 rounded-full bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
               >
                 {t("comments.submit")}
               </button>

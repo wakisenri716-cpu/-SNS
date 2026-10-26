@@ -12,7 +12,7 @@ const TAG_SEARCH_POOL = 200;
 
 // Keyword search across municipalities and reel captions/place names, and/or
 // a ?tags= filter (comma-separated TRAVELER_TAGS; a post must have all of
-// them) — e.g. "♿ バリアフリー対応" alone finds every barrier-free post. Tags
+// them) — e.g. "バリアフリー対応" alone finds every barrier-free post. Tags
 // are matched in code rather than with SQL LIKE on the comma-separated
 // column, so one tag name can never accidentally match inside another.
 router.get("/", async (req, res) => {

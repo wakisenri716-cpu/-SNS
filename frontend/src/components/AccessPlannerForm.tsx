@@ -42,18 +42,18 @@ export default function AccessPlannerForm({ endpoint }: { endpoint: string }) {
           value={origin}
           onChange={(e) => setOrigin(e.target.value)}
           placeholder={t("accessPlanner.originPlaceholder")}
-          className="block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500 lg:max-w-xs"
+          className="block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400 lg:max-w-xs"
         />
         <input
           type="datetime-local"
           value={departureLocal}
           onChange={(e) => setDepartureLocal(e.target.value)}
-          className="block rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
+          className="block rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
         />
         <button
           type="submit"
           disabled={loading || !origin.trim()}
-          className="shrink-0 rounded-full bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+          className="shrink-0 rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
         >
           {loading ? t("accessPlanner.searching") : t("accessPlanner.search")}
         </button>
@@ -61,16 +61,15 @@ export default function AccessPlannerForm({ endpoint }: { endpoint: string }) {
       {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
       {result && (
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg bg-gray-50 p-3 text-sm text-gray-700">
-          <span>🚉 {t("accessPlanner.departure", { time: formatDateTime(result.departureAt, i18n.language) })}</span>
-          <span>🏁 {t("accessPlanner.arrival", { time: formatDateTime(result.arrivalAt, i18n.language) })}</span>
-          <span>🕐 {t("accessPlanner.duration", { minutes: result.totalDurationMin })}</span>
+          <span>{t("accessPlanner.departure", { time: formatDateTime(result.departureAt, i18n.language) })}</span>
+          <span>{t("accessPlanner.arrival", { time: formatDateTime(result.arrivalAt, i18n.language) })}</span>
+          <span className="font-semibold text-gray-900">{t("accessPlanner.duration", { minutes: result.totalDurationMin })}</span>
           <span>
             {result.legs
               .map((leg) => t(TRANSIT_MODE_LABEL_KEY[leg.mode] ?? "accessPlanner.modeDrive"))
               .join(t("accessPlanner.modeSeparator"))}
           </span>
           <span>
-            💴{" "}
             {result.estimatedFareYen > 0
               ? t("accessPlanner.fare", { yen: result.estimatedFareYen.toLocaleString() })
               : t("accessPlanner.fareFree")}

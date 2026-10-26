@@ -3,16 +3,16 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
+import ModeIcon from "./ModeIcon";
 import type { TravelMode, TravelReports } from "../types";
 
-const MODES: { mode: TravelMode; icon: string; labelKey: string }[] = [
-  { mode: "train", icon: "🚃", labelKey: "accessPlanner.modeTrain" },
-  { mode: "bus", icon: "🚌", labelKey: "accessPlanner.modeBus" },
-  { mode: "car", icon: "🚗", labelKey: "accessPlanner.modeDrive" },
-  { mode: "taxi", icon: "🚕", labelKey: "reelAccessPage.modeTaxi" },
-  { mode: "walk", icon: "🚶", labelKey: "accessPlanner.modeWalk" },
+const MODES: { mode: TravelMode; labelKey: string }[] = [
+  { mode: "train", labelKey: "accessPlanner.modeTrain" },
+  { mode: "bus", labelKey: "accessPlanner.modeBus" },
+  { mode: "car", labelKey: "accessPlanner.modeDrive" },
+  { mode: "taxi", labelKey: "reelAccessPage.modeTaxi" },
+  { mode: "walk", labelKey: "accessPlanner.modeWalk" },
 ];
-export const TRAVEL_MODE_ICON = Object.fromEntries(MODES.map((m) => [m.mode, m.icon])) as Record<TravelMode, string>;
 export const TRAVEL_MODE_LABEL_KEY = Object.fromEntries(MODES.map((m) => [m.mode, m.labelKey])) as Record<TravelMode, string>;
 
 // Same normalization the backend applies before storing, so a searched origin
@@ -80,8 +80,8 @@ export default function TravelReportSection({
   const summary = reports?.summary ?? [];
 
   return (
-    <div className="mt-6 rounded-2xl border border-gray-200/80 bg-white shadow-sm p-4 lg:p-5">
-      <h2 className="text-sm font-bold text-gray-900">⏱ {t("travelReport.heading")}</h2>
+    <div className="mt-6 rounded-2xl border border-gray-200/80 bg-white p-4 lg:p-5">
+      <h2 className="text-sm font-bold text-gray-900">{t("travelReport.heading")}</h2>
       <p className="mt-0.5 text-xs text-gray-400">{t("travelReport.subtitle")}</p>
 
       {summary.length > 0 ? (
@@ -89,8 +89,8 @@ export default function TravelReportSection({
           {summary.map((g) => (
             <li key={`${g.originLabel}-${g.mode}`} className="flex flex-wrap items-baseline gap-x-2 text-xs text-gray-700">
               <span className="font-semibold">{t("travelReport.fromOrigin", { origin: g.originLabel })}</span>
-              <span>
-                {TRAVEL_MODE_ICON[g.mode]} {t(TRAVEL_MODE_LABEL_KEY[g.mode])}
+              <span className="inline-flex items-center gap-1">
+                <ModeIcon mode={g.mode} className="h-3.5 w-3.5" /> {t(TRAVEL_MODE_LABEL_KEY[g.mode])}
               </span>
               <span className="font-bold tabular-nums text-gray-900">
                 {t("travelReport.average", { minutes: g.averageMin })}
@@ -111,8 +111,8 @@ export default function TravelReportSection({
           <ul className="mt-1 flex flex-col gap-0.5">
             {reports!.mine.map((m) => (
               <li key={m.mode} className="text-xs text-gray-600">
-                {t("travelReport.fromOrigin", { origin: m.originLabel })} {TRAVEL_MODE_ICON[m.mode]}{" "}
-                {t(TRAVEL_MODE_LABEL_KEY[m.mode])} {t("travelReport.mineDuration", { minutes: m.durationMin })}
+                {t("travelReport.fromOrigin", { origin: m.originLabel })} {t(TRAVEL_MODE_LABEL_KEY[m.mode])}{" "}
+                {t("travelReport.mineDuration", { minutes: m.durationMin })}
               </li>
             ))}
           </ul>
@@ -122,7 +122,7 @@ export default function TravelReportSection({
       <div className="mt-4 border-t border-gray-100 pt-4">
         {!user ? (
           <p className="text-xs text-gray-500">
-            <Link to="/login" className="font-semibold text-brand-600 hover:underline">
+            <Link to="/login" className="font-semibold text-gray-900 hover:underline">
               {t("travelReport.loginCta")}
             </Link>
           </p>
@@ -130,14 +130,14 @@ export default function TravelReportSection({
           <p className="text-xs text-gray-400">{t("travelReport.travelersOnly")}</p>
         ) : (
           <form onSubmit={submit} className="flex flex-col gap-3">
-            <p className="text-xs font-semibold text-amber-700">🪙 {t("travelReport.pointsNote")}</p>
+            <p className="text-xs font-semibold text-gray-900">{t("travelReport.pointsNote")}</p>
             <div className="flex flex-col gap-1">
               <span className="text-xs font-semibold text-gray-500">{t("travelReport.originLabel")}</span>
               <input
                 value={originValue}
                 onChange={(e) => setOrigin(e.target.value)}
                 placeholder={t("accessPlanner.originPlaceholder")}
-                className="w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
+                className="w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
               />
               <span className="text-[11px] leading-relaxed text-amber-700">{t("travelReport.originPrivacyNote")}</span>
             </div>
@@ -147,11 +147,11 @@ export default function TravelReportSection({
                   key={m.mode}
                   type="button"
                   onClick={() => setMode(m.mode)}
-                  className={`rounded-full px-3 py-1 text-xs font-medium ${
+                  className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium ${
                     mode === m.mode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
                 >
-                  {m.icon} {t(m.labelKey)}
+                  <ModeIcon mode={m.mode} className="h-3.5 w-3.5" /> {t(m.labelKey)}
                 </button>
               ))}
             </div>
@@ -163,7 +163,7 @@ export default function TravelReportSection({
                   max={23}
                   value={hours}
                   onChange={(e) => setHours(e.target.value)}
-                  className="w-16 rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
+                  className="w-16 rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
                 />
                 {t("travelReport.hours")}
               </label>
@@ -174,14 +174,14 @@ export default function TravelReportSection({
                   max={59}
                   value={minutes}
                   onChange={(e) => setMinutes(e.target.value)}
-                  className="w-16 rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
+                  className="w-16 rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
                 />
                 {t("travelReport.minutes")}
               </label>
               <button
                 type="submit"
                 disabled={saving || !normalizeOrigin(originValue) || durationMin <= 0 || durationMin > 24 * 60}
-                className="ml-auto rounded-full bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+                className="ml-auto rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
               >
                 {t("travelReport.submit")}
               </button>

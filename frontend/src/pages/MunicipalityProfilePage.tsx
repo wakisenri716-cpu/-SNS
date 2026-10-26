@@ -4,13 +4,24 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { fetchSavedReelIds, notifySavesChanged, onSavesChanged } from "../lib/savesChanged";
 import { useAuth } from "../auth/AuthContext";
-import AutoplayVideo from "../components/AutoplayVideo";
+import Avatar from "../components/Avatar";
 import ReelThumb from "../components/ReelGrid";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import AccessPlannerForm from "../components/AccessPlannerForm";
 import type { Municipality, Reel } from "../types";
+import {
+  ArrowUpRight,
+  BadgeCheck,
+  BedDouble,
+  CalendarDays,
+  Grid3x3,
+  Landmark,
+  MapPin,
+  TrainFront,
+  UtensilsCrossed,
+} from "lucide-react";
 
-const TAB_KEYS = ["tourismInfo", "accessInfo", "lodgingInfo", "restaurantInfo"] as const;
+const TAB_KEYS = ["posts", "tourismInfo", "accessInfo", "lodgingInfo", "restaurantInfo"] as const;
 
 function formatDate(iso: string, language: string) {
   return new Intl.DateTimeFormat(language, { year: "numeric", month: "long" }).format(new Date(iso));
@@ -49,14 +60,15 @@ export default function MunicipalityProfilePage() {
   const { token } = useAuth();
   const { t, i18n } = useTranslation();
   const tabs = [
-    { key: "tourismInfo", label: t("dashboard.tabTourism") },
-    { key: "accessInfo", label: t("dashboard.tabAccess") },
-    { key: "lodgingInfo", label: t("dashboard.tabLodging") },
-    { key: "restaurantInfo", label: t("dashboard.tabRestaurant") },
-  ] as const satisfies { key: (typeof TAB_KEYS)[number]; label: string }[];
+    { key: "posts", label: t("dashboard.tabPosts"), icon: Grid3x3 },
+    { key: "tourismInfo", label: t("dashboard.tabTourism"), icon: Landmark },
+    { key: "accessInfo", label: t("dashboard.tabAccess"), icon: TrainFront },
+    { key: "lodgingInfo", label: t("dashboard.tabLodging"), icon: BedDouble },
+    { key: "restaurantInfo", label: t("dashboard.tabRestaurant"), icon: UtensilsCrossed },
+  ] as const satisfies { key: (typeof TAB_KEYS)[number]; label: string; icon: unknown }[];
   const [municipality, setMunicipality] = useState<Municipality | null>(null);
   const [reels, setReels] = useState<Reel[]>([]);
-  const [tab, setTab] = useState<(typeof TAB_KEYS)[number]>("tourismInfo");
+  const [tab, setTab] = useState<(typeof TAB_KEYS)[number]>("posts");
   const [openReelId, setOpenReelId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -152,79 +164,111 @@ export default function MunicipalityProfilePage() {
 
   if (!municipality) return <p className="p-10 text-center text-gray-400">{t("municipalityProfile.loading")}</p>;
 
-  const featured = reels[0];
-
   return (
-    <div className="mx-auto w-full max-w-2xl overflow-hidden border-gray-200 bg-white sm:my-6 sm:rounded-3xl sm:border shadow-sm lg:max-w-4xl">
-      <div className="relative aspect-[3/1] w-full bg-gradient-to-br from-brand-100 to-orange-100">
-        {featured && <AutoplayVideo src={featured.videoUrl} className="h-full w-full object-cover" />}
-      </div>
-
-      <div className="px-4 lg:px-6">
-        <div className="-mt-10 flex items-end justify-between lg:-mt-12">
-          <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-orange-300 text-2xl font-bold text-white shadow-md ring-4 ring-white lg:h-24 lg:w-24">
-            {municipality.avatarUrl ? (
-              <img src={municipality.avatarUrl} className="h-full w-full rounded-full object-cover" />
-            ) : (
-              municipality.name.slice(0, 1)
-            )}
+    <div className="mx-auto w-full max-w-[935px] bg-white md:px-5 md:pt-8">
+      <header className="px-4 pt-4 md:flex md:items-start md:gap-16 md:px-12 md:pb-10">
+        <div className="flex items-center gap-6 md:block">
+          <span className="md:hidden">
+            <Avatar name={municipality.name} src={municipality.avatarUrl} size={80} ring />
+          </span>
+          <span className="hidden md:block">
+            <Avatar name={municipality.name} src={municipality.avatarUrl} size={150} ring />
+          </span>
+          <div className="flex flex-1 justify-around text-center text-sm md:hidden">
+            <span>
+              <b className="block text-base font-semibold text-gray-900">{reels.length}</b>
+              <span className="text-gray-900">{t("municipalityProfile.postsLabel")}</span>
+            </span>
+            <span>
+              <b className="block text-base font-semibold text-gray-900">{municipality.followerCount}</b>
+              <span className="text-gray-900">{t("municipalityProfile.followersLabel")}</span>
+            </span>
           </div>
         </div>
 
-        <div className="mt-3 flex items-center gap-2">
-          <h1 className="text-xl font-bold text-gray-900">{municipality.name}</h1>
-          <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700">
-            {t("municipalityProfile.officialBadge")}
-          </span>
+        <div className="mt-3 min-w-0 flex-1 md:mt-0">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+            <h1 className="flex items-center gap-1.5 text-xl text-gray-900">
+              {municipality.name}
+              <BadgeCheck className="h-5 w-5 fill-[#0095f6] text-white" aria-label={t("municipalityProfile.officialBadge")} />
+            </h1>
+            {token && (
+              <button
+                onClick={toggleFollowMunicipality}
+                className={`hidden rounded-lg px-5 py-1.5 text-sm font-semibold md:block ${
+                  municipality.isFollowing
+                    ? "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                    : "bg-[#0095f6] text-white hover:bg-[#1877f2]"
+                }`}
+              >
+                {municipality.isFollowing ? t("municipalityProfile.following") : t("municipalityProfile.follow")}
+              </button>
+            )}
+          </div>
+
+          <div className="mt-5 hidden gap-10 text-base text-gray-900 md:flex">
+            <span>
+              <b className="font-semibold">{reels.length}</b> {t("municipalityProfile.postsLabel")}
+            </span>
+            <span>
+              <b className="font-semibold">{municipality.followerCount}</b> {t("municipalityProfile.followersLabel")}
+            </span>
+          </div>
+
+          <div className="mt-1 text-sm text-gray-900 md:mt-5">
+            <p className="text-xs text-gray-500">{t("municipalityProfile.officialBadge")}</p>
+            {municipality.description && <p className="mt-1 whitespace-pre-wrap">{municipality.description}</p>}
+            <p className="mt-1 flex flex-wrap gap-x-3 text-gray-500">
+              <span className="inline-flex items-center gap-1">
+                <MapPin className="h-3.5 w-3.5" /> {municipality.prefecture}
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <CalendarDays className="h-3.5 w-3.5" /> {formatDate(municipality.createdAt, i18n.language)}
+                {t("municipalityProfile.since")}
+              </span>
+            </p>
+          </div>
+
           {token && (
             <button
               onClick={toggleFollowMunicipality}
-              className={`ml-auto rounded-full px-4 py-1.5 text-sm font-medium ${
-                municipality.isFollowing
-                  ? "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                  : "bg-brand-600 text-white hover:bg-brand-700"
+              className={`mt-4 w-full rounded-lg py-1.5 text-sm font-semibold md:hidden ${
+                municipality.isFollowing ? "bg-gray-100 text-gray-900" : "bg-[#0095f6] text-white"
               }`}
             >
               {municipality.isFollowing ? t("municipalityProfile.following") : t("municipalityProfile.follow")}
             </button>
           )}
         </div>
-        <p className="mt-1 text-xs text-gray-400">
-          {t("municipalityProfile.followerCount", { count: municipality.followerCount })}
-        </p>
+      </header>
 
-        {municipality.description && <p className="mt-2 text-sm text-gray-800">{municipality.description}</p>}
-
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
-          <span>📍 {municipality.prefecture}</span>
-          <span>
-            📅 {formatDate(municipality.createdAt, i18n.language)}
-            {t("municipalityProfile.since")}
-          </span>
-        </div>
-
-        <div className="mt-3 flex gap-4 border-b border-gray-200 pb-3 text-sm text-gray-600">
-          <span>
-            <b className="text-gray-900">{reels.length}</b>
-            {t("municipalityProfile.postsCount")}
-          </span>
-        </div>
-      </div>
-
-      <div className="flex border-b border-gray-200">
-        {tabs.map((tabItem) => (
+      {/* Instagram-style tab strip: the active tab gets a top rule. */}
+      <div className="mt-4 flex border-t border-gray-200 md:mt-0 md:justify-center md:gap-12">
+        {tabs.map(({ key, label, icon: TabIcon }) => (
           <button
-            key={tabItem.key}
-            onClick={() => setTab(tabItem.key)}
-            className={`flex-1 py-3 text-sm font-medium hover:bg-brand-50/50 ${
-              tab === tabItem.key ? "border-b-2 border-brand-500 text-gray-900" : "text-gray-500"
+            key={key}
+            onClick={() => setTab(key)}
+            aria-pressed={tab === key}
+            className={`-mt-px flex flex-1 flex-col items-center gap-1 border-t py-2.5 text-[11px] font-semibold md:flex-none md:flex-row md:gap-1.5 md:py-4 md:text-xs md:tracking-wider ${
+              tab === key ? "border-gray-900 text-gray-900" : "border-transparent text-gray-400 hover:text-gray-600"
             }`}
           >
-            {tabItem.label}
+            <TabIcon className="h-5 w-5 md:h-3.5 md:w-3.5" strokeWidth={tab === key ? 2.4 : 1.8} />
+            {label}
           </button>
         ))}
       </div>
-      {tab === "tourismInfo" ? (
+      {tab === "posts" ? (
+        reels.length === 0 ? (
+          <p className="px-6 py-16 text-center text-sm text-gray-500">{t("municipalityProfile.noPosts")}</p>
+        ) : (
+          <div className="grid grid-cols-3 gap-px md:gap-1">
+            {reels.map((reel) => (
+              <ReelThumb key={reel.id} reel={reel} onOpen={(r) => setOpenReelId(r.id)} />
+            ))}
+          </div>
+        )
+      ) : tab === "tourismInfo" ? (
         <div className="border-b border-gray-200 p-4 lg:p-6">
           {municipality.tourismSpots.length === 0 ? (
             <p className="text-sm text-gray-400">{t("municipalityProfile.noSpots")}</p>
@@ -267,7 +311,7 @@ export default function MunicipalityProfilePage() {
         </>
       )}
 
-      {municipality.otaLinks.length > 0 && (
+      {tab === "lodgingInfo" && municipality.otaLinks.length > 0 && (
         <div className="border-b border-gray-200 p-4 lg:p-6">
           <h2 className="mb-2 text-sm font-semibold text-gray-600">{t("municipalityProfile.otaHeading")}</h2>
           <div className="flex flex-col gap-2 lg:flex-row">
@@ -277,20 +321,14 @@ export default function MunicipalityProfilePage() {
                 href={link.url}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 hover:border-brand-300 hover:bg-brand-50"
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 hover:border-gray-300 hover:bg-gray-100"
               >
-                {link.label} ↗
+                {link.label} <ArrowUpRight className="inline h-3.5 w-3.5 align-[-2px]" />
               </a>
             ))}
           </div>
         </div>
       )}
-
-      <div className="grid grid-cols-1 gap-x-5 gap-y-7 p-4 sm:grid-cols-2 lg:p-6">
-        {reels.map((reel) => (
-          <ReelThumb key={reel.id} reel={reel} onOpen={(r) => setOpenReelId(r.id)} />
-        ))}
-      </div>
 
       {openReelId && (
         <ReelFullscreenViewer

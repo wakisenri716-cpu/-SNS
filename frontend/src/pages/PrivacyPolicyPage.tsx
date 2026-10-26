@@ -5,7 +5,7 @@ export default function PrivacyPolicyPage() {
   const { t } = useTranslation();
 
   return (
-    <div className="mx-auto w-full max-w-2xl overflow-hidden border-gray-200 bg-white sm:my-6 sm:rounded-3xl sm:border p-6 shadow-sm lg:max-w-3xl lg:p-8">
+    <div className="mx-auto w-full max-w-2xl overflow-hidden border-gray-200 bg-white sm:my-6 sm:rounded-xl sm:border p-6 lg:max-w-3xl lg:p-8">
       <h1 className="text-xl font-bold text-gray-900">{t("privacyPolicy.title")}</h1>
       <p className="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">{t("privacyPolicy.draftNotice")}</p>
 
@@ -41,7 +41,7 @@ export default function PrivacyPolicyPage() {
         <section>
           <h2 className="mb-1 font-semibold text-gray-900">{t("privacyPolicy.section5Heading")}</h2>
           <p>{t("privacyPolicy.section5Body")}</p>
-          <Link to="/contact" className="mt-1 inline-block text-brand-700 hover:underline">
+          <Link to="/contact" className="mt-1 inline-block text-gray-900 hover:underline">
             {t("privacyPolicy.section5Link")}
           </Link>
         </section>

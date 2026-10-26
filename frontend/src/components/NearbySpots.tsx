@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import AutoplayVideo from "./AutoplayVideo";
 import { REEL_CATEGORIES, type NearbyReel, type NearbyTourismSpot, type ReelCategory } from "../types";
+import { MapPin } from "lucide-react";
 
 // Pitch deck item "(1) 近隣の観光スポットの掲載": while looking at one post's access
 // info, let the viewer discover other posts located near it, regardless of
@@ -45,7 +46,7 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
 
   return (
     <div className="mt-6 border-t border-gray-100 pt-5">
-      <h2 className="text-sm font-bold text-gray-900">📍 {t("reelAccessPage.nearbyHeading")}</h2>
+      <h2 className="text-sm font-bold text-gray-900">{t("reelAccessPage.nearbyHeading")}</h2>
       <p className="mt-0.5 text-xs text-gray-400">{t("reelAccessPage.nearbySubtitle")}</p>
       <div className="mt-3 flex gap-1.5 overflow-x-auto pb-1">
         {[null, ...REEL_CATEGORIES].map((c) => (
@@ -73,7 +74,7 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
               key={item.id}
               to={`/reels/${item.id}/access`}
               state={{ reel: item }}
-              className="block w-32 shrink-0 overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm hover:border-brand-300 md:w-40"
+              className="block w-32 shrink-0 overflow-hidden rounded-2xl border border-gray-200/80 bg-white hover:border-gray-300 md:w-40"
             >
               <div className="relative aspect-square w-full bg-gray-900">
                 <AutoplayVideo src={item.videoUrl} className="h-full w-full object-cover" />
@@ -100,10 +101,10 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
               <Link
                 key={spot.id}
                 to={`/municipalities/${spot.municipality.id}`}
-                className="block rounded-2xl border border-gray-200/80 bg-white shadow-sm p-3 hover:border-brand-300"
+                className="block rounded-2xl border border-gray-200/80 bg-white p-3 hover:border-gray-300"
               >
                 <div className="flex items-baseline gap-2">
-                  <p className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-900">📍 {spot.name}</p>
+                  <p className="flex min-w-0 flex-1 items-center gap-1 truncate text-sm font-semibold text-gray-900"><MapPin className="h-3.5 w-3.5 shrink-0 text-gray-500" />{spot.name}</p>
                   <span className="shrink-0 text-[11px] text-gray-400">{distanceLabel(spot.distanceMeters)}</span>
                 </div>
                 <p className="text-[11px] text-gray-400">{spot.municipality.name}</p>

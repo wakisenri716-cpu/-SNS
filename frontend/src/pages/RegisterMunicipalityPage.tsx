@@ -42,10 +42,10 @@ export default function RegisterMunicipalityPage() {
   }
 
   const inputClass =
-    "rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:border-brand-500";
+    "rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:border-gray-400";
 
   return (
-    <div className="mx-4 my-8 rounded-3xl border border-gray-200/80 bg-white p-7 shadow-sm sm:mx-auto sm:my-12 sm:max-w-sm sm:p-8">
+    <div className="mx-4 my-8 rounded-xl border border-gray-200/80 bg-white p-7 sm:mx-auto sm:my-12 sm:max-w-sm sm:p-8">
       <h1 className="mb-2 text-center text-xl font-bold text-gray-900">{t("registerMunicipality.title")}</h1>
       <p className="mb-6 text-center text-sm text-gray-500">{t("registerMunicipality.description")}</p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -95,7 +95,7 @@ export default function RegisterMunicipalityPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-full bg-brand-600 py-2 font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+          className="rounded-full bg-gray-900 py-2 font-medium text-white hover:bg-gray-800 disabled:opacity-50"
         >
           {t("registerMunicipality.submit")}
         </button>

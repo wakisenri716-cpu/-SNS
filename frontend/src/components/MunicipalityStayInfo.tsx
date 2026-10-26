@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import type { Municipality } from "../types";
+import { ArrowUpRight } from "lucide-react";
 
 type Tab = "lodgingInfo" | "restaurantInfo";
 
@@ -29,8 +30,8 @@ export default function MunicipalityStayInfo({ municipalityId }: { municipalityI
   const text = municipality[tab];
 
   return (
-    <div className="mt-6 rounded-2xl border border-gray-200/80 bg-white shadow-sm p-4 lg:p-5">
-      <h2 className="text-sm font-bold text-gray-900">🏨 {t("stayInfo.heading", { name: municipality.name })}</h2>
+    <div className="mt-6 rounded-2xl border border-gray-200/80 bg-white p-4 lg:p-5">
+      <h2 className="text-sm font-bold text-gray-900">{t("stayInfo.heading", { name: municipality.name })}</h2>
       <div className="mt-3 flex gap-1.5">
         {(["lodgingInfo", "restaurantInfo"] as const).map((key) => (
           <button
@@ -48,7 +49,7 @@ export default function MunicipalityStayInfo({ municipalityId }: { municipalityI
       <p className="mt-3 line-clamp-5 whitespace-pre-wrap text-sm leading-relaxed text-gray-700">
         {text || t("municipalityProfile.noInfo")}
       </p>
-      <Link to={`/municipalities/${municipality.id}`} className="mt-2 inline-block text-xs font-semibold text-brand-600 hover:underline">
+      <Link to={`/municipalities/${municipality.id}`} className="mt-2 inline-block text-xs font-semibold text-gray-900 hover:underline">
         {t("stayInfo.profileLink", { name: municipality.name })}
       </Link>
 
@@ -62,9 +63,9 @@ export default function MunicipalityStayInfo({ municipalityId }: { municipalityI
                 href={link.url}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-gray-800 hover:border-brand-300 hover:bg-brand-50"
+                className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-gray-800 hover:border-gray-300 hover:bg-gray-100"
               >
-                {link.label} ↗
+                {link.label} <ArrowUpRight className="inline h-3.5 w-3.5 align-[-2px]" />
               </a>
             ))}
           </div>

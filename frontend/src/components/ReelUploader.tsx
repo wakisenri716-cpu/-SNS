@@ -5,7 +5,7 @@ import { REEL_CATEGORIES, type Reel, type ReelCategory, type TravelerTag } from 
 import { TravelerTagPicker } from "./TravelerTagChips";
 
 const inputClass =
-  "rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-brand-500";
+  "rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-gray-400";
 
 // Matches the backend's multer limit (see backend/src/middleware/upload.ts) — checked
 // client-side too so oversized files fail fast instead of uploading for a long time
@@ -68,7 +68,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-3 rounded-2xl border border-gray-200/80 bg-white shadow-sm p-5">
+    <form onSubmit={submit} className="flex flex-col gap-3 rounded-2xl border border-gray-200/80 bg-white p-5">
       <h3 className="text-sm font-semibold text-gray-900">{t("reelUploader.heading")}</h3>
       <input
         type="file"
@@ -129,7 +129,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
         <div className="flex flex-col gap-1">
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
             <div
-              className="h-full rounded-full bg-brand-600 transition-all"
+              className="h-full rounded-full bg-gray-900 transition-all"
               style={{ width: `${uploadPercent}%` }}
             />
           </div>
@@ -140,7 +140,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
       )}
       <button
         disabled={submitting}
-        className="rounded-full bg-brand-600 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+        className="rounded-full bg-gray-900 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
       >
         {t("reelUploader.submit")}
       </button>

@@ -4,6 +4,7 @@ import { api } from "../api/client";
 import ReelEditor from "./ReelEditor";
 import { TravelerTagChips } from "./TravelerTagChips";
 import type { Reel } from "../types";
+import { Pencil } from "lucide-react";
 
 export default function ReelManageGrid({
   reels,
@@ -37,7 +38,7 @@ export default function ReelManageGrid({
         <ReelEditor reel={editingReel} onClose={() => setEditingReel(null)} onSaved={onUpdated} />
       )}
       {reels.map((reel) => (
-        <div key={reel.id} className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm">
+        <div key={reel.id} className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white">
           <video src={reel.videoUrl} className="aspect-video w-full bg-gray-200 object-cover" muted />
           <div className="flex items-center gap-2 p-2">
             <p className="flex-1 truncate text-xs text-gray-700">{reel.caption || t("reelManageGrid.untitled")}</p>
@@ -47,7 +48,7 @@ export default function ReelManageGrid({
               aria-label={t("reelEditor.heading")}
               className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200"
             >
-              ✏️
+              <Pencil className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => removeReel(reel.id)}

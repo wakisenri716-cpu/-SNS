@@ -8,8 +8,9 @@ import SchematicRouteMap from "./SchematicRouteMap";
 import { projectLatLngToUnitSquare } from "../lib/schematicMap";
 import { notifySavesChanged, onSavesChanged } from "../lib/savesChanged";
 import type { Itinerary, TransitSuggestion } from "../types";
+import ModeIcon from "./ModeIcon";
+import { ChevronDown, ChevronUp, Flag, House, X } from "lucide-react";
 
-const LEG_MODE_ICON: Record<string, string> = { walk: "🚶", drive: "🚗", train: "🚃", bus: "🚌" };
 type ItineraryView = "list" | "map";
 
 // Only plain traveler accounts have a しおり — municipality/company accounts
@@ -45,7 +46,7 @@ function LegRow({ leg }: { leg: TransitSuggestion }) {
   const mode = mainMode(leg);
   return (
     <p className="my-1.5 ml-9 flex flex-wrap items-center gap-1 text-xs text-gray-600">
-      <span>{mode ? LEG_MODE_ICON[mode] : ""}</span>
+      <ModeIcon mode={mode} className="h-3.5 w-3.5" />
       <span>
         {t("itinerary.legSummary", {
           mode: t(TRANSIT_MODE_LABEL_KEY[mode ?? ""] ?? "accessPlanner.modeDrive"),
@@ -139,7 +140,7 @@ export function ItineraryPanel() {
 
   return (
     <>
-      <h2 className="text-base font-bold text-gray-900">📖 {t("itinerary.heading")}</h2>
+      <h2 className="text-base font-bold text-gray-900">{t("itinerary.heading")}</h2>
       <p className="mt-1 text-xs text-gray-400">{t("itinerary.subtitle")}</p>
 
       {loading ? (
@@ -147,7 +148,7 @@ export function ItineraryPanel() {
       ) : !itinerary || itinerary.stops.length === 0 ? (
         <div className="mt-6 rounded-lg border border-dashed border-gray-300 p-4 text-center">
           <p className="text-xs text-gray-400">{t("itinerary.empty")}</p>
-          <Link to="/" className="mt-2 inline-block text-xs font-medium text-brand-600 hover:underline">
+          <Link to="/" className="mt-2 inline-block text-xs font-medium text-gray-900 hover:underline">
             {t("itinerary.emptyCta")}
           </Link>
         </div>
@@ -159,7 +160,7 @@ export function ItineraryPanel() {
               value={originDraft}
               onChange={(e) => setOriginDraft(e.target.value)}
               placeholder={t("itinerary.originPlaceholder")}
-              className="w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
+              className="w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
             />
             <div className="flex items-center gap-2">
               <input
@@ -167,12 +168,12 @@ export function ItineraryPanel() {
                 value={startDraft}
                 onChange={(e) => setStartDraft(e.target.value)}
                 aria-label={t("itinerary.startTimeLabel")}
-                className="rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-brand-500"
+                className="rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
               />
               <button
                 type="submit"
                 disabled={busy || (originDraft.trim() === itinerary.originLabel && startDraft === itinerary.startTime)}
-                className="ml-auto rounded-full bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700 disabled:opacity-40"
+                className="ml-auto rounded-full bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800 disabled:opacity-40"
               >
                 {t("itinerary.apply")}
               </button>
@@ -207,7 +208,7 @@ export function ItineraryPanel() {
           {view === "list" && (
             <div className={busy ? "pointer-events-none opacity-60" : ""}>
               <p className="flex items-center gap-2 text-xs font-semibold text-gray-700">
-                <span className="w-7 text-center">🏠</span>
+                <span className="flex w-7 justify-center"><House className="h-4 w-4 text-gray-500" /></span>
                 {(!itinerary.originLabel || itinerary.originLocated) && (
                   <span className="tabular-nums">{t("itinerary.depart", { time: formatClock(departAt, t) })}</span>
                 )}
@@ -223,10 +224,10 @@ export function ItineraryPanel() {
                 return (
                   <div key={stop.id}>
                     <div className="mt-1.5 flex gap-2">
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-600 text-xs font-bold text-white">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white">
                         {i + 1}
                       </span>
-                      <div className="min-w-0 flex-1 rounded-2xl border border-gray-200/80 bg-white shadow-sm p-2">
+                      <div className="min-w-0 flex-1 rounded-2xl border border-gray-200/80 bg-white p-2">
                         <div className="flex items-start gap-1">
                           <Link to={`/reels/${stop.id}/access`} className="min-w-0 flex-1 hover:underline">
                             <p className="truncate text-sm font-semibold text-gray-900">{stop.locationName || stop.caption}</p>
@@ -238,7 +239,7 @@ export function ItineraryPanel() {
                             aria-label={t("itinerary.moveUp")}
                             className="rounded px-1 text-xs text-gray-400 hover:bg-gray-100 disabled:opacity-20"
                           >
-                            ↑
+                            <ChevronUp className="h-4 w-4" />
                           </button>
                           <button
                             type="button"
@@ -247,7 +248,7 @@ export function ItineraryPanel() {
                             aria-label={t("itinerary.moveDown")}
                             className="rounded px-1 text-xs text-gray-400 hover:bg-gray-100 disabled:opacity-20"
                           >
-                            ↓
+                            <ChevronDown className="h-4 w-4" />
                           </button>
                           <button
                             type="button"
@@ -255,7 +256,7 @@ export function ItineraryPanel() {
                             aria-label={t("itinerary.remove")}
                             className="rounded px-1 text-xs text-gray-400 hover:bg-red-50 hover:text-red-500"
                           >
-                            ✕
+                            <X className="h-4 w-4" />
                           </button>
                         </div>
                         <p className="mt-0.5 text-xs tabular-nums text-gray-600">
@@ -288,7 +289,7 @@ export function ItineraryPanel() {
               })}
 
               <p className="mt-3 flex items-center gap-2 text-xs font-semibold text-gray-700">
-                <span className="w-7 text-center">🏁</span>
+                <span className="flex w-7 justify-center"><Flag className="h-4 w-4 text-gray-500" /></span>
                 <span className="tabular-nums">
                   {t("itinerary.finish", { time: formatClock(times[times.length - 1].leave, t) })}
                 </span>
