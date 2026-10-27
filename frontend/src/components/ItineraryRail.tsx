@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { lazy, Suspense, useEffect, useState, type FormEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
@@ -9,7 +9,9 @@ import { projectLatLngToUnitSquare } from "../lib/schematicMap";
 import { notifySavesChanged, onSavesChanged } from "../lib/savesChanged";
 import type { Itinerary, TransitSuggestion } from "../types";
 import ModeIcon from "./ModeIcon";
-import { ChevronDown, ChevronUp, Flag, House, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Flag, House, Sparkles, X } from "lucide-react";
+
+const TripPlanSheet = lazy(() => import("./TripPlanSheet"));
 
 type ItineraryView = "list" | "map";
 
@@ -75,6 +77,7 @@ export function ItineraryPanel() {
   const [view, setView] = useState<ItineraryView>("list");
   const [originDraft, setOriginDraft] = useState("");
   const [startDraft, setStartDraft] = useState("09:00");
+  const [planOpen, setPlanOpen] = useState(false);
 
   function load() {
     return api.get<Itinerary>("/reels/itinerary").then(({ data }) => {
@@ -179,6 +182,29 @@ export function ItineraryPanel() {
               </button>
             </div>
           </form>
+
+          {itinerary.stops.length >= 2 && (
+            <button
+              type="button"
+              onClick={() => setPlanOpen(true)}
+              className="ai-border mb-4 block w-full rounded-2xl p-[1.5px] text-left transition active:scale-[0.99]"
+            >
+              <span className="flex items-center gap-3 rounded-2xl bg-white px-3 py-2.5">
+                <span className="ai-orb flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white">
+                  <Sparkles className="h-4 w-4" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-bold text-jz-ink">{t("tripPlan.title")}</span>
+                  <span className="block truncate text-[11px] text-gray-500">{t("tripPlan.buttonHint")}</span>
+                </span>
+              </span>
+            </button>
+          )}
+          {planOpen && itinerary && (
+            <Suspense fallback={null}>
+              <TripPlanSheet stops={itinerary.stops} onClose={() => setPlanOpen(false)} onApplied={() => void mutate(async () => {})} />
+            </Suspense>
+          )}
 
           <div className="mb-4 flex gap-1.5">
             {(["list", "map"] as const).map((v) => (

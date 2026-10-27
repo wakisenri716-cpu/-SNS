@@ -13,7 +13,8 @@ import { POINTS_PER_TRAVEL_REPORT, getUserPoints } from "../lib/points";
 import { hasTravelStyle, scoreReel } from "../lib/personalize";
 import { notifyPoster } from "../lib/notifications";
 import { summarizeByOriginAndMode, summarizeOrigins } from "../lib/travelReports";
-import { translateLimiter, writeLimiter } from "../middleware/rateLimit";
+import { conciergeLimiter, translateLimiter, writeLimiter } from "../middleware/rateLimit";
+import { planTrip } from "../services/tripPlanner";
 import { isClaudeConfigured, logClaudeError } from "../services/claude";
 import { translateCaption } from "../services/translate";
 
@@ -283,6 +284,46 @@ router.get("/itinerary", requireAuth, async (req, res) => {
 const itineraryOrderSchema = z.object({ reelIds: z.array(z.string()).max(200) });
 
 // Rearrange the しおり: positions follow the given order. Ids the user hasn't
+// "AIでプランを作る": a proposed order and stay times for the しおり (see
+// services/tripPlanner). Only proposes — the client applies it with the
+// order and stay-time endpoints if the traveler accepts.
+const planSchema = z.object({
+  wishes: z.string().trim().max(300).default(""),
+  lang: z.enum(["ja", "en", "zh", "ko"]).default("ja"),
+});
+
+router.post("/itinerary/plan", requireAuth, conciergeLimiter, async (req, res) => {
+  const parsed = planSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
+
+  const [user, saves] = await Promise.all([
+    prisma.user.findUnique({ where: { id: req.auth!.userId }, select: { itineraryStartTime: true } }),
+    prisma.savedReel.findMany({
+      where: { userId: req.auth!.userId, reel: { locationLat: { not: null }, locationLng: { not: null } } },
+      include: { reel: { include: { municipality: { select: { name: true } } } } },
+      orderBy: [{ position: "asc" }, { createdAt: "asc" }],
+    }),
+  ]);
+  if (saves.length < 2) return res.status(400).json({ error: "しおりに2か所以上保存すると、プランを作れます" });
+
+  const plan = await planTrip(
+    saves.map((s) => ({
+      id: s.reelId,
+      name: s.reel.locationName || s.reel.caption.slice(0, 30),
+      municipality: s.reel.municipality.name,
+      category: s.reel.category,
+      caption: s.reel.caption,
+      lat: s.reel.locationLat,
+      lng: s.reel.locationLng,
+      stayMinutes: s.stayMinutes,
+    })),
+    parsed.data.wishes,
+    user?.itineraryStartTime ?? "09:00",
+    parsed.data.lang
+  );
+  res.json(plan);
+});
+
 // saved are ignored rather than rejected, so a stale client list can't fail.
 router.put("/itinerary/order", requireAuth, async (req, res) => {
   const parsed = itineraryOrderSchema.safeParse(req.body);

@@ -11,6 +11,7 @@ import { toggleSound, useSoundOn } from "../lib/videoPlayback";
 import { useTapGestures } from "../lib/useTapGestures";
 import { useAmbientColor } from "../lib/useAmbientColor";
 import { relativeTime } from "../lib/relativeTime";
+import { useTilt } from "../lib/useTilt";
 import type { Reel } from "../types";
 
 function haptic() {
@@ -48,6 +49,7 @@ export default function FeedPost({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const ambient = useAmbientColor(videoRef);
   const [burst, setBurst] = useState(0);
+  const tilt = useTilt<HTMLDivElement>();
   // The media keeps its own shape, clamped between 4:5 (tall) and 1.91:1
   // (wide); 4:5 until the video reports its size.
   const [ratio, setRatio] = useState(4 / 5);
@@ -63,7 +65,10 @@ export default function FeedPost({
   return (
     <article data-reel-id={reel.id} className="reveal px-3 pb-7 md:px-0">
       <div
-        className="on-media relative overflow-hidden rounded-[26px] bg-gray-100 transition-shadow duration-700"
+        ref={tilt.ref}
+        onPointerMove={tilt.onPointerMove}
+        onPointerLeave={tilt.onPointerLeave}
+        className="tilt-card parallax-media on-media relative overflow-hidden rounded-[26px] bg-gray-100"
         style={{
           aspectRatio: Math.min(1.91, Math.max(0.8, ratio)),
           boxShadow: ambient ? `0 22px 50px -22px ${ambient}, 0 8px 24px -14px ${ambient}` : undefined,
@@ -74,6 +79,7 @@ export default function FeedPost({
           <AutoplayVideo src={reel.videoUrl} className="h-full w-full object-cover" onAspectRatio={setRatio} videoRef={videoRef} />
         </button>
         {burst > 0 && <HeartBurst key={burst} />}
+        <span className="tilt-glare" aria-hidden />
 
         {/* Poster, top-left */}
         <div className="glass-dark absolute left-3 top-3 flex max-w-[calc(100%-1.5rem)] items-center gap-2 rounded-full py-1 pl-1 pr-1.5 text-white">

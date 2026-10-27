@@ -609,5 +609,25 @@
   "map": {
     "locate": "My location",
     "noneInCategory": "No posts in this category on the map"
+  },
+  "tripPlan": {
+    "title": "Plan my day with AI",
+    "buttonHint": "Suggests an order and how long to stay",
+    "intro_one": "Reorders your {{count}} saved spot so there is less travel, with a sensible time at each. You can review it before applying.",
+    "intro_other": "Reorders your {{count}} saved spots so there is less travel, with a sensible time at each. You can review it before applying.",
+    "wishesLabel": "Wishes (optional)",
+    "wishesPlaceholder": "e.g. take it slow, soba for lunch",
+    "wishRelaxed": "Take it slow",
+    "wishEfficient": "Start early and see a lot",
+    "wishFoodie": "Enjoy the food",
+    "make": "Make a plan",
+    "planning": "Planning",
+    "byAi": "Planned by Claude (AI)",
+    "byAuto": "Ordered to minimize travel distance (AI not configured, so stay times are unchanged)",
+    "stay": "Stay {{minutes}} min",
+    "apply": "Use this plan",
+    "redo": "Start over",
+    "applied": "Plan applied to your itinerary",
+    "error": "Couldn't make a plan. Please try again in a moment."
   }
 }

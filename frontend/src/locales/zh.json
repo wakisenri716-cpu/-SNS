@@ -604,5 +604,24 @@
   "map": {
     "locate": "当前位置",
     "noneInCategory": "地图上没有该类别的帖子"
+  },
+  "tripPlan": {
+    "title": "用AI规划行程",
+    "buttonHint": "建议游览顺序和停留时间",
+    "intro": "将行程手册中的{{count}}个地点按移动较少的顺序和合适的停留时间重新安排。可先查看建议再决定是否采用。",
+    "wishesLabel": "希望（可选）",
+    "wishesPlaceholder": "例：想慢慢逛、午餐想吃荞麦面",
+    "wishRelaxed": "想慢慢逛",
+    "wishEfficient": "想从早上开始高效游览",
+    "wishFoodie": "想享受美食",
+    "make": "生成计划",
+    "planning": "生成中",
+    "byAi": "由Claude（AI）规划",
+    "byAuto": "已按移动距离较短的顺序排列（未设置AI，停留时间保持不变）",
+    "stay": "停留 {{minutes}}分钟",
+    "apply": "采用此计划",
+    "redo": "重新生成",
+    "applied": "已将计划应用到行程手册",
+    "error": "无法生成计划，请稍后再试。"
   }
 }

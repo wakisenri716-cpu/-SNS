@@ -604,5 +604,24 @@
   "map": {
     "locate": "현재 위치",
     "noneInCategory": "이 카테고리의 게시물이 지도에 없어요"
+  },
+  "tripPlan": {
+    "title": "AI로 일정 짜기",
+    "buttonHint": "방문 순서와 머무는 시간을 제안해요",
+    "intro": "여행 수첩의 {{count}}곳을 이동이 적은 순서와 알맞은 머무는 시간으로 다시 짜 드려요. 제안을 본 뒤 반영할지 고를 수 있어요.",
+    "wishesLabel": "희망 사항 (선택)",
+    "wishesPlaceholder": "예: 천천히 둘러보고 싶어요, 점심은 소바",
+    "wishRelaxed": "천천히 둘러보고 싶어요",
+    "wishEfficient": "아침부터 알차게 돌고 싶어요",
+    "wishFoodie": "음식을 즐기고 싶어요",
+    "make": "일정 만들기",
+    "planning": "만드는 중",
+    "byAi": "Claude(AI)가 만든 일정",
+    "byAuto": "이동 거리가 짧은 순서로 정렬했어요 (AI 미설정이라 머무는 시간은 그대로예요)",
+    "stay": "머무는 시간 {{minutes}}분",
+    "apply": "이 일정으로 하기",
+    "redo": "다시 만들기",
+    "applied": "일정을 여행 수첩에 반영했어요",
+    "error": "일정을 만들지 못했어요. 잠시 후 다시 시도해 주세요."
   }
 }

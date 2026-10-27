@@ -221,12 +221,19 @@ export default function FeedPage() {
       </div>
       <WelcomeIntro />
 
+      <div className="relative isolate">
+        <div className="aurora" aria-hidden>
+          <span />
+          <span />
+          <span />
+        </div>
       <h1 className="px-4 pt-5 text-[26px] font-extrabold leading-tight tracking-tight text-jz-ink md:px-0 md:pt-8">
         {t("feed.heroTitle")}
         <span className="ml-1 inline-block h-2.5 w-2.5 rounded-full bg-jz-red align-baseline" aria-hidden />
       </h1>
       <div className="px-3 pt-3 md:px-0">
         <ConciergeButton />
+      </div>
       </div>
       {stories.length > 0 && (
         <nav aria-label={t("feed.storiesLabel")} className="scrollbar-none flex gap-4 overflow-x-auto px-4 pb-2 pt-3 md:px-0">
