@@ -13,6 +13,7 @@ import Avatar from "../components/Avatar";
 import CommentsSheet from "../components/CommentsSheet";
 import FeedPost from "../components/FeedPost";
 import FeedSkeleton from "../components/FeedSkeleton";
+import ConciergeButton from "../components/ConciergeButton";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import WelcomeIntro from "../components/WelcomeIntro";
 import { REEL_CATEGORIES, type Reel } from "../types";
@@ -213,6 +214,9 @@ export default function FeedPage() {
         {t("feed.heroTitle")}
         <span className="ml-1 inline-block h-2.5 w-2.5 rounded-full bg-jz-red align-baseline" aria-hidden />
       </h1>
+      <div className="px-3 pt-3 md:px-0">
+        <ConciergeButton />
+      </div>
       {stories.length > 0 && (
         <nav aria-label={t("feed.storiesLabel")} className="scrollbar-none flex gap-4 overflow-x-auto px-4 pb-2 pt-3 md:px-0">
           {stories.map((m) => (

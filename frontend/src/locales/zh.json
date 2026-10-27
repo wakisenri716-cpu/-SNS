@@ -563,5 +563,29 @@
     "copied": "已复制链接",
     "copyManually": "请复制此链接",
     "copiedShort": "已复制"
+  },
+  "concierge": {
+    "title": "和AI商量旅行",
+    "buttonHint": "例：和家人看雪景／情侣吃美味荞麦面",
+    "greeting": "想要怎样的旅行？",
+    "intro": "随意描述想要的氛围和同行的人，我们会从Jaziba的帖子中找出合适的地方。也可以直接用语音说。",
+    "suggestFamilySnow": "想和家人看雪景",
+    "suggestCoupleFood": "情侣想吃美味的荞麦面",
+    "suggestCastle": "想去有历史感的城堡",
+    "suggestStay": "想住在山附近",
+    "placeholder": "写下想要的旅行",
+    "listening": "正在聆听…",
+    "voice": "语音输入",
+    "stopVoice": "停止语音输入",
+    "send": "发送",
+    "thinking": "思考中",
+    "modeAi": "由Claude（AI）从Jaziba的帖子中挑选",
+    "modeKeyword": "按关键词查找帖子（未设置AI）",
+    "keywordReply": "找到{{count}}条可能合适的帖子。",
+    "noMatch": "没有找到合适的帖子。请试着加入地点类型（自然、住宿、美食等）或同行的人。",
+    "keywordNote": "由于未设置AI，按关键词匹配查找。",
+    "matchCategory": "{{category}}帖子",
+    "matchPlace": "地名一致",
+    "error": "查找失败，请稍后再试。"
   }
 }

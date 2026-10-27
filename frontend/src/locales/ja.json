@@ -563,5 +563,29 @@
     "copied": "リンクをコピーしました",
     "copyManually": "このリンクをコピーしてください",
     "copiedShort": "コピー済み"
+  },
+  "concierge": {
+    "title": "AIに旅を相談",
+    "buttonHint": "例：家族で雪景色を見たい／カップルでおいしいそば",
+    "greeting": "どんな旅にしたいですか？",
+    "intro": "行きたい雰囲気や、だれと行くかを自由に書いてください。ジャジバの投稿から合いそうな場所を探します。マイクで話しかけることもできます。",
+    "suggestFamilySnow": "家族で雪景色を見たい",
+    "suggestCoupleFood": "カップルでおいしいそばを食べたい",
+    "suggestCastle": "歴史を感じるお城に行きたい",
+    "suggestStay": "山の近くの宿に泊まりたい",
+    "placeholder": "行きたい旅を書いてください",
+    "listening": "聞き取り中…",
+    "voice": "音声で入力",
+    "stopVoice": "音声入力を止める",
+    "send": "送信",
+    "thinking": "考え中",
+    "modeAi": "Claude（AI）がジャジバの投稿から選びます",
+    "modeKeyword": "キーワードで投稿を探します（AIは未設定）",
+    "keywordReply": "ご希望に合いそうな投稿が{{count}}件見つかりました。",
+    "noMatch": "ぴったりの投稿が見つかりませんでした。場所の種類（自然・宿・グルメなど）や、だれと行くかを入れて聞いてみてください。",
+    "keywordNote": "AIが設定されていないため、キーワードの一致で探しています。",
+    "matchCategory": "{{category}}の投稿",
+    "matchPlace": "場所の名前が一致",
+    "error": "うまく探せませんでした。少し時間をおいてもう一度お試しください。"
   }
 }

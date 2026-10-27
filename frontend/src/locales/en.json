@@ -567,5 +567,30 @@
     "copied": "Link copied",
     "copyManually": "Copy this link",
     "copiedShort": "Copied"
+  },
+  "concierge": {
+    "title": "Plan with AI",
+    "buttonHint": "e.g. snowy views with kids / soba for two",
+    "greeting": "What kind of trip are you dreaming of?",
+    "intro": "Describe the mood you're after and who you're going with. We'll find places that fit from Jaziba's posts. You can also just speak.",
+    "suggestFamilySnow": "Snowy scenery with the kids",
+    "suggestCoupleFood": "Great soba for a couple",
+    "suggestCastle": "A historic castle",
+    "suggestStay": "A place to stay near the mountains",
+    "placeholder": "Describe your trip",
+    "listening": "Listening…",
+    "voice": "Voice input",
+    "stopVoice": "Stop voice input",
+    "send": "Send",
+    "thinking": "Thinking",
+    "modeAi": "Claude (AI) picks from Jaziba posts",
+    "modeKeyword": "Finds posts by keyword (AI not configured)",
+    "keywordReply_one": "Found {{count}} post that may fit.",
+    "keywordReply_other": "Found {{count}} posts that may fit.",
+    "noMatch": "Couldn't find a good match. Try adding the kind of place (nature, stay, food…) or who you're traveling with.",
+    "keywordNote": "AI is not configured, so this matched keywords.",
+    "matchCategory": "{{category}} post",
+    "matchPlace": "Place name matches",
+    "error": "Something went wrong. Please try again in a moment."
   }
 }

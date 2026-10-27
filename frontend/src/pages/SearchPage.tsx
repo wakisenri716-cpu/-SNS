@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Mic, Search as SearchIcon } from "lucide-react";
+import ConciergeButton from "../components/ConciergeButton";
+import { useSpeechInput } from "../lib/useSpeechInput";
 import { api } from "../api/client";
 import { TravelerTagChips, TravelerTagPicker } from "../components/TravelerTagChips";
 import type { Municipality, Reel, TravelerTag } from "../types";
@@ -16,8 +19,9 @@ interface RecommendItem {
 }
 
 export default function SearchPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [q, setQ] = useState("");
+  const speech = useSpeechInput(i18n.language, (text) => setQ(text));
   const [tags, setTags] = useState<TravelerTag[]>([]);
   const [municipalities, setMunicipalities] = useState<Municipality[]>([]);
   const [reels, setReels] = useState<Reel[]>([]);
@@ -45,13 +49,31 @@ export default function SearchPage() {
   }, [q, tags, searching]);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
-      <input
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-        placeholder={t("search.placeholder")}
-        className="w-full rounded-xl border border-gray-300 bg-white p-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-gray-400"
-      />
+    <div className="mx-auto max-w-3xl px-4 py-6">
+      <ConciergeButton className="mb-4" />
+      <div className="relative">
+        <SearchIcon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder={speech.listening ? t("concierge.listening") : t("search.placeholder")}
+          className="w-full rounded-full bg-gray-100 py-3 pl-10 pr-12 text-sm text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-jz-red/30"
+        />
+        {speech.supported && (
+          <button
+            type="button"
+            onClick={speech.listening ? speech.stop : speech.start}
+            aria-label={speech.listening ? t("concierge.stopVoice") : t("concierge.voice")}
+            aria-pressed={speech.listening}
+            className={`absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full transition ${
+              speech.listening ? "bg-jz-red text-white" : "text-gray-500 hover:bg-gray-200"
+            }`}
+          >
+            {speech.listening && <span className="absolute inset-0 animate-ping rounded-full bg-jz-red/40" />}
+            <Mic className="relative h-4 w-4" />
+          </button>
+        )}
+      </div>
       <div className="mt-3">
         <p className="mb-1.5 text-xs font-semibold text-gray-500">{t("search.tagFilterLabel")}</p>
         <TravelerTagPicker value={tags} onChange={setTags} />

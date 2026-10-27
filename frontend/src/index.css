@@ -176,7 +176,7 @@ body {
 }
 /* Anything drawn over a video or on red keeps the light-mode palette, so
    white text and icons there stay white. */
-.dark :where(.on-media, .bg-jz-red, .glass-dark, [class*="from-black"]) {
+.dark :where(.on-media, .bg-jz-red, .glass-dark, .ai-orb, [class*="from-black"]) {
   --color-white: #fff;
   --color-gray-100: oklch(96.7% 0.003 264.542);
   --color-gray-200: oklch(92.8% 0.006 264.531);
@@ -200,4 +200,24 @@ body {
    hue rotation brings the red dot back to red. */
 .dark .logo-adaptive {
   filter: invert(1) hue-rotate(180deg) brightness(1.05);
+}
+
+/* ---- AI concierge ----------------------------------------------------- */
+/* A registered custom property lets the conic gradient's angle animate. */
+@property --ai-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes ai-spin {
+  to { --ai-angle: 360deg; }
+}
+.ai-border {
+  background: conic-gradient(from var(--ai-angle), #d7202e, #ff7a4d, #ffb36b, #ff4f8b, #d7202e);
+  animation: ai-spin 4s linear infinite;
+}
+.ai-orb {
+  background: conic-gradient(from var(--ai-angle), #d7202e, #ff7a4d, #ff4f8b, #d7202e);
+  animation: ai-spin 3s linear infinite;
+  box-shadow: 0 4px 16px -4px rgba(215, 32, 46, 0.6);
 }

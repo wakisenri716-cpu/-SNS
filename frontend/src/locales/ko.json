@@ -563,5 +563,29 @@
     "copied": "링크를 복사했습니다",
     "copyManually": "이 링크를 복사해 주세요",
     "copiedShort": "복사됨"
+  },
+  "concierge": {
+    "title": "AI와 여행 상담",
+    "buttonHint": "예: 가족과 설경 / 커플 소바 맛집",
+    "greeting": "어떤 여행을 원하세요?",
+    "intro": "원하는 분위기나 함께 가는 사람을 자유롭게 적어 주세요. Jaziba 게시물에서 어울리는 곳을 찾아 드려요. 음성으로 말해도 됩니다.",
+    "suggestFamilySnow": "가족과 설경을 보고 싶어요",
+    "suggestCoupleFood": "커플로 맛있는 소바를 먹고 싶어요",
+    "suggestCastle": "역사가 느껴지는 성에 가고 싶어요",
+    "suggestStay": "산 근처 숙소에 묵고 싶어요",
+    "placeholder": "원하는 여행을 적어 주세요",
+    "listening": "듣는 중…",
+    "voice": "음성 입력",
+    "stopVoice": "음성 입력 중지",
+    "send": "보내기",
+    "thinking": "생각 중",
+    "modeAi": "Claude(AI)가 Jaziba 게시물에서 골라 드려요",
+    "modeKeyword": "키워드로 게시물을 찾아요 (AI 미설정)",
+    "keywordReply": "어울릴 만한 게시물을 {{count}}건 찾았어요.",
+    "noMatch": "딱 맞는 게시물을 찾지 못했어요. 장소 종류(자연, 숙소, 맛집 등)나 함께 가는 사람을 넣어 보세요.",
+    "keywordNote": "AI가 설정되지 않아 키워드 일치로 찾았어요.",
+    "matchCategory": "{{category}} 게시물",
+    "matchPlace": "장소 이름 일치",
+    "error": "찾지 못했어요. 잠시 후 다시 시도해 주세요."
   }
 }
