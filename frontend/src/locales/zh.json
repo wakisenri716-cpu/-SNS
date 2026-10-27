@@ -16,7 +16,12 @@
     "openMenu": "打开菜单",
     "closeMenu": "关闭菜单",
     "manage": "管理",
-    "tabBar": "主菜单"
+    "tabBar": "主菜单",
+    "darkMode": "深色模式",
+    "lightMode": "浅色模式",
+    "installApp": "添加到主屏幕",
+    "offline": "当前处于离线状态，联网后将显示最新内容",
+    "backOnline": "已恢复联网"
   },
   "auth": {
     "sessionExpired": "登录已过期，请重新登录。"
@@ -360,7 +365,13 @@
     },
     "favoriteCategoriesLabel": "感兴趣的类别（可多选）",
     "needsBarrierFreeLabel": "优先显示无障碍的地点",
-    "needsMultilingualLabel": "优先显示支持外语的地点"
+    "needsMultilingualLabel": "优先显示支持外语的地点",
+    "appearanceHeading": "显示模式",
+    "appearance": {
+      "system": "跟随系统",
+      "light": "浅色",
+      "dark": "深色"
+    }
   },
   "privacyPolicy": {
     "title": "隐私政策",

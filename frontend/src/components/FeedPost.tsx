@@ -62,7 +62,7 @@ export default function FeedPost({
   return (
     <article data-reel-id={reel.id} className="reveal px-3 pb-7 md:px-0">
       <div
-        className="relative overflow-hidden rounded-[26px] bg-gray-100 transition-shadow duration-700"
+        className="on-media relative overflow-hidden rounded-[26px] bg-gray-100 transition-shadow duration-700"
         style={{
           aspectRatio: Math.min(1.91, Math.max(0.8, ratio)),
           boxShadow: ambient ? `0 22px 50px -22px ${ambient}, 0 8px 24px -14px ${ambient}` : undefined,

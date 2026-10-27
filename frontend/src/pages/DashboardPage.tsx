@@ -453,7 +453,7 @@ export default function DashboardPage() {
 
   return (
     <div className="mx-auto w-full max-w-2xl overflow-hidden border-gray-200 bg-white sm:my-6 sm:rounded-xl sm:border lg:max-w-4xl">
-      <div className="relative aspect-[3/1] w-full bg-gradient-to-br from-gray-100 to-gray-200">
+      <div className="on-media relative aspect-[3/1] w-full bg-gradient-to-br from-gray-100 to-gray-200">
         {featured ? (
           <>
             <AutoplayVideo src={featured.videoUrl} className="h-full w-full object-cover" />

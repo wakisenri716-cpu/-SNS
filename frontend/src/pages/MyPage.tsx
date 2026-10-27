@@ -65,7 +65,7 @@ export default function MyPage() {
               <Link
                 key={reel.id}
                 to={`/municipalities/${reel.municipality.id}`}
-                className="relative block aspect-square overflow-hidden bg-gray-100"
+                className="on-media relative block aspect-square overflow-hidden bg-gray-100"
                 aria-label={reel.locationName || reel.municipality.name}
               >
                 <video src={`${reel.videoUrl}#t=0.1`} className="h-full w-full object-cover" muted playsInline preload="metadata" />

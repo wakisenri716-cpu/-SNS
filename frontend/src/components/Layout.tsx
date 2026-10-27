@@ -12,8 +12,11 @@ import {
   LogIn,
   LogOut,
   Menu,
+  MonitorDown,
+  Moon,
   Search,
   Settings,
+  Sun,
   User,
   X,
   type LucideProps,
@@ -22,8 +25,11 @@ import { useAuth } from "../auth/AuthContext";
 import Avatar from "./Avatar";
 import JazibaLogo from "./JazibaLogo";
 import Toaster from "./Toaster";
+import { showToast } from "../lib/toast";
 import ItineraryRail, { useIsTraveler } from "./ItineraryRail";
 import { useUnreadNotificationCount } from "../lib/unreadNotifications";
+import { setThemePref, useIsDark } from "../lib/theme";
+import { promptInstall, setAppBadge, useCanInstall } from "../lib/pwa";
 
 type Icon = ComponentType<LucideProps>;
 interface NavEntry {
@@ -107,6 +113,8 @@ function SecondaryNav() {
         </>
       )}
       <SideNavItem to="/settings" label={t("nav.settings")} icon={Settings} />
+      <ThemeToggle />
+      <InstallButton />
       {user && (
         <button
           type="button"
@@ -118,6 +126,37 @@ function SecondaryNav() {
         </button>
       )}
     </div>
+  );
+}
+
+function ThemeToggle() {
+  const { t } = useTranslation();
+  const dark = useIsDark();
+  const Icon = dark ? Sun : Moon;
+  return (
+    <button
+      type="button"
+      onClick={() => setThemePref(dark ? "light" : "dark")}
+      className="flex items-center gap-4 rounded-lg p-3 text-[15px] text-gray-900 hover:bg-gray-100"
+    >
+      <Icon className="h-6 w-6" strokeWidth={1.8} />
+      {dark ? t("nav.lightMode") : t("nav.darkMode")}
+    </button>
+  );
+}
+
+function InstallButton() {
+  const { t } = useTranslation();
+  if (!useCanInstall()) return null;
+  return (
+    <button
+      type="button"
+      onClick={() => void promptInstall()}
+      className="flex items-center gap-4 rounded-lg p-3 text-[15px] font-semibold text-jz-red hover:bg-gray-100"
+    >
+      <MonitorDown className="h-6 w-6" strokeWidth={1.8} />
+      {t("nav.installApp")}
+    </button>
   );
 }
 
@@ -176,6 +215,19 @@ export default function Layout() {
   // Only municipality/company accounts post, so only they receive お知らせ.
   const unreadCount = useUnreadNotificationCount(!!municipality || !!company);
   const primary = usePrimaryNav(unreadCount);
+
+  useEffect(() => setAppBadge(unreadCount), [unreadCount]);
+
+  useEffect(() => {
+    const offline = () => showToast(t("nav.offline"));
+    const online = () => showToast(t("nav.backOnline"));
+    window.addEventListener("offline", offline);
+    window.addEventListener("online", online);
+    return () => {
+      window.removeEventListener("offline", offline);
+      window.removeEventListener("online", online);
+    };
+  }, [t]);
   const isTraveler = useIsTraveler();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);

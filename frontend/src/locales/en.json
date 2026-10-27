@@ -16,7 +16,12 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "manage": "Manage",
-    "tabBar": "Main menu"
+    "tabBar": "Main menu",
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode",
+    "installApp": "Install the app",
+    "offline": "You're offline. Latest posts will load when you reconnect",
+    "backOnline": "Back online"
   },
   "auth": {
     "sessionExpired": "Your session has expired. Please log in again."
@@ -362,7 +367,13 @@
     },
     "favoriteCategoriesLabel": "Categories you're interested in (choose any)",
     "needsBarrierFreeLabel": "Prioritize barrier-free spots",
-    "needsMultilingualLabel": "Prioritize spots with multilingual support"
+    "needsMultilingualLabel": "Prioritize spots with multilingual support",
+    "appearanceHeading": "Appearance",
+    "appearance": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    }
   },
   "privacyPolicy": {
     "title": "Privacy Policy",

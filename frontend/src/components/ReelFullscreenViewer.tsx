@@ -264,7 +264,7 @@ export default function ReelFullscreenViewer({
   }, []);
 
   return (
-    <div className={`fixed inset-0 z-50 bg-black ${morphedIn ? "" : "animate-viewer-in"}`}>
+    <div className={`on-media fixed inset-0 z-50 bg-black ${morphedIn ? "" : "animate-viewer-in"}`}>
       <SoundButton />
       <button
         onClick={close}

@@ -76,7 +76,7 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
               state={{ reel: item }}
               className="block w-32 shrink-0 overflow-hidden rounded-2xl border border-gray-200/80 bg-white hover:border-gray-300 md:w-40"
             >
-              <div className="relative aspect-square w-full bg-gray-900">
+              <div className="on-media relative aspect-square w-full bg-gray-900">
                 <AutoplayVideo src={item.videoUrl} className="h-full w-full object-cover" />
                 <span className="absolute bottom-1 right-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white">
                   {distanceLabel(item.distanceMeters)}

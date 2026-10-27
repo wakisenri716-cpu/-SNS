@@ -8,6 +8,7 @@ import { fetchSavedReelIds, notifySavesChanged, onSavesChanged } from "../lib/sa
 import { useAuth } from "../auth/AuthContext";
 import { showToast } from "../lib/toast";
 import { isOnScreen, withViewTransition } from "../lib/viewTransition";
+import { usePullToRefresh } from "../lib/usePullToRefresh";
 import Avatar from "../components/Avatar";
 import CommentsSheet from "../components/CommentsSheet";
 import FeedPost from "../components/FeedPost";
@@ -46,10 +47,20 @@ export default function FeedPage() {
   const sentinelRef = useRef<HTMLDivElement>(null);
   // Bumped on every tab/login change so responses for a previous list are dropped.
   const listVersion = useRef(0);
+  // Pull-to-refresh reloads the list in place (no skeleton) while the dot pulses.
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const refreshingRef = useRef(false);
+  const { pull, progress } = usePullToRefresh(() => {
+    if (refreshingRef.current) return;
+    refreshingRef.current = true;
+    setRefreshing(true);
+    setRefreshKey((k) => k + 1);
+  });
 
   useEffect(() => {
     const version = ++listVersion.current;
-    setLoading(true);
+    if (!refreshingRef.current) setLoading(true);
     setNextCursor(null);
     feedRequest(tab)
       .then(({ data }) => {
@@ -58,8 +69,13 @@ export default function FeedPage() {
         setPersonalized(!!data.personalized);
         setNextCursor(data.nextCursor ?? null);
       })
-      .finally(() => version === listVersion.current && setLoading(false));
-  }, [token, tab]);
+      .finally(() => {
+        if (version !== listVersion.current) return;
+        setLoading(false);
+        refreshingRef.current = false;
+        setRefreshing(false);
+      });
+  }, [token, tab, refreshKey]);
 
   // Infinite scroll: fetch the next page when the sentinel below the grid
   // comes near the viewport.
@@ -176,6 +192,21 @@ export default function FeedPage() {
 
   return (
     <div className="mx-auto w-full max-w-[560px] md:px-4">
+      {/* Pull-to-refresh indicator: the logo's red dot grows as you pull and pulses while loading. */}
+      <div
+        className="flex items-end justify-center overflow-hidden md:hidden"
+        style={{ height: refreshing ? 48 : pull, transition: pull ? "none" : "height 0.3s ease" }}
+        aria-hidden={!refreshing}
+        role="status"
+      >
+        <span className="relative mb-3 flex h-4 w-4 items-center justify-center">
+          {refreshing && <span className="absolute h-4 w-4 animate-ping rounded-full bg-jz-red opacity-60" />}
+          <span
+            className="h-3 w-3 rounded-full bg-jz-red"
+            style={{ transform: `scale(${refreshing ? 1 : 0.3 + progress * 0.9})`, opacity: refreshing ? 1 : 0.4 + progress * 0.6 }}
+          />
+        </span>
+      </div>
       <WelcomeIntro />
 
       <h1 className="px-4 pt-5 text-[26px] font-extrabold leading-tight tracking-tight text-jz-ink md:px-0 md:pt-8">

@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { isDataSaverEnabled, setDataSaverEnabled } from "../components/AutoplayVideo";
+import { setThemePref, useThemePref, type ThemePref } from "../lib/theme";
+import { Monitor, Moon, Sun } from "lucide-react";
 import { SUPPORTED_LANGUAGES, setAppLanguage, type SupportedLanguage } from "../i18n";
 import { NATIONALITIES, REEL_CATEGORIES, TRAVEL_COMPANIONS, type AuthUser } from "../types";
 
@@ -379,6 +381,40 @@ function DataSaverSection() {
   );
 }
 
+const THEME_OPTIONS: { value: ThemePref; icon: typeof Sun }[] = [
+  { value: "system", icon: Monitor },
+  { value: "light", icon: Sun },
+  { value: "dark", icon: Moon },
+];
+
+// Appearance: light, dark, or follow the device (stored on this device only).
+function AppearanceSection() {
+  const { t } = useTranslation();
+  const pref = useThemePref();
+
+  return (
+    <section className="border-b border-gray-200 p-4 lg:p-6">
+      <h2 className="mb-2 text-sm font-semibold text-gray-600">{t("settings.appearanceHeading")}</h2>
+      <div className="flex gap-1 rounded-full bg-gray-100 p-1 lg:max-w-md" role="radiogroup">
+        {THEME_OPTIONS.map(({ value, icon: Icon }) => (
+          <button
+            key={value}
+            role="radio"
+            aria-checked={pref === value}
+            onClick={() => setThemePref(value)}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-full py-2 text-sm font-semibold transition ${
+              pref === value ? "bg-white text-gray-900 shadow-[0_1px_4px_rgba(0,0,0,0.12)]" : "text-gray-500"
+            }`}
+          >
+            <Icon className="h-4 w-4" />
+            {t(`settings.appearance.${value}`)}
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 const LANGUAGE_LABELS: Record<SupportedLanguage, string> = {
   ja: "日本語",
   en: "English",
@@ -585,6 +621,7 @@ export default function SettingsPage() {
         </>
       )}
 
+      <AppearanceSection />
       <DataSaverSection />
       <LanguageSection />
 

@@ -16,7 +16,12 @@
     "openMenu": "メニューを開く",
     "closeMenu": "メニューを閉じる",
     "manage": "管理",
-    "tabBar": "メインメニュー"
+    "tabBar": "メインメニュー",
+    "darkMode": "ダークモード",
+    "lightMode": "ライトモード",
+    "installApp": "アプリとしてホーム画面に追加",
+    "offline": "オフラインです。つながると最新の情報を表示します",
+    "backOnline": "オンラインに戻りました"
   },
   "auth": {
     "sessionExpired": "セッションが切れました。もう一度ログインしてください。"
@@ -360,7 +365,13 @@
     },
     "favoriteCategoriesLabel": "興味のあるカテゴリ（複数選択可）",
     "needsBarrierFreeLabel": "バリアフリー対応の場所を優先する",
-    "needsMultilingualLabel": "外国語対応の場所を優先する"
+    "needsMultilingualLabel": "外国語対応の場所を優先する",
+    "appearanceHeading": "表示モード",
+    "appearance": {
+      "system": "端末に合わせる",
+      "light": "ライト",
+      "dark": "ダーク"
+    }
   },
   "privacyPolicy": {
     "title": "プライバシーポリシー",

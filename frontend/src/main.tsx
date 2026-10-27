@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import './i18n'
+import './lib/theme'
+import './lib/pwa'
 import App from './App.tsx'
 import { AuthProvider } from './auth/AuthContext.tsx'
 

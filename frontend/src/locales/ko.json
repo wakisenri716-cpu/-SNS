@@ -16,7 +16,12 @@
     "openMenu": "메뉴 열기",
     "closeMenu": "메뉴 닫기",
     "manage": "관리",
-    "tabBar": "메인 메뉴"
+    "tabBar": "메인 메뉴",
+    "darkMode": "다크 모드",
+    "lightMode": "라이트 모드",
+    "installApp": "홈 화면에 앱 추가",
+    "offline": "오프라인 상태입니다. 연결되면 최신 정보를 표시합니다",
+    "backOnline": "다시 온라인 상태입니다"
   },
   "auth": {
     "sessionExpired": "세션이 만료되었습니다. 다시 로그인해 주세요."
@@ -360,7 +365,13 @@
     },
     "favoriteCategoriesLabel": "관심 있는 카테고리(복수 선택 가능)",
     "needsBarrierFreeLabel": "배리어프리 장소 우선",
-    "needsMultilingualLabel": "외국어 지원 장소 우선"
+    "needsMultilingualLabel": "외국어 지원 장소 우선",
+    "appearanceHeading": "화면 모드",
+    "appearance": {
+      "system": "기기 설정",
+      "light": "라이트",
+      "dark": "다크"
+    }
   },
   "privacyPolicy": {
     "title": "개인정보 처리방침",

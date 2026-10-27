@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Jaziba look: white surfaces, the logo's ink for text and its red dot as
    the one accent (primary actions, likes, the active-tab dot, story rings). */
 @theme {
@@ -27,7 +29,8 @@ body,
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background: #ffffff;
+  background: var(--color-white);
+  color-scheme: light;
   color: #111827;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
@@ -93,7 +96,7 @@ body {
 /* Loading placeholder with a light sweep. */
 .skeleton {
   display: block;
-  background: linear-gradient(90deg, #efefef 30%, #f8f8f8 50%, #efefef 70%);
+  background: linear-gradient(90deg, var(--color-gray-100) 30%, var(--color-gray-50) 50%, var(--color-gray-100) 70%);
   background-size: 300% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }
@@ -146,4 +149,55 @@ body {
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation-duration: 0.25s;
+}
+
+/* ---- Dark mode ------------------------------------------------------- */
+/* Set on <html> by the theme script in index.html (system setting, or the
+   choice in 設定). Instead of dark: variants on every element, the neutral
+   palette is flipped: "white" becomes the page color and the gray scale and
+   the logo ink run the other way, so existing classes just work. */
+.dark {
+  color-scheme: dark;
+  --color-white: #0b0d12;
+  --color-gray-50: #14171d;
+  --color-gray-100: #1b1f26;
+  --color-gray-200: #272c35;
+  --color-gray-300: #363c47;
+  --color-gray-400: #6f7786;
+  --color-gray-500: #959dab;
+  --color-gray-600: #b3b9c4;
+  --color-gray-700: #cdd2da;
+  --color-gray-800: #e1e4e9;
+  --color-gray-900: #eff1f4;
+  --color-gray-950: #f8f9fa;
+  --color-jz-ink: #f3f4f6;
+  --color-jz-tint: #2b1417;
+  --color-jz-red: #ec2d3b;
+}
+/* Anything drawn over a video or on red keeps the light-mode palette, so
+   white text and icons there stay white. */
+.dark :where(.on-media, .bg-jz-red, .glass-dark, [class*="from-black"]) {
+  --color-white: #fff;
+  --color-gray-100: oklch(96.7% 0.003 264.542);
+  --color-gray-200: oklch(92.8% 0.006 264.531);
+  --color-gray-300: oklch(87.2% 0.01 258.338);
+  --color-gray-400: oklch(70.7% 0.022 261.325);
+  --color-gray-500: oklch(55.1% 0.027 264.364);
+  --color-gray-600: oklch(44.6% 0.03 256.802);
+  --color-gray-700: oklch(37.3% 0.034 259.733);
+  --color-gray-800: oklch(27.8% 0.033 256.848);
+  --color-gray-900: oklch(21% 0.034 264.665);
+  --color-jz-ink: #11151d;
+}
+.dark .glass {
+  background: rgba(30, 33, 40, 0.72);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 10px 40px -10px rgba(0, 0, 0, 0.6);
+}
+/* The logo PNG is ink-on-transparent: invert the ink to white while the
+   hue rotation brings the red dot back to red. */
+.dark .logo-adaptive {
+  filter: invert(1) hue-rotate(180deg) brightness(1.05);
 }

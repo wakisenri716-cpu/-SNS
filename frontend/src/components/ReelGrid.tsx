@@ -11,7 +11,7 @@ export default function ReelThumb({ reel, onOpen }: { reel: Reel; onOpen: (reel:
     <button
       type="button"
       onClick={() => onOpen(reel)}
-      className="group relative block aspect-square w-full overflow-hidden bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900"
+      className="on-media group relative block aspect-square w-full overflow-hidden bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900"
       aria-label={label}
     >
       {/* #t=0.1 makes browsers paint the first frame as a still. */}

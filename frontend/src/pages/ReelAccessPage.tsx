@@ -326,7 +326,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
         />
       </div>
 
-      <div className="relative mb-4 h-40 overflow-hidden rounded-lg bg-gray-900 lg:h-56">
+      <div className="on-media relative mb-4 h-40 overflow-hidden rounded-lg bg-gray-900 lg:h-56">
         <AutoplayVideo src={reel.videoUrl} className="h-full w-full object-cover opacity-90" />
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 to-transparent p-3 lg:p-5">
           <span className="mb-1 self-start rounded bg-white/90 px-2 py-0.5 text-[10px] font-bold text-gray-800">
