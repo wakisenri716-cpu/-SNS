@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { ChevronRight, Sparkles } from "lucide-react";
 import { api } from "../api/client";
 import { fetchSavedReelIds, notifySavesChanged, onSavesChanged } from "../lib/savesChanged";
 import { useAuth } from "../auth/AuthContext";
 import { showToast } from "../lib/toast";
+import { isOnScreen, withViewTransition } from "../lib/viewTransition";
 import Avatar from "../components/Avatar";
 import CommentsSheet from "../components/CommentsSheet";
 import FeedPost from "../components/FeedPost";
@@ -35,6 +38,8 @@ export default function FeedPage() {
   const [loading, setLoading] = useState(true);
   const [openReelId, setOpenReelId] = useState<string | null>(null);
   const [commentsReelId, setCommentsReelId] = useState<string | null>(null);
+  // Reel whose card/slide carries the shared name during an open/close morph.
+  const [heroId, setHeroId] = useState<string | null>(null);
   const [personalized, setPersonalized] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -146,6 +151,19 @@ export default function FeedPage() {
     });
   }
 
+  function openViewer(reel: Reel) {
+    flushSync(() => setHeroId(reel.id));
+    void withViewTransition(() => setOpenReelId(reel.id)).then(() => setHeroId(null));
+  }
+
+  function closeViewer(currentId: string) {
+    // Morph back only into a card that's actually on screen.
+    const card = document.querySelector(`[data-reel-id="${currentId}"]`);
+    if (!isOnScreen(card)) return setOpenReelId(null);
+    flushSync(() => setHeroId(currentId));
+    void withViewTransition(() => setOpenReelId(null)).then(() => setHeroId(null));
+  }
+
   function setCommentCount(reelId: string, count: number) {
     setReels((prev) => prev.map((r) => (r.id === reelId ? { ...r, commentCount: count } : r)));
   }
@@ -157,11 +175,15 @@ export default function FeedPage() {
     .slice(0, 20);
 
   return (
-    <div className="mx-auto w-full max-w-[630px]">
+    <div className="mx-auto w-full max-w-[560px] md:px-4">
       <WelcomeIntro />
 
+      <h1 className="px-4 pt-5 text-[26px] font-extrabold leading-tight tracking-tight text-jz-ink md:px-0 md:pt-8">
+        {t("feed.heroTitle")}
+        <span className="ml-1 inline-block h-2.5 w-2.5 rounded-full bg-jz-red align-baseline" aria-hidden />
+      </h1>
       {stories.length > 0 && (
-        <nav aria-label={t("feed.storiesLabel")} className="scrollbar-none flex gap-4 overflow-x-auto px-4 pb-2 pt-4 md:pt-8">
+        <nav aria-label={t("feed.storiesLabel")} className="scrollbar-none flex gap-4 overflow-x-auto px-4 pb-2 pt-3 md:px-0">
           {stories.map((m) => (
             <Link key={m.id} to={`/municipalities/${m.id}`} className="flex w-[72px] shrink-0 flex-col items-center gap-1.5 transition active:scale-95">
               <Avatar name={m.name} src={m.avatarUrl} size={62} ring spin />
@@ -171,7 +193,7 @@ export default function FeedPage() {
         </nav>
       )}
 
-      <div className="sticky top-[var(--header-offset,53px)] z-30 border-b border-gray-100 bg-white/80 backdrop-blur-xl backdrop-saturate-150 transition-[top] duration-300 md:top-0">
+      <div className="sticky top-[var(--header-offset,53px)] z-30 bg-white/80 backdrop-blur-xl backdrop-saturate-150 transition-[top] duration-300 md:top-0">
         <div className="scrollbar-none flex gap-2 overflow-x-auto px-4 py-2.5">
           {[...CATEGORY_TABS, ...(token ? SPECIAL_TABS : [])].map((c) => (
             <button
@@ -189,12 +211,19 @@ export default function FeedPage() {
       </div>
 
       {tab === "all" && user?.role === "USER" && !loading && (
-        <p className="flex flex-wrap items-center gap-x-2 border-b border-gray-200 px-4 py-2.5 text-xs text-gray-500">
-          <span>{personalized ? t("feed.personalizedNote") : t("feed.personalizeCta")}</span>
-          <Link to="/settings#travel-style" className="font-semibold text-[#0095f6] hover:text-[#00376b]">
+        <Link
+          to="/settings#travel-style"
+          className="mx-3 mt-3 flex items-center gap-3 rounded-2xl bg-jz-tint px-4 py-3 text-xs text-jz-ink transition active:scale-[0.99] md:mx-0"
+        >
+          <Sparkles className="h-4 w-4 shrink-0 text-jz-red" />
+          <span className="min-w-0 flex-1 leading-relaxed">
+            {personalized ? t("feed.personalizedNote") : t("feed.personalizeCta")}
+          </span>
+          <span className="flex shrink-0 items-center font-bold text-jz-red">
             {personalized ? t("feed.personalizedChange") : t("feed.personalizeSet")}
-          </Link>
-        </p>
+            <ChevronRight className="h-4 w-4" />
+          </span>
+        </Link>
       )}
 
       {loading ? (
@@ -206,12 +235,13 @@ export default function FeedPage() {
           {tab === "saved" ? t("feed.emptySaved") : tab === "following" ? t("feed.emptyFollowing") : t("feed.empty")}
         </p>
       ) : (
-        <div className="mx-auto max-w-[470px] pb-6 md:pt-4">
+        <div className="pb-6 pt-3">
           {reels.map((reel) => (
             <FeedPost
               key={reel.id}
               reel={reel}
-              onOpen={(r) => setOpenReelId(r.id)}
+              heroName={heroId === reel.id && !openReelId ? "reel-hero" : undefined}
+              onOpen={openViewer}
               onToggleLike={toggleLike}
               onToggleSave={toggleSave}
               onToggleFollow={toggleFollow}
@@ -227,7 +257,8 @@ export default function FeedPage() {
         <ReelFullscreenViewer
           reels={reels}
           initialId={openReelId}
-          onClose={() => setOpenReelId(null)}
+          heroId={heroId}
+          onClose={closeViewer}
           onToggleLike={toggleLike}
           onToggleSave={toggleSave}
           onToggleFollow={toggleFollow}

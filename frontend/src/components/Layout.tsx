@@ -38,7 +38,7 @@ function Badge({ count, className = "" }: { count: number; className?: string })
   if (count <= 0) return null;
   return (
     <span
-      className={`min-w-5 rounded-full bg-[#ff3040] px-1.5 text-center text-[11px] font-bold leading-5 text-white ${className}`}
+      className={`min-w-5 rounded-full bg-jz-red px-1.5 text-center text-[11px] font-bold leading-5 text-white ${className}`}
     >
       {count > 99 ? "99+" : count}
     </span>
@@ -57,7 +57,11 @@ function SideNavItem({ to, label, icon: IconC, badge = 0, className = "" }: NavE
     >
       {({ isActive }) => (
         <>
-          <IconC className="h-6 w-6 shrink-0 transition-transform group-hover:scale-105" strokeWidth={isActive ? 2.6 : 1.8} />
+          <span className="relative">
+            <IconC className="h-6 w-6 shrink-0 transition-transform group-hover:scale-105" strokeWidth={isActive ? 2.6 : 1.8} />
+            {/* The logo's red dot marks where you are. */}
+            {isActive && <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-jz-red ring-2 ring-white" />}
+          </span>
           <span className="flex-1">{label}</span>
           <Badge count={badge} />
         </>
@@ -124,7 +128,7 @@ function AccountChip() {
     return (
       <NavLink
         to="/login"
-        className="block rounded-lg bg-[#0095f6] px-4 py-2 text-center text-sm font-semibold text-white hover:bg-[#1877f2]"
+        className="block rounded-lg bg-jz-red px-4 py-2 text-center text-sm font-semibold text-white hover:bg-jz-red-dark"
       >
         {t("nav.login")}
       </NavLink>
@@ -247,7 +251,13 @@ export default function Layout() {
 
       {/* pb on phones keeps content clear of the bottom tab bar. */}
       <main className="min-w-0 flex-1 pb-28 md:pb-0">
-        <Suspense fallback={<p className="p-10 text-center text-sm text-gray-400">{t("feed.loading")}</p>}>
+        <Suspense
+          fallback={
+            <div className="flex justify-center p-16" role="status" aria-label={t("feed.loading")}>
+              <span className="h-3 w-3 animate-ping rounded-full bg-jz-red" />
+            </div>
+          }
+        >
           {/* Re-keyed per page so each one fades in. */}
           <div key={location.pathname} className="animate-page-in">
             <Outlet />
@@ -270,14 +280,18 @@ export default function Layout() {
             end={to === "/"}
             aria-label={label}
             className={({ isActive }) =>
-              `relative flex h-12 flex-1 items-center justify-center rounded-full text-gray-900 transition-all duration-300 active:scale-90 ${
-                isActive ? "bg-black/[0.06]" : ""
+              `relative flex h-12 flex-1 flex-col items-center justify-center rounded-full text-jz-ink transition-all duration-300 active:scale-90 ${
+                isActive ? "" : "text-gray-500"
               }`
             }
           >
             {({ isActive }) => (
               <>
                 <IconC className="h-[25px] w-[25px]" strokeWidth={isActive ? 2.4 : 1.7} />
+                <span
+                  className={`mt-1 h-1.5 w-1.5 rounded-full bg-jz-red transition-all duration-300 ${isActive ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
+                  aria-hidden
+                />
                 {badge > 0 && <Badge count={badge} className="absolute left-1/2 top-1 ml-1.5" />}
               </>
             )}

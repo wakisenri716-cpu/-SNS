@@ -8,7 +8,7 @@ import HeartBurst from "./HeartBurst";
 import CommentsSheet from "./CommentsSheet";
 import ShareButton from "./ShareButton";
 import { TravelerTagChips } from "./TravelerTagChips";
-import { Bookmark, Compass, Heart, MapPin, MessageCircle, Play, Sparkles, Volume2, VolumeX, X } from "lucide-react";
+import { Bookmark, Heart, MapPin, MessageCircle, Navigation, Play, Sparkles, Volume2, VolumeX, X } from "lucide-react";
 import { toggleSound, useSoundOn } from "../lib/videoPlayback";
 import { useTapGestures } from "../lib/useTapGestures";
 import type { Reel } from "../types";
@@ -49,7 +49,7 @@ function ReelOverlayInfo({
           className="flex flex-col items-center gap-1"
         >
           <span className={railButton}>
-            <Heart key={String(reel.likedByMe)} className={`h-7 w-7 ${reel.likedByMe ? "animate-like-pop fill-[#ff3040] text-[#ff3040]" : ""}`} strokeWidth={1.8} />
+            <Heart key={String(reel.likedByMe)} className={`h-7 w-7 ${reel.likedByMe ? "animate-like-pop fill-jz-red text-jz-red" : ""}`} strokeWidth={1.8} />
           </span>
           <span className="text-xs font-semibold drop-shadow">{reel.likeCount}</span>
         </button>
@@ -132,9 +132,9 @@ function ReelOverlayInfo({
           <Link
             to={`/reels/${reel.id}/access`}
             state={{ reel }}
-            className="pointer-events-auto mt-3 inline-flex items-center gap-1.5 rounded-lg bg-white/20 px-3.5 py-2 text-sm font-semibold text-white backdrop-blur-md transition active:scale-95"
+            className="pointer-events-auto mt-3 inline-flex items-center gap-1.5 rounded-full bg-jz-red px-4 py-2.5 text-sm font-bold text-white shadow-[0_8px_24px_-6px_rgba(215,32,46,0.8)] transition hover:bg-jz-red-dark active:scale-95"
           >
-            <Compass className="h-4 w-4" /> {t("reelViewer.accessButton")}
+            <Navigation className="h-4 w-4 fill-white" /> {t("reelViewer.accessButton")}
           </Link>
         )}
       </div>
@@ -223,6 +223,7 @@ export default function ReelFullscreenViewer({
   reels,
   initialId,
   onClose,
+  heroId,
   onToggleLike,
   onToggleSave,
   onToggleFollow,
@@ -230,7 +231,10 @@ export default function ReelFullscreenViewer({
 }: {
   reels: Reel[];
   initialId: string;
-  onClose: () => void;
+  /** Called with the reel showing when the viewer is closed. */
+  onClose: (currentId: string) => void;
+  /** While set, that reel's slide carries the shared view-transition name. */
+  heroId?: string | null;
   onToggleLike: (reel: Reel) => void;
   onToggleSave: (reel: Reel) => void;
   onToggleFollow: (reel: Reel) => void;
@@ -241,6 +245,14 @@ export default function ReelFullscreenViewer({
   const [commentsReelId, setCommentsReelId] = useState<string | null>(null);
 
   const scrollerRef = useRef<HTMLDivElement>(null);
+  // Opened with a morph from the feed card: skip the zoom-in animation.
+  const [morphedIn] = useState(() => !!heroId);
+
+  function close() {
+    const sc = scrollerRef.current;
+    const idx = sc ? Math.round(sc.scrollTop / Math.max(1, sc.clientHeight)) : 0;
+    onClose(reels[Math.min(idx, reels.length - 1)]?.id ?? initialId);
+  }
 
   // offsetTop rather than scrollIntoView: it isn't thrown off by the opening
   // zoom animation, and runs before paint so there's no visible jump.
@@ -252,10 +264,10 @@ export default function ReelFullscreenViewer({
   }, []);
 
   return (
-    <div className="animate-viewer-in fixed inset-0 z-50 bg-black">
+    <div className={`fixed inset-0 z-50 bg-black ${morphedIn ? "" : "animate-viewer-in"}`}>
       <SoundButton />
       <button
-        onClick={onClose}
+        onClick={close}
         aria-label={t("reelViewer.closeLabel")}
         className="fixed right-3 top-[max(0.75rem,env(safe-area-inset-top))] z-20 flex h-10 w-10 items-center justify-center text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
       >
@@ -270,6 +282,7 @@ export default function ReelFullscreenViewer({
               itemRefs.current[reel.id] = el;
             }}
             className="relative h-full w-full snap-start"
+            style={{ viewTransitionName: reel.id === heroId ? "reel-hero" : undefined }}
           >
             <ViewerVideo reel={reel} onLike={() => !reel.likedByMe && onToggleLike(reel)} />
             <ReelOverlayInfo

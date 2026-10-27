@@ -92,7 +92,11 @@
     "savedToast": "Saved to your itinerary",
     "savedToastAction": "View itinerary",
     "soundOn": "Turn sound on",
-    "soundOff": "Mute"
+    "soundOff": "Mute",
+    "directions": "Directions",
+    "savePill": "Save",
+    "savedPill": "Saved",
+    "heroTitle": "Find your next trip"
   },
   "search": {
     "placeholder": "Search by region or keyword",

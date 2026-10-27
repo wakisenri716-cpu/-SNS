@@ -55,7 +55,7 @@ export default function NotificationsPage() {
               >
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100">
                   {n.type === "like" ? (
-                    <Heart className="h-5 w-5 fill-[#ff3040] text-[#ff3040]" />
+                    <Heart className="h-5 w-5 fill-jz-red text-jz-red" />
                   ) : (
                     <MessageCircle className="h-5 w-5 text-gray-900" />
                   )}
@@ -72,7 +72,7 @@ export default function NotificationsPage() {
                 )}
                 <p className="mt-1 text-[11px] text-gray-400">{new Date(n.createdAt).toLocaleString(i18n.language)}</p>
                 </span>
-                {!n.read && <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#ff3040]" aria-hidden />}
+                {!n.read && <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-jz-red" aria-hidden />}
               </Link>
             </li>
           ))}

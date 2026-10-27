@@ -1,21 +1,29 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Bookmark, Heart, MessageCircle, Volume2, VolumeX } from "lucide-react";
+import { Bookmark, Heart, MapPin, MessageCircle, Navigation, Volume2, VolumeX } from "lucide-react";
 import AutoplayVideo from "./AutoplayVideo";
 import Avatar from "./Avatar";
 import HeartBurst from "./HeartBurst";
 import ShareButton from "./ShareButton";
 import { toggleSound, useSoundOn } from "../lib/videoPlayback";
 import { useTapGestures } from "../lib/useTapGestures";
+import { useAmbientColor } from "../lib/useAmbientColor";
+import { relativeTime } from "../lib/relativeTime";
 import type { Reel } from "../types";
 
-// One post in the home feed, Instagram-style: header, media, action row,
-// likes, caption with hashtags, comments link, date. On the video: tap opens
-// the fullscreen viewer, double tap likes (with the big heart), and the corner
-// button switches sound on/off for every video.
+function haptic() {
+  navigator.vibrate?.(8);
+}
+
+// One post in the home feed as a Jaziba travel card: the video carries the
+// poster (top) and the place with a "行き方" button (bottom) — getting there
+// is what Jaziba is for — and glows in the footage's own colors. Below: like,
+// comment, share and the しおり (save) pill, then caption, tags and comments.
+// On the video, tap opens the fullscreen viewer and double tap likes.
 export default function FeedPost({
   reel,
+  heroName,
   onOpen,
   onToggleLike,
   onToggleSave,
@@ -23,6 +31,8 @@ export default function FeedPost({
   onOpenComments,
 }: {
   reel: Reel;
+  /** View-transition name for the media while it morphs into/out of the viewer. */
+  heroName?: string;
   onOpen: (reel: Reel) => void;
   onToggleLike: (reel: Reel) => void;
   onToggleSave: (reel: Reel) => void;
@@ -31,128 +41,161 @@ export default function FeedPost({
 }) {
   const { t, i18n } = useTranslation();
   const poster = reel.postedByCompany ?? reel.municipality;
-  const hashtags = [t(`category.${reel.category}`), ...reel.travelerTags.map((tag) => t(`travelerTag.${tag}`))];
+  const tags = [t(`category.${reel.category}`), ...reel.travelerTags.map((tag) => t(`travelerTag.${tag}`))];
   const hasLocation = reel.locationLat != null && reel.locationLng != null;
   const soundOn = useSoundOn();
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const ambient = useAmbientColor(videoRef);
   const [burst, setBurst] = useState(0);
-  // Like Instagram, the media keeps its own shape, clamped between 4:5 (tall)
-  // and 1.91:1 (wide); 4:5 until the video reports its size.
+  // The media keeps its own shape, clamped between 4:5 (tall) and 1.91:1
+  // (wide); 4:5 until the video reports its size.
   const [ratio, setRatio] = useState(4 / 5);
   const onTap = useTapGestures(
     () => onOpen(reel),
     () => {
       setBurst((n) => n + 1);
+      haptic();
       if (!reel.likedByMe) onToggleLike(reel);
     }
   );
 
   return (
-    <article className="border-b border-gray-100 pb-5 md:mb-4 md:border-0">
-      <header className="flex items-center gap-3 px-3 py-3 md:px-0">
-        <Link to={`/municipalities/${reel.municipality.id}`} aria-label={reel.municipality.name}>
-          <Avatar name={reel.municipality.name} src={reel.municipality.avatarUrl} size={34} ring />
-        </Link>
-        <div className="min-w-0 flex-1 leading-tight">
-          <p className="flex items-center gap-1.5 text-sm">
-            <Link to={`/municipalities/${reel.municipality.id}`} className="truncate font-semibold text-gray-900">
-              {poster.name}
-            </Link>
-            {!poster.isFollowing && (
-              <>
-                <span className="text-gray-400">•</span>
-                <button
-                  type="button"
-                  onClick={() => onToggleFollow(reel)}
-                  className="shrink-0 font-semibold text-[#0095f6] hover:text-[#00376b]"
-                >
-                  {t("reelViewer.follow")}
-                </button>
-              </>
-            )}
-          </p>
-          {reel.locationName &&
-            (hasLocation ? (
-              <Link to={`/reels/${reel.id}/access`} state={{ reel }} className="block truncate text-xs text-gray-700">
-                {reel.locationName}
-              </Link>
-            ) : (
-              <p className="truncate text-xs text-gray-700">{reel.locationName}</p>
-            ))}
-        </div>
-      </header>
-
-      <div className="relative overflow-hidden bg-gray-100 md:rounded-2xl" style={{ aspectRatio: Math.min(1.91, Math.max(0.8, ratio)) }}>
+    <article data-reel-id={reel.id} className="reveal px-3 pb-7 md:px-0">
+      <div
+        className="relative overflow-hidden rounded-[26px] bg-gray-100 transition-shadow duration-700"
+        style={{
+          aspectRatio: Math.min(1.91, Math.max(0.8, ratio)),
+          boxShadow: ambient ? `0 22px 50px -22px ${ambient}, 0 8px 24px -14px ${ambient}` : undefined,
+          viewTransitionName: heroName,
+        }}
+      >
         <button type="button" onClick={onTap} className="block h-full w-full" aria-label={t("feed.openFullscreen")}>
-          <AutoplayVideo src={reel.videoUrl} className="h-full w-full object-cover" onAspectRatio={setRatio} />
+          <AutoplayVideo src={reel.videoUrl} className="h-full w-full object-cover" onAspectRatio={setRatio} videoRef={videoRef} />
         </button>
         {burst > 0 && <HeartBurst key={burst} />}
-        <button
-          type="button"
-          onClick={toggleSound}
-          aria-label={soundOn ? t("feed.soundOff") : t("feed.soundOn")}
-          aria-pressed={soundOn}
-          className="glass-dark absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-full text-white transition active:scale-90"
-        >
-          {soundOn ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-        </button>
+
+        {/* Poster, top-left */}
+        <div className="glass-dark absolute left-3 top-3 flex max-w-[calc(100%-1.5rem)] items-center gap-2 rounded-full py-1 pl-1 pr-1.5 text-white">
+          <Link to={`/municipalities/${reel.municipality.id}`} className="flex min-w-0 items-center gap-2">
+            <Avatar name={reel.municipality.name} src={reel.municipality.avatarUrl} size={28} />
+            <span className="truncate text-[13px] font-semibold">{poster.name}</span>
+          </Link>
+          {poster.isFollowing ? (
+            <span className="pr-1.5 text-[11px] text-white/70">{t("reelViewer.following")}</span>
+          ) : (
+            <button
+              type="button"
+              onClick={() => onToggleFollow(reel)}
+              className="shrink-0 rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-jz-ink transition active:scale-95"
+            >
+              {t("reelViewer.follow")}
+            </button>
+          )}
+        </div>
+
+        {/* Place + directions, bottom */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end gap-2 bg-gradient-to-t from-black/65 via-black/25 to-transparent p-3 pt-16">
+          <div className="min-w-0 flex-1 text-white">
+            {reel.locationName && (
+              <p className="flex items-center gap-1 truncate text-[15px] font-bold drop-shadow">
+                <MapPin className="h-4 w-4 shrink-0" />
+                <span className="truncate">{reel.locationName}</span>
+              </p>
+            )}
+            <p className="truncate pl-5 text-xs text-white/75">{reel.municipality.prefecture}</p>
+          </div>
+          {hasLocation && (
+            <Link
+              to={`/reels/${reel.id}/access`}
+              state={{ reel }}
+              className="pointer-events-auto flex shrink-0 items-center gap-1.5 rounded-full bg-jz-red px-3.5 py-2 text-[13px] font-bold text-white shadow-[0_6px_20px_-6px_rgba(215,32,46,0.8)] transition hover:bg-jz-red-dark active:scale-95"
+            >
+              <Navigation className="h-3.5 w-3.5 fill-white" /> {t("feed.directions")}
+            </Link>
+          )}
+          <button
+            type="button"
+            onClick={toggleSound}
+            aria-label={soundOn ? t("feed.soundOff") : t("feed.soundOn")}
+            aria-pressed={soundOn}
+            className="glass-dark pointer-events-auto flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white transition active:scale-90"
+          >
+            {soundOn ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+          </button>
+        </div>
       </div>
 
-      <div className="flex items-center gap-4 px-3 pt-3 md:px-0">
+      <div className="flex items-center gap-1 pt-2.5">
         <button
           type="button"
-          onClick={() => onToggleLike(reel)}
+          onClick={() => {
+            haptic();
+            onToggleLike(reel);
+          }}
           aria-label={t("reelViewer.likeLabel")}
           aria-pressed={reel.likedByMe}
-          className="transition active:scale-90"
+          className="flex items-center gap-1.5 rounded-full px-2 py-1.5 text-sm font-semibold text-jz-ink transition hover:bg-gray-100 active:scale-90"
         >
           <Heart
             key={String(reel.likedByMe)}
-            className={`h-[26px] w-[26px] ${reel.likedByMe ? "animate-like-pop fill-[#ff3040] text-[#ff3040]" : "text-gray-900 hover:text-gray-500"}`}
+            className={`h-6 w-6 ${reel.likedByMe ? "animate-like-pop fill-jz-red text-jz-red" : ""}`}
             strokeWidth={1.8}
           />
+          {reel.likeCount > 0 && <span className="tabular-nums">{reel.likeCount}</span>}
         </button>
-        <button type="button" onClick={() => onOpenComments(reel)} aria-label={t("comments.heading")}>
-          <MessageCircle className="h-[26px] w-[26px] -scale-x-100 text-gray-900 hover:text-gray-500" strokeWidth={1.8} />
-        </button>
-        <ShareButton
-          path={`/reels/${reel.id}/access`}
-          title={`${reel.locationName || reel.municipality.name} | ${t("brand.name")}`}
-          variant="icon"
-        />
         <button
           type="button"
-          onClick={() => onToggleSave(reel)}
+          onClick={() => onOpenComments(reel)}
+          aria-label={t("comments.heading")}
+          className="flex items-center gap-1.5 rounded-full px-2 py-1.5 text-sm font-semibold text-jz-ink transition hover:bg-gray-100 active:scale-90"
+        >
+          <MessageCircle className="h-6 w-6 -scale-x-100" strokeWidth={1.8} />
+          {reel.commentCount > 0 && <span className="tabular-nums">{reel.commentCount}</span>}
+        </button>
+        <span className="px-1">
+          <ShareButton
+            path={`/reels/${reel.id}/access`}
+            title={`${reel.locationName || reel.municipality.name} | ${t("brand.name")}`}
+            variant="icon"
+          />
+        </span>
+        <button
+          type="button"
+          onClick={() => {
+            haptic();
+            onToggleSave(reel);
+          }}
           aria-label={t("reelViewer.saveLabel")}
           aria-pressed={reel.savedByMe}
-          className="ml-auto transition active:scale-90"
+          className={`ml-auto flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] font-bold transition active:scale-95 ${
+            reel.savedByMe ? "bg-jz-ink text-white" : "bg-gray-100 text-jz-ink hover:bg-gray-200"
+          }`}
         >
           <Bookmark
             key={String(reel.savedByMe)}
-            className={`h-[26px] w-[26px] ${reel.savedByMe ? "animate-like-pop fill-gray-900 text-gray-900" : "text-gray-900 hover:text-gray-500"}`}
-            strokeWidth={1.8}
+            className={`h-4 w-4 ${reel.savedByMe ? "animate-like-pop fill-white" : ""}`}
+            strokeWidth={2}
           />
+          {reel.savedByMe ? t("feed.savedPill") : t("feed.savePill")}
         </button>
       </div>
 
-      <div className="space-y-1 px-3 pt-2.5 text-sm text-gray-900 md:px-0">
-        {reel.likeCount > 0 && <p className="font-semibold">{t("feed.likes", { count: reel.likeCount })}</p>}
-        {reel.caption && (
-          <p className="leading-snug">
-            <span className="mr-1.5 font-semibold">{poster.name}</span>
-            {reel.caption}
-          </p>
-        )}
-        <p className="leading-snug text-[#00376b]">{hashtags.map((h) => `#${h.replace(/\s+/g, "")}`).join(" ")}</p>
-        {hasLocation && (
-          <Link to={`/reels/${reel.id}/access`} state={{ reel }} className="inline-block font-semibold text-gray-900 hover:underline">
-            {t("feed.seeAccess")}
-          </Link>
-        )}
-        <button type="button" onClick={() => onOpenComments(reel)} className="block text-gray-500">
-          {reel.commentCount > 0 ? t("feed.viewComments", { count: reel.commentCount }) : t("feed.addComment")}
-        </button>
-        <p className="text-[11px] uppercase tracking-wide text-gray-400">
-          {new Date(reel.createdAt).toLocaleDateString(i18n.language, { year: "numeric", month: "long", day: "numeric" })}
+      <div className="space-y-1.5 px-1 pt-1.5 text-sm text-jz-ink">
+        {reel.caption && <p className="leading-relaxed">{reel.caption}</p>}
+        <p className="flex flex-wrap gap-1.5">
+          {tags.map((tag) => (
+            <span key={tag} className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
+              <span className="text-jz-red">#</span>
+              {tag.replace(/\s+/g, "")}
+            </span>
+          ))}
+        </p>
+        <p className="flex items-center gap-2 text-xs text-gray-400">
+          <button type="button" onClick={() => onOpenComments(reel)} className="hover:text-gray-600">
+            {reel.commentCount > 0 ? t("feed.viewComments", { count: reel.commentCount }) : t("feed.addComment")}
+          </button>
+          <span aria-hidden>·</span>
+          <time dateTime={reel.createdAt}>{relativeTime(reel.createdAt, i18n.language)}</time>
         </p>
       </div>
     </article>

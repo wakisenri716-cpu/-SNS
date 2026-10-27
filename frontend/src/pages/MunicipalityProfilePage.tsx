@@ -192,7 +192,7 @@ export default function MunicipalityProfilePage() {
           <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
             <h1 className="flex items-center gap-1.5 text-xl text-gray-900">
               {municipality.name}
-              <BadgeCheck className="h-5 w-5 fill-[#0095f6] text-white" aria-label={t("municipalityProfile.officialBadge")} />
+              <BadgeCheck className="h-5 w-5 fill-jz-red text-white" aria-label={t("municipalityProfile.officialBadge")} />
             </h1>
             {token && (
               <button
@@ -200,7 +200,7 @@ export default function MunicipalityProfilePage() {
                 className={`hidden rounded-lg px-5 py-1.5 text-sm font-semibold md:block ${
                   municipality.isFollowing
                     ? "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                    : "bg-[#0095f6] text-white hover:bg-[#1877f2]"
+                    : "bg-jz-red text-white hover:bg-jz-red-dark"
                 }`}
               >
                 {municipality.isFollowing ? t("municipalityProfile.following") : t("municipalityProfile.follow")}
@@ -235,7 +235,7 @@ export default function MunicipalityProfilePage() {
             <button
               onClick={toggleFollowMunicipality}
               className={`mt-4 w-full rounded-lg py-1.5 text-sm font-semibold md:hidden ${
-                municipality.isFollowing ? "bg-gray-100 text-gray-900" : "bg-[#0095f6] text-white"
+                municipality.isFollowing ? "bg-gray-100 text-gray-900" : "bg-jz-red text-white"
               }`}
             >
               {municipality.isFollowing ? t("municipalityProfile.following") : t("municipalityProfile.follow")}
@@ -252,7 +252,7 @@ export default function MunicipalityProfilePage() {
             onClick={() => setTab(key)}
             aria-pressed={tab === key}
             className={`-mt-px flex flex-1 flex-col items-center gap-1 border-t py-2.5 text-[11px] font-semibold md:flex-none md:flex-row md:gap-1.5 md:py-4 md:text-xs md:tracking-wider ${
-              tab === key ? "border-gray-900 text-gray-900" : "border-transparent text-gray-400 hover:text-gray-600"
+              tab === key ? "border-jz-red text-jz-ink" : "border-transparent text-gray-400 hover:text-gray-600"
             }`}
           >
             <TabIcon className="h-5 w-5 md:h-3.5 md:w-3.5" strokeWidth={tab === key ? 2.4 : 1.8} />

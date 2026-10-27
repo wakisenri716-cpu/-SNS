@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
-/* Instagram-like look: white surfaces, near-black text, thin gray rules.
-   Accent colors are used inline (#0095f6 follow/primary, #ff3040 likes). */
+/* Jaziba look: white surfaces, the logo's ink for text and its red dot as
+   the one accent (primary actions, likes, the active-tab dot, story rings). */
 @theme {
+  --color-jz-red: #d7202e;
+  --color-jz-red-dark: #b3141f;
+  --color-jz-tint: #fdeced;
+  --color-jz-ink: #11151d;
   --animate-like-pop: like-pop 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.4);
   --animate-heart-burst: heart-burst 0.9s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards;
   --animate-toast-in: toast-in 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1);
@@ -113,4 +117,33 @@ body {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
     0 10px 30px -8px rgba(0, 0, 0, 0.35);
+}
+
+/* Posts ease in as they scroll into view (scroll-driven animation; browsers
+   without it simply show them). */
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+}
+@keyframes reveal {
+  from { opacity: 0.2; transform: translateY(28px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Feed post <-> fullscreen viewer morph (View Transitions API). */
+::view-transition-group(reel-hero) {
+  animation-duration: 0.38s;
+  animation-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+::view-transition-old(reel-hero),
+::view-transition-new(reel-hero) {
+  height: 100%;
+  object-fit: cover;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.25s;
 }

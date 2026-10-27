@@ -90,7 +90,11 @@
     "savedToast": "여행 수첩에 저장했습니다",
     "savedToastAction": "여행 수첩 보기",
     "soundOn": "소리 켜기",
-    "soundOff": "음소거"
+    "soundOff": "음소거",
+    "directions": "가는 법",
+    "savePill": "수첩에 저장",
+    "savedPill": "저장됨",
+    "heroTitle": "다음 여행지를 찾아보세요"
   },
   "search": {
     "placeholder": "지역명・키워드로 검색",

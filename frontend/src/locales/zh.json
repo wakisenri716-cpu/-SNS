@@ -90,7 +90,11 @@
     "savedToast": "已保存到行程手册",
     "savedToastAction": "查看行程手册",
     "soundOn": "打开声音",
-    "soundOff": "静音"
+    "soundOff": "静音",
+    "directions": "怎么去",
+    "savePill": "加入行程",
+    "savedPill": "已加入",
+    "heroTitle": "发现下一个目的地"
   },
   "search": {
     "placeholder": "按地区名或关键词搜索",

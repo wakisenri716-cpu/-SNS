@@ -34,24 +34,30 @@ export default function WelcomeIntro() {
   }
 
   return (
-    <div className="relative mx-4 mt-4 rounded-xl border border-gray-200 bg-white p-5 pr-12 text-gray-900 md:mt-8">
+    <div className="relative mx-3 mt-4 overflow-hidden rounded-[26px] bg-jz-ink p-6 pr-12 text-white md:mx-0 md:mt-8">
+      {/* The logo's red dot, rising like a sun behind the copy. */}
+      <span
+        className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-jz-red opacity-90 blur-[2px]"
+        style={{ boxShadow: "0 0 90px 30px rgba(215,32,46,0.45)" }}
+        aria-hidden
+      />
       <button
         type="button"
         onClick={dismiss}
         aria-label={t("welcome.close")}
-        className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100"
+        className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/20 text-white backdrop-blur hover:bg-black/30"
       >
         <X className="h-4 w-4" />
       </button>
-      <p className="text-base font-semibold leading-snug">{t("welcome.heading")}</p>
-      <p className="mt-1.5 text-sm leading-relaxed text-gray-500">{t("welcome.body")}</p>
-      <div className="mt-3 flex flex-wrap gap-2">
-        <Link to="/register" className="rounded-lg bg-[#0095f6] px-4 py-1.5 text-sm font-semibold text-white hover:bg-[#1877f2]">
+      <p className="relative max-w-[18rem] text-xl font-bold leading-snug tracking-tight">{t("welcome.heading")}</p>
+      <p className="relative mt-2 text-sm leading-relaxed text-white/70">{t("welcome.body")}</p>
+      <div className="relative mt-4 flex flex-wrap gap-2">
+        <Link to="/register" className="rounded-full bg-white px-4 py-2 text-sm font-bold text-jz-ink transition hover:bg-gray-100 active:scale-95">
           {t("welcome.registerTraveler")}
         </Link>
         <Link
           to="/register-municipality"
-          className="rounded-lg bg-gray-100 px-4 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-200"
+          className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/25 transition hover:bg-white/20 active:scale-95"
         >
           {t("welcome.forMunicipality")}
         </Link>

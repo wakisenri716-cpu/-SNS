@@ -90,7 +90,11 @@
     "savedToast": "しおりに保存しました",
     "savedToastAction": "しおりを見る",
     "soundOn": "音を出す",
-    "soundOff": "消音にする"
+    "soundOff": "消音にする",
+    "directions": "行き方",
+    "savePill": "しおり",
+    "savedPill": "しおり済み",
+    "heroTitle": "次の旅先を見つけよう"
   },
   "search": {
     "placeholder": "地域名・キーワードで検索",

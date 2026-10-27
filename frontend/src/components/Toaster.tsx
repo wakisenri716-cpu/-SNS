@@ -23,7 +23,7 @@ export default function Toaster() {
     >
       <span className="font-medium">{toast.text}</span>
       {toast.action && (
-        <Link to={toast.action.to} onClick={() => setToast(null)} className="shrink-0 font-semibold text-[#7cc4ff]">
+        <Link to={toast.action.to} onClick={() => setToast(null)} className="shrink-0 font-semibold text-[#ff8f97]">
           {toast.action.label}
         </Link>
       )}
