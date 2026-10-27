@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import {
   Bell,
   BookOpen,
+  Clapperboard,
   Briefcase,
   Building2,
   ChartColumn,
@@ -11,6 +12,7 @@ import {
   LayoutDashboard,
   LogIn,
   LogOut,
+  Map as MapIcon,
   Menu,
   MonitorDown,
   Moon,
@@ -38,6 +40,8 @@ interface NavEntry {
   icon: Icon;
   badge?: number;
   className?: string;
+  /** false: sidebar only — kept out of the phone tab bar (search lives in the top bar there). */
+  tabBar?: boolean;
 }
 
 function Badge({ count, className = "" }: { count: number; className?: string }) {
@@ -51,7 +55,7 @@ function Badge({ count, className = "" }: { count: number; className?: string })
   );
 }
 
-function SideNavItem({ to, label, icon: IconC, badge = 0, className = "" }: NavEntry) {
+function SideNavItem({ to, label, icon: IconC, badge = 0, className = "" }: Omit<NavEntry, "tabBar">) {
   return (
     <NavLink
       to={to}
@@ -82,11 +86,15 @@ function usePrimaryNav(unreadCount: number): NavEntry[] {
   const { user, municipality, company } = useAuth();
   const { t } = useTranslation();
   const home = { to: "/", label: t("nav.recommend"), icon: House };
-  const search = { to: "/search", label: t("nav.search"), icon: Search };
+  const search = { to: "/search", label: t("nav.search"), icon: Search, tabBar: false };
+  const reels = { to: "/reels", label: t("nav.reels"), icon: Clapperboard };
+  const map = { to: "/map", label: t("nav.map"), icon: MapIcon };
   if (municipality || company) {
     return [
       home,
-      search,
+      { ...search, tabBar: true },
+      { ...reels, tabBar: false },
+      { ...map, tabBar: false },
       { to: municipality ? "/dashboard" : "/company-dashboard", label: t("nav.manage"), icon: LayoutDashboard },
       { to: "/insights", label: t("nav.insights"), icon: ChartColumn },
       { to: "/notifications", label: t("notifications.heading"), icon: Bell, badge: unreadCount },
@@ -94,6 +102,8 @@ function usePrimaryNav(unreadCount: number): NavEntry[] {
   }
   return [
     home,
+    reels,
+    map,
     search,
     { to: "/itinerary", label: t("itinerary.heading"), icon: BookOpen },
     user ? { to: "/mypage", label: t("nav.myPage"), icon: User } : { to: "/login", label: t("nav.login"), icon: LogIn },
@@ -253,6 +263,10 @@ export default function Layout() {
         <NavLink to="/" aria-label={t("brand.name")}>
           <JazibaLogo className="h-8 w-auto" />
         </NavLink>
+        <div className="flex items-center">
+        <NavLink to="/search" aria-label={t("nav.search")} className="flex h-10 w-10 items-center justify-center text-gray-900">
+          <Search className="h-6 w-6" strokeWidth={1.8} />
+        </NavLink>
         <button
           type="button"
           onClick={() => setMenuOpen(true)}
@@ -262,6 +276,7 @@ export default function Layout() {
         >
           <Menu className="h-6 w-6" strokeWidth={1.8} />
         </button>
+        </div>
       </header>
 
       <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-gray-200 bg-white px-3 pb-5 pt-8 md:flex lg:w-[244px]">
@@ -271,7 +286,14 @@ export default function Layout() {
         <nav className="flex flex-col gap-1">
           {primary.map((item) => (
             // The しおり rail is always visible on xl screens, so no link there.
-            <SideNavItem key={item.to} {...item} className={item.to === "/itinerary" && isTraveler ? "xl:hidden" : ""} />
+            <SideNavItem
+              key={item.to}
+              to={item.to}
+              label={item.label}
+              icon={item.icon}
+              badge={item.badge}
+              className={item.to === "/itinerary" && isTraveler ? "xl:hidden" : ""}
+            />
           ))}
         </nav>
         <div className="mt-auto flex flex-col gap-3">
@@ -325,7 +347,7 @@ export default function Layout() {
         aria-label={t("nav.tabBar")}
         className="glass fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-1/2 z-40 flex h-16 w-[min(calc(100%-2rem),420px)] -translate-x-1/2 items-center gap-1 rounded-full px-2 md:hidden"
       >
-        {primary.map(({ to, label, icon: IconC, badge = 0 }) => (
+        {primary.filter((item) => item.tabBar !== false).map(({ to, label, icon: IconC, badge = 0 }) => (
           <NavLink
             key={to}
             to={to}

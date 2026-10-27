@@ -142,7 +142,7 @@ function ReelOverlayInfo({
   );
 }
 
-function SoundButton() {
+function SoundButton({ className }: { className: string }) {
   const { t } = useTranslation();
   const soundOn = useSoundOn();
   return (
@@ -150,7 +150,7 @@ function SoundButton() {
       onClick={toggleSound}
       aria-label={soundOn ? t("feed.soundOff") : t("feed.soundOn")}
       aria-pressed={soundOn}
-      className="fixed right-16 top-[max(0.75rem,env(safe-area-inset-top))] z-20 flex h-10 w-10 items-center justify-center text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
+      className={`z-20 flex h-10 w-10 items-center justify-center text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] ${className}`}
     >
       {soundOn ? <Volume2 className="h-6 w-6" strokeWidth={1.8} /> : <VolumeX className="h-6 w-6" strokeWidth={1.8} />}
     </button>
@@ -218,7 +218,9 @@ function ViewerVideo({ reel, onLike }: { reel: Reel; onLike: () => void }) {
 // Fullscreen, Instagram-Reels-style viewer: opens maximized on the clicked reel and
 // lets the viewer scroll down through the rest of the given reel list, one reel per
 // screen. Shared by the main feed and the municipality profile's post grid so both
-// open the exact same experience.
+// open the exact same experience. With `embedded` it fills its parent instead of
+// the screen and has no close button (the リール page), and `onReachEnd` asks for
+// more reels as the last one comes into view.
 export default function ReelFullscreenViewer({
   reels,
   initialId,
@@ -228,6 +230,8 @@ export default function ReelFullscreenViewer({
   onToggleSave,
   onToggleFollow,
   onCommentCountChange,
+  embedded = false,
+  onReachEnd,
 }: {
   reels: Reel[];
   initialId: string;
@@ -239,6 +243,8 @@ export default function ReelFullscreenViewer({
   onToggleSave: (reel: Reel) => void;
   onToggleFollow: (reel: Reel) => void;
   onCommentCountChange: (reelId: string, count: number) => void;
+  embedded?: boolean;
+  onReachEnd?: () => void;
 }) {
   const { t } = useTranslation();
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -254,6 +260,20 @@ export default function ReelFullscreenViewer({
     onClose(reels[Math.min(idx, reels.length - 1)]?.id ?? initialId);
   }
 
+  const lastId = reels[reels.length - 1]?.id;
+  const reachEndRef = useRef(onReachEnd);
+  reachEndRef.current = onReachEnd;
+  useEffect(() => {
+    const el = lastId ? itemRefs.current[lastId] : null;
+    if (!el || !scrollerRef.current) return;
+    const observer = new IntersectionObserver(([entry]) => entry.isIntersecting && reachEndRef.current?.(), {
+      root: scrollerRef.current,
+      threshold: 0.3,
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [lastId]);
+
   // offsetTop rather than scrollIntoView: it isn't thrown off by the opening
   // zoom animation, and runs before paint so there's no visible jump.
   useLayoutEffect(() => {
@@ -264,15 +284,19 @@ export default function ReelFullscreenViewer({
   }, []);
 
   return (
-    <div className={`on-media fixed inset-0 z-50 bg-black ${morphedIn ? "" : "animate-viewer-in"}`}>
-      <SoundButton />
-      <button
-        onClick={close}
-        aria-label={t("reelViewer.closeLabel")}
-        className="fixed right-3 top-[max(0.75rem,env(safe-area-inset-top))] z-20 flex h-10 w-10 items-center justify-center text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
-      >
-        <X className="h-7 w-7" strokeWidth={1.8} />
-      </button>
+    <div
+      className={`on-media bg-black ${embedded ? "absolute inset-0" : "fixed inset-0 z-50"} ${morphedIn || embedded ? "" : "animate-viewer-in"}`}
+    >
+      <SoundButton className={embedded ? "absolute right-3 top-3" : "fixed right-16 top-[max(0.75rem,env(safe-area-inset-top))]"} />
+      {!embedded && (
+        <button
+          onClick={close}
+          aria-label={t("reelViewer.closeLabel")}
+          className="fixed right-3 top-[max(0.75rem,env(safe-area-inset-top))] z-20 flex h-10 w-10 items-center justify-center text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
+        >
+          <X className="h-7 w-7" strokeWidth={1.8} />
+        </button>
+      )}
 
       <div ref={scrollerRef} className="h-full snap-y snap-mandatory overflow-y-scroll">
         {reels.map((reel) => (

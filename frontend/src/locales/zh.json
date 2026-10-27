@@ -21,7 +21,9 @@
     "lightMode": "浅色模式",
     "installApp": "添加到主屏幕",
     "offline": "当前处于离线状态，联网后将显示最新内容",
-    "backOnline": "已恢复联网"
+    "backOnline": "已恢复联网",
+    "reels": "短视频",
+    "map": "地图"
   },
   "auth": {
     "sessionExpired": "登录已过期，请重新登录。"
@@ -598,5 +600,9 @@
     "loading": "翻译中…",
     "failed": "翻译失败（点击重试）",
     "byClaude": "由Claude（AI）翻译"
+  },
+  "map": {
+    "locate": "当前位置",
+    "noneInCategory": "地图上没有该类别的帖子"
   }
 }

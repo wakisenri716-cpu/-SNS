@@ -21,7 +21,9 @@
     "lightMode": "ライトモード",
     "installApp": "アプリとしてホーム画面に追加",
     "offline": "オフラインです。つながると最新の情報を表示します",
-    "backOnline": "オンラインに戻りました"
+    "backOnline": "オンラインに戻りました",
+    "reels": "リール",
+    "map": "地図"
   },
   "auth": {
     "sessionExpired": "セッションが切れました。もう一度ログインしてください。"
@@ -598,5 +600,9 @@
     "loading": "翻訳中…",
     "failed": "翻訳できませんでした（もう一度押す）",
     "byClaude": "Claude（AI）による翻訳"
+  },
+  "map": {
+    "locate": "現在地",
+    "noneInCategory": "このカテゴリの投稿は地図上にありません"
   }
 }

@@ -120,6 +120,24 @@ router.get("/", optionalAuth, async (req, res) => {
 
 // Reels the signed-in user has liked (used by the read-only tourist "マイページ").
 // Must be registered before "/:id" so "liked" isn't matched as a reel id.
+// 地図で探す: every post that has a location, newest first, for plotting on
+// the map (capped; plenty at the current scale).
+const MAP_LIMIT = 300;
+router.get("/map", optionalAuth, async (req, res) => {
+  const followed = await getFollowedIds(req.auth?.userId);
+  const reels = await prisma.reel.findMany({
+    where: { locationLat: { not: null }, locationLng: { not: null } },
+    take: MAP_LIMIT,
+    orderBy: { createdAt: "desc" },
+    include: {
+      ...reelInclude,
+      likes: req.auth ? { where: { userId: req.auth.userId }, select: { id: true } } : false,
+      saves: req.auth ? { where: { userId: req.auth.userId }, select: { id: true } } : false,
+    },
+  });
+  res.json({ items: await Promise.all(reels.map((r) => serializeReel(r, viewerStateFor(r, followed)))) });
+});
+
 router.get("/liked", requireAuth, async (req, res) => {
   const followed = await getFollowedIds(req.auth!.userId);
   const likes = await prisma.like.findMany({

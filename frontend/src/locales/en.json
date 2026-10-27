@@ -21,7 +21,9 @@
     "lightMode": "Light mode",
     "installApp": "Install the app",
     "offline": "You're offline. Latest posts will load when you reconnect",
-    "backOnline": "Back online"
+    "backOnline": "Back online",
+    "reels": "Reels",
+    "map": "Map"
   },
   "auth": {
     "sessionExpired": "Your session has expired. Please log in again."
@@ -603,5 +605,9 @@
     "loading": "Translating…",
     "failed": "Couldn't translate (tap to retry)",
     "byClaude": "Translated by Claude (AI)"
+  },
+  "map": {
+    "locate": "My location",
+    "noneInCategory": "No posts in this category on the map"
   }
 }

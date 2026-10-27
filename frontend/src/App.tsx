@@ -18,6 +18,8 @@ const MunicipalityProfilePage = lazy(() => import("./pages/MunicipalityProfilePa
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const CompanyDashboardPage = lazy(() => import("./pages/CompanyDashboardPage"));
 const SearchPage = lazy(() => import("./pages/SearchPage"));
+const ReelsPage = lazy(() => import("./pages/ReelsPage"));
+const MapPage = lazy(() => import("./pages/MapPage"));
 const MyPage = lazy(() => import("./pages/MyPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
@@ -39,6 +41,8 @@ function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<FeedPage />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/reels" element={<ReelsPage />} />
+        <Route path="/map" element={<MapPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterUserPage />} />
         <Route path="/register-municipality" element={<RegisterMunicipalityPage />} />

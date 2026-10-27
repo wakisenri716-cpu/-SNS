@@ -21,7 +21,9 @@
     "lightMode": "라이트 모드",
     "installApp": "홈 화면에 앱 추가",
     "offline": "오프라인 상태입니다. 연결되면 최신 정보를 표시합니다",
-    "backOnline": "다시 온라인 상태입니다"
+    "backOnline": "다시 온라인 상태입니다",
+    "reels": "릴스",
+    "map": "지도"
   },
   "auth": {
     "sessionExpired": "세션이 만료되었습니다. 다시 로그인해 주세요."
@@ -598,5 +600,9 @@
     "loading": "번역 중…",
     "failed": "번역하지 못했어요 (다시 누르기)",
     "byClaude": "Claude(AI) 번역"
+  },
+  "map": {
+    "locate": "현재 위치",
+    "noneInCategory": "이 카테고리의 게시물이 지도에 없어요"
   }
 }
