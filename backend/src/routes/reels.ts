@@ -1037,4 +1037,32 @@ router.post("/:id/translation", translateLimiter, async (req, res) => {
   }
 });
 
+// スタンプラリー: check in at a post's spot. The browser sends its position;
+// a stamp is given only within VISIT_RADIUS_METERS of the spot (the position
+// is the browser's report, so this keeps honest use honest rather than being
+// tamper-proof). Travelers only — posters don't collect stamps.
+const VISIT_RADIUS_METERS = 1000;
+const visitSchema = z.object({ lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180) });
+
+router.post("/:id/visit", requireAuth, requireRole("USER"), writeLimiter, async (req, res) => {
+  const parsed = visitSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "現在地を取得できませんでした" });
+  const reel = await prisma.reel.findUnique({
+    where: { id: req.params.id },
+    select: { id: true, locationLat: true, locationLng: true },
+  });
+  if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
+  if (reel.locationLat == null || reel.locationLng == null) {
+    return res.status(400).json({ error: "この投稿には場所が登録されていません" });
+  }
+  const distance = haversineMeters(parsed.data, { lat: reel.locationLat, lng: reel.locationLng });
+  if (distance > VISIT_RADIUS_METERS) {
+    return res.status(422).json({ error: "tooFar", distanceMeters: Math.round(distance) });
+  }
+  const existing = await prisma.visit.findUnique({ where: { userId_reelId: { userId: req.auth!.userId, reelId: reel.id } } });
+  const visit =
+    existing ?? (await prisma.visit.create({ data: { userId: req.auth!.userId, reelId: reel.id } }));
+  res.json({ visitedAt: visit.createdAt, alreadyVisited: !!existing, ...(await getUserPoints(req.auth!.userId)) });
+});
+
 export default router;

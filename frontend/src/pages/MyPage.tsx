@@ -4,14 +4,22 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import Avatar from "../components/Avatar";
+import Stamp from "../components/Stamp";
+import { formatStampDate } from "../components/VisitStampCard";
 import type { Reel } from "../types";
+
+interface StampItem {
+  visitedAt: string;
+  reel: { id: string; locationName: string; municipality: { id: string; name: string; prefecture: string } };
+}
 
 export default function MyPage() {
   const { user } = useAuth();
   const { t } = useTranslation();
   const [likedReels, setLikedReels] = useState<Reel[]>([]);
   const [loading, setLoading] = useState(true);
-  const [points, setPoints] = useState<{ points: number; reportCount: number } | null>(null);
+  const [points, setPoints] = useState<{ points: number; reportCount: number; visitCount: number } | null>(null);
+  const [stamps, setStamps] = useState<StampItem[] | null>(null);
 
   useEffect(() => {
     api
@@ -19,6 +27,7 @@ export default function MyPage() {
       .then(({ data }) => setLikedReels(data.items))
       .finally(() => setLoading(false));
     api.get("/auth/me/points").then(({ data }) => setPoints(data));
+    api.get<{ items: StampItem[] }>("/auth/me/stamps").then(({ data }) => setStamps(data.items));
   }, []);
 
   if (!user) return null;
@@ -45,9 +54,30 @@ export default function MyPage() {
           </div>
           <p className="text-xs leading-relaxed text-gray-500">
             {t("myPage.pointsNote", { count: points.reportCount })}
+            <br />
+            {t("stamps.pointsNote", { count: points.visitCount })}
           </p>
         </div>
       )}
+
+      <section className="mt-8">
+        <h2 className="text-sm font-bold text-gray-900">
+          {t("stamps.bookHeading")}
+          {stamps && <span className="ml-2 font-normal text-gray-400">{t("stamps.count", { count: stamps.length })}</span>}
+        </h2>
+        {stamps && stamps.length === 0 ? (
+          <p className="mt-3 rounded-2xl bg-gray-50 p-4 text-xs leading-relaxed text-gray-500">{t("stamps.bookEmpty")}</p>
+        ) : (
+          <div className="scrollbar-none -mx-4 mt-3 flex gap-5 overflow-x-auto px-4 pb-2 pt-2 md:mx-0 md:flex-wrap md:px-0">
+            {(stamps ?? []).map((s) => (
+              <Link key={s.reel.id} to={`/reels/${s.reel.id}/access`} className="flex w-24 shrink-0 flex-col items-center gap-1.5 text-center">
+                <Stamp place={s.reel.locationName} date={formatStampDate(s.visitedAt)} size={92} />
+                <span className="w-full truncate text-[11px] text-gray-500">{s.reel.municipality.name}</span>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
 
       <div className="-mx-4 mt-8 border-t border-gray-200 md:mx-0">
         <h2 className="px-4 py-3 text-center text-xs font-semibold tracking-wider text-gray-900 md:px-0">

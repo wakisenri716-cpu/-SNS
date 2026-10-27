@@ -12,6 +12,7 @@ import { useTapGestures } from "../lib/useTapGestures";
 import { useAmbientColor } from "../lib/useAmbientColor";
 import { relativeTime } from "../lib/relativeTime";
 import { useTilt } from "../lib/useTilt";
+import { formatDistance } from "../lib/geo";
 import type { Reel } from "../types";
 
 function haptic() {
@@ -26,6 +27,7 @@ function haptic() {
 export default function FeedPost({
   reel,
   heroName,
+  distanceKm,
   onOpen,
   onToggleLike,
   onToggleSave,
@@ -35,6 +37,8 @@ export default function FeedPost({
   reel: Reel;
   /** View-transition name for the media while it morphs into/out of the viewer. */
   heroName?: string;
+  /** Shown as "ここから12km" on the 近く tab. */
+  distanceKm?: number;
   onOpen: (reel: Reel) => void;
   onToggleLike: (reel: Reel) => void;
   onToggleSave: (reel: Reel) => void;
@@ -43,7 +47,10 @@ export default function FeedPost({
 }) {
   const { t, i18n } = useTranslation();
   const poster = reel.postedByCompany ?? reel.municipality;
-  const tags = [t(`category.${reel.category}`), ...reel.travelerTags.map((tag) => t(`travelerTag.${tag}`))];
+  const tags = [
+    { label: t(`category.${reel.category}`), to: `/tags/category/${reel.category}` },
+    ...reel.travelerTags.map((tag) => ({ label: t(`travelerTag.${tag}`), to: `/tags/traveler/${tag}` })),
+  ];
   const hasLocation = reel.locationLat != null && reel.locationLng != null;
   const soundOn = useSoundOn();
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -109,7 +116,10 @@ export default function FeedPost({
                 <span className="truncate">{reel.locationName}</span>
               </p>
             )}
-            <p className="truncate pl-5 text-xs text-white/75">{reel.municipality.prefecture}</p>
+            <p className="truncate pl-5 text-xs text-white/75">
+              {reel.municipality.prefecture}
+              {distanceKm != null && <span className="ml-1.5 font-semibold text-white">・{t("feed.distanceFromHere", { distance: formatDistance(distanceKm) })}</span>}
+            </p>
           </div>
           {hasLocation && (
             <Link
@@ -191,10 +201,14 @@ export default function FeedPost({
         {reel.caption && <TranslatedCaption reelId={reel.id} caption={reel.caption} />}
         <p className="flex flex-wrap gap-1.5">
           {tags.map((tag) => (
-            <span key={tag} className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
+            <Link
+              key={tag.to}
+              to={tag.to}
+              className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700 transition hover:bg-gray-200 active:scale-95"
+            >
               <span className="text-jz-red">#</span>
-              {tag.replace(/\s+/g, "")}
-            </span>
+              {tag.label.replace(/\s+/g, "")}
+            </Link>
           ))}
         </p>
         <p className="flex items-center gap-2 text-xs text-gray-400">

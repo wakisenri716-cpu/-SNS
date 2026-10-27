@@ -101,7 +101,9 @@
     "directions": "가는 법",
     "savePill": "수첩에 저장",
     "savedPill": "저장됨",
-    "heroTitle": "다음 여행지를 찾아보세요"
+    "heroTitle": "다음 여행지를 찾아보세요",
+    "distanceFromHere": "여기서 {{distance}}",
+    "nearbyNoLocation": "현재 위치를 가져오지 못했어요. 브라우저에서 위치 권한을 허용하면 가까운 순으로 볼 수 있어요."
   },
   "search": {
     "placeholder": "지역명・키워드로 검색",
@@ -146,7 +148,11 @@
     "stayLabel": "체류",
     "stayMinutes": "{{minutes}}분",
     "finish": "{{time}}경 마지막 장소 출발",
-    "originNotLocated": "출발 지점의 위치를 특정할 수 없어 첫 장소까지의 이동 시간은 포함하지 않았습니다 (출발 시각에 첫 장소에 도착하는 것으로 계산합니다)."
+    "originNotLocated": "출발 지점의 위치를 특정할 수 없어 첫 장소까지의 이동 시간은 포함하지 않았습니다 (출발 시각에 첫 장소에 도착하는 것으로 계산합니다).",
+    "addToCalendar": "캘린더에 추가",
+    "calendarDate": "여행 날짜",
+    "downloadCalendar": "이 날짜로 추가",
+    "offlineCopy": "오프라인이라 마지막으로 열었을 때의 여행 수첩을 보여 드려요."
   },
   "dashboard": {
     "tabPosts": "게시물",
@@ -419,7 +425,8 @@
     "lodging": "숙박",
     "restaurant": "음식점",
     "saved": "저장됨",
-    "following": "팔로잉"
+    "following": "팔로잉",
+    "nearby": "가까운 곳"
   },
   "insights": {
     "heading": "게시물 인사이트",
@@ -623,5 +630,35 @@
     "redo": "다시 만들기",
     "applied": "일정을 여행 수첩에 반영했어요",
     "error": "일정을 만들지 못했어요. 잠시 후 다시 시도해 주세요."
+  },
+  "tags": {
+    "postCount": "게시물 {{count}}개",
+    "empty": "이 태그의 게시물이 아직 없어요"
+  },
+  "poster": {
+    "loginRequired": "지자체 계정으로 로그인해 주세요",
+    "back": "← 관리 화면으로",
+    "print": "인쇄하기",
+    "lead": "영상으로 여행지를 찾아보세요",
+    "sub": "명소·숙소·맛집 영상과 가는 법을 한 번에",
+    "scan": "휴대폰 카메라로 스캔해 주세요",
+    "button": "QR 코드 포스터 인쇄",
+    "buttonHint": "역이나 관광안내소에 붙일 수 있는, 지자체 페이지 QR 코드 포스터"
+  },
+  "stamps": {
+    "heading": "스탬프 랠리",
+    "how": "이 장소에 도착하면 여기서 스탬프를 찍을 수 있어요 (1km 이내, 1곳당 20pt).",
+    "collected": "이 장소의 스탬프를 모았어요.",
+    "checkIn": "현장에서 스탬프 찍기",
+    "checking": "현재 위치 확인 중…",
+    "got": "스탬프를 찍었어요! (총 {{points}}pt)",
+    "viewBook": "스탬프북 보기",
+    "noLocation": "현재 위치를 가져오지 못했어요. 위치 권한을 허용한 뒤 다시 시도해 주세요.",
+    "tooFar": "장소까지 약 {{distance}} 남았어요. 1km 이내로 가면 찍을 수 있어요.",
+    "error": "스탬프를 찍지 못했어요. 잠시 후 다시 시도해 주세요.",
+    "bookHeading": "스탬프북",
+    "count": "{{count}}개",
+    "bookEmpty": "아직 스탬프가 없어요. 가고 싶은 장소의 교통 화면을 열고, 도착하면 \"현장에서 스탬프 찍기\"를 눌러 주세요.",
+    "pointsNote": "스탬프 {{count}}개"
   }
 }

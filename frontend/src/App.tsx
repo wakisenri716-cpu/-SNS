@@ -1,4 +1,4 @@
-import { lazy, useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Layout from "./components/Layout";
@@ -20,6 +20,8 @@ const CompanyDashboardPage = lazy(() => import("./pages/CompanyDashboardPage"));
 const SearchPage = lazy(() => import("./pages/SearchPage"));
 const ReelsPage = lazy(() => import("./pages/ReelsPage"));
 const MapPage = lazy(() => import("./pages/MapPage"));
+const TagPage = lazy(() => import("./pages/TagPage"));
+const PosterPage = lazy(() => import("./pages/PosterPage"));
 const MyPage = lazy(() => import("./pages/MyPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
@@ -38,11 +40,21 @@ function App() {
 
   return (
     <Routes>
+      {/* Printable poster: outside the layout so the app chrome doesn't print. */}
+      <Route
+        path="/poster"
+        element={
+          <Suspense fallback={null}>
+            <PosterPage />
+          </Suspense>
+        }
+      />
       <Route element={<Layout />}>
         <Route path="/" element={<FeedPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/reels" element={<ReelsPage />} />
         <Route path="/map" element={<MapPage />} />
+        <Route path="/tags/:kind/:value" element={<TagPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterUserPage />} />
         <Route path="/register-municipality" element={<RegisterMunicipalityPage />} />

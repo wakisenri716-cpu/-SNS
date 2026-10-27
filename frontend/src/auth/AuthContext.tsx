@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { api, setAuthToken, setUnauthorizedHandler } from "../api/client";
+import { isAxiosError } from "axios";
 import i18n from "../i18n";
+import { clearOfflineItinerary } from "../lib/offlineItinerary";
 import type { AuthUser, Company, Municipality } from "../types";
 
 interface AuthState {
@@ -62,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setCompany(null);
     setAuthToken(null);
     localStorage.removeItem(STORAGE_KEY);
+    clearOfflineItinerary();
     if (notice) sessionStorage.setItem(AUTH_NOTICE_KEY, notice);
   }
 
@@ -89,7 +92,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setMunicipalityState(data.municipality);
           setCompany(data.company);
         })
-        .catch(() => {
+        .catch((err) => {
+          // No response at all means we're offline (or the server is
+          // unreachable), not that the session is invalid: keep the saved
+          // session so the installed app still opens signed in — and its
+          // offline しおり copy survives. Real rejections still log out.
+          if (isAxiosError(err) && !err.response && parsed.user) {
+            setToken(parsed.token);
+            setUser(parsed.user);
+            setMunicipalityState(parsed.municipality ?? null);
+            setCompany(parsed.company ?? null);
+            return;
+          }
           logout();
         })
         .finally(() => setReady(true));

@@ -51,6 +51,7 @@ model User {
   travelReports TravelTimeReport[]
   notifications       Notification[] @relation("NotificationRecipient")
   notificationsCaused Notification[] @relation("NotificationActor")
+  visits        Visit[]
 }
 
 model Municipality {
@@ -149,6 +150,20 @@ model Reel {
   travelReports TravelTimeReport[]
   notifications Notification[]
   translations  ReelTranslation[]
+  visits        Visit[]
+}
+
+// スタンプラリー: a traveler checked in at a post's spot (within
+// VISIT_RADIUS_METERS of it, by the browser's location). One stamp per spot.
+model Visit {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reelId    String
+  reel      Reel     @relation(fields: [reelId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, reelId])
 }
 
 // Machine translations of a reel's caption (Claude), cached so each

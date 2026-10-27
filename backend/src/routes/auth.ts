@@ -259,6 +259,31 @@ router.get("/me/points", requireAuth, async (req, res) => {
   res.json(await getUserPoints(req.auth!.userId));
 });
 
+// スタンプ帳: the spots this traveler has checked in at, newest first.
+router.get("/me/stamps", requireAuth, async (req, res) => {
+  const visits = await prisma.visit.findMany({
+    where: { userId: req.auth!.userId },
+    orderBy: { createdAt: "desc" },
+    include: {
+      reel: {
+        select: {
+          id: true,
+          videoUrl: true,
+          locationName: true,
+          caption: true,
+          municipality: { select: { id: true, name: true, prefecture: true } },
+        },
+      },
+    },
+  });
+  res.json({
+    items: visits.map((v) => ({
+      visitedAt: v.createdAt,
+      reel: { ...v.reel, caption: undefined, locationName: v.reel.locationName || v.reel.caption.slice(0, 30) },
+    })),
+  });
+});
+
 const updateMeSchema = z.object({
   name: z.string().min(1).optional(),
   email: z.string().email().optional(),

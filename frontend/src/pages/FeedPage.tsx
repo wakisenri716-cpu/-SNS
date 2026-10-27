@@ -9,6 +9,7 @@ import { useAuth } from "../auth/AuthContext";
 import { showToast } from "../lib/toast";
 import { isOnScreen, withViewTransition } from "../lib/viewTransition";
 import { usePullToRefresh } from "../lib/usePullToRefresh";
+import { currentPosition, distanceKm } from "../lib/geo";
 import Avatar from "../components/Avatar";
 import CommentsSheet from "../components/CommentsSheet";
 import FeedPost from "../components/FeedPost";
@@ -20,12 +21,22 @@ import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import WelcomeIntro from "../components/WelcomeIntro";
 import { REEL_CATEGORIES, type Reel } from "../types";
 
-const CATEGORY_TABS = ["all", ...REEL_CATEGORIES] as const;
+const CATEGORY_TABS = ["all", "nearby", ...REEL_CATEGORIES] as const;
 const SPECIAL_TABS = ["saved", "following"] as const;
 type Tab = (typeof CATEGORY_TABS)[number] | (typeof SPECIAL_TABS)[number];
 
-// saved/following return everything at once; the main feed is paged by cursor.
-function feedRequest(tab: Tab, cursor?: string) {
+// 近く: every located post, nearest first, measured from the browser's position.
+async function nearbyRequest() {
+  const [here, { data }] = await Promise.all([currentPosition(), api.get<{ items: Reel[] }>("/reels/map")]);
+  const distances: Record<string, number> = {};
+  for (const r of data.items) distances[r.id] = distanceKm(here, { lat: r.locationLat!, lng: r.locationLng! });
+  const items = [...data.items].sort((a, b) => distances[a.id] - distances[b.id]);
+  return { data: { items, distances, nextCursor: null, personalized: false } };
+}
+
+// saved/following/nearby return everything at once; the main feed is paged by cursor.
+function feedRequest(tab: Tab, cursor?: string): Promise<{ data: { items: Reel[]; nextCursor?: string | null; personalized?: boolean; distances?: Record<string, number> } }> {
+  if (tab === "nearby") return nearbyRequest();
   if (tab === "saved") return api.get("/reels/saved");
   if (tab === "following") return api.get("/reels/following");
   return api.get("/reels", {
@@ -44,6 +55,9 @@ export default function FeedPage() {
   const [commentsReelId, setCommentsReelId] = useState<string | null>(null);
   // Reel whose card/slide carries the shared name during an open/close morph.
   const [heroId, setHeroId] = useState<string | null>(null);
+  // 近く tab: km from the viewer to each post, and whether location was unavailable.
+  const [distances, setDistances] = useState<Record<string, number>>({});
+  const [locationError, setLocationError] = useState(false);
   // Stories being watched: the groups as ordered when opened, so the row
   // re-sorting as posts become "seen" doesn't shift the viewer.
   const [storyView, setStoryView] = useState<{ groups: StoryGroup[]; start: number } | null>(null);
@@ -69,12 +83,19 @@ export default function FeedPage() {
     const version = ++listVersion.current;
     if (!refreshingRef.current) setLoading(true);
     setNextCursor(null);
+    setLocationError(false);
     feedRequest(tab)
       .then(({ data }) => {
         if (version !== listVersion.current) return;
         setReels(data.items);
+        setDistances(data.distances ?? {});
         setPersonalized(!!data.personalized);
         setNextCursor(data.nextCursor ?? null);
+      })
+      .catch(() => {
+        if (version !== listVersion.current || tab !== "nearby") return;
+        setReels([]);
+        setLocationError(true);
       })
       .finally(() => {
         if (version !== listVersion.current) return;
@@ -292,7 +313,13 @@ export default function FeedPage() {
         </div>
       ) : reels.length === 0 ? (
         <p className="px-6 py-16 text-center text-sm text-gray-500">
-          {tab === "saved" ? t("feed.emptySaved") : tab === "following" ? t("feed.emptyFollowing") : t("feed.empty")}
+          {tab === "saved"
+            ? t("feed.emptySaved")
+            : tab === "following"
+              ? t("feed.emptyFollowing")
+              : tab === "nearby" && locationError
+                ? t("feed.nearbyNoLocation")
+                : t("feed.empty")}
         </p>
       ) : (
         <div className="pb-6 pt-3">
@@ -301,6 +328,7 @@ export default function FeedPage() {
               key={reel.id}
               reel={reel}
               heroName={heroId === reel.id && !openReelId ? "reel-hero" : undefined}
+              distanceKm={tab === "nearby" ? distances[reel.id] : undefined}
               onOpen={openViewer}
               onToggleLike={toggleLike}
               onToggleSave={toggleSave}

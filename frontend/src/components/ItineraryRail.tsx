@@ -9,7 +9,8 @@ import { projectLatLngToUnitSquare } from "../lib/schematicMap";
 import { notifySavesChanged, onSavesChanged } from "../lib/savesChanged";
 import type { Itinerary, TransitSuggestion } from "../types";
 import ModeIcon from "./ModeIcon";
-import { ChevronDown, ChevronUp, Flag, House, Sparkles, X } from "lucide-react";
+import { CalendarPlus, ChevronDown, ChevronUp, Flag, House, Sparkles, WifiOff, X } from "lucide-react";
+import { downloadItineraryIcs } from "../lib/ics";
 
 const TripPlanSheet = lazy(() => import("./TripPlanSheet"));
 
@@ -78,9 +79,13 @@ export function ItineraryPanel() {
   const [originDraft, setOriginDraft] = useState("");
   const [startDraft, setStartDraft] = useState("09:00");
   const [planOpen, setPlanOpen] = useState(false);
+  // Served from the service worker's saved copy because we're offline.
+  const [offline, setOffline] = useState(false);
+  const [calendarDate, setCalendarDate] = useState<string | null>(null);
 
   function load() {
-    return api.get<Itinerary>("/reels/itinerary").then(({ data }) => {
+    return api.get<Itinerary>("/reels/itinerary").then(({ data, headers }) => {
+      setOffline(headers["x-jaziba-offline"] === "1");
       setItinerary(data);
       setOriginDraft(data.originLabel);
       setStartDraft(data.startTime);
@@ -145,6 +150,11 @@ export function ItineraryPanel() {
     <>
       <h2 className="text-base font-bold text-gray-900">{t("itinerary.heading")}</h2>
       <p className="mt-1 text-xs text-gray-400">{t("itinerary.subtitle")}</p>
+      {offline && (
+        <p className="mt-3 flex items-center gap-2 rounded-xl bg-amber-50 px-3 py-2 text-[11px] leading-relaxed text-amber-800">
+          <WifiOff className="h-3.5 w-3.5 shrink-0" /> {t("itinerary.offlineCopy")}
+        </p>
+      )}
 
       {loading ? (
         <p className="mt-6 text-xs text-gray-400">{t("itinerary.loading")}</p>
@@ -322,6 +332,55 @@ export function ItineraryPanel() {
               </p>
             </div>
           )}
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            {calendarDate == null ? (
+              <button
+                type="button"
+                onClick={() => {
+                  const tomorrow = new Date(Date.now() + 86_400_000);
+                  setCalendarDate(
+                    `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, "0")}-${String(tomorrow.getDate()).padStart(2, "0")}`
+                  );
+                }}
+                className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-800 hover:bg-gray-200"
+              >
+                <CalendarPlus className="h-3.5 w-3.5" /> {t("itinerary.addToCalendar")}
+              </button>
+            ) : (
+              <>
+                <input
+                  type="date"
+                  value={calendarDate}
+                  onChange={(e) => setCalendarDate(e.target.value)}
+                  aria-label={t("itinerary.calendarDate")}
+                  className="rounded-xl border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900"
+                />
+                <button
+                  type="button"
+                  disabled={!calendarDate}
+                  onClick={() => {
+                    downloadItineraryIcs(
+                      calendarDate,
+                      itinerary.stops.map((stop, i) => ({
+                        title: stop.locationName || stop.caption.slice(0, 30),
+                        location: `${stop.locationName ?? ""} ${stop.municipality.name} ${stop.municipality.prefecture}`.trim(),
+                        lat: stop.locationLat,
+                        lng: stop.locationLng,
+                        url: `${window.location.origin}/reels/${stop.id}/access`,
+                        start: times[i].arrive,
+                        end: times[i].leave,
+                      })),
+                      `jaziba-${calendarDate}.ics`
+                    );
+                    setCalendarDate(null);
+                  }}
+                  className="rounded-full bg-jz-red px-3 py-1.5 text-xs font-bold text-white"
+                >
+                  {t("itinerary.downloadCalendar")}
+                </button>
+              </>
+            )}
+          </div>
           <p className="mt-3 text-[11px] leading-relaxed text-gray-400">{t("itinerary.disclaimer")}</p>
         </div>
       )}

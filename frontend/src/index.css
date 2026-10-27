@@ -357,3 +357,56 @@ body {
 @keyframes aurora-a { to { transform: translate(80px, 40px) scale(1.2); } }
 @keyframes aurora-b { to { transform: translate(-90px, 50px) scale(0.85); } }
 @keyframes aurora-c { to { transform: translate(-40px, -50px) scale(1.15); } }
+
+/* ---- Stamps (スタンプラリー) ------------------------------------------- */
+.stamp {
+  display: inline-flex;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  border: 0.32em solid #d7202e;
+  padding: 0.25em;
+  color: #d7202e;
+  transform: rotate(-12deg);
+  opacity: 0.92;
+}
+.stamp-ring {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 0.12em solid #d7202e;
+  text-align: center;
+  line-height: 1.15;
+  overflow: hidden;
+  padding: 0 0.6em;
+}
+.stamp-brand {
+  font-size: 0.75em;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+.stamp-place {
+  max-width: 100%;
+  margin: 0.2em 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1.15em;
+  font-weight: 800;
+}
+.stamp-date {
+  font-size: 0.7em;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+@keyframes stamp-in {
+  0% { transform: rotate(-12deg) scale(2.2); opacity: 0; }
+  55% { transform: rotate(-12deg) scale(0.92); opacity: 1; }
+  75% { transform: rotate(-12deg) scale(1.04); }
+  100% { transform: rotate(-12deg) scale(1); opacity: 0.92; }
+}
+.animate-stamp {
+  animation: stamp-in 0.55s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}

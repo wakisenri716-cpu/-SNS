@@ -7,6 +7,7 @@ import SchematicRouteMap from "../components/SchematicRouteMap";
 import NearbySpots from "../components/NearbySpots";
 import ShareButton from "../components/ShareButton";
 import MunicipalityStayInfo from "../components/MunicipalityStayInfo";
+import VisitStampCard from "../components/VisitStampCard";
 import { TravelerTagChips } from "../components/TravelerTagChips";
 import TravelReportSection, { normalizeOrigin } from "../components/TravelReportSection";
 import { formatDateTime, localDateTimeToIso, nowAsDatetimeLocalValue } from "../lib/departureTime";
@@ -342,6 +343,10 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
           )}
         </div>
       </div>
+
+      {reel.locationLat != null && reel.locationLng != null && (
+        <VisitStampCard reelId={reel.id} place={reel.locationName || reel.municipality.name} />
+      )}
 
       <div className="mb-4 flex items-center justify-between gap-2 border-b border-gray-200 pb-3">
         <h1 className="text-lg font-bold text-gray-900">{t("reelAccessPage.heading")}</h1>

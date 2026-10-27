@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
@@ -7,7 +8,7 @@ import ReelEditor from "../components/ReelEditor";
 import { TravelerTagChips } from "../components/TravelerTagChips";
 import AutoplayVideo from "../components/AutoplayVideo";
 import type { Municipality, Reel, TourismSpot } from "../types";
-import { Pencil } from "lucide-react";
+import { Pencil, QrCode } from "lucide-react";
 
 // "アクセス方法・宿情報・飲食店" — still one free-text field each, edited via a
 // plain textarea. 観光情報 (tourismInfo) used to be a 4th field in this same
@@ -566,6 +567,20 @@ export default function DashboardPage() {
       )}
 
       <MaasStationEditor municipality={municipality} onUpdated={setMunicipality} />
+      <div className="border-b border-gray-200 p-4 lg:p-6">
+        <Link
+          to="/poster"
+          className="flex items-center gap-3 rounded-2xl border border-gray-200 p-3 transition hover:bg-gray-50"
+        >
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-jz-tint text-jz-red">
+            <QrCode className="h-5 w-5" />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-sm font-bold text-gray-900">{t("poster.button")}</span>
+            <span className="block text-xs text-gray-500">{t("poster.buttonHint")}</span>
+          </span>
+        </Link>
+      </div>
 
       <div className="border-t border-gray-200 p-4 lg:p-6">
         <h3 className="mb-2 text-sm font-semibold text-gray-600">

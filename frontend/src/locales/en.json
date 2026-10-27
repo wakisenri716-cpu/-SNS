@@ -103,7 +103,9 @@
     "directions": "Directions",
     "savePill": "Save",
     "savedPill": "Saved",
-    "heroTitle": "Find your next trip"
+    "heroTitle": "Find your next trip",
+    "distanceFromHere": "{{distance}} away",
+    "nearbyNoLocation": "Couldn't get your location. Allow location access in your browser to see the nearest posts."
   },
   "search": {
     "placeholder": "Search by region or keyword",
@@ -148,7 +150,11 @@
     "stayLabel": "Stay",
     "stayMinutes": "{{minutes}} min",
     "finish": "Leave the last stop around {{time}}",
-    "originNotLocated": "Couldn't locate the starting point, so travel time to the first stop isn't included (times assume you reach the first stop at the start time)."
+    "originNotLocated": "Couldn't locate the starting point, so travel time to the first stop isn't included (times assume you reach the first stop at the start time).",
+    "addToCalendar": "Add to calendar",
+    "calendarDate": "Trip date",
+    "downloadCalendar": "Add for this date",
+    "offlineCopy": "You're offline — showing the itinerary as it was when you last opened it."
   },
   "dashboard": {
     "tabPosts": "Posts",
@@ -421,7 +427,8 @@
     "lodging": "Lodging",
     "restaurant": "Restaurants",
     "saved": "Saved",
-    "following": "Following"
+    "following": "Following",
+    "nearby": "Nearby"
   },
   "insights": {
     "heading": "Post Insights",
@@ -629,5 +636,38 @@
     "redo": "Start over",
     "applied": "Plan applied to your itinerary",
     "error": "Couldn't make a plan. Please try again in a moment."
+  },
+  "tags": {
+    "postCount_one": "{{count}} post",
+    "postCount_other": "{{count}} posts",
+    "empty": "No posts with this tag yet"
+  },
+  "poster": {
+    "loginRequired": "Please sign in with a municipality account",
+    "back": "← Back to dashboard",
+    "print": "Print",
+    "lead": "Find your next trip in videos",
+    "sub": "Sights, stays and food in short videos — plus how to get there",
+    "scan": "Scan with your phone camera",
+    "button": "Print QR code poster",
+    "buttonHint": "A poster with a QR code to your page, for stations and tourist info desks"
+  },
+  "stamps": {
+    "heading": "Stamp rally",
+    "how": "When you're at this spot, collect its stamp here (within 1 km, 20 pt each).",
+    "collected": "You've collected this spot's stamp.",
+    "checkIn": "I'm here — get the stamp",
+    "checking": "Checking your location…",
+    "got": "Stamp collected! ({{points}} pt in total)",
+    "viewBook": "Stamp book",
+    "noLocation": "Couldn't get your location. Allow location access and try again.",
+    "tooFar": "About {{distance}} to go. Get within 1 km to collect it.",
+    "error": "Couldn't collect the stamp. Please try again in a moment.",
+    "bookHeading": "Stamp book",
+    "count_one": "{{count}} stamp",
+    "count_other": "{{count}} stamps",
+    "bookEmpty": "No stamps yet. Open a spot's directions page and tap \"I'm here\" when you arrive.",
+    "pointsNote_one": "{{count}} stamp",
+    "pointsNote_other": "{{count}} stamps"
   }
 }
