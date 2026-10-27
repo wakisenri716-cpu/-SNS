@@ -5,7 +5,7 @@ import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import Avatar from "../components/Avatar";
 import Stamp from "../components/Stamp";
-import { formatStampDate } from "../components/VisitStampCard";
+import { formatStampDate } from "../lib/stampDate";
 import type { Reel } from "../types";
 
 interface StampItem {

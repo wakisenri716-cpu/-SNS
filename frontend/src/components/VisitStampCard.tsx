@@ -7,11 +7,7 @@ import { useAuth } from "../auth/AuthContext";
 import { currentPosition, formatDistance } from "../lib/geo";
 import { showToast } from "../lib/toast";
 import Stamp from "./Stamp";
-
-export function formatStampDate(iso: string) {
-  const d = new Date(iso);
-  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
-}
+import { formatStampDate } from "../lib/stampDate";
 
 // スタンプラリー on a spot's access page: when you're actually there (within
 // 1km), press to get its stamp (+20pt). Travelers only.
