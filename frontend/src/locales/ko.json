@@ -587,5 +587,16 @@
     "matchCategory": "{{category}} 게시물",
     "matchPlace": "장소 이름 일치",
     "error": "찾지 못했어요. 잠시 후 다시 시도해 주세요."
+  },
+  "stories": {
+    "tapHint": "오른쪽을 탭하면 다음, 왼쪽은 이전, 길게 누르면 일시정지",
+    "viewProfile": "프로필 보기"
+  },
+  "translation": {
+    "show": "번역 보기",
+    "showOriginal": "원문 보기",
+    "loading": "번역 중…",
+    "failed": "번역하지 못했어요 (다시 누르기)",
+    "byClaude": "Claude(AI) 번역"
   }
 }

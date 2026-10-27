@@ -148,6 +148,20 @@ model Reel {
   saves    SavedReel[]
   travelReports TravelTimeReport[]
   notifications Notification[]
+  translations  ReelTranslation[]
+}
+
+// Machine translations of a reel's caption (Claude), cached so each
+// caption/language pair is translated once. Cleared when the caption changes.
+model ReelTranslation {
+  id        String   @id @default(cuid())
+  reelId    String
+  reel      Reel     @relation(fields: [reelId], references: [id], onDelete: Cascade)
+  lang      String
+  caption   String
+  createdAt DateTime @default(now())
+
+  @@unique([reelId, lang])
 }
 
 // One row per reel view, kept (rather than just incrementing a counter) so

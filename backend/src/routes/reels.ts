@@ -13,7 +13,9 @@ import { POINTS_PER_TRAVEL_REPORT, getUserPoints } from "../lib/points";
 import { hasTravelStyle, scoreReel } from "../lib/personalize";
 import { notifyPoster } from "../lib/notifications";
 import { summarizeByOriginAndMode, summarizeOrigins } from "../lib/travelReports";
-import { writeLimiter } from "../middleware/rateLimit";
+import { translateLimiter, writeLimiter } from "../middleware/rateLimit";
+import { isClaudeConfigured, logClaudeError } from "../services/claude";
+import { translateCaption } from "../services/translate";
 
 const PERSONALIZED_POOL = 100;
 
@@ -712,6 +714,10 @@ router.put("/:id", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (r
     data: { ...rest, ...coords, ...(travelerTags ? { travelerTags: travelerTags.join(",") } : {}) },
     include: reelInclude,
   });
+  // Cached translations no longer match an edited caption.
+  if (rest.caption !== undefined && rest.caption !== reel.caption) {
+    await prisma.reelTranslation.deleteMany({ where: { reelId: reel.id } });
+  }
   res.json(await serializeReel(updated, anonymousViewerState()));
 });
 
@@ -938,6 +944,38 @@ router.delete("/:id/comments/:commentId", requireAuth, async (req, res) => {
 
   await prisma.comment.delete({ where: { id: comment.id } });
   res.status(204).end();
+});
+
+// "翻訳を見る": the caption in the viewer's language, translated by Claude
+// once per caption/language and cached. 503 when no API key is configured
+// (the UI hides the button then — see GET /concierge/status).
+const translationSchema = z.object({ lang: z.enum(["en", "zh", "ko"]) });
+
+router.post("/:id/translation", translateLimiter, async (req, res) => {
+  const parsed = translationSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "翻訳先の言語が正しくありません" });
+  const { lang } = parsed.data;
+
+  const reel = await prisma.reel.findUnique({ where: { id: req.params.id }, select: { id: true, caption: true } });
+  if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
+  if (!reel.caption.trim()) return res.json({ caption: "", cached: true });
+
+  const cached = await prisma.reelTranslation.findUnique({ where: { reelId_lang: { reelId: reel.id, lang } } });
+  if (cached) return res.json({ caption: cached.caption, cached: true });
+
+  if (!isClaudeConfigured()) return res.status(503).json({ error: "翻訳機能は現在利用できません" });
+  try {
+    const caption = await translateCaption(reel.caption, lang);
+    await prisma.reelTranslation.upsert({
+      where: { reelId_lang: { reelId: reel.id, lang } },
+      create: { reelId: reel.id, lang, caption },
+      update: { caption },
+    });
+    res.json({ caption, cached: false });
+  } catch (err) {
+    logClaudeError("translate", err);
+    res.status(502).json({ error: "翻訳できませんでした。しばらくしてからもう一度お試しください" });
+  }
 });
 
 export default router;

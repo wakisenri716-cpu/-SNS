@@ -592,5 +592,16 @@
     "matchCategory": "{{category}} post",
     "matchPlace": "Place name matches",
     "error": "Something went wrong. Please try again in a moment."
+  },
+  "stories": {
+    "tapHint": "Tap right for next, left for previous, hold to pause",
+    "viewProfile": "View profile"
+  },
+  "translation": {
+    "show": "See translation",
+    "showOriginal": "See original",
+    "loading": "Translating…",
+    "failed": "Couldn't translate (tap to retry)",
+    "byClaude": "Translated by Claude (AI)"
   }
 }

@@ -28,3 +28,5 @@ export const writeLimiter = limiter(10, 30, "短時間に投稿しすぎてい�
 export const inquiryLimiter = limiter(60, 5, "お問い合わせの送信回数が多すぎます。しばらく時間をおいてから再度お試しください");
 // Each concierge request may call the Claude API, so keep it to a sensible pace.
 export const conciergeLimiter = limiter(10, 20, "AIへの相談が続いたため、少し時間をおいてから再度お試しください");
+// Translations are cached, so only first-time translations cost an API call.
+export const translateLimiter = limiter(10, 60, "翻訳の回数が多すぎます。少し時間をおいてから再度お試しください");

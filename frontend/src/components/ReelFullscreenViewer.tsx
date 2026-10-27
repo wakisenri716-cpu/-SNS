@@ -209,7 +209,7 @@ function ViewerVideo({ reel, onLike }: { reel: Reel; onLike: () => void }) {
         </span>
       )}
       <span className="absolute inset-x-0 bottom-0 z-20 h-[3px] bg-white/20" aria-hidden>
-        <span ref={barRef} className="block h-full origin-left scale-x-0 bg-white" />
+        <span ref={barRef} className="block h-full origin-left bg-white" style={{ transform: "scaleX(0)" }} />
       </span>
     </>
   );

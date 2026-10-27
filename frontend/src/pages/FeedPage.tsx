@@ -13,6 +13,8 @@ import Avatar from "../components/Avatar";
 import CommentsSheet from "../components/CommentsSheet";
 import FeedPost from "../components/FeedPost";
 import FeedSkeleton from "../components/FeedSkeleton";
+import StoryViewer, { type StoryGroup } from "../components/StoryViewer";
+import { useSeenStories } from "../lib/storiesSeen";
 import ConciergeButton from "../components/ConciergeButton";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import WelcomeIntro from "../components/WelcomeIntro";
@@ -42,6 +44,10 @@ export default function FeedPage() {
   const [commentsReelId, setCommentsReelId] = useState<string | null>(null);
   // Reel whose card/slide carries the shared name during an open/close morph.
   const [heroId, setHeroId] = useState<string | null>(null);
+  // Stories being watched: the groups as ordered when opened, so the row
+  // re-sorting as posts become "seen" doesn't shift the viewer.
+  const [storyView, setStoryView] = useState<{ groups: StoryGroup[]; start: number } | null>(null);
+  const seenStories = useSeenStories();
   const [personalized, setPersonalized] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -185,11 +191,16 @@ export default function FeedPage() {
     setReels((prev) => prev.map((r) => (r.id === reelId ? { ...r, commentCount: count } : r)));
   }
 
-  // Story-style row of the municipalities appearing in this feed, in order.
-  const stories = reels
-    .map((r) => r.municipality)
-    .filter((m, i, all) => all.findIndex((x) => x.id === m.id) === i)
-    .slice(0, 20);
+  // Stories: the feed's posts grouped by municipality, ones with unwatched
+  // posts first (each group keeps feed order).
+  const storyGroups: StoryGroup[] = [];
+  for (const r of reels) {
+    const group = storyGroups.find((sg) => sg.municipality.id === r.municipality.id);
+    if (group) group.reels.push(r);
+    else storyGroups.push({ municipality: r.municipality, reels: [r] });
+  }
+  const isGroupSeen = (sg: StoryGroup) => sg.reels.every((r) => seenStories.has(r.id));
+  const stories = [...storyGroups.filter((sg) => !isGroupSeen(sg)), ...storyGroups.filter(isGroupSeen)].slice(0, 20);
 
   return (
     <div className="mx-auto w-full max-w-[560px] md:px-4">
@@ -219,11 +230,18 @@ export default function FeedPage() {
       </div>
       {stories.length > 0 && (
         <nav aria-label={t("feed.storiesLabel")} className="scrollbar-none flex gap-4 overflow-x-auto px-4 pb-2 pt-3 md:px-0">
-          {stories.map((m) => (
-            <Link key={m.id} to={`/municipalities/${m.id}`} className="flex w-[72px] shrink-0 flex-col items-center gap-1.5 transition active:scale-95">
-              <Avatar name={m.name} src={m.avatarUrl} size={62} ring spin />
-              <span className="w-full truncate text-center text-xs text-gray-900">{m.name}</span>
-            </Link>
+          {stories.map((sg, idx) => (
+            <button
+              key={sg.municipality.id}
+              type="button"
+              onClick={() => setStoryView({ groups: stories, start: idx })}
+              className="flex w-[72px] shrink-0 flex-col items-center gap-1.5 transition active:scale-95"
+            >
+              <Avatar name={sg.municipality.name} src={sg.municipality.avatarUrl} size={62} ring spin seen={isGroupSeen(sg)} />
+              <span className={`w-full truncate text-center text-xs ${isGroupSeen(sg) ? "text-gray-500" : "text-gray-900"}`}>
+                {sg.municipality.name}
+              </span>
+            </button>
           ))}
         </nav>
       )}
@@ -299,6 +317,9 @@ export default function FeedPage() {
           onToggleFollow={toggleFollow}
           onCommentCountChange={setCommentCount}
         />
+      )}
+      {storyView && (
+        <StoryViewer groups={storyView.groups} startGroup={storyView.start} onClose={() => setStoryView(null)} />
       )}
       {commentsReelId && (
         <CommentsSheet

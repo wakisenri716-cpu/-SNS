@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { CLAUDE_MODEL, getClaudeClient, isClaudeConfigured, logClaudeError } from "./claude";
 import { REEL_CATEGORIES, TRAVELER_TAGS, type ReelCategory, type TravelerTag } from "../types";
 
 // "AIに旅を相談" — the travel concierge. Given a free-text wish ("家族で雪景色
@@ -36,11 +36,8 @@ export interface ConciergeResult {
 }
 
 const MAX_PICKS = 5;
-const MODEL = "claude-opus-5-5";
 
-export function isAiConciergeConfigured() {
-  return !!process.env.ANTHROPIC_API_KEY;
-}
+export const isAiConciergeConfigured = isClaudeConfigured;
 
 // ---- Keyword mode ---------------------------------------------------------
 
@@ -104,12 +101,6 @@ Ground everything in the post data you are given: each reason must refer only to
 
 The reply is one or two friendly sentences addressed to the traveler, written in the requested language, as are the reasons.`;
 
-let client: Anthropic | null = null;
-function getClient() {
-  client ??= new Anthropic({ timeout: 25_000, maxRetries: 1 });
-  return client;
-}
-
 async function aiConcierge(message: string, lang: string, candidates: ConciergeCandidate[]): Promise<ConciergeResult> {
   const ids = candidates.map((c) => c.id);
   const posts = candidates.map((c) => ({
@@ -122,8 +113,8 @@ async function aiConcierge(message: string, lang: string, candidates: ConciergeC
     caption: c.caption.slice(0, 280),
   }));
 
-  const response = await getClient().beta.messages.create({
-    model: MODEL,
+  const response = await getClaudeClient().beta.messages.create({
+    model: CLAUDE_MODEL,
     max_tokens: 4000,
     // Re-runs a safety-declined request on Anthropic's recommended fallback model.
     betas: ["server-side-fallback-2026-07-01"],
@@ -181,9 +172,7 @@ export async function runConcierge(message: string, lang: string, candidates: Co
     try {
       return await aiConcierge(message, lang, candidates);
     } catch (err) {
-      if (err instanceof Anthropic.RateLimitError) console.warn("[concierge] rate limited; using keyword matching");
-      else if (err instanceof Anthropic.APIError) console.error(`[concierge] API error ${err.status}: ${err.message}`);
-      else console.error("[concierge] falling back to keyword matching:", err);
+      logClaudeError("concierge, using keyword matching", err);
     }
   }
   return keywordConcierge(message, candidates);

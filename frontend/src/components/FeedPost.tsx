@@ -6,6 +6,7 @@ import AutoplayVideo from "./AutoplayVideo";
 import Avatar from "./Avatar";
 import HeartBurst from "./HeartBurst";
 import ShareButton from "./ShareButton";
+import TranslatedCaption from "./TranslatedCaption";
 import { toggleSound, useSoundOn } from "../lib/videoPlayback";
 import { useTapGestures } from "../lib/useTapGestures";
 import { useAmbientColor } from "../lib/useAmbientColor";
@@ -181,7 +182,7 @@ export default function FeedPost({
       </div>
 
       <div className="space-y-1.5 px-1 pt-1.5 text-sm text-jz-ink">
-        {reel.caption && <p className="leading-relaxed">{reel.caption}</p>}
+        {reel.caption && <TranslatedCaption reelId={reel.id} caption={reel.caption} />}
         <p className="flex flex-wrap gap-1.5">
           {tags.map((tag) => (
             <span key={tag} className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">

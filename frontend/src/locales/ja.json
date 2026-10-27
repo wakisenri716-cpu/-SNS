@@ -587,5 +587,16 @@
     "matchCategory": "{{category}}の投稿",
     "matchPlace": "場所の名前が一致",
     "error": "うまく探せませんでした。少し時間をおいてもう一度お試しください。"
+  },
+  "stories": {
+    "tapHint": "右をタップで次へ、左で前へ、長押しで一時停止",
+    "viewProfile": "自治体のページ"
+  },
+  "translation": {
+    "show": "翻訳を見る",
+    "showOriginal": "原文を見る",
+    "loading": "翻訳中…",
+    "failed": "翻訳できませんでした（もう一度押す）",
+    "byClaude": "Claude（AI）による翻訳"
   }
 }
