@@ -10,7 +10,7 @@ export default function ItineraryPage() {
   return (
     <div className="mx-auto flex max-w-lg flex-col p-4 md:p-8">
       {isTraveler ? (
-        <ItineraryPanel />
+        <ItineraryPanel headingLevel={1} />
       ) : (
         <p className="text-sm text-gray-500">
           <Link to="/login" className="font-semibold text-gray-900 hover:underline">

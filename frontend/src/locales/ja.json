@@ -467,7 +467,8 @@
     "csvCategory": "カテゴリ",
     "csvPostedBy": "投稿者",
     "totalVisits": "来訪スタンプ数",
-    "sortVisits": "来訪スタンプ順"
+    "sortVisits": "来訪スタンプ順",
+    "sortLabel": "並び替え"
   },
   "nationality": {
     "japan": "日本",

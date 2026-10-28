@@ -160,7 +160,7 @@ function ModeCard({
           </div>
           <div className="min-w-0">
             <p className="text-sm font-bold text-gray-900">{t(MODE_LABEL_KEY[estimate.mode])}</p>
-            <p className="truncate text-xs text-gray-400">{destinationLabel}</p>
+            <p className="truncate text-xs text-gray-500">{destinationLabel}</p>
           </div>
         </div>
         <div className="shrink-0 text-right">
@@ -221,8 +221,8 @@ function ModeCard({
             {t("accessPlanner.departure", { time: formatDateTime(departureAt.toISOString(), i18n.language) })}
             {" · "}{t("accessPlanner.arrival", { time: formatDateTime(arrival.toISOString(), i18n.language) })}
           </p>
-          <p className="mt-1.5 text-gray-400">{t("accessPlanner.fareDisclaimer")}</p>
-          <p className="text-gray-400">{t("accessPlanner.noTimetableDisclaimer")}</p>
+          <p className="mt-1.5 text-gray-500">{t("accessPlanner.fareDisclaimer")}</p>
+          <p className="text-gray-500">{t("accessPlanner.noTimetableDisclaimer")}</p>
           <RouteMap reelId={reelId} origin={origin} destinationLabel={destinationLabel} />
         </div>
       )}
@@ -307,7 +307,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
     return <div className="mx-auto max-w-lg p-6 text-sm text-gray-500">{t("accessPlanner.genericError")}</div>;
   }
   if (!reel) {
-    return <div className="mx-auto max-w-lg p-6 text-sm text-gray-400">…</div>;
+    return <div className="mx-auto max-w-lg p-6 text-sm text-gray-500">…</div>;
   }
 
   const recommendedMode = pickRecommendedMode(accessibility, hasCar, groupSize);
@@ -350,7 +350,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
 
       <div className="mb-4 flex items-center justify-between gap-2 border-b border-gray-200 pb-3">
         <h1 className="text-lg font-bold text-gray-900">{t("reelAccessPage.heading")}</h1>
-        <span className="flex items-center gap-1.5 text-xs font-medium text-gray-400">
+        <span className="flex items-center gap-1.5 text-xs font-medium text-gray-500">
           <span className="h-1.5 w-1.5 rounded-full bg-gray-900" />
           {t("reelAccessPage.basis")}
         </span>
@@ -358,7 +358,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
 
       <div className="mb-4 rounded-2xl border border-gray-200/80 bg-white p-4 lg:p-5">
         <p className="text-sm font-bold text-gray-900">{t("reelAccessPage.conditionsHeading")}</p>
-        <p className="mt-0.5 text-xs text-gray-400">{t("reelAccessPage.conditionsSub")}</p>
+        <p className="mt-0.5 text-xs text-gray-500">{t("reelAccessPage.conditionsSub")}</p>
 
         <div className="mt-3">
           <span className="mb-1.5 block text-xs font-semibold text-gray-500">{t("reelAccessPage.groupSizeLabel")}</span>
@@ -379,6 +379,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
             <span className="text-xs font-semibold text-gray-500">{t("reelAccessPage.departureLabel")}</span>
             <input
               type="datetime-local"
+              aria-label={t("reelAccessPage.departureLabel")}
               value={departureLocal}
               onChange={(e) => setDepartureLocal(e.target.value)}
               className="rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
@@ -399,7 +400,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
         </div>
       </div>
 
-      {error && <p className="mb-4 text-xs text-red-500">{error}</p>}
+      {error && <p className="mb-4 text-xs text-jz-red">{error}</p>}
 
       {orderedEstimates && departureAt && (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -420,7 +421,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
               )}
             />
           ))}
-          <p className="px-1 text-[11px] leading-relaxed text-gray-400 md:col-span-2">
+          <p className="px-1 text-[11px] leading-relaxed text-gray-500 md:col-span-2">
             {t("reelAccessPage.estimateDisclaimer")}
           </p>
         </div>
@@ -433,7 +434,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
         onSaved={loadTravelReports}
       />
 
-      <p className="mt-5 text-center text-xs text-gray-400">
+      <p className="mt-5 text-center text-xs text-gray-500">
         <Link to={`/municipalities/${reel.municipality.id}`} className="hover:underline">
           {reel.municipality.name}
         </Link>

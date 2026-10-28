@@ -20,7 +20,7 @@ export default function ConciergeButton({ className = "" }: { className?: string
             <span className="block text-sm font-bold text-jz-ink">{t("concierge.title")}</span>
             <span className="block truncate text-xs text-gray-500">{t("concierge.buttonHint")}</span>
           </span>
-          <Mic className="h-4 w-4 shrink-0 text-gray-400" />
+          <Mic className="h-4 w-4 shrink-0 text-gray-500" />
         </span>
       </button>
       {open && (

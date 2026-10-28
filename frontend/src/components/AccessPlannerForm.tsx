@@ -46,6 +46,7 @@ export default function AccessPlannerForm({ endpoint }: { endpoint: string }) {
         />
         <input
           type="datetime-local"
+          aria-label={t("reelAccessPage.departureLabel")}
           value={departureLocal}
           onChange={(e) => setDepartureLocal(e.target.value)}
           className="block rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
@@ -58,7 +59,7 @@ export default function AccessPlannerForm({ endpoint }: { endpoint: string }) {
           {loading ? t("accessPlanner.searching") : t("accessPlanner.search")}
         </button>
       </form>
-      {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+      {error && <p className="mt-2 text-xs text-jz-red">{error}</p>}
       {result && (
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg bg-gray-50 p-3 text-sm text-gray-700">
           <span>{t("accessPlanner.departure", { time: formatDateTime(result.departureAt, i18n.language) })}</span>
@@ -83,8 +84,8 @@ export default function AccessPlannerForm({ endpoint }: { endpoint: string }) {
               {t("municipalityProfile.realData")}
             </span>
           )}
-          <span className="w-full text-xs text-gray-400">{t("accessPlanner.fareDisclaimer")}</span>
-          <span className="w-full text-xs text-gray-400">{t("accessPlanner.noTimetableDisclaimer")}</span>
+          <span className="w-full text-xs text-gray-500">{t("accessPlanner.fareDisclaimer")}</span>
+          <span className="w-full text-xs text-gray-500">{t("accessPlanner.noTimetableDisclaimer")}</span>
         </div>
       )}
     </div>

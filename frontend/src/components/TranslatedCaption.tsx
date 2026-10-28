@@ -55,7 +55,7 @@ export default function TranslatedCaption({ reelId, caption }: { reelId: string;
                 : t("translation.show")}
         </button>
       )}
-      {showing && translated && <p className="mt-0.5 text-[11px] text-gray-400">{t("translation.byClaude")}</p>}
+      {showing && translated && <p className="mt-0.5 text-[11px] text-gray-500">{t("translation.byClaude")}</p>}
     </div>
   );
 }

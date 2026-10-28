@@ -211,7 +211,7 @@ export default function FeedPost({
             </Link>
           ))}
         </p>
-        <p className="flex items-center gap-2 text-xs text-gray-400">
+        <p className="flex items-center gap-2 text-xs text-gray-500">
           <button type="button" onClick={() => onOpenComments(reel)} className="hover:text-gray-600">
             {reel.commentCount > 0 ? t("feed.viewComments", { count: reel.commentCount }) : t("feed.addComment")}
           </button>

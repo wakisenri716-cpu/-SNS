@@ -467,7 +467,8 @@
     "csvCategory": "类别",
     "csvPostedBy": "投稿者",
     "totalVisits": "到访印章数",
-    "sortVisits": "按到访印章"
+    "sortVisits": "按到访印章",
+    "sortLabel": "排序"
   },
   "nationality": {
     "japan": "日本",

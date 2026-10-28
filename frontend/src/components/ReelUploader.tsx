@@ -123,8 +123,8 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
           className={inputClass}
         />
       </div>
-      <p className="text-xs text-gray-400">{t("reelUploader.maasNote")}</p>
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      <p className="text-xs text-gray-500">{t("reelUploader.maasNote")}</p>
+      {error && <p className="text-xs text-jz-red">{error}</p>}
       {submitting && (
         <div className="flex flex-col gap-1">
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">

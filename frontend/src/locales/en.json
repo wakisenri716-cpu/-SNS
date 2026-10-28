@@ -470,7 +470,8 @@
     "csvCategory": "Category",
     "csvPostedBy": "Posted by",
     "totalVisits": "Visit stamps",
-    "sortVisits": "Most visit stamps"
+    "sortVisits": "Most visit stamps",
+    "sortLabel": "Sort by"
   },
   "nationality": {
     "japan": "Japan",

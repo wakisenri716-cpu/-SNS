@@ -91,16 +91,16 @@ export default function ReelEditor({
             <input value={lat} onChange={(e) => setLat(e.target.value)} placeholder={t("reelUploader.latPlaceholder")} inputMode="decimal" className={inputClass} />
             <input value={lng} onChange={(e) => setLng(e.target.value)} placeholder={t("reelUploader.lngPlaceholder")} inputMode="decimal" className={inputClass} />
           </div>
-          <p className="mt-1 text-[11px] font-normal leading-relaxed text-gray-400">{t("reelEditor.coordsNote")}</p>
+          <p className="mt-1 text-[11px] font-normal leading-relaxed text-gray-500">{t("reelEditor.coordsNote")}</p>
         </div>
         <div className="text-xs font-medium text-gray-500">
           {t("reelUploader.travelerTagsLabel")}
           <div className="mt-1">
             <TravelerTagPicker value={tags} onChange={setTags} />
           </div>
-          <p className="mt-1 text-[11px] font-normal leading-relaxed text-gray-400">{t("reelEditor.tagsNote")}</p>
+          <p className="mt-1 text-[11px] font-normal leading-relaxed text-gray-500">{t("reelEditor.tagsNote")}</p>
         </div>
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        {error && <p className="text-xs text-jz-red">{error}</p>}
         <div className="flex justify-end gap-2">
           <button type="button" onClick={onClose} className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100">
             {t("dashboard.cancel")}

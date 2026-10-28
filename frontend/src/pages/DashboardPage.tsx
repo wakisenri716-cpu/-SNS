@@ -95,7 +95,7 @@ function CoordsFields({
         <input value={lat} onChange={(e) => onLat(e.target.value)} placeholder={t("reelUploader.latPlaceholder")} inputMode="decimal" className={cls} />
         <input value={lng} onChange={(e) => onLng(e.target.value)} placeholder={t("reelUploader.lngPlaceholder")} inputMode="decimal" className={cls} />
       </div>
-      <p className="mt-1 text-[11px] leading-relaxed text-gray-400">{t("dashboard.spotCoordsNote")}</p>
+      <p className="mt-1 text-[11px] leading-relaxed text-gray-500">{t("dashboard.spotCoordsNote")}</p>
     </div>
   );
 }
@@ -188,7 +188,7 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
 
   return (
     <div className="p-4 lg:p-6">
-      <p className="text-xs text-gray-400">{t("dashboard.spotsDescription")}</p>
+      <p className="text-xs text-gray-500">{t("dashboard.spotsDescription")}</p>
 
       <div className="mt-3 flex flex-col gap-3">
         {spots.map((spot) =>
@@ -231,7 +231,7 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
                   {spot.name}
                   <span
                     className={`ml-2 rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                      spot.locationLat != null ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-400"
+                      spot.locationLat != null ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-500"
                     }`}
                   >
                     {spot.locationLat != null ? t("dashboard.spotHasLocation") : t("dashboard.spotNoLocation")}
@@ -245,7 +245,7 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
                 <button onClick={() => startEdit(spot)} className="text-xs font-medium text-gray-900 hover:text-gray-900">
                   {t("dashboard.editSpot")}
                 </button>
-                <button onClick={() => deleteSpot(spot.id)} className="text-xs font-medium text-red-500 hover:text-red-600">
+                <button onClick={() => deleteSpot(spot.id)} className="text-xs font-medium text-jz-red hover:text-jz-red">
                   {t("dashboard.deleteSpot")}
                 </button>
               </div>
@@ -253,7 +253,7 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
           )
         )}
         {spots.length === 0 && !adding && (
-          <p className="rounded-lg border border-dashed border-gray-300 p-4 text-center text-xs text-gray-400">
+          <p className="rounded-lg border border-dashed border-gray-300 p-4 text-center text-xs text-gray-500">
             {t("dashboard.noSpots")}
           </p>
         )}
@@ -295,12 +295,12 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
       ) : (
         <button
           onClick={() => setAdding(true)}
-          className="mt-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-sm font-medium text-gray-400 hover:border-gray-400 hover:text-gray-600"
+          className="mt-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-sm font-medium text-gray-500 hover:border-gray-400 hover:text-gray-600"
         >
           ＋ {t("dashboard.addSpot")}
         </button>
       )}
-      {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+      {error && <p className="mt-2 text-xs text-jz-red">{error}</p>}
     </div>
   );
 }
@@ -333,7 +333,7 @@ function MaasStationEditor({
   return (
     <div className="border-b border-t border-gray-200 p-4 lg:p-6">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold text-gray-600">{t("dashboard.maasHeading")}</h3>
+        <h2 className="text-sm font-semibold text-gray-600">{t("dashboard.maasHeading")}</h2>
         {municipality.maasConfigured ? (
           <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-900">
             {t("dashboard.maasReal")}
@@ -344,7 +344,7 @@ function MaasStationEditor({
           </span>
         )}
       </div>
-      <p className="mt-1 text-xs text-gray-400">{t("dashboard.maasDescription")}</p>
+      <p className="mt-1 text-xs text-gray-500">{t("dashboard.maasDescription")}</p>
       <div className="mt-2 flex gap-2">
         <input
           value={value}
@@ -360,7 +360,7 @@ function MaasStationEditor({
           {t("dashboard.save")}
         </button>
       </div>
-      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+      {error && <p className="mt-1 text-xs text-jz-red">{error}</p>}
     </div>
   );
 }
@@ -591,7 +591,7 @@ export default function DashboardPage() {
           {t("dashboard.linkedCompaniesHeading", { count: companies.length })}
         </h3>
         {companies.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-400">
+          <p className="rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500">
             {t("dashboard.noLinkedCompanies")}
           </p>
         ) : (

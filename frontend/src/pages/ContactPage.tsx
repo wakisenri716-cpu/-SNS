@@ -65,7 +65,7 @@ export default function ContactPage() {
             onChange={(e) => setMessage(e.target.value)}
             className={inputClass}
           />
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && <p className="text-sm text-jz-red">{error}</p>}
           <button
             type="submit"
             disabled={submitting}
@@ -76,7 +76,7 @@ export default function ContactPage() {
         </form>
       )}
 
-      <p className="mt-4 text-center text-xs text-gray-400">
+      <p className="mt-4 text-center text-xs text-gray-500">
         {t("contact.directEmailNote")}
         <br />
         <a href={`mailto:${CONTACT_EMAIL}`} className="text-gray-900 hover:underline">

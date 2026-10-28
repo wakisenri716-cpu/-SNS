@@ -50,6 +50,7 @@ export default function SearchPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6">
+      <h1 className="sr-only">{t("nav.search")}</h1>
       <ConciergeButton className="mb-4" />
       <Link
         to="/areas"
@@ -57,10 +58,10 @@ export default function SearchPage() {
       >
         <MapPinned className="h-5 w-5 text-jz-red" />
         <span className="flex-1">{t("areas.heading")}</span>
-        <ChevronRight className="h-4 w-4 text-gray-400" />
+        <ChevronRight className="h-4 w-4 text-gray-500" />
       </Link>
       <div className="relative">
-        <SearchIcon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+        <SearchIcon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
@@ -91,7 +92,7 @@ export default function SearchPage() {
         <div className="mt-6 flex flex-col gap-6">
           {municipalities.length > 0 && (
             <div>
-              <h3 className="mb-2 text-xs font-semibold text-gray-500">{t("search.municipalitiesHeading")}</h3>
+              <h2 className="mb-2 text-xs font-semibold text-gray-500">{t("search.municipalitiesHeading")}</h2>
               <div className="flex flex-col gap-2">
                 {municipalities.map((m) => (
                   <Link
@@ -107,7 +108,7 @@ export default function SearchPage() {
           )}
           {reels.length > 0 && (
             <div>
-              <h3 className="mb-2 text-xs font-semibold text-gray-500">{t("search.postsHeading")}</h3>
+              <h2 className="mb-2 text-xs font-semibold text-gray-500">{t("search.postsHeading")}</h2>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {reels.map((r) => (
                   <Link
@@ -119,7 +120,7 @@ export default function SearchPage() {
                     <video src={r.videoUrl} className="aspect-video w-full bg-gray-200 object-cover" muted />
                     <div className="flex flex-col gap-1 p-2">
                       <p className="truncate text-xs font-semibold text-gray-900">{r.locationName || r.caption}</p>
-                      <p className="truncate text-[11px] text-gray-400">
+                      <p className="truncate text-[11px] text-gray-500">
                         {r.municipality.name} · {t(`category.${r.category}`)}
                       </p>
                       <TravelerTagChips tags={r.travelerTags} />
@@ -130,15 +131,15 @@ export default function SearchPage() {
             </div>
           )}
           {reels.length === 0 && tags.length > 0 && municipalities.length > 0 && (
-            <p className="text-sm text-gray-400">{t("search.noTaggedPosts")}</p>
+            <p className="text-sm text-gray-500">{t("search.noTaggedPosts")}</p>
           )}
           {municipalities.length === 0 && reels.length === 0 && (
-            <p className="text-sm text-gray-400">{t("search.noResults")}</p>
+            <p className="text-sm text-gray-500">{t("search.noResults")}</p>
           )}
         </div>
       ) : (
         <div className="mt-6">
-          <h3 className="mb-2 text-xs font-semibold text-gray-500">{t("search.recommendHeading")}</h3>
+          <h2 className="mb-2 text-xs font-semibold text-gray-500">{t("search.recommendHeading")}</h2>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {recommend.map((r) => (
               <Link key={r.id} to={`/municipalities/${r.municipality.id}`} className="relative block">

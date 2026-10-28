@@ -101,7 +101,7 @@ export default function RegisterCompanyPage() {
             onChange={(e) => setForm({ ...form, password: e.target.value })}
             className={inputClass}
           />
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && <p className="text-sm text-jz-red">{error}</p>}
           <button
             type="submit"
             disabled={submitting}

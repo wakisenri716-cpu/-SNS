@@ -187,7 +187,7 @@ export default function MapPage() {
                 type="button"
                 onClick={() => setSelectedId(null)}
                 aria-label={t("reelViewer.closeLabel")}
-                className="-mr-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100"
+                className="-mr-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100"
               >
                 <X className="h-4 w-4" />
               </button>

@@ -7,7 +7,10 @@
 @theme {
   --color-jz-red: #d7202e;
   --color-jz-red-dark: #b3141f;
-  --color-jz-tint: #fdeced;
+  --color-jz-tint: #fef2f3;
+  /* A touch darker than Tailwind's gray-500 so small secondary text stays
+     at WCAG AA (4.5:1) on white and on gray-100 surfaces. */
+  --color-gray-500: #646c7b;
   --color-jz-ink: #11151d;
   --animate-like-pop: like-pop 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.4);
   --animate-heart-burst: heart-burst 0.9s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards;
@@ -124,11 +127,13 @@ body {
 
 /* Posts ease in as they scroll into view (scroll-driven animation; browsers
    without it simply show them). */
-@supports (animation-timeline: view()) {
-  .reveal {
-    animation: reveal linear both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 40%;
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
   }
 }
 @keyframes reveal {
@@ -172,7 +177,14 @@ body {
   --color-gray-950: #f8f9fa;
   --color-jz-ink: #f3f4f6;
   --color-jz-tint: #2b1417;
-  --color-jz-red: #ec2d3b;
+}
+/* Red stays the logo red behind white text (buttons, badges: 5:1), but red
+   *text* on the dark page needs a lighter shade to stay readable. */
+.dark .text-jz-red {
+  color: #ff5c66;
+}
+.dark :where(.on-media, .bg-jz-red) .text-jz-red {
+  color: #d7202e;
 }
 /* Anything drawn over a video or on red keeps the light-mode palette, so
    white text and icons there stay white. */
@@ -303,11 +315,13 @@ body {
 
 /* Scroll parallax: the clip drifts slightly inside its card as the card
    crosses the screen. */
-@supports (animation-timeline: view()) {
-  .parallax-media video {
-    animation: parallax linear both;
-    animation-timeline: view();
-    scale: 1.12;
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .parallax-media video {
+      animation: parallax linear both;
+      animation-timeline: view();
+      scale: 1.12;
+    }
   }
 }
 @keyframes parallax {
@@ -409,4 +423,23 @@ body {
 }
 .animate-stamp {
   animation: stamp-in 0.55s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+.dark .stamp,
+.dark .stamp-ring {
+  color: #ff5c66;
+  border-color: #ff5c66;
+}
+
+/* Status colors (仮データ notices, 実データ badges) in dark mode. */
+.dark .bg-amber-50 {
+  background-color: #2a2010;
+}
+.dark :is(.text-amber-700, .text-amber-800) {
+  color: #fbbf5a;
+}
+.dark .bg-emerald-50 {
+  background-color: #0f261d;
+}
+.dark :is(.text-emerald-700, .text-emerald-800) {
+  color: #4ade9b;
 }

@@ -57,7 +57,7 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
           className={inputClass}
         />
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-sm text-jz-red">{error}</p>}
         <button
           type="submit"
           disabled={submitting}
@@ -68,19 +68,19 @@ export default function LoginPage() {
       </form>
       <p className="mt-4 text-center text-sm text-gray-500">
         {t("login.touristPrompt")}
-        <Link to="/register" className="ml-1 text-gray-900 hover:underline">
+        <Link to="/register" className="ml-1 font-semibold text-gray-900 underline underline-offset-2">
           {t("login.touristLink")}
         </Link>
       </p>
       <p className="mt-2 text-center text-sm text-gray-500">
         {t("login.municipalityPrompt")}
-        <Link to="/register-municipality" className="ml-1 text-gray-900 hover:underline">
+        <Link to="/register-municipality" className="ml-1 font-semibold text-gray-900 underline underline-offset-2">
           {t("login.municipalityLink")}
         </Link>
       </p>
       <p className="mt-2 text-center text-sm text-gray-500">
         {t("login.companyPrompt")}
-        <Link to="/register-company" className="ml-1 text-gray-900 hover:underline">
+        <Link to="/register-company" className="ml-1 font-semibold text-gray-900 underline underline-offset-2">
           {t("login.companyLink")}
         </Link>
       </p>

@@ -25,7 +25,7 @@ function AudienceBar({ label, count, max }: { label: string; count: number; max:
       <div className="h-2 flex-1 overflow-hidden rounded-full bg-gray-100">
         <div className="h-full rounded-full bg-gray-400" style={{ width: `${max > 0 ? (count / max) * 100 : 0}%` }} />
       </div>
-      <span className="w-10 shrink-0 text-right text-xs text-gray-400">{count}</span>
+      <span className="w-10 shrink-0 text-right text-xs text-gray-500">{count}</span>
     </div>
   );
 }
@@ -33,7 +33,7 @@ function AudienceBar({ label, count, max }: { label: string; count: number; max:
 function SummaryCard({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-2xl border border-gray-200/80 bg-white p-4">
-      <p className="text-xs text-gray-400">{label}</p>
+      <p className="text-xs text-gray-500">{label}</p>
       <p className="mt-1 text-2xl font-bold text-gray-900">{value.toLocaleString()}</p>
     </div>
   );
@@ -140,14 +140,14 @@ export default function InsightsPage() {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
       <div>
-        <h2 className="text-lg font-bold text-gray-900">{t("insights.heading")}</h2>
+        <h1 className="text-lg font-bold text-gray-900">{t("insights.heading")}</h1>
         <p className="text-sm text-gray-500">{t("insights.subheading")}</p>
       </div>
 
       {loading ? (
-        <p className="text-sm text-gray-400">{t("insights.loading")}</p>
+        <p className="text-sm text-gray-500">{t("insights.loading")}</p>
       ) : reels.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-400">
+        <p className="rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500">
           {t("insights.empty")}
         </p>
       ) : (
@@ -168,11 +168,11 @@ export default function InsightsPage() {
 
           {tripPlanning && (
             <section>
-              <h3 className="mb-1 text-sm font-semibold text-gray-600">{t("insights.originsHeading")}</h3>
-              <p className="mb-2 text-xs text-gray-400">{t("insights.originsNote")}</p>
+              <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("insights.originsHeading")}</h2>
+              <p className="mb-2 text-xs text-gray-500">{t("insights.originsNote")}</p>
               <div className="flex flex-col gap-2 rounded-2xl border border-gray-200/80 bg-white p-4">
                 {tripPlanning.origins.length === 0 ? (
-                  <p className="text-xs text-gray-400">{t("insights.originsEmpty")}</p>
+                  <p className="text-xs text-gray-500">{t("insights.originsEmpty")}</p>
                 ) : (
                   tripPlanning.origins.map((o) => (
                     <div key={o.originLabel} className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
@@ -185,21 +185,21 @@ export default function InsightsPage() {
                           </span>
                         ))}
                       </span>
-                      <span className="w-14 shrink-0 text-right text-xs text-gray-400">
+                      <span className="w-14 shrink-0 text-right text-xs text-gray-500">
                         {t("insights.reportCount", { count: o.reportCount })}
                       </span>
                     </div>
                   ))
                 )}
                 {tripPlanning.hiddenCount > 0 && (
-                  <p className="text-[11px] text-gray-400">{t("insights.originsHidden", { count: tripPlanning.hiddenCount })}</p>
+                  <p className="text-[11px] text-gray-500">{t("insights.originsHidden", { count: tripPlanning.hiddenCount })}</p>
                 )}
               </div>
             </section>
           )}
 
           <section>
-            <h3 className="mb-2 text-sm font-semibold text-gray-600">{t("insights.byCategoryHeading")}</h3>
+            <h2 className="mb-2 text-sm font-semibold text-gray-600">{t("insights.byCategoryHeading")}</h2>
             <div className="flex flex-col gap-2 rounded-2xl border border-gray-200/80 bg-white p-4">
               {byCategory.map((c) => (
                 <div key={c.category} className="flex items-center gap-3 text-sm">
@@ -210,7 +210,7 @@ export default function InsightsPage() {
                       style={{ width: `${(c.views / maxCategoryViews) * 100}%` }}
                     />
                   </div>
-                  <span className="w-40 shrink-0 text-right text-xs text-gray-400">
+                  <span className="w-40 shrink-0 text-right text-xs text-gray-500">
                     {t("insights.categoryStats", { count: c.count, views: c.views, likes: c.likes, comments: c.comments })}
                   </span>
                 </div>
@@ -220,13 +220,13 @@ export default function InsightsPage() {
 
           {demographics && (
             <section>
-              <h3 className="mb-1 text-sm font-semibold text-gray-600">{t("insights.audienceHeading")}</h3>
-              <p className="mb-2 text-xs text-gray-400">{t("insights.audienceNote")}</p>
+              <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("insights.audienceHeading")}</h2>
+              <p className="mb-2 text-xs text-gray-500">{t("insights.audienceNote")}</p>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-2 rounded-2xl border border-gray-200/80 bg-white p-4">
-                  <h4 className="mb-1 text-xs font-semibold text-gray-500">{t("insights.byNationalityHeading")}</h4>
+                  <h3 className="mb-1 text-xs font-semibold text-gray-500">{t("insights.byNationalityHeading")}</h3>
                   {demographics.byNationality.length === 0 ? (
-                    <p className="text-xs text-gray-400">{t("insights.audienceEmpty")}</p>
+                    <p className="text-xs text-gray-500">{t("insights.audienceEmpty")}</p>
                   ) : (
                     demographics.byNationality.map((n) => (
                       <AudienceBar
@@ -239,9 +239,9 @@ export default function InsightsPage() {
                   )}
                 </div>
                 <div className="flex flex-col gap-2 rounded-2xl border border-gray-200/80 bg-white p-4">
-                  <h4 className="mb-1 text-xs font-semibold text-gray-500">{t("insights.byAgeHeading")}</h4>
+                  <h3 className="mb-1 text-xs font-semibold text-gray-500">{t("insights.byAgeHeading")}</h3>
                   {demographics.totalViews === 0 ? (
-                    <p className="text-xs text-gray-400">{t("insights.audienceEmpty")}</p>
+                    <p className="text-xs text-gray-500">{t("insights.audienceEmpty")}</p>
                   ) : (
                     demographics.byAgeBucket.map((b) => (
                       <AudienceBar
@@ -259,7 +259,7 @@ export default function InsightsPage() {
 
           <section>
             <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-gray-600">{t("insights.byReelHeading")}</h3>
+              <h2 className="text-sm font-semibold text-gray-600">{t("insights.byReelHeading")}</h2>
               <button
                 type="button"
                 onClick={exportCsv}
@@ -268,6 +268,7 @@ export default function InsightsPage() {
                 <Download className="inline h-3.5 w-3.5 align-[-2px]" /> {t("insights.csvDownload")}
               </button>
               <select
+                aria-label={t("insights.sortLabel")}
                 value={sortKey}
                 onChange={(e) => setSortKey(e.target.value as SortKey)}
                 className="rounded-xl border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 outline-none focus:border-gray-400"
@@ -290,7 +291,7 @@ export default function InsightsPage() {
                   />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm text-gray-800">{reel.caption || t("reelManageGrid.untitled")}</p>
-                    <p className="truncate text-xs text-gray-400">
+                    <p className="truncate text-xs text-gray-500">
                       {t(`category.${reel.category}`)} · {new Date(reel.createdAt).toLocaleDateString(i18n.language)}
                       {reel.postedByCompany && ` · ${t("dashboard.postedBy", { name: reel.postedByCompany.name })}`}
                     </p>

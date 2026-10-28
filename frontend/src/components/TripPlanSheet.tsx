@@ -107,7 +107,7 @@ export default function TripPlanSheet({
                 onChange={(e) => setWishes(e.target.value)}
                 maxLength={300}
                 placeholder={t("tripPlan.wishesPlaceholder")}
-                className="mt-1.5 w-full rounded-2xl bg-gray-100 px-4 py-3 text-sm text-jz-ink outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-jz-red/30"
+                className="mt-1.5 w-full rounded-2xl bg-gray-100 px-4 py-3 text-sm text-jz-ink outline-none placeholder:text-gray-500 focus:ring-2 focus:ring-jz-red/30"
               />
               <div className="mt-2.5 flex flex-wrap gap-2">
                 {WISHES.map((key) => (
@@ -124,7 +124,7 @@ export default function TripPlanSheet({
             </>
           ) : (
             <>
-              <p className="text-[11px] font-semibold text-gray-400">{plan.mode === "ai" ? t("tripPlan.byAi") : t("tripPlan.byAuto")}</p>
+              <p className="text-[11px] font-semibold text-gray-500">{plan.mode === "ai" ? t("tripPlan.byAi") : t("tripPlan.byAuto")}</p>
               {plan.summary && <p className="mt-2 text-sm leading-relaxed text-jz-ink">{plan.summary}</p>}
               <ol className="mt-4 space-y-3">
                 {plan.stops.map((s, i) => {

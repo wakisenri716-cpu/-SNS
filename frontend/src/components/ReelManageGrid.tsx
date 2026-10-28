@@ -26,7 +26,7 @@ export default function ReelManageGrid({
 
   if (reels.length === 0) {
     return (
-      <p className="rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-400">
+      <p className="rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500">
         {t("reelManageGrid.empty")}
       </p>
     );
@@ -52,7 +52,7 @@ export default function ReelManageGrid({
             </button>
             <button
               onClick={() => removeReel(reel.id)}
-              className="rounded-full bg-red-50 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-100"
+              className="rounded-full bg-jz-tint px-2 py-1 text-xs font-medium text-jz-red hover:bg-jz-tint"
             >
               {t("reelManageGrid.delete")}
             </button>

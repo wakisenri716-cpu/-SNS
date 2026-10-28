@@ -56,7 +56,7 @@ export default function EventSheet({ event, onClose }: { event: EventItem; onClo
         </div>
         {event.locationName && (
           <p className="mt-4 flex items-center gap-1.5 text-sm text-gray-700">
-            <MapPin className="h-4 w-4 shrink-0 text-gray-400" /> {event.locationName}
+            <MapPin className="h-4 w-4 shrink-0 text-gray-500" /> {event.locationName}
           </p>
         )}
         {event.description && <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-gray-700">{event.description}</p>}

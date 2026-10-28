@@ -119,7 +119,7 @@ function ProfileSection() {
         </label>
         {user?.role === "USER" && (
           <>
-            <p className="text-xs text-gray-400">{t("settings.demographicsNote")}</p>
+            <p className="text-xs text-gray-500">{t("settings.demographicsNote")}</p>
             <label className="text-xs font-medium text-gray-500">
               {t("registerUser.nationalityLabel")}
               <select
@@ -156,7 +156,7 @@ function ProfileSection() {
           {t("settings.save")}
         </button>
         {message && <p className="text-xs text-gray-900">{message}</p>}
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        {error && <p className="text-xs text-jz-red">{error}</p>}
       </div>
     </section>
   );
@@ -177,7 +177,7 @@ function ToggleRow({
     <label className="flex cursor-pointer items-start justify-between gap-4 py-2">
       <span>
         <span className="block text-sm text-gray-800">{label}</span>
-        {description && <span className="block text-xs text-gray-400">{description}</span>}
+        {description && <span className="block text-xs text-gray-500">{description}</span>}
       </span>
       <input
         type="checkbox"
@@ -198,7 +198,7 @@ function FollowNotificationSection() {
   return (
     <section className="border-b border-gray-200 p-4 lg:p-6">
       <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("settings.notificationHeading")}</h2>
-      <p className="mb-2 text-xs text-gray-400">{t("settings.followNotificationDisclaimer")}</p>
+      <p className="mb-2 text-xs text-gray-500">{t("settings.followNotificationDisclaimer")}</p>
       <div className="lg:max-w-md">
         <ToggleRow
           label={t("settings.notifyNewPostLabel")}
@@ -234,7 +234,7 @@ function NotificationSection() {
   return (
     <section className="border-b border-gray-200 p-4 lg:p-6">
       <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("settings.notificationHeading")}</h2>
-      <p className="mb-2 text-xs text-gray-400">{t("settings.notificationDisclaimer")}</p>
+      <p className="mb-2 text-xs text-gray-500">{t("settings.notificationDisclaimer")}</p>
       <div className="divide-y divide-gray-100 lg:max-w-md">
         <ToggleRow
           label={t("settings.notifyLikeLabel")}
@@ -255,7 +255,7 @@ function NotificationSection() {
           }}
         />
       </div>
-      {saving && <p className="mt-1 text-xs text-gray-400">{t("settings.saving")}</p>}
+      {saving && <p className="mt-1 text-xs text-gray-500">{t("settings.saving")}</p>}
     </section>
   );
 }
@@ -291,7 +291,7 @@ function TravelStyleSection() {
   return (
     <section ref={ref} id="travel-style" className="scroll-mt-16 border-b border-gray-200 p-4 lg:p-6">
       <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("settings.travelStyleHeading")}</h2>
-      <p className="mb-3 text-xs text-gray-400">{t("settings.travelStyleDescription")}</p>
+      <p className="mb-3 text-xs text-gray-500">{t("settings.travelStyleDescription")}</p>
 
       <p className="mb-1.5 text-xs font-semibold text-gray-500">{t("settings.travelCompanionLabel")}</p>
       <div className="mb-4 flex flex-wrap gap-1.5">
@@ -340,7 +340,7 @@ function TravelStyleSection() {
           onChange={(v) => save({ needsMultilingual: v })}
         />
       </div>
-      {saving && <p className="mt-1 text-xs text-gray-400">{t("settings.saving")}</p>}
+      {saving && <p className="mt-1 text-xs text-gray-500">{t("settings.saving")}</p>}
     </section>
   );
 }
@@ -371,7 +371,7 @@ function CommentsPermissionSection() {
   return (
     <section className="border-b border-gray-200 p-4 lg:p-6">
       <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("settings.commentsHeading")}</h2>
-      <p className="mb-2 text-xs text-gray-400">
+      <p className="mb-2 text-xs text-gray-500">
         {municipality
           ? t("settings.commentsDescriptionMunicipality")
           : t("settings.commentsDescriptionCompany")}
@@ -379,7 +379,7 @@ function CommentsPermissionSection() {
       <div className="lg:max-w-md">
         <ToggleRow label={t("settings.commentsToggleLabel")} checked={commentsEnabled} onChange={save} />
       </div>
-      {saving && <p className="mt-1 text-xs text-gray-400">{t("settings.saving")}</p>}
+      {saving && <p className="mt-1 text-xs text-gray-500">{t("settings.saving")}</p>}
     </section>
   );
 }
@@ -391,7 +391,7 @@ function DataSaverSection() {
   return (
     <section className="border-b border-gray-200 p-4 lg:p-6">
       <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("settings.dataSaverHeading")}</h2>
-      <p className="mb-2 text-xs text-gray-400">{t("settings.dataSaverDescription")}</p>
+      <p className="mb-2 text-xs text-gray-500">{t("settings.dataSaverDescription")}</p>
       <div className="lg:max-w-md">
         <ToggleRow
           label={t("settings.dataSaverToggleLabel")}
@@ -541,7 +541,7 @@ function PasswordSection() {
           {t("settings.changePassword")}
         </button>
         {message && <p className="text-xs text-gray-900">{message}</p>}
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        {error && <p className="text-xs text-jz-red">{error}</p>}
       </div>
     </section>
   );
@@ -570,12 +570,12 @@ function DeleteAccountSection() {
 
   return (
     <section className="p-4 lg:p-6">
-      <h2 className="mb-1 text-sm font-semibold text-red-600">{t("settings.deleteHeading")}</h2>
-      <p className="mb-2 text-xs text-gray-400">{t("settings.deleteWarning")}</p>
+      <h2 className="mb-1 text-sm font-semibold text-jz-red">{t("settings.deleteHeading")}</h2>
+      <p className="mb-2 text-xs text-gray-500">{t("settings.deleteWarning")}</p>
       {!confirming ? (
         <button
           onClick={() => setConfirming(true)}
-          className="rounded-lg border border-red-300 px-4 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50"
+          className="rounded-lg border border-jz-red/40 px-4 py-1.5 text-sm font-medium text-jz-red hover:bg-jz-tint"
         >
           {t("settings.deleteButton")}
         </button>
@@ -587,14 +587,14 @@ function DeleteAccountSection() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-red-500"
+              className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-jz-red"
             />
           </label>
           <div className="flex gap-2">
             <button
               onClick={remove}
               disabled={deleting || !password}
-              className="rounded-lg bg-red-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+              className="rounded-lg bg-jz-red px-4 py-1.5 text-sm font-medium text-white hover:bg-jz-red-dark disabled:opacity-50"
             >
               {t("settings.deleteConfirmButton")}
             </button>
@@ -609,7 +609,7 @@ function DeleteAccountSection() {
               {t("settings.deleteCancelButton")}
             </button>
           </div>
-          {error && <p className="text-xs text-red-500">{error}</p>}
+          {error && <p className="text-xs text-jz-red">{error}</p>}
         </div>
       )}
     </section>

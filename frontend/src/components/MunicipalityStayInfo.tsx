@@ -69,7 +69,7 @@ export default function MunicipalityStayInfo({ municipalityId }: { municipalityI
               </a>
             ))}
           </div>
-          <p className="mt-2 text-[11px] text-gray-400">{t("stayInfo.otaNote")}</p>
+          <p className="mt-2 text-[11px] text-gray-500">{t("stayInfo.otaNote")}</p>
         </div>
       )}
     </div>

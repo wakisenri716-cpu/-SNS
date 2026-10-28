@@ -82,7 +82,7 @@ export default function TravelReportSection({
   return (
     <div className="mt-6 rounded-2xl border border-gray-200/80 bg-white p-4 lg:p-5">
       <h2 className="text-sm font-bold text-gray-900">{t("travelReport.heading")}</h2>
-      <p className="mt-0.5 text-xs text-gray-400">{t("travelReport.subtitle")}</p>
+      <p className="mt-0.5 text-xs text-gray-500">{t("travelReport.subtitle")}</p>
 
       {summary.length > 0 ? (
         <ul className="mt-3 flex flex-col gap-1.5">
@@ -95,15 +95,15 @@ export default function TravelReportSection({
               <span className="font-bold tabular-nums text-gray-900">
                 {t("travelReport.average", { minutes: g.averageMin })}
               </span>
-              <span className="text-gray-400">{t("travelReport.count", { count: g.count })}</span>
+              <span className="text-gray-500">{t("travelReport.count", { count: g.count })}</span>
             </li>
           ))}
         </ul>
       ) : (
-        <p className="mt-3 text-xs text-gray-400">{t("travelReport.noReports")}</p>
+        <p className="mt-3 text-xs text-gray-500">{t("travelReport.noReports")}</p>
       )}
       {(reports?.hiddenCount ?? 0) > 0 && (
-        <p className="mt-1.5 text-[11px] text-gray-400">{t("travelReport.hiddenCount", { count: reports!.hiddenCount })}</p>
+        <p className="mt-1.5 text-[11px] text-gray-500">{t("travelReport.hiddenCount", { count: reports!.hiddenCount })}</p>
       )}
       {(reports?.mine.length ?? 0) > 0 && (
         <div className="mt-3 rounded-lg bg-gray-50 px-3 py-2">
@@ -127,7 +127,7 @@ export default function TravelReportSection({
             </Link>
           </p>
         ) : !isTraveler ? (
-          <p className="text-xs text-gray-400">{t("travelReport.travelersOnly")}</p>
+          <p className="text-xs text-gray-500">{t("travelReport.travelersOnly")}</p>
         ) : (
           <form onSubmit={submit} className="flex flex-col gap-3">
             <p className="text-xs font-semibold text-gray-900">{t("travelReport.pointsNote")}</p>
@@ -193,10 +193,10 @@ export default function TravelReportSection({
                   : t("travelReport.updated", { total: result.points })}
               </p>
             )}
-            {error && <p className="text-xs text-red-500">{error}</p>}
+            {error && <p className="text-xs text-jz-red">{error}</p>}
           </form>
         )}
-        <p className="mt-3 text-[11px] leading-relaxed text-gray-400">{t("travelReport.disclaimer")}</p>
+        <p className="mt-3 text-[11px] leading-relaxed text-gray-500">{t("travelReport.disclaimer")}</p>
       </div>
     </div>
   );

@@ -96,7 +96,7 @@ export default function CommentsSheet({
         <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
           <h2 className="text-sm font-bold text-gray-900">
             {t("comments.heading")}
-            {items && <span className="ml-1 font-normal text-gray-400">{items.length}</span>}
+            {items && <span className="ml-1 font-normal text-gray-500">{items.length}</span>}
           </h2>
           <button
             type="button"
@@ -110,22 +110,22 @@ export default function CommentsSheet({
 
         <div className="flex-1 overflow-y-auto px-4 py-3">
           {items == null ? (
-            <p className="text-xs text-gray-400">…</p>
+            <p className="text-xs text-gray-500">…</p>
           ) : items.length === 0 ? (
-            <p className="py-6 text-center text-xs text-gray-400">{t("comments.empty")}</p>
+            <p className="py-6 text-center text-xs text-gray-500">{t("comments.empty")}</p>
           ) : (
             <ul className="flex flex-col gap-3">
               {items.map((c) => (
                 <li key={c.id} className="text-sm">
                   <div className="flex items-baseline gap-2">
                     <span className="font-semibold text-gray-900">{c.user.name}</span>
-                    <span className="text-[11px] text-gray-400">{new Date(c.createdAt).toLocaleDateString(i18n.language)}</span>
+                    <span className="text-[11px] text-gray-500">{new Date(c.createdAt).toLocaleDateString(i18n.language)}</span>
                     {c.hidden && <span className="rounded-full bg-jz-tint px-2 py-0.5 text-[10px] font-semibold text-jz-red">{t("comments.hiddenBadge")}</span>}
                     {c.canDelete && (
                       <button
                         type="button"
                         onClick={() => remove(c.id)}
-                        className="ml-auto text-[11px] text-gray-400 hover:text-red-500"
+                        className="ml-auto text-[11px] text-gray-500 hover:text-jz-red"
                       >
                         {t("comments.delete")}
                       </button>
@@ -136,7 +136,7 @@ export default function CommentsSheet({
                         onClick={() => setReportingId(reportingId === c.id ? null : c.id)}
                         disabled={c.reportedByMe}
                         aria-expanded={reportingId === c.id}
-                        className="ml-auto inline-flex items-center gap-0.5 text-[11px] text-gray-400 hover:text-gray-700 disabled:hover:text-gray-400"
+                        className="ml-auto inline-flex items-center gap-0.5 text-[11px] text-gray-500 hover:text-gray-700 disabled:hover:text-gray-500"
                       >
                         <Flag className="h-3 w-3" /> {c.reportedByMe ? t("comments.reportedLabel") : t("comments.report")}
                       </button>
@@ -166,7 +166,7 @@ export default function CommentsSheet({
 
         <div className="border-t border-gray-100 px-4 py-3">
           {!enabled ? (
-            <p className="text-xs text-gray-400">{t("comments.disabled")}</p>
+            <p className="text-xs text-gray-500">{t("comments.disabled")}</p>
           ) : !user ? (
             <Link to="/login" className="text-xs font-semibold text-gray-900 hover:underline">
               {t("comments.loginCta")}
@@ -190,7 +190,7 @@ export default function CommentsSheet({
               </button>
             </form>
           )}
-          {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+          {error && <p className="mt-1 text-xs text-jz-red">{error}</p>}
         </div>
       </div>
     </div>

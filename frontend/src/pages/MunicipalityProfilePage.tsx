@@ -45,9 +45,9 @@ function AccessPlanner({
   return (
     <div className="border-b border-gray-200 p-4 lg:p-6">
       <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("accessPlanner.heading")}</h2>
-      <p className="mb-2 text-xs text-gray-400">{t("accessPlanner.description")}</p>
+      <p className="mb-2 text-xs text-gray-500">{t("accessPlanner.description")}</p>
       {!stationConfigured ? (
-        <p className="rounded-lg border border-dashed border-gray-300 p-3 text-xs text-gray-400">
+        <p className="rounded-lg border border-dashed border-gray-300 p-3 text-xs text-gray-500">
           {t("accessPlanner.stationNotConfigured")}
         </p>
       ) : (
@@ -166,7 +166,7 @@ export default function MunicipalityProfilePage() {
     }
   }
 
-  if (!municipality) return <p className="p-10 text-center text-gray-400">{t("municipalityProfile.loading")}</p>;
+  if (!municipality) return <p className="p-10 text-center text-gray-500">{t("municipalityProfile.loading")}</p>;
 
   return (
     <div className="mx-auto w-full max-w-[935px] bg-white md:px-5 md:pt-8">
@@ -247,14 +247,14 @@ export default function MunicipalityProfilePage() {
       </header>
 
       {/* Instagram-style tab strip: the active tab gets a top rule. */}
-      <div className="mt-4 flex border-t border-gray-200 md:mt-0 md:justify-center md:gap-12">
+      <div className="scrollbar-none mt-4 flex overflow-x-auto border-t border-gray-200 md:mt-0 md:justify-center md:gap-12">
         {tabs.map(({ key, label, icon: TabIcon }) => (
           <button
             key={key}
             onClick={() => setTab(key)}
             aria-pressed={tab === key}
-            className={`-mt-px flex flex-1 flex-col items-center gap-1 border-t py-2.5 text-[11px] font-semibold md:flex-none md:flex-row md:gap-1.5 md:py-4 md:text-xs md:tracking-wider ${
-              tab === key ? "border-jz-red text-jz-ink" : "border-transparent text-gray-400 hover:text-gray-600"
+            className={`-mt-px flex min-w-[4.25rem] flex-1 shrink-0 flex-col items-center gap-1 whitespace-nowrap border-t px-1.5 py-2.5 text-[11px] font-semibold md:flex-none md:flex-row md:gap-1.5 md:py-4 md:text-xs md:tracking-wider ${
+              tab === key ? "border-jz-red text-jz-ink" : "border-transparent text-gray-500 hover:text-gray-600"
             }`}
           >
             <TabIcon className="h-5 w-5 md:h-3.5 md:w-3.5" strokeWidth={tab === key ? 2.4 : 1.8} />
@@ -277,7 +277,7 @@ export default function MunicipalityProfilePage() {
       ) : tab === "tourismInfo" ? (
         <div className="border-b border-gray-200 p-4 lg:p-6">
           {municipality.tourismSpots.length === 0 ? (
-            <p className="text-sm text-gray-400">{t("municipalityProfile.noSpots")}</p>
+            <p className="text-sm text-gray-500">{t("municipalityProfile.noSpots")}</p>
           ) : (
             <div className="flex flex-col gap-4">
               {municipality.tourismSpots.map((spot) => (

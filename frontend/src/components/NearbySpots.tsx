@@ -47,7 +47,7 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
   return (
     <div className="mt-6 border-t border-gray-100 pt-5">
       <h2 className="text-sm font-bold text-gray-900">{t("reelAccessPage.nearbyHeading")}</h2>
-      <p className="mt-0.5 text-xs text-gray-400">{t("reelAccessPage.nearbySubtitle")}</p>
+      <p className="mt-0.5 text-xs text-gray-500">{t("reelAccessPage.nearbySubtitle")}</p>
       <div className="mt-3 flex gap-1.5 overflow-x-auto pb-1">
         {[null, ...REEL_CATEGORIES].map((c) => (
           <button
@@ -64,7 +64,7 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
       </div>
 
       {items.length === 0 ? (
-        <p className="mt-3 text-xs text-gray-400">
+        <p className="mt-3 text-xs text-gray-500">
           {category ? t("reelAccessPage.nearbyEmptyCategory", { category: t(`category.${category}`) }) : t("reelAccessPage.nearbyEmpty")}
         </p>
       ) : (
@@ -86,7 +86,7 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
                 <p className="truncate text-xs font-semibold text-gray-900">
                   {item.locationName || item.municipality.name}
                 </p>
-                <p className="truncate text-[11px] text-gray-400">{t(`category.${item.category}`)}</p>
+                <p className="truncate text-[11px] text-gray-500">{t(`category.${item.category}`)}</p>
               </div>
             </Link>
           ))}
@@ -105,9 +105,9 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
               >
                 <div className="flex items-baseline gap-2">
                   <p className="flex min-w-0 flex-1 items-center gap-1 truncate text-sm font-semibold text-gray-900"><MapPin className="h-3.5 w-3.5 shrink-0 text-gray-500" />{spot.name}</p>
-                  <span className="shrink-0 text-[11px] text-gray-400">{distanceLabel(spot.distanceMeters)}</span>
+                  <span className="shrink-0 text-[11px] text-gray-500">{distanceLabel(spot.distanceMeters)}</span>
                 </div>
-                <p className="text-[11px] text-gray-400">{spot.municipality.name}</p>
+                <p className="text-[11px] text-gray-500">{spot.municipality.name}</p>
                 {spot.description && <p className="mt-1 line-clamp-2 text-xs text-gray-600">{spot.description}</p>}
               </Link>
             ))}

@@ -57,7 +57,7 @@ function LegRow({ leg }: { leg: TransitSuggestion }) {
         })}
       </span>
       {leg.isMock && (
-        <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-400">
+        <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500">
           {t("municipalityProfile.mockData")}
         </span>
       )}
@@ -70,7 +70,7 @@ function LegRow({ leg }: { leg: TransitSuggestion }) {
 // real-or-mock travel between stops (see GET /reels/itinerary), and a planned
 // stay at each. Rendered both as the wide-screen rail below and as the
 // /itinerary page used on narrower screens.
-export function ItineraryPanel() {
+export function ItineraryPanel({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
   const { t } = useTranslation();
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -148,8 +148,12 @@ export function ItineraryPanel() {
 
   return (
     <>
-      <h2 className="text-base font-bold text-gray-900">{t("itinerary.heading")}</h2>
-      <p className="mt-1 text-xs text-gray-400">{t("itinerary.subtitle")}</p>
+      {headingLevel === 1 ? (
+        <h1 className="text-base font-bold text-gray-900">{t("itinerary.heading")}</h1>
+      ) : (
+        <h2 className="text-base font-bold text-gray-900">{t("itinerary.heading")}</h2>
+      )}
+      <p className="mt-1 text-xs text-gray-500">{t("itinerary.subtitle")}</p>
       {offline && (
         <p className="mt-3 flex items-center gap-2 rounded-xl bg-amber-50 px-3 py-2 text-[11px] leading-relaxed text-amber-800">
           <WifiOff className="h-3.5 w-3.5 shrink-0" /> {t("itinerary.offlineCopy")}
@@ -157,10 +161,10 @@ export function ItineraryPanel() {
       )}
 
       {loading ? (
-        <p className="mt-6 text-xs text-gray-400">{t("itinerary.loading")}</p>
+        <p className="mt-6 text-xs text-gray-500">{t("itinerary.loading")}</p>
       ) : !itinerary || itinerary.stops.length === 0 ? (
         <div className="mt-6 rounded-lg border border-dashed border-gray-300 p-4 text-center">
-          <p className="text-xs text-gray-400">{t("itinerary.empty")}</p>
+          <p className="text-xs text-gray-500">{t("itinerary.empty")}</p>
           <Link to="/" className="mt-2 inline-block text-xs font-medium text-gray-900 hover:underline">
             {t("itinerary.emptyCta")}
           </Link>
@@ -273,7 +277,7 @@ export function ItineraryPanel() {
                             onClick={() => move(i, -1)}
                             disabled={i === 0}
                             aria-label={t("itinerary.moveUp")}
-                            className="rounded px-1 text-xs text-gray-400 hover:bg-gray-100 disabled:opacity-20"
+                            className="rounded px-1 text-xs text-gray-500 hover:bg-gray-100 disabled:opacity-20"
                           >
                             <ChevronUp className="h-4 w-4" />
                           </button>
@@ -282,7 +286,7 @@ export function ItineraryPanel() {
                             onClick={() => move(i, 1)}
                             disabled={i === itinerary.stops.length - 1}
                             aria-label={t("itinerary.moveDown")}
-                            className="rounded px-1 text-xs text-gray-400 hover:bg-gray-100 disabled:opacity-20"
+                            className="rounded px-1 text-xs text-gray-500 hover:bg-gray-100 disabled:opacity-20"
                           >
                             <ChevronDown className="h-4 w-4" />
                           </button>
@@ -290,7 +294,7 @@ export function ItineraryPanel() {
                             type="button"
                             onClick={() => remove(stop.id)}
                             aria-label={t("itinerary.remove")}
-                            className="rounded px-1 text-xs text-gray-400 hover:bg-red-50 hover:text-red-500"
+                            className="rounded px-1 text-xs text-gray-500 hover:bg-jz-tint hover:text-jz-red"
                           >
                             <X className="h-4 w-4" />
                           </button>
@@ -301,7 +305,7 @@ export function ItineraryPanel() {
                             depart: formatClock(times[i].leave, t),
                           })}
                         </p>
-                        <label className="mt-1 flex items-center gap-1.5 text-[11px] text-gray-400">
+                        <label className="mt-1 flex items-center gap-1.5 text-[11px] text-gray-500">
                           {t("itinerary.stayLabel")}
                           <select
                             value={stop.stayMinutes}
@@ -381,7 +385,7 @@ export function ItineraryPanel() {
               </>
             )}
           </div>
-          <p className="mt-3 text-[11px] leading-relaxed text-gray-400">{t("itinerary.disclaimer")}</p>
+          <p className="mt-3 text-[11px] leading-relaxed text-gray-500">{t("itinerary.disclaimer")}</p>
         </div>
       )}
     </>

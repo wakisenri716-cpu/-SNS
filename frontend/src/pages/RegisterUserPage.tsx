@@ -81,7 +81,7 @@ export default function RegisterUserPage() {
           onChange={(e) => setForm({ ...form, password: e.target.value })}
           className={inputClass}
         />
-        <p className="mt-1 text-xs text-gray-400">{t("registerUser.demographicsNote")}</p>
+        <p className="mt-1 text-xs text-gray-500">{t("registerUser.demographicsNote")}</p>
         <label className="text-xs font-medium text-gray-500">
           {t("registerUser.nationalityLabel")}
           <select
@@ -100,7 +100,7 @@ export default function RegisterUserPage() {
             ))}
           </select>
           {nationalityAutoSuggested && (
-            <span className="mt-1 block text-[11px] text-gray-400">{t("registerUser.nationalityAutoSuggested")}</span>
+            <span className="mt-1 block text-[11px] text-gray-500">{t("registerUser.nationalityAutoSuggested")}</span>
           )}
         </label>
         <input
@@ -113,7 +113,7 @@ export default function RegisterUserPage() {
           className={inputClass}
         />
         {error && (
-          <p className="text-sm text-red-500">
+          <p className="text-sm text-jz-red">
             {typeof error === "string" ? error : t("registerUser.invalidInput")}
           </p>
         )}

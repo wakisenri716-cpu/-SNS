@@ -42,7 +42,7 @@ export default function MyPage() {
         </div>
       </div>
 
-      <p className="mt-3 text-xs text-gray-400">{t("myPage.viewOnlyNotice")}</p>
+      <p className="mt-3 text-xs text-gray-500">{t("myPage.viewOnlyNotice")}</p>
 
       {points && (
         <div className="mt-6 flex items-center gap-4 rounded-lg bg-gray-100 px-4 py-3">
@@ -63,7 +63,7 @@ export default function MyPage() {
       <section className="mt-8">
         <h2 className="text-sm font-bold text-gray-900">
           {t("stamps.bookHeading")}
-          {stamps && <span className="ml-2 font-normal text-gray-400">{t("stamps.count", { count: stamps.length })}</span>}
+          {stamps && <span className="ml-2 font-normal text-gray-500">{t("stamps.count", { count: stamps.length })}</span>}
         </h2>
         {stamps && stamps.length === 0 ? (
           <p className="mt-3 rounded-2xl bg-gray-50 p-4 text-xs leading-relaxed text-gray-500">{t("stamps.bookEmpty")}</p>
@@ -84,7 +84,7 @@ export default function MyPage() {
           {t("myPage.likedHeading", { count: likedReels.length })}
         </h2>
         {loading ? (
-          <p className="text-sm text-gray-400">{t("myPage.loading")}</p>
+          <p className="text-sm text-gray-500">{t("myPage.loading")}</p>
         ) : likedReels.length === 0 ? (
           <p className="px-6 py-12 text-center text-sm text-gray-500">
             {t("myPage.emptyLiked")}

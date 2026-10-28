@@ -41,12 +41,12 @@ export default function NotificationsPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 lg:py-8">
       <h1 className="text-xl font-bold text-gray-900">{t("notifications.heading")}</h1>
-      <p className="mt-1 text-xs text-gray-400">{t(user?.role === "USER" ? "notifications.subtitleTraveler" : "notifications.subtitle")}</p>
+      <p className="mt-1 text-xs text-gray-500">{t(user?.role === "USER" ? "notifications.subtitleTraveler" : "notifications.subtitle")}</p>
 
       {items == null ? (
-        <p className="mt-6 text-sm text-gray-400">{t("feed.loading")}</p>
+        <p className="mt-6 text-sm text-gray-500">{t("feed.loading")}</p>
       ) : items.length === 0 ? (
-        <p className="mt-6 rounded-xl border border-dashed border-gray-300 p-8 text-center text-sm text-gray-400">
+        <p className="mt-6 rounded-xl border border-dashed border-gray-300 p-8 text-center text-sm text-gray-500">
           {t("notifications.empty")}
         </p>
       ) : (
@@ -78,7 +78,7 @@ export default function NotificationsPage() {
                 {n.commentBody && (
                   <p className="mt-1 line-clamp-2 whitespace-pre-wrap text-xs text-gray-600">「{n.commentBody}」</p>
                 )}
-                <p className="mt-1 text-[11px] text-gray-400">{new Date(n.createdAt).toLocaleString(i18n.language)}</p>
+                <p className="mt-1 text-[11px] text-gray-500">{new Date(n.createdAt).toLocaleString(i18n.language)}</p>
                 </span>
                 {n.type === "newPost" && (
                   <video

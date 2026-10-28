@@ -39,7 +39,7 @@ export default function CompanyDashboardPage() {
         <h3 className="mb-2 text-sm font-semibold text-gray-600">
           {t("companyDashboard.postedHeading", { count: reels.length })}
         </h3>
-        <p className="mb-2 text-xs text-gray-400">{t("companyDashboard.note")}</p>
+        <p className="mb-2 text-xs text-gray-500">{t("companyDashboard.note")}</p>
         <ReelManageGrid
           reels={reels}
           onRemoved={(id) => setReels((prev) => prev.filter((r) => r.id !== id))}

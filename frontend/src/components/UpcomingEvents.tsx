@@ -38,7 +38,7 @@ export default function UpcomingEvents({ municipalityId, layout = "row" }: { mun
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm font-bold text-jz-ink">{e.title}</span>
         <span className="block truncate text-[11px] text-gray-500">{formatEventDates(e, i18n.language)}</span>
-        <span className="block truncate text-[11px] text-gray-400">
+        <span className="block truncate text-[11px] text-gray-500">
           {e.municipality.name}
           {e.locationName && `・${e.locationName}`}
         </span>

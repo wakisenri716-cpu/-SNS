@@ -55,7 +55,7 @@ export default function EventManager() {
       <h3 className="flex items-center gap-1.5 text-sm font-semibold text-gray-600">
         <CalendarDays className="h-4 w-4" /> {t("events.manageHeading")}
       </h3>
-      <p className="mt-1 text-xs text-gray-400">{t("events.manageNote")}</p>
+      <p className="mt-1 text-xs text-gray-500">{t("events.manageNote")}</p>
 
       <form onSubmit={submit} className="mt-3 flex flex-col gap-2 lg:max-w-lg">
         <input {...field("title")} required maxLength={80} placeholder={t("events.titlePlaceholder")} className={input} />
@@ -90,7 +90,7 @@ export default function EventManager() {
                 type="button"
                 onClick={() => void remove(e)}
                 aria-label={t("events.delete")}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-jz-red"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-jz-red"
               >
                 <Trash2 className="h-4 w-4" />
               </button>

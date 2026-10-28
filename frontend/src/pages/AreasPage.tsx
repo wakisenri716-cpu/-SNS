@@ -50,7 +50,7 @@ export default function AreasPage() {
               onClick={() => setRegion(r.key)}
               aria-pressed={region === r.key}
               className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm font-semibold ${
-                region === r.key ? "bg-jz-ink text-white" : n > 0 ? "bg-gray-100 text-jz-ink" : "bg-gray-50 text-gray-400"
+                region === r.key ? "bg-jz-ink text-white" : n > 0 ? "bg-gray-100 text-jz-ink" : "bg-gray-50 text-gray-500"
               }`}
             >
               {t(`areas.region.${r.key}`)}
@@ -88,12 +88,12 @@ export default function AreasPage() {
                             <span className="block truncate text-sm font-bold text-jz-ink">{m.name}</span>
                             <span className="block truncate text-xs text-gray-500">{m.description || p}</span>
                           </span>
-                          <ChevronRight className="h-4 w-4 shrink-0 text-gray-400" />
+                          <ChevronRight className="h-4 w-4 shrink-0 text-gray-500" />
                         </Link>
                       ))}
                     </div>
                   ))}
-                {countIn(r.prefectures) === 0 && <p className="text-xs text-gray-400">{t("areas.none")}</p>}
+                {countIn(r.prefectures) === 0 && <p className="text-xs text-gray-500">{t("areas.none")}</p>}
               </div>
             </section>
           ))}

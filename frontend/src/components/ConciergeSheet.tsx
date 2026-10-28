@@ -237,7 +237,7 @@ export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
                       ))}
                     </div>
                   )}
-                  {turn.mode === "keyword" && <p className="px-1 text-[11px] text-gray-400">{t("concierge.keywordNote")}</p>}
+                  {turn.mode === "keyword" && <p className="px-1 text-[11px] text-gray-500">{t("concierge.keywordNote")}</p>}
                 </>
               )}
             </div>
@@ -250,7 +250,7 @@ export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
             onChange={(e) => setInput(e.target.value)}
             maxLength={300}
             placeholder={speech.listening ? t("concierge.listening") : t("concierge.placeholder")}
-            className="min-w-0 flex-1 rounded-full bg-gray-100 px-4 py-3 text-sm text-jz-ink outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-jz-red/30"
+            className="min-w-0 flex-1 rounded-full bg-gray-100 px-4 py-3 text-sm text-jz-ink outline-none placeholder:text-gray-500 focus:ring-2 focus:ring-jz-red/30"
           />
           {speech.supported && (
             <button
