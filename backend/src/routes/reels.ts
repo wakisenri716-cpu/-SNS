@@ -1048,6 +1048,47 @@ router.post("/:id/translation", translateLimiter, async (req, res) => {
   }
 });
 
+// A comment translated into the viewer's UI language (any language to any,
+// since comments come from everywhere — Japanese staff reading an English
+// comment included). Same visibility as GET /:id/comments: a comment hidden
+// by reports can't be fetched this way by others.
+const commentTranslationSchema = z.object({ lang: z.enum(["ja", "en", "zh", "ko"]) });
+
+router.post("/:id/comments/:commentId/translation", translateLimiter, optionalAuth, async (req, res) => {
+  const parsed = commentTranslationSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "翻訳先の言語が正しくありません" });
+  const { lang } = parsed.data;
+
+  const reel = await prisma.reel.findUnique({ where: { id: req.params.id }, include: commentReelInclude });
+  const comment = reel
+    ? await prisma.comment.findFirst({
+        where: { id: req.params.commentId, reelId: reel.id },
+        include: { _count: { select: { reports: true } } },
+      })
+    : null;
+  if (!reel || !comment) return res.status(404).json({ error: "コメントが見つかりません" });
+  if (comment._count.reports >= COMMENT_HIDE_THRESHOLD && comment.userId !== req.auth?.userId && !(await canModerateComments(req.auth, reel))) {
+    return res.status(404).json({ error: "コメントが見つかりません" });
+  }
+
+  const cached = await prisma.commentTranslation.findUnique({ where: { commentId_lang: { commentId: comment.id, lang } } });
+  if (cached) return res.json({ body: cached.body, cached: true });
+
+  if (!isClaudeConfigured()) return res.status(503).json({ error: "翻訳機能は現在利用できません" });
+  try {
+    const body = await translateCaption(comment.body, lang, "comment");
+    await prisma.commentTranslation.upsert({
+      where: { commentId_lang: { commentId: comment.id, lang } },
+      create: { commentId: comment.id, lang, body },
+      update: { body },
+    });
+    res.json({ body, cached: false });
+  } catch (err) {
+    logClaudeError("translate comment", err);
+    res.status(502).json({ error: "翻訳できませんでした。しばらくしてからもう一度お試しください" });
+  }
+});
+
 // スタンプラリー: check in at a post's spot. The browser sends its position;
 // a stamp is given only within VISIT_RADIUS_METERS of the spot (the position
 // is the browser's report, so this keeps honest use honest rather than being

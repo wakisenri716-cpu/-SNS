@@ -6,6 +6,7 @@ import { useAuth } from "../auth/AuthContext";
 import type { Comment } from "../types";
 import { Flag, X } from "lucide-react";
 import { showToast } from "../lib/toast";
+import TranslatableComment from "./TranslatableComment";
 
 type CommentRow = Comment & { canDelete: boolean; reportedByMe?: boolean; hidden?: boolean };
 
@@ -142,7 +143,7 @@ export default function CommentsSheet({
                       </button>
                     )}
                   </div>
-                  <p className="mt-0.5 whitespace-pre-wrap break-words text-gray-700">{c.body}</p>
+                  <TranslatableComment reelId={reelId} commentId={c.id} body={c.body} />
                   {reportingId === c.id && (
                     <div className="mt-2 flex flex-wrap items-center gap-1.5 rounded-xl bg-gray-50 p-2">
                       <span className="text-[11px] text-gray-500">{t("comments.reportWhy")}</span>

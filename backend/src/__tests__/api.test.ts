@@ -295,3 +295,25 @@ test("見頃: posters set the months, and ?season=now lists only posts in season
   assert.ok(!ids.includes(bridge.id));
   assert.ok(inSeason.json.items.every((r: any) => r.bestMonths.includes(month)));
 });
+
+test("comment translation: unavailable without an API key, served from cache, hidden comments stay hidden", async () => {
+  const { json: map } = await call("GET", "/api/reels/map");
+  const reelId = map.items[0].id;
+  const posted = await call("POST", `/api/reels/${reelId}/comments`, { body: "Beautiful view!" }, traveler);
+  const commentId = posted.json.id;
+  const url = `/api/reels/${reelId}/comments/${commentId}/translation`;
+
+  assert.equal((await call("POST", url, { lang: "ja" })).status, 503);
+  assert.equal((await call("POST", url, { lang: "xx" })).status, 400);
+  assert.equal((await call("POST", `/api/reels/${reelId}/comments/nope/translation`, { lang: "ja" })).status, 404);
+
+  const { prisma } = await import("../prisma");
+  await prisma.commentTranslation.create({ data: { commentId, lang: "ja", body: "美しい眺め！" } });
+  assert.deepEqual((await call("POST", url, { lang: "ja" })).json, { body: "美しい眺め！", cached: true });
+
+  // Hidden by reports: not even its cached translation is served to others.
+  const reporter = (n: number) => call("POST", "/api/auth/register", { email: `tr${n}@example.com`, password: "password123", name: `tr${n}` });
+  for (const n of [1, 2, 3]) await call("POST", `/api/reels/${reelId}/comments/${commentId}/report`, { reason: "spam" }, (await reporter(n)).json.token);
+  assert.equal((await call("POST", url, { lang: "ja" })).status, 404);
+  assert.equal((await call("POST", url, { lang: "ja" }, traveler)).status, 200);
+});

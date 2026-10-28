@@ -265,6 +265,20 @@ model Comment {
   createdAt DateTime @default(now())
   notifications Notification[]
   reports   CommentReport[]
+  translations CommentTranslation[]
+}
+
+// Cached Claude translation of a comment into one UI language. Comments
+// can't be edited, so a cached translation never goes stale.
+model CommentTranslation {
+  id        String   @id @default(cuid())
+  commentId String
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  lang      String
+  body      String
+  createdAt DateTime @default(now())
+
+  @@unique([commentId, lang])
 }
 
 // 通報: a user flags someone else's comment. At COMMENT_HIDE_THRESHOLD
