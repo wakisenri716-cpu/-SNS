@@ -11,7 +11,7 @@ import { parseDepartureTime } from "../lib/parseDepartureTime";
 import { AGE_BUCKETS, REEL_CATEGORIES, TRAVEL_MODES, ageBucketFromBirthYear, parseTravelerTags } from "../types";
 import { POINTS_PER_TRAVEL_REPORT, getUserPoints } from "../lib/points";
 import { hasTravelStyle, scoreReel } from "../lib/personalize";
-import { notifyPoster } from "../lib/notifications";
+import { notifyFollowersOfNewPost, notifyPoster } from "../lib/notifications";
 import { summarizeByOriginAndMode, summarizeOrigins } from "../lib/travelReports";
 import { conciergeLimiter, translateLimiter, writeLimiter } from "../middleware/rateLimit";
 import { planTrip } from "../services/tripPlanner";
@@ -705,6 +705,12 @@ router.post(
       include: reelInclude,
     });
 
+    await notifyFollowersOfNewPost({
+      reelId: reel.id,
+      actorId: req.auth!.userId,
+      municipalityId: poster.municipalityId,
+      companyId: poster.companyId,
+    });
     res.status(201).json(await serializeReel(reel, anonymousViewerState()));
   }
 );

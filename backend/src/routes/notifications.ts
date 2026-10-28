@@ -14,7 +14,16 @@ router.get("/", requireAuth, async (req, res) => {
       take: LIMIT,
       include: {
         actor: { select: { name: true } },
-        reel: { select: { id: true, caption: true, locationName: true } },
+        reel: {
+          select: {
+            id: true,
+            caption: true,
+            locationName: true,
+            videoUrl: true,
+            municipality: { select: { name: true } },
+            company: { select: { name: true } },
+          },
+        },
         comment: { select: { body: true } },
       },
     }),
@@ -27,7 +36,9 @@ router.get("/", requireAuth, async (req, res) => {
       type: n.type,
       // The actor's account may have been deleted since (actorId → null).
       actorName: n.actor?.name ?? null,
-      reel: n.reel,
+      reel: { id: n.reel.id, caption: n.reel.caption, locationName: n.reel.locationName, videoUrl: n.reel.videoUrl },
+      // Who posted the reel — what a "newPost" notice is about.
+      posterName: n.reel.company?.name ?? n.reel.municipality.name,
       commentBody: n.comment?.body ?? null,
       read: n.readAt != null,
       createdAt: n.createdAt,

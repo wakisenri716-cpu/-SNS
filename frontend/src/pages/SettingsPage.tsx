@@ -189,6 +189,31 @@ function ToggleRow({
   );
 }
 
+// Travelers: whether new posts from followed municipalities/companies show up in お知らせ.
+function FollowNotificationSection() {
+  const { t } = useTranslation();
+  const { user, updateUser } = useAuth();
+  const [on, setOn] = useState(user?.notifyOnNewPost ?? true);
+
+  return (
+    <section className="border-b border-gray-200 p-4 lg:p-6">
+      <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("settings.notificationHeading")}</h2>
+      <p className="mb-2 text-xs text-gray-400">{t("settings.followNotificationDisclaimer")}</p>
+      <div className="lg:max-w-md">
+        <ToggleRow
+          label={t("settings.notifyNewPostLabel")}
+          description={t("settings.notifyNewPostDescription")}
+          checked={on}
+          onChange={(v) => {
+            setOn(v);
+            void api.put("/auth/me", { notifyOnNewPost: v }).then(({ data }) => updateUser(data));
+          }}
+        />
+      </div>
+    </section>
+  );
+}
+
 function NotificationSection() {
   const { t } = useTranslation();
   const { user, updateUser } = useAuth();
@@ -617,6 +642,7 @@ export default function SettingsPage() {
           <ProfileSection />
           {user.role === "USER" && <TravelStyleSection />}
           {(municipality || company) && <NotificationSection />}
+          {user.role === "USER" && <FollowNotificationSection />}
           <CommentsPermissionSection />
         </>
       )}

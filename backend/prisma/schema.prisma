@@ -27,6 +27,8 @@ model User {
   // (push/email) yet, so these currently have no visible effect.
   notifyOnLike    Boolean  @default(true)
   notifyOnComment Boolean  @default(true)
+  // Travelers: お知らせ when a municipality/company they follow posts.
+  notifyOnNewPost Boolean  @default(true)
   // Optional travel style, set from Settings, used only to personalize the
   // おすすめ feed (see lib/personalize.ts). travelCompanion is one of
   // TRAVEL_COMPANIONS; favoriteCategories is a comma-separated subset of
@@ -299,7 +301,7 @@ model Notification {
   id          String    @id @default(cuid())
   recipientId String
   recipient   User      @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
-  // "like" | "comment"
+  // "like" | "comment" | "newPost" (to followers of the poster)
   type        String
   reelId      String
   reel        Reel      @relation(fields: [reelId], references: [id], onDelete: Cascade)

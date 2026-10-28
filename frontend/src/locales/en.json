@@ -381,7 +381,10 @@
       "system": "System",
       "light": "Light",
       "dark": "Dark"
-    }
+    },
+    "followNotificationDisclaimer": "Notifications appear in the app (the bell icon). Push and email notifications are not supported yet.",
+    "notifyNewPostLabel": "New posts from accounts you follow",
+    "notifyNewPostDescription": "Let me know when a municipality or business I follow posts"
   },
   "privacyPolicy": {
     "title": "Privacy Policy",
@@ -571,7 +574,9 @@
     "empty": "No notifications yet",
     "liked": "{{name}} liked “{{post}}”",
     "commented": "{{name}} commented on “{{post}}”",
-    "deletedUser": "A deleted user"
+    "deletedUser": "A deleted user",
+    "newPost": "{{name}} posted something new: {{post}}",
+    "subtitleTraveler": "New posts from the municipalities and businesses you follow"
   },
   "share": {
     "label": "Share",

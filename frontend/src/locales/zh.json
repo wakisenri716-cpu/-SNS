@@ -379,7 +379,10 @@
       "system": "跟随系统",
       "light": "浅色",
       "dark": "深色"
-    }
+    },
+    "followNotificationDisclaimer": "通知显示在应用内（铃铛图标）。暂不支持手机推送和邮件通知。",
+    "notifyNewPostLabel": "关注对象的新帖子",
+    "notifyNewPostDescription": "关注的自治体或企业发布新帖子时通知我"
   },
   "privacyPolicy": {
     "title": "隐私政策",
@@ -567,7 +570,9 @@
     "empty": "暂无通知",
     "liked": "{{name}} 赞了「{{post}}」",
     "commented": "{{name}} 评论了「{{post}}」",
-    "deletedUser": "已注销的用户"
+    "deletedUser": "已注销的用户",
+    "newPost": "{{name}}发布了新帖子：{{post}}",
+    "subtitleTraveler": "关注的自治体和企业的新帖子"
   },
   "share": {
     "label": "分享",

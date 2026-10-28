@@ -47,3 +47,35 @@ export async function notifyPoster(input: {
     console.error("[notifications] Failed to create notification:", err);
   }
 }
+
+// New post → お知らせ for everyone following the posting municipality or
+// company (once each, even if they follow both), except the poster's own
+// account and followers who turned these off. Logged, never thrown.
+export async function notifyFollowersOfNewPost(input: {
+  reelId: string;
+  actorId: string;
+  municipalityId: string;
+  companyId: string | null;
+}) {
+  try {
+    const follows = await prisma.follow.findMany({
+      where: {
+        OR: [{ municipalityId: input.municipalityId }, ...(input.companyId ? [{ companyId: input.companyId }] : [])],
+        follower: { notifyOnNewPost: true },
+      },
+      select: { followerId: true },
+    });
+    const recipients = [...new Set(follows.map((f) => f.followerId))].filter((id) => id !== input.actorId);
+    if (recipients.length === 0) return;
+    await prisma.notification.createMany({
+      data: recipients.map((recipientId) => ({
+        recipientId,
+        type: "newPost",
+        reelId: input.reelId,
+        actorId: input.actorId,
+      })),
+    });
+  } catch (err) {
+    console.error("[notifications] Failed to notify followers:", err);
+  }
+}

@@ -379,7 +379,10 @@
       "system": "기기 설정",
       "light": "라이트",
       "dark": "다크"
-    }
+    },
+    "followNotificationDisclaimer": "알림은 앱 안(종 아이콘)으로 와요. 휴대폰 푸시 알림과 이메일은 아직 지원하지 않아요.",
+    "notifyNewPostLabel": "팔로우 중인 계정의 새 게시물",
+    "notifyNewPostDescription": "팔로우한 지자체·기업이 게시물을 올리면 알려 드려요"
   },
   "privacyPolicy": {
     "title": "개인정보 처리방침",
@@ -567,7 +570,9 @@
     "empty": "아직 알림이 없습니다",
     "liked": "{{name}}님이 「{{post}}」에 좋아요를 눌렀습니다",
     "commented": "{{name}}님이 「{{post}}」에 댓글을 달았습니다",
-    "deletedUser": "탈퇴한 사용자"
+    "deletedUser": "탈퇴한 사용자",
+    "newPost": "{{name}}에서 새 게시물을 올렸어요: {{post}}",
+    "subtitleTraveler": "팔로우 중인 지자체·기업의 새 게시물이에요"
   },
   "share": {
     "label": "공유",

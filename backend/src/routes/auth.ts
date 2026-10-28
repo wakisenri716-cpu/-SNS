@@ -24,6 +24,7 @@ function serializeUser(user: {
   birthYear: number | null;
   notifyOnLike: boolean;
   notifyOnComment: boolean;
+  notifyOnNewPost: boolean;
   travelCompanion: string | null;
   needsBarrierFree: boolean;
   needsMultilingual: boolean;
@@ -39,6 +40,7 @@ function serializeUser(user: {
     birthYear: user.birthYear,
     notifyOnLike: user.notifyOnLike,
     notifyOnComment: user.notifyOnComment,
+    notifyOnNewPost: user.notifyOnNewPost,
     travelCompanion: user.travelCompanion,
     needsBarrierFree: user.needsBarrierFree,
     needsMultilingual: user.needsMultilingual,
@@ -291,6 +293,7 @@ const updateMeSchema = z.object({
   birthYear: z.coerce.number().int().min(1900).max(currentYear - 5).optional(),
   notifyOnLike: z.boolean().optional(),
   notifyOnComment: z.boolean().optional(),
+  notifyOnNewPost: z.boolean().optional(),
   travelCompanion: z.enum(TRAVEL_COMPANIONS).nullable().optional(),
   needsBarrierFree: z.boolean().optional(),
   needsMultilingual: z.boolean().optional(),

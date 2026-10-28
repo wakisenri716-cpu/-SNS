@@ -379,7 +379,10 @@
       "system": "端末に合わせる",
       "light": "ライト",
       "dark": "ダーク"
-    }
+    },
+    "followNotificationDisclaimer": "お知らせはアプリ内（ベルのアイコン）に届きます。スマホへのプッシュ通知やメールにはまだ対応していません。",
+    "notifyNewPostLabel": "フォロー中の新着投稿",
+    "notifyNewPostDescription": "フォローしている自治体・企業が投稿したときにお知らせします"
   },
   "privacyPolicy": {
     "title": "プライバシーポリシー",
@@ -567,7 +570,9 @@
     "empty": "まだお知らせはありません",
     "liked": "{{name}}さんが「{{post}}」にいいねしました",
     "commented": "{{name}}さんが「{{post}}」にコメントしました",
-    "deletedUser": "退会したユーザー"
+    "deletedUser": "退会したユーザー",
+    "newPost": "{{name}}が新しい投稿をしました：{{post}}",
+    "subtitleTraveler": "フォロー中の自治体・企業の新しい投稿です"
   },
   "share": {
     "label": "共有",

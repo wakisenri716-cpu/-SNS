@@ -39,6 +39,7 @@ export interface AuthUser {
   birthYear: number | null;
   notifyOnLike: boolean;
   notifyOnComment: boolean;
+  notifyOnNewPost: boolean;
   travelCompanion: TravelCompanion | null;
   needsBarrierFree: boolean;
   needsMultilingual: boolean;

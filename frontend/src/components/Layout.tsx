@@ -106,6 +106,7 @@ function usePrimaryNav(unreadCount: number): NavEntry[] {
     map,
     search,
     { to: "/itinerary", label: t("itinerary.heading"), icon: BookOpen },
+    ...(user ? [{ to: "/notifications", label: t("notifications.heading"), icon: Bell, badge: unreadCount, tabBar: false }] : []),
     user ? { to: "/mypage", label: t("nav.myPage"), icon: User } : { to: "/login", label: t("nav.login"), icon: LogIn },
   ];
 }
@@ -221,9 +222,9 @@ function useHideOnScroll() {
 
 export default function Layout() {
   const { t } = useTranslation();
-  const { municipality, company } = useAuth();
-  // Only municipality/company accounts post, so only they receive お知らせ.
-  const unreadCount = useUnreadNotificationCount(!!municipality || !!company);
+  const { user, municipality, company } = useAuth();
+  // Posters get likes/comments; travelers get new posts from who they follow.
+  const unreadCount = useUnreadNotificationCount(!!user);
   const primary = usePrimaryNav(unreadCount);
 
   useEffect(() => setAppBadge(unreadCount), [unreadCount]);
@@ -264,6 +265,16 @@ export default function Layout() {
           <JazibaLogo className="h-8 w-auto" />
         </NavLink>
         <div className="flex items-center">
+        {user && !municipality && !company && (
+          <NavLink
+            to="/notifications"
+            aria-label={t("notifications.heading")}
+            className="relative flex h-10 w-10 items-center justify-center text-gray-900"
+          >
+            <Bell className="h-6 w-6" strokeWidth={1.8} />
+            {unreadCount > 0 && <span className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-jz-red ring-2 ring-white" />}
+          </NavLink>
+        )}
         <NavLink to="/search" aria-label={t("nav.search")} className="flex h-10 w-10 items-center justify-center text-gray-900">
           <Search className="h-6 w-6" strokeWidth={1.8} />
         </NavLink>

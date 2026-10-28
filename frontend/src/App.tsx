@@ -65,9 +65,9 @@ function App() {
         <Route
           path="/notifications"
           element={
-            <RequirePoster>
+            <RequireAuth>
               <NotificationsPage />
-            </RequirePoster>
+            </RequireAuth>
           }
         />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
