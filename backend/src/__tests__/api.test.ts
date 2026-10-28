@@ -192,3 +192,10 @@ test("events: posters add them, everyone sees upcoming ones, past ones drop off"
   assert.equal((await call("DELETE", `/api/events/${created.json.id}`, undefined, municipalityToken)).status, 204);
   assert.equal((await call("GET", "/api/events")).json.items.length, 0);
 });
+
+test("a wrong password on password change is 403, not a logout-triggering 401", async () => {
+  const res = await call("PUT", "/api/auth/password", { currentPassword: "wrong-password", newPassword: "another-pass-123" }, traveler);
+  assert.equal(res.status, 403);
+  const del = await call("DELETE", "/api/auth/me", { password: "wrong-password" }, traveler);
+  assert.equal(del.status, 403);
+});

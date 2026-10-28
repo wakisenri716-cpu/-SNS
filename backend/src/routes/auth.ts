@@ -348,7 +348,8 @@ router.delete("/me", requireAuth, async (req, res) => {
   if (!user) return res.status(404).json({ error: "ユーザーが見つかりません" });
 
   const valid = await bcrypt.compare(parsed.data.password, user.passwordHash);
-  if (!valid) return res.status(401).json({ error: "パスワードが正しくありません" });
+  // 403, not 401: the session is fine, and the client treats 401 as "log out".
+  if (!valid) return res.status(403).json({ error: "パスワードが正しくありません" });
 
   await prisma.user.delete({ where: { id: user.id } });
   res.status(204).end();
@@ -367,7 +368,8 @@ router.put("/password", requireAuth, async (req, res) => {
   if (!user) return res.status(404).json({ error: "ユーザーが見つかりません" });
 
   const valid = await bcrypt.compare(parsed.data.currentPassword, user.passwordHash);
-  if (!valid) return res.status(401).json({ error: "現在のパスワードが正しくありません" });
+  // 403, not 401: the session is fine, and the client treats 401 as "log out".
+  if (!valid) return res.status(403).json({ error: "現在のパスワードが正しくありません" });
 
   const passwordHash = await bcrypt.hash(parsed.data.newPassword, 10);
   await prisma.user.update({ where: { id: user.id }, data: { passwordHash } });
