@@ -4,7 +4,7 @@
 // the API and uploaded videos go to the network — except the signed-in
 // traveler's しおり, whose last copy is kept so it can be opened offline
 // (cleared on logout, see src/lib/offlineItinerary.ts).
-const CACHE = "jaziba-v1";
+const CACHE = "jaziba-v2";
 const ITINERARY_CACHE = "jaziba-itinerary";
 const ITINERARY_PATH = "/api/reels/itinerary";
 const SHELL = ["/", "/manifest.webmanifest", "/brand/jaziba-logo.png", "/icons/icon-192.png"];
@@ -54,7 +54,9 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(req)
         .then((res) => {
-          if (res.ok) {
+          // Only the home page refreshes the offline shell: other pages carry
+          // their own link-preview title (see backend lib/pageMeta.ts).
+          if (res.ok && url.pathname === "/") {
             const copy = res.clone();
             caches.open(CACHE).then((c) => c.put("/", copy));
           }

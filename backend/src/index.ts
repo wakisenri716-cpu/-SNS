@@ -12,6 +12,7 @@ import searchRoutes from "./routes/search";
 import inquiryRoutes from "./routes/inquiries";
 import notificationRoutes from "./routes/notifications";
 import conciergeRoutes from "./routes/concierge";
+import { applyMeta, metaForPath } from "./lib/pageMeta";
 import { seedIfEmpty } from "./seed";
 
 const app = express();
@@ -47,9 +48,13 @@ app.use("/api/concierge", conciergeRoutes);
 // frontend instead, so these middlewares simply no-op.
 const frontendDist = path.resolve(__dirname, "../../frontend/dist");
 if (fs.existsSync(frontendDist)) {
-  app.use(express.static(frontendDist));
-  app.get(/^(?!\/api|\/uploads).*/, (_req, res) => {
-    res.sendFile(path.join(frontendDist, "index.html"));
+  app.use(express.static(frontendDist, { index: false }));
+  const indexHtml = fs.readFileSync(path.join(frontendDist, "index.html"), "utf8");
+  app.get(/^(?!\/api|\/uploads).*/, async (req, res) => {
+    // Shared post/profile links get their own title and description for
+    // link previews (lib/pageMeta.ts); everything else is the plain shell.
+    const meta = await metaForPath(req.path, `${req.protocol}://${req.get("host")}`).catch(() => null);
+    res.type("html").send(meta ? applyMeta(indexHtml, meta) : indexHtml);
   });
 }
 
