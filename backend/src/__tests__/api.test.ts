@@ -1,6 +1,6 @@
 // End-to-end API tests: a fresh SQLite database (migrated and seeded), the
 // real Express app on a random port, and plain HTTP requests — no mocks.
-import { after, before, test } from "node:test";
+import { after, before, mock, test } from "node:test";
 import assert from "node:assert/strict";
 import { execSync } from "node:child_process";
 import fs from "node:fs";
@@ -316,4 +316,63 @@ test("comment translation: unavailable without an API key, served from cache, hi
   for (const n of [1, 2, 3]) await call("POST", `/api/reels/${reelId}/comments/${commentId}/report`, { reason: "spam" }, (await reporter(n)).json.token);
   assert.equal((await call("POST", url, { lang: "ja" })).status, 404);
   assert.equal((await call("POST", url, { lang: "ja" }, traveler)).status, 200);
+});
+
+test("web push: devices subscribe, get each お知らせ in their language, and gone ones are dropped", async () => {
+  const webpush = (await import("web-push")).default;
+  const sent: { endpoint: string; payload: any }[] = [];
+  let gone = new Set<string>();
+  const send = mock.method(webpush, "sendNotification", async (sub: any, payload: string) => {
+    if (gone.has(sub.endpoint)) throw Object.assign(new Error("gone"), { statusCode: 410 });
+    sent.push({ endpoint: sub.endpoint, payload: JSON.parse(payload) });
+    return { statusCode: 201, body: "", headers: {} };
+  });
+  try {
+    const key = await call("GET", "/api/push/public-key");
+    assert.match(key.json.key, /^[A-Za-z0-9_-]{80,}$/);
+    // The same key every time (it's stored, not regenerated).
+    assert.equal((await call("GET", "/api/push/public-key")).json.key, key.json.key);
+
+    const fan = (await call("POST", "/api/auth/register", { email: "fan@example.com", password: "password123", name: "ファン" })).json.token;
+    const keys = { p256dh: "BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTpQtUbVlUls0VJXg7A8u-Ts1XbjhazAkj7I99e8QcYP7DkM", auth: "tBHItJI5svbpez7KI4CCXg" };
+    assert.equal((await call("POST", "/api/push/subscribe", { endpoint: "https://push.example/phone", keys, lang: "en" }, fan)).status, 204);
+    assert.equal((await call("POST", "/api/push/subscribe", { endpoint: "https://push.example/old-tablet", keys, lang: "ja" }, fan)).status, 204);
+    assert.equal((await call("POST", "/api/push/subscribe", { endpoint: "not a url", keys }, fan)).status, 400);
+
+    const { json: map } = await call("GET", "/api/reels/map");
+    const municipalityId = map.items[0].municipality.id;
+    await call("POST", `/api/municipalities/${municipalityId}/follow`, undefined, fan);
+
+    gone = new Set(["https://push.example/old-tablet"]);
+    const municipalityToken = await login("demo-matsumoto@example.com");
+    const form = new FormData();
+    form.append("video", new Blob([fs.readFileSync(path.resolve(__dirname, "../../seed-assets/kamikochi.webm"))], { type: "video/webm" }), "clip.webm");
+    form.append("caption", "プッシュのテスト");
+    form.append("category", "nature");
+    form.append("locationName", "大正池");
+    const created = await fetch(`${base}/api/reels`, { method: "POST", headers: { Authorization: `Bearer ${municipalityToken}` }, body: form });
+    assert.equal(created.status, 201);
+    const reelId = (await created.json()).id;
+
+    // Sending isn't awaited by the request; give it a moment.
+    for (let i = 0; i < 50 && send.mock.callCount() < 2; i++) await new Promise((r) => setTimeout(r, 20));
+    await new Promise((r) => setTimeout(r, 50));
+    const toPhone = sent.find((s) => s.endpoint === "https://push.example/phone");
+    assert.deepEqual(toPhone?.payload, {
+      title: `New post from ${map.items[0].municipality.name}`,
+      body: "大正池",
+      url: `/reels/${reelId}/access`,
+      tag: `newPost-${reelId}`,
+    });
+    const { prisma } = await import("../prisma");
+    assert.deepEqual(
+      (await prisma.pushSubscription.findMany({ where: { endpoint: { startsWith: "https://push.example/" } } })).map((s) => s.endpoint),
+      ["https://push.example/phone"]
+    );
+
+    assert.equal((await call("DELETE", "/api/push/subscribe", { endpoint: "https://push.example/phone" }, fan)).status, 204);
+    assert.equal(await prisma.pushSubscription.count({ where: { endpoint: { startsWith: "https://push.example/" } } }), 0);
+  } finally {
+    send.mock.restore();
+  }
 });

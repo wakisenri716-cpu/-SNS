@@ -353,7 +353,7 @@
     "saveSuccess": "Saved",
     "saveError": "Failed to save",
     "notificationHeading": "Notifications",
-    "notificationDisclaimer": "Likes and comments appear under “Notifications” in the menu (push and email notifications aren't supported yet).",
+    "notificationDisclaimer": "Likes and comments appear under “Notifications” in the menu. Turn on push notifications below to get them on this device too (email isn't supported yet).",
     "notifyLikeLabel": "Like notifications",
     "notifyLikeDescription": "Get notified when someone likes your posts",
     "notifyCommentLabel": "Comment notifications",
@@ -405,7 +405,7 @@
       "light": "Light",
       "dark": "Dark"
     },
-    "followNotificationDisclaimer": "Notifications appear in the app (the bell icon). Push and email notifications are not supported yet.",
+    "followNotificationDisclaimer": "Notifications appear in the app (the bell icon). Turn on push notifications below to get them on this device too (email isn't supported yet).",
     "notifyNewPostLabel": "New posts from accounts you follow",
     "notifyNewPostDescription": "Let me know when a municipality or business I follow posts"
   },
@@ -835,5 +835,14 @@
       "w": "West",
       "nw": "Northwest"
     }
+  },
+  "push": {
+    "heading": "Push notifications (this device)",
+    "label": "Get notifications as push",
+    "description": "Arrive on this device even when the app is closed",
+    "needsInstall": "On iPhone, add the app to your Home Screen from Safari's share menu to use this.",
+    "unsupported": "This browser doesn't support push notifications.",
+    "denied": "Notifications are blocked. Allow them for this site in your browser settings.",
+    "error": "Couldn't set up push notifications"
   }
 }

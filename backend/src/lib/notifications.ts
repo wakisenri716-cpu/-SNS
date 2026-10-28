@@ -1,4 +1,5 @@
 import { prisma } from "../prisma";
+import { sendPush } from "./push";
 
 // Creates an お知らせ for the account that posted a reel (the company for a
 // company post, otherwise the municipality) — unless the actor is that
@@ -15,6 +16,8 @@ export async function notifyPoster(input: {
     const reel = await prisma.reel.findUnique({
       where: { id: input.reelId },
       select: {
+        locationName: true,
+        caption: true,
         municipality: { select: { user: { select: { id: true, notifyOnLike: true, notifyOnComment: true } } } },
         company: { select: { user: { select: { id: true, notifyOnLike: true, notifyOnComment: true } } } },
       },
@@ -43,6 +46,18 @@ export async function notifyPoster(input: {
         commentId: input.commentId,
       },
     });
+
+    const [actor, comment] = await Promise.all([
+      prisma.user.findUnique({ where: { id: input.actorId }, select: { name: true } }),
+      input.commentId ? prisma.comment.findUnique({ where: { id: input.commentId }, select: { body: true } }) : null,
+    ]);
+    const place = reel.locationName || reel.caption.slice(0, 40);
+    void sendPush(
+      [recipient.id],
+      input.type === "like"
+        ? { type: "like", actor: actor?.name ?? "", place, reelId: input.reelId }
+        : { type: "comment", actor: actor?.name ?? "", body: comment?.body ?? "", reelId: input.reelId }
+    );
   } catch (err) {
     console.error("[notifications] Failed to create notification:", err);
   }
@@ -75,6 +90,19 @@ export async function notifyFollowersOfNewPost(input: {
         actorId: input.actorId,
       })),
     });
+
+    const reel = await prisma.reel.findUnique({
+      where: { id: input.reelId },
+      select: { locationName: true, caption: true, municipality: { select: { name: true } }, company: { select: { name: true } } },
+    });
+    if (reel) {
+      void sendPush(recipients, {
+        type: "newPost",
+        poster: reel.company?.name ?? reel.municipality.name,
+        place: reel.locationName || reel.caption.slice(0, 40),
+        reelId: input.reelId,
+      });
+    }
   } catch (err) {
     console.error("[notifications] Failed to notify followers:", err);
   }

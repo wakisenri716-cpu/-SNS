@@ -58,6 +58,7 @@ model User {
   notificationsCaused Notification[] @relation("NotificationActor")
   visits        Visit[]
   commentReports CommentReport[]
+  pushSubscriptions PushSubscription[]
 }
 
 model Municipality {
@@ -335,8 +336,8 @@ model TravelTimeReport {
 
 // In-app お知らせ for the account that posted a reel: someone liked it or
 // commented on it. Only created when the recipient's notifyOnLike /
-// notifyOnComment setting is on, and never for their own actions. There is
-// no push/email delivery — this table is the whole mechanism.
+// notifyOnComment setting is on, and never for their own actions. Devices
+// that opted in also get each one as a Web Push (see PushSubscription).
 model Notification {
   id          String    @id @default(cuid())
   recipientId String
@@ -374,4 +375,26 @@ model Event {
   createdAt      DateTime     @default(now())
 
   @@index([endDate])
+}
+
+// A browser/device that agreed to Web Push for this account (Settings →
+// プッシュ通知). Each お知らせ is also pushed to these; one the push service
+// reports gone (404/410) is deleted. `lang` is the UI language at subscribe
+// time, used for the notification text.
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  lang      String   @default("ja")
+  createdAt DateTime @default(now())
+}
+
+// Small server-wide values that must survive restarts, e.g. the generated
+// Web Push (VAPID) key pair when none is configured in the environment.
+model AppSetting {
+  key   String @id
+  value String
 }

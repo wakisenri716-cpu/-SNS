@@ -3,6 +3,7 @@ import { api, setAuthToken, setUnauthorizedHandler } from "../api/client";
 import { isAxiosError } from "axios";
 import i18n from "../i18n";
 import { clearOfflineItinerary } from "../lib/offlineItinerary";
+import { forgetPushOnThisDevice } from "../lib/push";
 import type { AuthUser, Company, Municipality } from "../types";
 
 interface AuthState {
@@ -65,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAuthToken(null);
     localStorage.removeItem(STORAGE_KEY);
     clearOfflineItinerary();
+    void forgetPushOnThisDevice();
     if (notice) sessionStorage.setItem(AUTH_NOTICE_KEY, notice);
   }
 

@@ -351,7 +351,7 @@
     "saveSuccess": "保存しました",
     "saveError": "保存に失敗しました",
     "notificationHeading": "通知設定",
-    "notificationDisclaimer": "いいね・コメントがあると、メニューの「お知らせ」に表示されます（スマホへのプッシュ通知やメールでのお知らせには、まだ対応していません）。",
+    "notificationDisclaimer": "いいね・コメントがあると、メニューの「お知らせ」に表示されます。下の「プッシュ通知」をオンにすると、この端末にも届きます（メールでのお知らせには未対応です）。",
     "notifyLikeLabel": "いいね通知",
     "notifyLikeDescription": "自分の投稿にいいねが付いたときに通知を受け取る",
     "notifyCommentLabel": "コメント通知",
@@ -403,7 +403,7 @@
       "light": "ライト",
       "dark": "ダーク"
     },
-    "followNotificationDisclaimer": "お知らせはアプリ内（ベルのアイコン）に届きます。スマホへのプッシュ通知やメールにはまだ対応していません。",
+    "followNotificationDisclaimer": "お知らせはアプリ内（ベルのアイコン）に届きます。下の「プッシュ通知」をオンにすると、この端末にも届きます（メールには未対応です）。",
     "notifyNewPostLabel": "フォロー中の新着投稿",
     "notifyNewPostDescription": "フォローしている自治体・企業が投稿したときにお知らせします"
   },
@@ -820,5 +820,14 @@
       "w": "西",
       "nw": "北西"
     }
+  },
+  "push": {
+    "heading": "プッシュ通知（この端末）",
+    "label": "お知らせをプッシュ通知で受け取る",
+    "description": "アプリを閉じていても、この端末に通知が届きます",
+    "needsInstall": "iPhoneでは、Safariの共有メニューから「ホーム画面に追加」したアプリで使えます。",
+    "unsupported": "このブラウザではプッシュ通知を使えません。",
+    "denied": "通知がブロックされています。ブラウザの設定でこのサイトの通知を許可してください。",
+    "error": "プッシュ通知を設定できませんでした"
   }
 }

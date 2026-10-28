@@ -5,6 +5,8 @@ import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { isDataSaverEnabled, setDataSaverEnabled } from "../components/AutoplayVideo";
 import { setThemePref, useThemePref, type ThemePref } from "../lib/theme";
+import { disablePush, enablePush, getPushState, type PushState } from "../lib/push";
+import { showToast } from "../lib/toast";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { SUPPORTED_LANGUAGES, setAppLanguage, type SupportedLanguage } from "../i18n";
 import { NATIONALITIES, REEL_CATEGORIES, TRAVEL_COMPANIONS, type AuthUser } from "../types";
@@ -186,6 +188,42 @@ function ToggleRow({
         className="mt-1 h-4 w-4 shrink-0 accent-gray-900"
       />
     </label>
+  );
+}
+
+// Web Push on this device for every お知らせ (all account types).
+function PushSection() {
+  const { t, i18n } = useTranslation();
+  const [state, setState] = useState<PushState | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    void getPushState().then(setState);
+  }, []);
+
+  async function toggle(on: boolean) {
+    setBusy(true);
+    try {
+      setState(on ? await enablePush(i18n.language) : await disablePush());
+    } catch {
+      showToast(t("push.error"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (state == null) return null;
+  return (
+    <section className="border-b border-gray-200 p-4 lg:p-6">
+      <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("push.heading")}</h2>
+      <div className="lg:max-w-md">
+        {state === "on" || state === "off" ? (
+          <ToggleRow label={t("push.label")} description={t("push.description")} checked={state === "on"} onChange={(v) => !busy && void toggle(v)} />
+        ) : (
+          <p className="text-xs leading-relaxed text-gray-500">{t(`push.${state}`)}</p>
+        )}
+      </div>
+    </section>
   );
 }
 
@@ -643,6 +681,7 @@ export default function SettingsPage() {
           {user.role === "USER" && <TravelStyleSection />}
           {(municipality || company) && <NotificationSection />}
           {user.role === "USER" && <FollowNotificationSection />}
+          <PushSection />
           <CommentsPermissionSection />
         </>
       )}

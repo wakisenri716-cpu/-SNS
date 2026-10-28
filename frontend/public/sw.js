@@ -83,3 +83,35 @@ self.addEventListener("fetch", (event) => {
     );
   }
 });
+
+// Web Push (see src/lib/push.ts, backend lib/push.ts): show the お知らせ, and
+// open its page when tapped — focusing an open Jaziba window if there is one.
+self.addEventListener("push", (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = { title: "Jaziba", body: event.data ? event.data.text() : "" };
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title || "Jaziba", {
+      body: data.body || "",
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      tag: data.tag,
+      data: { url: data.url || "/notifications" },
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = new URL(event.notification.data?.url || "/", self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((windows) => {
+      const open = windows.find((w) => new URL(w.url).origin === self.location.origin);
+      if (open) return open.navigate(url).then((w) => (w || open).focus());
+      return self.clients.openWindow(url);
+    })
+  );
+});

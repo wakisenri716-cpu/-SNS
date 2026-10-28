@@ -351,7 +351,7 @@
     "saveSuccess": "저장했습니다",
     "saveError": "저장에 실패했습니다",
     "notificationHeading": "알림 설정",
-    "notificationDisclaimer": "좋아요・댓글이 달리면 메뉴의 「알림」에 표시됩니다 (스마트폰 푸시 알림이나 이메일 알림은 아직 지원하지 않습니다).",
+    "notificationDisclaimer": "좋아요・댓글이 달리면 메뉴의 「알림」에 표시됩니다. 아래 「푸시 알림」을 켜면 이 기기로도 알림이 옵니다(이메일 알림은 아직 지원하지 않습니다).",
     "notifyLikeLabel": "좋아요 알림",
     "notifyLikeDescription": "내 게시물에 좋아요가 달렸을 때 알림 받기",
     "notifyCommentLabel": "댓글 알림",
@@ -403,7 +403,7 @@
       "light": "라이트",
       "dark": "다크"
     },
-    "followNotificationDisclaimer": "알림은 앱 안(종 아이콘)으로 와요. 휴대폰 푸시 알림과 이메일은 아직 지원하지 않아요.",
+    "followNotificationDisclaimer": "알림은 앱 안(종 아이콘)으로 와요. 아래 「푸시 알림」을 켜면 이 기기로도 와요(이메일은 아직 지원하지 않아요).",
     "notifyNewPostLabel": "팔로우 중인 계정의 새 게시물",
     "notifyNewPostDescription": "팔로우한 지자체·기업이 게시물을 올리면 알려 드려요"
   },
@@ -820,5 +820,14 @@
       "w": "서",
       "nw": "북서"
     }
+  },
+  "push": {
+    "heading": "푸시 알림(이 기기)",
+    "label": "알림을 푸시로 받기",
+    "description": "앱을 닫아도 이 기기로 알림이 옵니다",
+    "needsInstall": "iPhone에서는 Safari 공유 메뉴에서 '홈 화면에 추가'한 앱에서 사용할 수 있습니다.",
+    "unsupported": "이 브라우저는 푸시 알림을 지원하지 않습니다.",
+    "denied": "알림이 차단되어 있습니다. 브라우저 설정에서 이 사이트의 알림을 허용해 주세요.",
+    "error": "푸시 알림을 설정하지 못했습니다"
   }
 }

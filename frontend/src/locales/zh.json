@@ -351,7 +351,7 @@
     "saveSuccess": "已保存",
     "saveError": "保存失败",
     "notificationHeading": "通知设置",
-    "notificationDisclaimer": "收到点赞或评论时，会显示在菜单的「通知」中（尚不支持手机推送通知和邮件通知）。",
+    "notificationDisclaimer": "收到点赞或评论时，会显示在菜单的「通知」中。开启下方的「推送通知」后，也会推送到此设备（暂不支持邮件通知）。",
     "notifyLikeLabel": "点赞通知",
     "notifyLikeDescription": "当有人给自己的投稿点赞时接收通知",
     "notifyCommentLabel": "评论通知",
@@ -403,7 +403,7 @@
       "light": "浅色",
       "dark": "深色"
     },
-    "followNotificationDisclaimer": "通知显示在应用内（铃铛图标）。暂不支持手机推送和邮件通知。",
+    "followNotificationDisclaimer": "通知显示在应用内（铃铛图标）。开启下方的「推送通知」后，也会推送到此设备（暂不支持邮件）。",
     "notifyNewPostLabel": "关注对象的新帖子",
     "notifyNewPostDescription": "关注的自治体或企业发布新帖子时通知我"
   },
@@ -820,5 +820,14 @@
       "w": "西",
       "nw": "西北"
     }
+  },
+  "push": {
+    "heading": "推送通知（此设备）",
+    "label": "通过推送接收通知",
+    "description": "即使关闭应用，也会推送到此设备",
+    "needsInstall": "在iPhone上，请通过Safari的分享菜单“添加到主屏幕”后使用。",
+    "unsupported": "此浏览器不支持推送通知。",
+    "denied": "通知已被阻止。请在浏览器设置中允许此网站的通知。",
+    "error": "无法设置推送通知"
   }
 }
