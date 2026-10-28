@@ -116,12 +116,22 @@
   },
   "myPage": {
     "viewOnlyNotice": "観光客アカウントの閲覧専用ページです。投稿の作成・編集はできません（自治体アカウントのみ可能です）。",
-    "likedHeading": "いいねしたリール（{{count}}件）",
-    "loading": "読み込み中...",
     "emptyLiked": "まだいいねしたリールがありません。フィードで気になる投稿にいいねしてみましょう。",
     "pointsLabel": "ポイント",
     "pointsValue": "{{points}}pt",
-    "pointsNote": "移動時間の記録 {{count}}件。ポイントは試作のため、まだ使い道はありません。"
+    "pointsNote": "移動時間の記録 {{count}}件。ポイントは試作のため、まだ使い道はありません。",
+    "statStamps": "スタンプ",
+    "statPrefectures": "都道府県",
+    "statSaved": "保存",
+    "statFollowing": "フォロー中",
+    "prefectureProgress": "訪れた都道府県",
+    "tabsLabel": "マイページの表示切り替え",
+    "tabLiked": "いいね",
+    "tabSaved": "保存済み",
+    "tabFollowing": "フォロー中",
+    "emptySaved": "まだ保存した投稿がありません。行きたい場所を保存すると、しおりが作られます。",
+    "emptyFollowing": "まだフォロー中の自治体・企業はありません。",
+    "unfollow": "フォロー中"
   },
   "itinerary": {
     "heading": "しおり",

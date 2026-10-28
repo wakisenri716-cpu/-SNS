@@ -116,12 +116,22 @@
   },
   "myPage": {
     "viewOnlyNotice": "관광객 계정 전용 열람 페이지입니다. 게시물 작성・수정은 할 수 없습니다（지자체 계정만 가능）。",
-    "likedHeading": "좋아요한 릴（{{count}}건）",
-    "loading": "불러오는 중...",
     "emptyLiked": "아직 좋아요한 릴이 없습니다. 피드에서 마음에 드는 게시물에 좋아요를 눌러보세요.",
     "pointsLabel": "포인트",
     "pointsValue": "{{points}}pt",
-    "pointsNote": "소요 시간 기록 {{count}}건. 포인트는 시험 기능이라 아직 사용처가 없습니다."
+    "pointsNote": "소요 시간 기록 {{count}}건. 포인트는 시험 기능이라 아직 사용처가 없습니다.",
+    "statStamps": "스탬프",
+    "statPrefectures": "도도부현",
+    "statSaved": "저장",
+    "statFollowing": "팔로잉",
+    "prefectureProgress": "방문한 도도부현",
+    "tabsLabel": "마이페이지 보기 전환",
+    "tabLiked": "좋아요",
+    "tabSaved": "저장됨",
+    "tabFollowing": "팔로잉",
+    "emptySaved": "아직 저장한 게시물이 없습니다. 가고 싶은 곳을 저장하면 일정이 만들어집니다.",
+    "emptyFollowing": "아직 팔로우한 지자체・기업이 없습니다.",
+    "unfollow": "팔로잉"
   },
   "itinerary": {
     "heading": "여행 수첩",

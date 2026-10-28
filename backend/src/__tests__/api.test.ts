@@ -168,6 +168,11 @@ test("followers are notified of a new post, the poster is not", async () => {
   const { json: map } = await call("GET", "/api/reels/map");
   const municipalityId = map.items[0].municipality.id;
   assert.equal((await call("POST", `/api/municipalities/${municipalityId}/follow`, undefined, traveler)).status, 204);
+  const following = await call("GET", "/api/auth/me/following", undefined, traveler);
+  assert.deepEqual(
+    following.json.items.map((f: any) => [f.kind, f.id, f.municipalityId]),
+    [["municipality", municipalityId, municipalityId]]
+  );
 
   const form = new FormData();
   form.append("video", new Blob([fs.readFileSync(path.resolve(__dirname, "../../seed-assets/kamikochi.webm"))], { type: "video/webm" }), "clip.webm");

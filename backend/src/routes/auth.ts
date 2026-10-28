@@ -286,6 +286,35 @@ router.get("/me/stamps", requireAuth, async (req, res) => {
   });
 });
 
+// フォロー中: the municipalities and companies this user follows, newest
+// first. A company has no page of its own, so it links to its municipality.
+router.get("/me/following", requireAuth, async (req, res) => {
+  const follows = await prisma.follow.findMany({
+    where: { followerId: req.auth!.userId },
+    orderBy: { createdAt: "desc" },
+    include: {
+      municipality: { select: { id: true, name: true, prefecture: true, avatarUrl: true } },
+      company: {
+        select: { id: true, name: true, avatarUrl: true, municipality: { select: { id: true, name: true, prefecture: true } } },
+      },
+    },
+  });
+  res.json({
+    items: follows.flatMap((f) => {
+      if (f.municipality) {
+        const m = f.municipality;
+        return [{ kind: "municipality", id: m.id, name: m.name, avatarUrl: m.avatarUrl, municipalityId: m.id, place: m.prefecture }];
+      }
+      if (f.company) {
+        const c = f.company;
+        const place = `${c.municipality.prefecture}${c.municipality.name}`;
+        return [{ kind: "company", id: c.id, name: c.name, avatarUrl: c.avatarUrl, municipalityId: c.municipality.id, place }];
+      }
+      return [];
+    }),
+  });
+});
+
 const updateMeSchema = z.object({
   name: z.string().min(1).optional(),
   email: z.string().email().optional(),

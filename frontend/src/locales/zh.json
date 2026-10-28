@@ -116,12 +116,22 @@
   },
   "myPage": {
     "viewOnlyNotice": "这是游客账号的只读页面。无法创建或编辑投稿（仅自治体账号可以）。",
-    "likedHeading": "已点赞的短视频（{{count}}条）",
-    "loading": "加载中...",
     "emptyLiked": "还没有点赞过的短视频。快去信息流中给感兴趣的投稿点赞吧。",
     "pointsLabel": "积分",
     "pointsValue": "{{points}}pt",
-    "pointsNote": "所需时间记录{{count}}条。积分为试用功能，目前尚无用途。"
+    "pointsNote": "所需时间记录{{count}}条。积分为试用功能，目前尚无用途。",
+    "statStamps": "印章",
+    "statPrefectures": "都道府县",
+    "statSaved": "收藏",
+    "statFollowing": "关注",
+    "prefectureProgress": "去过的都道府县",
+    "tabsLabel": "我的页面切换",
+    "tabLiked": "点赞",
+    "tabSaved": "已收藏",
+    "tabFollowing": "关注中",
+    "emptySaved": "还没有收藏的帖子。收藏想去的地方，就会生成行程。",
+    "emptyFollowing": "还没有关注的自治体或企业。",
+    "unfollow": "关注中"
   },
   "itinerary": {
     "heading": "行程手册",
