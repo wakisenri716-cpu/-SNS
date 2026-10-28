@@ -25,6 +25,7 @@ const AreasPage = lazy(() => import("./pages/AreasPage"));
 const PosterPage = lazy(() => import("./pages/PosterPage"));
 const OnboardingPage = lazy(() => import("./pages/OnboardingPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+const TripPage = lazy(() => import("./pages/TripPage"));
 const MyPage = lazy(() => import("./pages/MyPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
@@ -76,6 +77,7 @@ function App() {
         <Route path="/municipalities/:id" element={<MunicipalityProfilePage />} />
         <Route path="/reels/:id/access" element={<ReelAccessPage />} />
         <Route path="/itinerary" element={<ItineraryPage />} />
+        <Route path="/trip/:token" element={<TripPage />} />
         <Route
           path="/notifications"
           element={

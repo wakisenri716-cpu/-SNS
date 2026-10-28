@@ -152,7 +152,14 @@
     "addToCalendar": "カレンダーに追加",
     "calendarDate": "旅行の日付",
     "downloadCalendar": "この日で追加",
-    "offlineCopy": "オフラインのため、最後に開いたときのしおりを表示しています。"
+    "offlineCopy": "オフラインのため、最後に開いたときのしおりを表示しています。",
+    "share": "しおりを共有",
+    "shareTitle": "旅のしおり | ジャジバ",
+    "shareError": "共有リンクを作れませんでした。時間をおいて再度お試しください",
+    "stopSharing": "共有を停止",
+    "stopSharingConfirm": "共有リンクを無効にしますか？送ったリンクは開けなくなります。",
+    "stopSharingDone": "共有を停止しました",
+    "sharingNote": "共有中：リンクを知っている人は、このしおりを見られます（出発地点は表示されません）。"
   },
   "dashboard": {
     "tabPosts": "投稿",
@@ -739,5 +746,22 @@
       "shikoku": "四国",
       "kyushu": "九州・沖縄"
     }
+  },
+  "trip": {
+    "loadError": "しおりを読み込めませんでした",
+    "addedToast": "{{count}}か所をしおりに追加しました",
+    "missingTitle": "このしおりは見られません",
+    "missingBody": "共有が停止されたか、リンクが間違っている可能性があります。",
+    "explore": "ジャジバで旅先を探す",
+    "eyebrow": "共有されたしおり",
+    "title": "{{name}}さんの旅のしおり",
+    "summary": "{{count}}か所・{{places}}",
+    "mineNote": "あなたが共有中のしおりです。友だちにはこのように見えています（出発地点は表示されません）。",
+    "empty": "まだ行き先が入っていません",
+    "inMyItinerary": "しおりに追加済み",
+    "addOne": "自分のしおりに追加",
+    "timeNote": "時刻は{{time}}に最初の場所へ着く想定です。",
+    "addAll": "{{count}}か所をまとめてしおりに追加",
+    "loginToAdd": "ログインして自分のしおりに追加"
   }
 }

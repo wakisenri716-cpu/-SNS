@@ -42,3 +42,15 @@ test("event ics: all-day, end date exclusive", () => {
   assert.match(ics, /DTEND;VALUE=DATE:20270102/);
   assert.doesNotMatch(ics, /DESCRIPTION/);
 });
+
+test("itinerary timeline: travel and stays accumulate, past midnight counts as the next day", async () => {
+  const { computeTimeline, splitClock } = await import("../src/lib/itineraryTimeline.ts");
+  const { departAt, times } = computeTimeline("22:00", 30, [60, 90], [45]);
+  assert.equal(departAt, 22 * 60);
+  assert.deepEqual(times, [
+    { arrive: 22 * 60 + 30, leave: 23 * 60 + 30 },
+    { arrive: 24 * 60 + 15, leave: 25 * 60 + 45 },
+  ]);
+  assert.deepEqual(splitClock(times[1].leave), { day: 1, time: "01:45" });
+  assert.equal(computeTimeline("bad", null, [0], []).departAt, 9 * 60);
+});

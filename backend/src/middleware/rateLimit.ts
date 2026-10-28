@@ -30,3 +30,6 @@ export const inquiryLimiter = limiter(60, 5, "お問い合わせの送信回数�
 export const conciergeLimiter = limiter(10, 20, "AIへの相談が続いたため、少し時間をおいてから再度お試しください");
 // Translations are cached, so only first-time translations cost an API call.
 export const translateLimiter = limiter(10, 60, "翻訳の回数が多すぎます。少し時間をおいてから再度お試しください");
+// A shared しおり link is public and each view may estimate every leg with the
+// maps API, so cap how often one visitor can reload it.
+export const tripViewLimiter = limiter(10, 60, "表示の回数が多すぎます。少し時間をおいてから再度お試しください");

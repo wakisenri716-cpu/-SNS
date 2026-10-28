@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AUTH_NOTICE_KEY, useAuth } from "../auth/AuthContext";
 
@@ -9,6 +9,10 @@ const inputClass =
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  // Pages that send people here to sign in (e.g. a shared しおり) pass where
+  // to come back to; only same-app paths are honored.
+  const from = (useLocation().state as { from?: unknown } | null)?.from;
+  const returnTo = typeof from === "string" && from.startsWith("/") && !from.startsWith("//") ? from : "/";
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +30,7 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       await login(email, password);
-      navigate("/");
+      navigate(returnTo, { replace: returnTo !== "/" });
     } catch (err: any) {
       setError(err?.response?.data?.error ?? t("login.genericError"));
     } finally {

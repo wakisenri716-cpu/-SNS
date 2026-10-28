@@ -18,6 +18,8 @@ import { resolvePosterContext } from "../lib/posterContext";
 import { planTrip } from "../services/tripPlanner";
 import { isClaudeConfigured, logClaudeError } from "../services/claude";
 import { translateCaption } from "../services/translate";
+import { buildItinerary } from "../lib/itinerary";
+import { randomBytes } from "node:crypto";
 
 const PERSONALIZED_POOL = 100;
 
@@ -163,100 +165,31 @@ router.get("/saved", requireAuth, async (req, res) => {
   });
 });
 
-// しおり (itinerary): chains the signed-in user's saved/bookmarked reels into
-// a route — in the order they arranged (PUT /reels/itinerary/order), falling
-// back to save order — with a real-or-mock travel estimate between each
-// consecutive pair (see getTransitSuggestion), reusing the exact same mock
-// fallback this app uses everywhere else. Both ends of those legs are known
-// reel coordinates, so nothing needs geocoding; only the optional leg from the
-// user's typed trip origin to the first stop does, like the access planner.
-// Reels without location data can't be chained and are skipped. The frontend
-// turns the legs + each stop's stayMinutes + the start time into a timeline.
+// しおり (itinerary) for the signed-in traveler — see lib/itinerary.ts.
 // Must be registered before "/:id" so "itinerary" isn't matched as a reel id.
 router.get("/itinerary", requireAuth, async (req, res) => {
-  const [user, saves] = await Promise.all([
-    prisma.user.findUnique({
-      where: { id: req.auth!.userId },
-      select: { itineraryOrigin: true, itineraryStartTime: true },
-    }),
-    prisma.savedReel.findMany({
-      where: { userId: req.auth!.userId },
-      include: {
-        reel: {
-          include: { municipality: { select: { id: true, name: true, avatarUrl: true, prefecture: true } } },
-        },
-      },
-    }),
+  const [itinerary, user] = await Promise.all([
+    buildItinerary(req.auth!.userId, { withOrigin: true }),
+    prisma.user.findUnique({ where: { id: req.auth!.userId }, select: { itineraryShareToken: true } }),
   ]);
+  res.json({ ...itinerary, shareToken: user?.itineraryShareToken ?? null });
+});
 
-  const ordered = saves
-    .filter((s) => s.reel.locationLat != null && s.reel.locationLng != null)
-    .sort(
-      (a, b) =>
-        (a.position ?? Number.MAX_SAFE_INTEGER) - (b.position ?? Number.MAX_SAFE_INTEGER) ||
-        a.createdAt.getTime() - b.createdAt.getTime()
-    );
-  const stops = ordered.map((s) => s.reel);
-
-  const originLabel = user?.itineraryOrigin ?? "";
-  let originLeg = null;
-  if (originLabel && stops.length > 0) {
-    let originCoords: { lat: number; lng: number } | null = null;
-    if (isGoogleMapsConfigured()) {
-      try {
-        const geocoded = await geocode(originLabel);
-        if (geocoded) originCoords = { lat: geocoded.lat, lng: geocoded.lng };
-      } catch (err) {
-        console.error("[reels] Geocoding itinerary origin failed:", err);
-      }
-    }
-    // Without coordinates for the typed origin, the only fallback would be the
-    // name-hash mock, which can be hours off — and on a timeline that error
-    // shifts every clock time after it. So leave the leg out instead, and let
-    // the client say why (originLocated: false).
-    if (originCoords) {
-      const first = stops[0];
-      originLeg = await getTransitSuggestion(
-        first.locationName || first.municipality.name,
-        first.locationLat!,
-        first.locationLng!,
-        { label: originLabel, ...originCoords }
-      );
-    }
+// Share the しおり as a read-only link (GET /api/trips/:token). Reuses the
+// existing token so a link already sent to companions keeps working.
+router.post("/itinerary/share", requireAuth, async (req, res) => {
+  const user = await prisma.user.findUnique({ where: { id: req.auth!.userId }, select: { itineraryShareToken: true } });
+  const token = user?.itineraryShareToken ?? randomBytes(12).toString("base64url");
+  if (!user?.itineraryShareToken) {
+    await prisma.user.update({ where: { id: req.auth!.userId }, data: { itineraryShareToken: token } });
   }
+  res.json({ token });
+});
 
-  const legs = [];
-  for (let i = 0; i < stops.length - 1; i++) {
-    const from = stops[i];
-    const to = stops[i + 1];
-    legs.push(
-      await getTransitSuggestion(
-        to.locationName || to.municipality.name,
-        to.locationLat!,
-        to.locationLng!,
-        { label: from.locationName || from.municipality.name, lat: from.locationLat!, lng: from.locationLng! }
-      )
-    );
-  }
-
-  res.json({
-    originLabel,
-    startTime: user?.itineraryStartTime ?? "09:00",
-    originLeg,
-    originLocated: originLeg != null,
-    stops: ordered.map(({ reel: r, stayMinutes }) => ({
-      id: r.id,
-      caption: r.caption,
-      category: r.category,
-      locationName: r.locationName,
-      locationLat: r.locationLat,
-      locationLng: r.locationLng,
-      videoUrl: r.videoUrl,
-      municipality: r.municipality,
-      stayMinutes,
-    })),
-    legs,
-  });
+// Stop sharing: the old link stops working immediately.
+router.delete("/itinerary/share", requireAuth, async (req, res) => {
+  await prisma.user.update({ where: { id: req.auth!.userId }, data: { itineraryShareToken: null } });
+  res.status(204).end();
 });
 
 const itineraryOrderSchema = z.object({ reelIds: z.array(z.string()).max(200) });

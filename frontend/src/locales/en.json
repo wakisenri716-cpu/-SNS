@@ -154,7 +154,14 @@
     "addToCalendar": "Add to calendar",
     "calendarDate": "Trip date",
     "downloadCalendar": "Add for this date",
-    "offlineCopy": "You're offline — showing the itinerary as it was when you last opened it."
+    "offlineCopy": "You're offline — showing the itinerary as it was when you last opened it.",
+    "share": "Share trip plan",
+    "shareTitle": "Trip plan | Jaziba",
+    "shareError": "Couldn't create a share link. Please try again later.",
+    "stopSharing": "Stop sharing",
+    "stopSharingConfirm": "Turn off the share link? Links you've sent will stop working.",
+    "stopSharingDone": "Sharing stopped",
+    "sharingNote": "Shared: anyone with the link can see this plan (your starting point isn't shown)."
   },
   "dashboard": {
     "tabPosts": "Posts",
@@ -750,5 +757,25 @@
       "shikoku": "Shikoku",
       "kyushu": "Kyushu & Okinawa"
     }
+  },
+  "trip": {
+    "loadError": "Couldn't load this trip plan",
+    "addedToast_one": "Added {{count}} place to your trip plan",
+    "addedToast_other": "Added {{count}} places to your trip plan",
+    "missingTitle": "This trip plan isn't available",
+    "missingBody": "Sharing may have been turned off, or the link may be wrong.",
+    "explore": "Explore destinations on Jaziba",
+    "eyebrow": "Shared trip plan",
+    "title": "{{name}}'s trip plan",
+    "summary_one": "{{count}} place · {{places}}",
+    "summary_other": "{{count}} places · {{places}}",
+    "mineNote": "You're sharing this plan. This is how your friends see it (your starting point isn't shown).",
+    "empty": "No places in this plan yet",
+    "inMyItinerary": "In your trip plan",
+    "addOne": "Add to my trip plan",
+    "timeNote": "Times assume arriving at the first place at {{time}}.",
+    "addAll_one": "Add {{count}} place to my trip plan",
+    "addAll_other": "Add all {{count}} places to my trip plan",
+    "loginToAdd": "Log in to add to your trip plan"
   }
 }

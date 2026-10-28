@@ -152,7 +152,14 @@
     "addToCalendar": "캘린더에 추가",
     "calendarDate": "여행 날짜",
     "downloadCalendar": "이 날짜로 추가",
-    "offlineCopy": "오프라인이라 마지막으로 열었을 때의 여행 수첩을 보여 드려요."
+    "offlineCopy": "오프라인이라 마지막으로 열었을 때의 여행 수첩을 보여 드려요.",
+    "share": "일정 공유",
+    "shareTitle": "여행 일정 | Jaziba",
+    "shareError": "공유 링크를 만들지 못했습니다. 잠시 후 다시 시도해 주세요",
+    "stopSharing": "공유 중지",
+    "stopSharingConfirm": "공유 링크를 비활성화할까요? 보낸 링크는 더 이상 열리지 않습니다.",
+    "stopSharingDone": "공유를 중지했습니다",
+    "sharingNote": "공유 중: 링크를 아는 사람은 이 일정을 볼 수 있습니다(출발지는 표시되지 않습니다)."
   },
   "dashboard": {
     "tabPosts": "게시물",
@@ -739,5 +746,22 @@
       "shikoku": "시코쿠",
       "kyushu": "규슈·오키나와"
     }
+  },
+  "trip": {
+    "loadError": "일정을 불러오지 못했습니다",
+    "addedToast": "{{count}}곳을 일정에 추가했습니다",
+    "missingTitle": "이 일정을 볼 수 없습니다",
+    "missingBody": "공유가 중지되었거나 링크가 잘못되었을 수 있습니다.",
+    "explore": "Jaziba에서 여행지 찾기",
+    "eyebrow": "공유된 일정",
+    "title": "{{name}}님의 여행 일정",
+    "summary": "{{count}}곳・{{places}}",
+    "mineNote": "내가 공유 중인 일정입니다. 친구에게는 이렇게 보입니다(출발지는 표시되지 않습니다).",
+    "empty": "아직 목적지가 없습니다",
+    "inMyItinerary": "일정에 추가됨",
+    "addOne": "내 일정에 추가",
+    "timeNote": "{{time}}에 첫 장소에 도착하는 것으로 계산했습니다.",
+    "addAll": "{{count}}곳을 모두 내 일정에 추가",
+    "loginToAdd": "로그인하고 내 일정에 추가"
   }
 }

@@ -52,6 +52,28 @@ export async function metaForPath(pathname: string, origin: string): Promise<Pag
       type: "website",
     };
   }
+  const tripMatch = pathname.match(/^\/trip\/([^/]+)\/?$/);
+  if (tripMatch) {
+    const owner = await prisma.user.findUnique({
+      where: { itineraryShareToken: tripMatch[1] },
+      select: {
+        name: true,
+        savedReels: {
+          where: { reel: { locationLat: { not: null }, locationLng: { not: null } } },
+          orderBy: [{ position: { sort: "asc", nulls: "last" } }, { createdAt: "asc" }],
+          select: { reel: { select: { locationName: true, municipality: { select: { name: true } } } } },
+        },
+      },
+    });
+    if (!owner) return null;
+    const names = owner.savedReels.map((s) => s.reel.locationName || s.reel.municipality.name);
+    return {
+      title: `${owner.name}さんの旅のしおり（${names.length}か所）| ジャジバ`,
+      description: clip(names.join(" → ") || "ジャジバで作った旅のしおり", 120),
+      url: `${origin}${pathname}`,
+      type: "article",
+    };
+  }
   return null;
 }
 

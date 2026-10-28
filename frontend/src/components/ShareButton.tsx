@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Send, Share2 } from "lucide-react";
+import { shareLink } from "../lib/shareLink";
 
-// Shares a link to a post's page: the phone's share sheet (LINE, X, ...)
-// where the browser supports it, otherwise copies the link to the clipboard.
+// Shares a link to a post's page (see lib/shareLink).
 export default function ShareButton({
   path,
   title,
@@ -18,20 +18,11 @@ export default function ShareButton({
   const url = `${window.location.origin}${path}`;
 
   async function share() {
-    if (navigator.share) {
-      try {
-        await navigator.share({ title, url });
-        return;
-      } catch (err) {
-        // The user closing the share sheet isn't an error worth reacting to.
-        if (err instanceof DOMException && err.name === "AbortError") return;
-      }
-    }
-    try {
-      await navigator.clipboard.writeText(url);
+    const result = await shareLink(url, title);
+    if (result === "copied") {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
-    } catch {
+    } else if (result === "manual") {
       window.prompt(t("share.copyManually"), url);
     }
   }

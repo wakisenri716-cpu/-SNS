@@ -152,7 +152,14 @@
     "addToCalendar": "添加到日历",
     "calendarDate": "旅行日期",
     "downloadCalendar": "按此日期添加",
-    "offlineCopy": "当前离线，显示上次打开时的行程手册。"
+    "offlineCopy": "当前离线，显示上次打开时的行程手册。",
+    "share": "分享行程",
+    "shareTitle": "旅行行程 | Jaziba",
+    "shareError": "无法创建分享链接，请稍后再试",
+    "stopSharing": "停止分享",
+    "stopSharingConfirm": "要停用分享链接吗？已发送的链接将无法打开。",
+    "stopSharingDone": "已停止分享",
+    "sharingNote": "分享中：知道链接的人可以查看此行程（不会显示出发地点）。"
   },
   "dashboard": {
     "tabPosts": "投稿",
@@ -739,5 +746,22 @@
       "shikoku": "四国",
       "kyushu": "九州・冲绳"
     }
+  },
+  "trip": {
+    "loadError": "无法加载行程",
+    "addedToast": "已将{{count}}个地点加入行程",
+    "missingTitle": "无法查看此行程",
+    "missingBody": "可能已停止分享，或链接有误。",
+    "explore": "在Jaziba寻找目的地",
+    "eyebrow": "分享的行程",
+    "title": "{{name}}的旅行行程",
+    "summary": "{{count}}个地点・{{places}}",
+    "mineNote": "这是你正在分享的行程。朋友看到的就是这样（不会显示出发地点）。",
+    "empty": "还没有添加目的地",
+    "inMyItinerary": "已加入行程",
+    "addOne": "加入我的行程",
+    "timeNote": "时间按{{time}}到达第一个地点计算。",
+    "addAll": "将{{count}}个地点全部加入我的行程",
+    "loginToAdd": "登录后加入我的行程"
   }
 }

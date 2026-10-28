@@ -98,6 +98,38 @@ test("saving builds the しおり, and the plan endpoint proposes an order for i
   assert.equal(last.category, "lodging");
 });
 
+test("a shared しおり link is read-only, hides the origin, and stops working when unshared", async () => {
+  assert.equal((await call("PUT", "/api/reels/itinerary/settings", { originLabel: "東京都杉並区1-2-3" }, traveler)).status, 204);
+  const shared = await call("POST", "/api/reels/itinerary/share", undefined, traveler);
+  assert.equal(shared.status, 200);
+  const token = shared.json.token;
+  // Sharing again keeps the same link.
+  assert.equal((await call("POST", "/api/reels/itinerary/share", undefined, traveler)).json.token, token);
+  assert.equal((await call("GET", "/api/reels/itinerary", undefined, traveler)).json.shareToken, token);
+
+  const view = await call("GET", `/api/trips/${token}`);
+  assert.equal(view.status, 200);
+  assert.equal(view.json.ownerName, "テスト旅行者");
+  assert.equal(view.json.isMine, false);
+  assert.ok(view.json.stops.length > 1);
+  assert.equal(view.json.legs.length, view.json.stops.length - 1);
+  assert.ok(!JSON.stringify(view.json).includes("杉並"));
+
+  const other = (await call("POST", "/api/auth/register", { email: "friend@example.com", password: "password123", name: "友だち" })).json.token;
+  assert.equal((await call("POST", `/api/reels/${view.json.stops[0].id}/save`, undefined, other)).status < 300, true);
+  assert.deepEqual((await call("GET", `/api/trips/${token}`, undefined, other)).json.savedIds, [view.json.stops[0].id]);
+  assert.equal((await call("GET", `/api/trips/${token}`, undefined, traveler)).json.isMine, true);
+
+  const page = await fetch(`${base}/trip/${token}`);
+  if (page.headers.get("content-type")?.includes("html")) {
+    assert.match(await page.text(), /<title>テスト旅行者さんの旅のしおり（\d+か所）\| ジャジバ<\/title>/);
+  }
+
+  assert.equal((await call("DELETE", "/api/reels/itinerary/share", undefined, traveler)).status, 204);
+  assert.equal((await call("GET", `/api/trips/${token}`)).status, 404);
+  await call("PUT", "/api/reels/itinerary/settings", { originLabel: "" }, traveler);
+});
+
 test("stamp rally: refused far away, granted on site, only once", async () => {
   const { json: map } = await call("GET", "/api/reels/map");
   const castle = map.items.find((r: any) => r.locationName === "松本城");

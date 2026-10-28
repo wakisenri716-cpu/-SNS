@@ -213,6 +213,19 @@ export interface Itinerary {
   // legs[i] is the travel estimate from stops[i] to stops[i+1] — always
   // legs.length === stops.length - 1.
   legs: TransitSuggestion[];
+  // Set while a read-only link (/trip/:token) to this しおり is shared.
+  shareToken: string | null;
+}
+
+// A しおり someone shared (GET /trips/:token): no trip origin, read-only.
+export interface SharedTrip {
+  ownerName: string;
+  isMine: boolean;
+  startTime: string;
+  stops: ItineraryStop[];
+  legs: TransitSuggestion[];
+  // Which of these stops the signed-in viewer has already saved.
+  savedIds: string[];
 }
 
 // イベント情報 (GET /events). Dates are calendar days, "YYYY-MM-DD".

@@ -3,14 +3,16 @@ import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
-import { TRANSIT_MODE_LABEL_KEY } from "../lib/transitModeLabels";
 import SchematicRouteMap from "./SchematicRouteMap";
 import { projectLatLngToUnitSquare } from "../lib/schematicMap";
 import { notifySavesChanged, onSavesChanged } from "../lib/savesChanged";
-import type { Itinerary, TransitSuggestion } from "../types";
-import ModeIcon from "./ModeIcon";
-import { CalendarPlus, ChevronDown, ChevronUp, Flag, House, Sparkles, WifiOff, X } from "lucide-react";
+import type { Itinerary } from "../types";
+import { CalendarPlus, ChevronDown, ChevronUp, Flag, House, Link2Off, Share2, Sparkles, WifiOff, X } from "lucide-react";
 import { downloadItineraryIcs } from "../lib/ics";
+import { computeTimeline, formatClock } from "../lib/itineraryTimeline";
+import LegRow from "./ItineraryLegRow";
+import { shareLink } from "../lib/shareLink";
+import { showToast } from "../lib/toast";
 
 const TripPlanSheet = lazy(() => import("./TripPlanSheet"));
 
@@ -24,46 +26,6 @@ export function useIsTraveler() {
 }
 
 const STAY_OPTIONS = [0, 30, 60, 90, 120, 180, 240];
-
-// "HH:MM" -> minutes since midnight (09:00 if malformed).
-function parseClock(value: string) {
-  const m = /^(\d{1,2}):(\d{2})$/.exec(value);
-  return m ? Number(m[1]) * 60 + Number(m[2]) : 9 * 60;
-}
-
-function formatClock(totalMin: number, t: (key: string, opts?: Record<string, unknown>) => string) {
-  const day = Math.floor(totalMin / (24 * 60));
-  const min = totalMin % (24 * 60);
-  const time = `${String(Math.floor(min / 60)).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}`;
-  return day > 0 ? t("itinerary.nextDay", { time }) : time;
-}
-
-// A leg can be several sub-legs (e.g. walk 10分 + train 83分); label it by
-// the one that takes longest, not just the first.
-function mainMode(leg: TransitSuggestion) {
-  return leg.legs.reduce((a, b) => (b.durationMin > a.durationMin ? b : a), leg.legs[0])?.mode;
-}
-
-function LegRow({ leg }: { leg: TransitSuggestion }) {
-  const { t } = useTranslation();
-  const mode = mainMode(leg);
-  return (
-    <p className="my-1.5 ml-9 flex flex-wrap items-center gap-1 text-xs text-gray-600">
-      <ModeIcon mode={mode} className="h-3.5 w-3.5" />
-      <span>
-        {t("itinerary.legSummary", {
-          mode: t(TRANSIT_MODE_LABEL_KEY[mode ?? ""] ?? "accessPlanner.modeDrive"),
-          duration: t("accessPlanner.duration", { minutes: leg.totalDurationMin }),
-        })}
-      </span>
-      {leg.isMock && (
-        <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500">
-          {t("municipalityProfile.mockData")}
-        </span>
-      )}
-    </p>
-  );
-}
 
 // しおり (itinerary) content: chains the signed-in traveler's saved/bookmarked
 // reels — in their chosen order — into a timed route: start point and time,
@@ -129,22 +91,47 @@ export function ItineraryPanel({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
     void api.patch(`/reels/${reelId}/save`, { stayMinutes });
   }
 
+  // Share with travel companions: a read-only /trip/:token link (without the
+  // trip origin). Creating the link and opening the share sheet are one tap.
+  async function shareTrip() {
+    if (!itinerary) return;
+    let token = itinerary.shareToken;
+    if (!token) {
+      try {
+        token = (await api.post<{ token: string }>("/reels/itinerary/share")).data.token;
+      } catch {
+        showToast(t("itinerary.shareError"));
+        return;
+      }
+      setItinerary((prev) => prev && { ...prev, shareToken: token });
+    }
+    const url = `${window.location.origin}/trip/${token}`;
+    const result = await shareLink(url, t("itinerary.shareTitle"));
+    if (result === "copied") showToast(t("share.copied"));
+    else if (result === "manual") window.prompt(t("share.copyManually"), url);
+  }
+
+  async function stopSharing() {
+    if (!window.confirm(t("itinerary.stopSharingConfirm"))) return;
+    await api.delete("/reels/itinerary/share");
+    setItinerary((prev) => prev && { ...prev, shareToken: null });
+    showToast(t("itinerary.stopSharingDone"));
+  }
+
   function saveTripSettings(e: FormEvent) {
     e.preventDefault();
     void mutate(() => api.put("/reels/itinerary/settings", { originLabel: originDraft, startTime: startDraft }));
   }
 
   // Timeline: clock time at each arrival/departure, accumulated from the start.
-  let clock = itinerary ? parseClock(itinerary.startTime) : 0;
-  const departAt = clock;
-  if (itinerary?.originLeg) clock += itinerary.originLeg.totalDurationMin;
-  const times =
-    itinerary?.stops.map((stop, i) => {
-      const arrive = clock;
-      const leave = arrive + stop.stayMinutes;
-      clock = leave + (itinerary.legs[i]?.totalDurationMin ?? 0);
-      return { arrive, leave };
-    }) ?? [];
+  const { departAt, times } = itinerary
+    ? computeTimeline(
+        itinerary.startTime,
+        itinerary.originLeg?.totalDurationMin ?? null,
+        itinerary.stops.map((s) => s.stayMinutes),
+        itinerary.legs.map((l) => l.totalDurationMin)
+      )
+    : { departAt: 0, times: [] };
 
   return (
     <>
@@ -337,6 +324,28 @@ export function ItineraryPanel({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
             </div>
           )}
           <div className="mt-4 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => void shareTrip()}
+              disabled={offline}
+              className="inline-flex items-center gap-1.5 rounded-full bg-jz-ink px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-40"
+            >
+              <Share2 className="h-3.5 w-3.5" /> {t("itinerary.share")}
+            </button>
+            {itinerary.shareToken && !offline && (
+              <button
+                type="button"
+                onClick={() => void stopSharing()}
+                className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold text-gray-500 hover:bg-gray-100"
+              >
+                <Link2Off className="h-3.5 w-3.5" /> {t("itinerary.stopSharing")}
+              </button>
+            )}
+          </div>
+          {itinerary.shareToken && (
+            <p className="mt-1.5 text-[11px] leading-relaxed text-gray-500">{t("itinerary.sharingNote")}</p>
+          )}
+          <div className="mt-2 flex flex-wrap items-center gap-2">
             {calendarDate == null ? (
               <button
                 type="button"

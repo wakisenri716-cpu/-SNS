@@ -14,6 +14,7 @@ import inquiryRoutes from "./routes/inquiries";
 import notificationRoutes from "./routes/notifications";
 import conciergeRoutes from "./routes/concierge";
 import eventRoutes from "./routes/events";
+import tripRoutes from "./routes/trips";
 import { applyMeta, metaForPath } from "./lib/pageMeta";
 
 const app = express();
@@ -42,6 +43,7 @@ app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/concierge", conciergeRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/trips", tripRoutes);
 
 // Serve the built frontend (frontend/npm run build -> frontend/dist) so a single
 // backend process can host both the API and the SPA, e.g. one Render web service.
