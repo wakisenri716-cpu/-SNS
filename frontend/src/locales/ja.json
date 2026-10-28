@@ -667,5 +667,24 @@
     "count": "{{count}}個",
     "bookEmpty": "まだスタンプはありません。行きたい場所のアクセス画面を開き、現地に着いたら「現地でスタンプを押す」を押してください。",
     "pointsNote": "スタンプ {{count}}個"
+  },
+  "events": {
+    "upcoming": "近日のイベント",
+    "tab": "イベント",
+    "empty": "開催予定のイベントはまだありません",
+    "by": "主催・掲載：{{name}}",
+    "officialSite": "公式サイト",
+    "manageHeading": "イベント情報",
+    "manageNote": "お祭り・朝市・季節のイベントなどを載せると、ホームの「近日のイベント」とプロフィールの「イベント」タブに、終了日まで表示されます。",
+    "titlePlaceholder": "イベント名（例：○○まつり）",
+    "start": "開始日",
+    "end": "終了日（1日だけなら空欄）",
+    "placePlaceholder": "会場（任意）",
+    "urlPlaceholder": "公式サイトのURL（任意）",
+    "descriptionPlaceholder": "内容・注意事項など（任意）",
+    "add": "イベントを追加",
+    "delete": "削除",
+    "confirmDelete": "「{{title}}」を削除しますか？",
+    "saveError": "保存できませんでした。入力内容を確認してください。"
   }
 }

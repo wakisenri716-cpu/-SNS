@@ -14,6 +14,7 @@ import { hasTravelStyle, scoreReel } from "../lib/personalize";
 import { notifyFollowersOfNewPost, notifyPoster } from "../lib/notifications";
 import { summarizeByOriginAndMode, summarizeOrigins } from "../lib/travelReports";
 import { conciergeLimiter, translateLimiter, writeLimiter } from "../middleware/rateLimit";
+import { resolvePosterContext } from "../lib/posterContext";
 import { planTrip } from "../services/tripPlanner";
 import { isClaudeConfigured, logClaudeError } from "../services/claude";
 import { translateCaption } from "../services/translate";
@@ -33,29 +34,6 @@ function viewerStateFor(reel: { likes?: unknown; saves?: unknown }, followed: Aw
 
 const router = Router();
 
-// Resolves the municipality/company a MUNICIPALITY or COMPANY user is allowed to
-// post as. Returns null (with the response already sent) if their profile is
-// missing — e.g. the demo database reset independently of their login token.
-async function resolvePosterContext(
-  req: Request,
-  res: Response
-): Promise<{ municipalityId: string; companyId: string | null } | null> {
-  if (req.auth!.role === "MUNICIPALITY") {
-    const municipality = await prisma.municipality.findUnique({ where: { userId: req.auth!.userId } });
-    if (!municipality) {
-      res.status(404).json({ error: "自治体プロフィールが見つかりません" });
-      return null;
-    }
-    return { municipalityId: municipality.id, companyId: null };
-  }
-
-  const company = await prisma.company.findUnique({ where: { userId: req.auth!.userId } });
-  if (!company) {
-    res.status(404).json({ error: "企業プロフィールが見つかりません" });
-    return null;
-  }
-  return { municipalityId: company.municipalityId, companyId: company.id };
-}
 
 // Feed: main "おすすめ" reel feed, newest first (paginated). Optionally filtered to
 // a single category tab (自然/文化/アクティビティー/宿/飲食店) via ?category=.

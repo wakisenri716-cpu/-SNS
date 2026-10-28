@@ -160,3 +160,35 @@ test("shared post links get their own preview title", async () => {
     assert.match(html, /<title>松本城（長野県松本市）\| ジャジバ<\/title>/);
   }
 });
+
+test("events: posters add them, everyone sees upcoming ones, past ones drop off", async () => {
+  const municipalityToken = await login("demo-matsumoto@example.com");
+  const { todayInJapan } = await import("../routes/events");
+  const today = todayInJapan();
+  const future = new Date(Date.now() + 10 * 86_400_000).toISOString().slice(0, 10);
+
+  assert.equal((await call("POST", "/api/events", { title: "x", startDate: today, endDate: today }, traveler)).status, 403);
+  const bad = await call("POST", "/api/events", { title: "逆順", startDate: future, endDate: today }, municipalityToken);
+  assert.equal(bad.status, 400);
+
+  const created = await call(
+    "POST",
+    "/api/events",
+    { title: "テスト祭り", startDate: today, endDate: future, locationName: "松本城", url: "https://example.com" },
+    municipalityToken
+  );
+  assert.equal(created.status, 201);
+  const past = await call("POST", "/api/events", { title: "去年の行事", startDate: "2020-01-01", endDate: "2020-01-02" }, municipalityToken);
+  assert.equal(past.status, 201);
+
+  const list = await call("GET", "/api/events");
+  assert.deepEqual(
+    list.json.items.map((e: any) => e.title),
+    ["テスト祭り"]
+  );
+  const mine = await call("GET", "/api/events/mine", undefined, municipalityToken);
+  assert.equal(mine.json.items.length, 2);
+
+  assert.equal((await call("DELETE", `/api/events/${created.json.id}`, undefined, municipalityToken)).status, 204);
+  assert.equal((await call("GET", "/api/events")).json.items.length, 0);
+});

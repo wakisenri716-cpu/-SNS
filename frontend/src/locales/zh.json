@@ -667,5 +667,24 @@
     "count": "{{count}}个",
     "bookEmpty": "还没有印章。打开想去地点的交通页面，到达后点击“到达现场盖章”。",
     "pointsNote": "印章 {{count}}个"
+  },
+  "events": {
+    "upcoming": "近期活动",
+    "tab": "活动",
+    "empty": "暂无即将举办的活动",
+    "by": "发布方：{{name}}",
+    "officialSite": "官方网站",
+    "manageHeading": "活动信息",
+    "manageNote": "发布祭典、早市、季节活动等，在结束日之前会显示在首页的“近期活动”和主页的“活动”标签中。",
+    "titlePlaceholder": "活动名称",
+    "start": "开始日期",
+    "end": "结束日期（仅一天可留空）",
+    "placePlaceholder": "会场（可选）",
+    "urlPlaceholder": "官方网站URL（可选）",
+    "descriptionPlaceholder": "内容、注意事项等（可选）",
+    "add": "添加活动",
+    "delete": "删除",
+    "confirmDelete": "要删除“{{title}}”吗？",
+    "saveError": "无法保存，请检查输入内容。"
   }
 }

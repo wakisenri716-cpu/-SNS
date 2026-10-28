@@ -17,6 +17,7 @@ import FeedSkeleton from "../components/FeedSkeleton";
 import StoryViewer, { type StoryGroup } from "../components/StoryViewer";
 import { useSeenStories } from "../lib/storiesSeen";
 import ConciergeButton from "../components/ConciergeButton";
+import UpcomingEvents from "../components/UpcomingEvents";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import WelcomeIntro from "../components/WelcomeIntro";
 import { REEL_CATEGORIES, type Reel } from "../types";
@@ -273,6 +274,8 @@ export default function FeedPage() {
           ))}
         </nav>
       )}
+
+      <UpcomingEvents />
 
       <div className="sticky top-[var(--header-offset,53px)] z-30 bg-white/80 backdrop-blur-xl backdrop-saturate-150 transition-[top] duration-300 md:top-0">
         <div className="scrollbar-none flex gap-2 overflow-x-auto px-4 py-2.5">

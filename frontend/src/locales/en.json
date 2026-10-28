@@ -676,5 +676,24 @@
     "bookEmpty": "No stamps yet. Open a spot's directions page and tap \"I'm here\" when you arrive.",
     "pointsNote_one": "{{count}} stamp",
     "pointsNote_other": "{{count}} stamps"
+  },
+  "events": {
+    "upcoming": "Upcoming events",
+    "tab": "Events",
+    "empty": "No upcoming events yet",
+    "by": "Listed by {{name}}",
+    "officialSite": "Official site",
+    "manageHeading": "Events",
+    "manageNote": "Festivals, morning markets, seasonal events… They appear in \"Upcoming events\" on the home screen and on your profile until their end date.",
+    "titlePlaceholder": "Event name",
+    "start": "Start date",
+    "end": "End date (blank for one day)",
+    "placePlaceholder": "Venue (optional)",
+    "urlPlaceholder": "Official site URL (optional)",
+    "descriptionPlaceholder": "Details (optional)",
+    "add": "Add event",
+    "delete": "Delete",
+    "confirmDelete": "Delete \"{{title}}\"?",
+    "saveError": "Couldn't save. Please check the details."
   }
 }

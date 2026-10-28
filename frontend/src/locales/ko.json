@@ -667,5 +667,24 @@
     "count": "{{count}}개",
     "bookEmpty": "아직 스탬프가 없어요. 가고 싶은 장소의 교통 화면을 열고, 도착하면 \"현장에서 스탬프 찍기\"를 눌러 주세요.",
     "pointsNote": "스탬프 {{count}}개"
+  },
+  "events": {
+    "upcoming": "다가오는 이벤트",
+    "tab": "이벤트",
+    "empty": "예정된 이벤트가 아직 없어요",
+    "by": "게시: {{name}}",
+    "officialSite": "공식 사이트",
+    "manageHeading": "이벤트 정보",
+    "manageNote": "축제·아침 시장·계절 이벤트 등을 올리면 종료일까지 홈의 \"다가오는 이벤트\"와 프로필의 \"이벤트\" 탭에 표시돼요.",
+    "titlePlaceholder": "이벤트 이름",
+    "start": "시작일",
+    "end": "종료일 (하루면 비워 두기)",
+    "placePlaceholder": "장소 (선택)",
+    "urlPlaceholder": "공식 사이트 URL (선택)",
+    "descriptionPlaceholder": "내용·주의 사항 (선택)",
+    "add": "이벤트 추가",
+    "delete": "삭제",
+    "confirmDelete": "\"{{title}}\"을(를) 삭제할까요?",
+    "saveError": "저장하지 못했어요. 입력 내용을 확인해 주세요."
   }
 }

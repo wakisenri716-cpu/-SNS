@@ -83,6 +83,7 @@ model Municipality {
   companies    Company[]
   followers    Follow[]
   tourismSpots TourismSpot[]
+  events       Event[]
 }
 
 // One tourist attraction within a municipality's jurisdiction — the 観光情報
@@ -122,6 +123,7 @@ model Company {
 
   reels     Reel[]
   followers Follow[]
+  events    Event[]
 }
 
 model Reel {
@@ -314,4 +316,24 @@ model Notification {
   createdAt   DateTime  @default(now())
 
   @@index([recipientId, createdAt])
+}
+
+// イベント情報: festivals, markets, seasonal events posted by a municipality
+// (or a company under it). Dates are calendar days ("YYYY-MM-DD", local to
+// Japan) since events are listed by day, not by instant.
+model Event {
+  id             String       @id @default(cuid())
+  municipalityId String
+  municipality   Municipality @relation(fields: [municipalityId], references: [id], onDelete: Cascade)
+  companyId      String?
+  company        Company?     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  title          String
+  description    String       @default("")
+  startDate      String
+  endDate        String
+  locationName   String       @default("")
+  url            String       @default("")
+  createdAt      DateTime     @default(now())
+
+  @@index([endDate])
 }

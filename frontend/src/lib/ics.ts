@@ -60,7 +60,40 @@ export function buildItineraryIcs(date: string, stops: CalendarStop[], now = new
 }
 
 export function downloadItineraryIcs(date: string, stops: CalendarStop[], fileName: string) {
-  const ics = buildItineraryIcs(date, stops);
+  downloadIcs(buildItineraryIcs(date, stops), fileName);
+}
+
+// One all-day (possibly multi-day) event, e.g. a festival.
+export function buildEventIcs(
+  event: { title: string; description: string; startDate: string; endDate: string; locationName: string; url: string },
+  now = new Date()
+) {
+  const stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
+  const day = (iso: string, plus = 0) => {
+    const d = new Date(`${iso}T00:00:00Z`);
+    d.setUTCDate(d.getUTCDate() + plus);
+    return d.toISOString().slice(0, 10).replace(/-/g, "");
+  };
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Jaziba//Event//JA",
+    "BEGIN:VEVENT",
+    `UID:jaziba-event-${day(event.startDate)}-${Math.random().toString(36).slice(2)}@jaziba.jp`,
+    `DTSTAMP:${stamp}`,
+    `DTSTART;VALUE=DATE:${day(event.startDate)}`,
+    // DTEND is exclusive for all-day events.
+    `DTEND;VALUE=DATE:${day(event.endDate, 1)}`,
+    `SUMMARY:${escapeText(event.title)}`,
+    ...(event.locationName ? [`LOCATION:${escapeText(event.locationName)}`] : []),
+    ...(event.description || event.url ? [`DESCRIPTION:${escapeText([event.description, event.url].filter(Boolean).join("\n"))}`] : []),
+    ...(event.url ? [`URL:${event.url}`] : []),
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+}
+
+export function downloadIcs(ics: string, fileName: string) {
   const url = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }));
   const a = document.createElement("a");
   a.href = url;

@@ -6,6 +6,7 @@ import { fetchSavedReelIds, notifySavesChanged, onSavesChanged } from "../lib/sa
 import { useAuth } from "../auth/AuthContext";
 import { showToast } from "../lib/toast";
 import Avatar from "../components/Avatar";
+import UpcomingEvents from "../components/UpcomingEvents";
 import ReelThumb from "../components/ReelGrid";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import AccessPlannerForm from "../components/AccessPlannerForm";
@@ -22,7 +23,7 @@ import {
   UtensilsCrossed,
 } from "lucide-react";
 
-const TAB_KEYS = ["posts", "tourismInfo", "accessInfo", "lodgingInfo", "restaurantInfo"] as const;
+const TAB_KEYS = ["posts", "events", "tourismInfo", "accessInfo", "lodgingInfo", "restaurantInfo"] as const;
 
 function formatDate(iso: string, language: string) {
   return new Intl.DateTimeFormat(language, { year: "numeric", month: "long" }).format(new Date(iso));
@@ -62,6 +63,7 @@ export default function MunicipalityProfilePage() {
   const { t, i18n } = useTranslation();
   const tabs = [
     { key: "posts", label: t("dashboard.tabPosts"), icon: Grid3x3 },
+    { key: "events", label: t("events.tab"), icon: CalendarDays },
     { key: "tourismInfo", label: t("dashboard.tabTourism"), icon: Landmark },
     { key: "accessInfo", label: t("dashboard.tabAccess"), icon: TrainFront },
     { key: "lodgingInfo", label: t("dashboard.tabLodging"), icon: BedDouble },
@@ -270,6 +272,8 @@ export default function MunicipalityProfilePage() {
             ))}
           </div>
         )
+      ) : tab === "events" ? (
+        <UpcomingEvents municipalityId={municipality.id} layout="list" />
       ) : tab === "tourismInfo" ? (
         <div className="border-b border-gray-200 p-4 lg:p-6">
           {municipality.tourismSpots.length === 0 ? (

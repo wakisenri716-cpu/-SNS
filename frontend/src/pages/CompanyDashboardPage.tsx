@@ -4,6 +4,7 @@ import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import ReelUploader from "../components/ReelUploader";
 import ReelManageGrid from "../components/ReelManageGrid";
+import EventManager from "../components/EventManager";
 import type { Reel } from "../types";
 
 export default function CompanyDashboardPage() {
@@ -44,6 +45,10 @@ export default function CompanyDashboardPage() {
           onUpdated={(updated) => setReels((prev) => prev.map((r) => (r.id === updated.id ? updated : r)))}
         />
       </section>
+
+      <div className="-mx-4 rounded-2xl border border-gray-200 sm:mx-0">
+        <EventManager />
+      </div>
     </div>
   );
 }

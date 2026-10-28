@@ -214,3 +214,16 @@ export interface Itinerary {
   // legs.length === stops.length - 1.
   legs: TransitSuggestion[];
 }
+
+// イベント情報 (GET /events). Dates are calendar days, "YYYY-MM-DD".
+export interface EventItem {
+  id: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  locationName: string;
+  url: string;
+  municipality: { id: string; name: string; prefecture: string; avatarUrl: string | null };
+  company: { id: string; name: string } | null;
+}

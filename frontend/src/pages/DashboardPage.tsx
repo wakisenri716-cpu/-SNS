@@ -8,6 +8,7 @@ import ReelEditor from "../components/ReelEditor";
 import { TravelerTagChips } from "../components/TravelerTagChips";
 import AutoplayVideo from "../components/AutoplayVideo";
 import type { Municipality, Reel, TourismSpot } from "../types";
+import EventManager from "../components/EventManager";
 import { Pencil, QrCode } from "lucide-react";
 
 // "アクセス方法・宿情報・飲食店" — still one free-text field each, edited via a
@@ -567,6 +568,7 @@ export default function DashboardPage() {
       )}
 
       <MaasStationEditor municipality={municipality} onUpdated={setMunicipality} />
+      <EventManager />
       <div className="border-b border-gray-200 p-4 lg:p-6">
         <Link
           to="/poster"

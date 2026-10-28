@@ -2,7 +2,7 @@
 // TypeScript types itself), run with `npm test`.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildItineraryIcs } from "../src/lib/ics.ts";
+import { buildEventIcs, buildItineraryIcs } from "../src/lib/ics.ts";
 import { distanceKm, formatDistance } from "../src/lib/geo.ts";
 import { formatStampDate } from "../src/lib/stampDate.ts";
 
@@ -34,4 +34,11 @@ test("geo: distance and formatting", () => {
 
 test("stamp date", () => {
   assert.equal(formatStampDate("2026-03-05T12:00:00"), "2026.03.05");
+});
+
+test("event ics: all-day, end date exclusive", () => {
+  const ics = buildEventIcs({ title: "夜市", description: "", startDate: "2026-12-31", endDate: "2027-01-01", locationName: "松本城公園", url: "" });
+  assert.match(ics, /DTSTART;VALUE=DATE:20261231/);
+  assert.match(ics, /DTEND;VALUE=DATE:20270102/);
+  assert.doesNotMatch(ics, /DESCRIPTION/);
 });
