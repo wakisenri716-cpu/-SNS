@@ -1,6 +1,11 @@
 import { prisma } from "../prisma";
 import { geocode, isGoogleMapsConfigured } from "../services/googleMaps";
 import { getTransitSuggestion } from "../services/maasProvider";
+import { ttlCache } from "./ttlCache";
+
+// The しおり reloads on every save/reorder, and the typed origin rarely
+// changes, so its geocode is kept for a few hours.
+const originGeocodes = ttlCache<Awaited<ReturnType<typeof geocode>>>(6 * 60 * 60 * 1000, 2000);
 
 // しおり (itinerary): chains a user's saved/bookmarked reels into a route — in
 // the order they arranged (PUT /reels/itinerary/order), falling back to save
@@ -45,7 +50,7 @@ export async function buildItinerary(userId: string, { withOrigin }: { withOrigi
     let originCoords: { lat: number; lng: number } | null = null;
     if (isGoogleMapsConfigured()) {
       try {
-        const geocoded = await geocode(originLabel);
+        const geocoded = await originGeocodes.get(originLabel, () => geocode(originLabel));
         if (geocoded) originCoords = { lat: geocoded.lat, lng: geocoded.lng };
       } catch (err) {
         console.error("[reels] Geocoding itinerary origin failed:", err);

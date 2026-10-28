@@ -1,4 +1,18 @@
 import { getRouteEstimate, haversineMeters, isGoogleMapsConfigured } from "./googleMaps";
+import { ttlCache } from "../lib/ttlCache";
+
+// Every post in a feed or map response carries a travel estimate, so without
+// a cache each page load would make one Directions API call per post. Same
+// endpoints (to ~10m) and the same quarter hour of departure share a result
+// for half an hour.
+const ROUTE_CACHE_TTL_MS = 30 * 60 * 1000;
+const routeCache = ttlCache<Awaited<ReturnType<typeof getRouteEstimate>>>(ROUTE_CACHE_TTL_MS, 5000);
+
+function cachedRouteEstimate(origin: { lat: number; lng: number }, destination: { lat: number; lng: number }, departureAt: Date) {
+  const key = [origin.lat, origin.lng, destination.lat, destination.lng].map((n) => n.toFixed(4)).join(",") +
+    `@${Math.floor(departureAt.getTime() / (15 * 60 * 1000))}`;
+  return routeCache.get(key, () => getRouteEstimate(origin, destination, departureAt));
+}
 
 export interface TransitLeg {
   mode: "walk" | "train" | "bus" | "drive";
@@ -151,7 +165,7 @@ export async function getTransitSuggestion(
 ): Promise<TransitSuggestion> {
   if (isGoogleMapsConfigured() && origin && origin.lat != null && origin.lng != null) {
     try {
-      const estimate = await getRouteEstimate(
+      const estimate = await cachedRouteEstimate(
         { lat: origin.lat, lng: origin.lng },
         { lat: destinationLat, lng: destinationLng },
         departureAt
