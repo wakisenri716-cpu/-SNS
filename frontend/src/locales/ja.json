@@ -268,7 +268,10 @@
     "uploading": "アップロード中... {{percent}}%",
     "fileTooLargeError": "動画ファイルが大きすぎます（200MB以下にしてください）",
     "processing": "処理中...",
-    "travelerTagsLabel": "どんな人に向いている場所か（任意・複数選択可）"
+    "travelerTagsLabel": "どんな人に向いている場所か（任意・複数選択可）",
+    "chooseVideo": "動画を選ぶ",
+    "changeVideo": "動画を変更",
+    "chooseVideoHint": "MP4・MOV・WebM、200MBまで（ドラッグ＆ドロップも可）"
   },
   "reelManageGrid": {
     "empty": "まだ投稿がありません。",

@@ -268,7 +268,10 @@
     "uploading": "업로드 중... {{percent}}%",
     "fileTooLargeError": "동영상 파일이 너무 큽니다（200MB 이하로 해주세요）",
     "processing": "처리 중...",
-    "travelerTagsLabel": "어떤 사람에게 맞는 장소인가요? (선택・복수 선택 가능)"
+    "travelerTagsLabel": "어떤 사람에게 맞는 장소인가요? (선택・복수 선택 가능)",
+    "chooseVideo": "동영상 선택",
+    "changeVideo": "동영상 변경",
+    "chooseVideoHint": "MP4・MOV・WebM, 200MB 이하(드래그 앤 드롭 가능)"
   },
   "reelManageGrid": {
     "empty": "아직 게시물이 없습니다.",

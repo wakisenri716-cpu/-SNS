@@ -270,7 +270,10 @@
     "uploading": "Uploading... {{percent}}%",
     "fileTooLargeError": "The video file is too large (please keep it under 200MB)",
     "processing": "Processing...",
-    "travelerTagsLabel": "Who is this spot good for? (optional, choose any)"
+    "travelerTagsLabel": "Who is this spot good for? (optional, choose any)",
+    "chooseVideo": "Choose a video",
+    "changeVideo": "Change video",
+    "chooseVideoHint": "MP4, MOV or WebM, up to 200MB (or drag and drop)"
   },
   "reelManageGrid": {
     "empty": "No posts yet.",

@@ -1,5 +1,6 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type DragEvent, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+import { Film } from "lucide-react";
 import { api } from "../api/client";
 import { REEL_CATEGORIES, type Reel, type ReelCategory, type TravelerTag } from "../types";
 import { TravelerTagPicker } from "./TravelerTagChips";
@@ -26,6 +27,23 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
   const [submitting, setSubmitting] = useState(false);
   const [uploadPercent, setUploadPercent] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [dragging, setDragging] = useState(false);
+
+  // A local preview of the chosen video, released when it changes.
+  useEffect(() => {
+    if (!file) return setPreviewUrl(null);
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
+  function onDrop(e: DragEvent) {
+    e.preventDefault();
+    setDragging(false);
+    const dropped = e.dataTransfer.files[0];
+    if (dropped?.type.startsWith("video/")) setFile(dropped);
+  }
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -58,6 +76,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
       onCreated(data);
       setCaption("");
       setTravelerTags([]);
+      setBestMonths([]);
       setLocationName("");
       setLocationLat("");
       setLocationLng("");
@@ -73,13 +92,41 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
   return (
     <form onSubmit={submit} className="flex flex-col gap-3 rounded-2xl border border-gray-200/80 bg-white p-5">
       <h3 className="text-sm font-semibold text-gray-900">{t("reelUploader.heading")}</h3>
-      <input
-        type="file"
-        accept="video/mp4,video/quicktime,video/webm"
-        onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-        className="text-xs"
-      />
+      <label
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragging(true);
+        }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={onDrop}
+        className={`flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-dashed p-3 transition focus-within:ring-2 focus-within:ring-jz-red/30 ${
+          dragging ? "border-jz-red bg-jz-tint" : "border-gray-300 hover:border-gray-400"
+        }`}
+      >
+        <input
+          type="file"
+          accept="video/mp4,video/quicktime,video/webm"
+          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          className="sr-only"
+        />
+        {previewUrl ? (
+          <video src={previewUrl} className="on-media h-24 w-[54px] shrink-0 rounded-lg bg-black object-cover" muted playsInline autoPlay loop />
+        ) : (
+          <span className="flex h-24 w-[54px] shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-500">
+            <Film className="h-6 w-6" />
+          </span>
+        )}
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold text-jz-ink">
+            {file ? t("reelUploader.changeVideo") : t("reelUploader.chooseVideo")}
+          </span>
+          <span className={`mt-0.5 block text-xs text-gray-500 ${file ? "truncate" : "leading-relaxed"}`}>
+            {file ? `${file.name}・${(file.size / 1024 / 1024).toFixed(1)}MB` : t("reelUploader.chooseVideoHint")}
+          </span>
+        </span>
+      </label>
       <textarea
+        aria-label={t("reelUploader.captionPlaceholder")}
         placeholder={t("reelUploader.captionPlaceholder")}
         value={caption}
         onChange={(e) => setCaption(e.target.value)}
@@ -114,18 +161,23 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
       </div>
       <div className="grid grid-cols-3 gap-2">
         <input
+          aria-label={t("reelUploader.locationNamePlaceholder")}
           placeholder={t("reelUploader.locationNamePlaceholder")}
           value={locationName}
           onChange={(e) => setLocationName(e.target.value)}
           className={`col-span-3 ${inputClass}`}
         />
         <input
+          aria-label={t("reelUploader.latPlaceholder")}
+          inputMode="decimal"
           placeholder={t("reelUploader.latPlaceholder")}
           value={locationLat}
           onChange={(e) => setLocationLat(e.target.value)}
           className={inputClass}
         />
         <input
+          aria-label={t("reelUploader.lngPlaceholder")}
+          inputMode="decimal"
           placeholder={t("reelUploader.lngPlaceholder")}
           value={locationLng}
           onChange={(e) => setLocationLng(e.target.value)}
