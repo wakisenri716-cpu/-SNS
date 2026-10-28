@@ -64,9 +64,13 @@ if (fs.existsSync(frontendDist)) {
   });
 }
 
+// Client errors (bad JSON, an upload over the size limit...) keep their
+// message; anything else gets a generic one, so internal details such as
+// database errors never reach the browser.
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err);
-  res.status(err?.status || 500).json({ error: err?.message || "サーバーエラーが発生しました" });
+  const status = err?.status || err?.statusCode || (err?.name === "MulterError" ? 400 : 500);
+  res.status(status).json({ error: status < 500 && err?.message ? err.message : "サーバーエラーが発生しました" });
 });
 
 export default app;
