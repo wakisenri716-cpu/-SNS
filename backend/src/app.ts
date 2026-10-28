@@ -1,5 +1,6 @@
 // The Express app (routes, static frontend, error handler) without starting a
 // server — index.ts seeds and listens; tests mount it on a random port.
+import "./lib/asyncErrors";
 import express from "express";
 import cors from "cors";
 import fs from "fs";

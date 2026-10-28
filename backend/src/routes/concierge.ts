@@ -20,10 +20,12 @@ const bodySchema = z.object({
   // follow-ups like "子連れだと？" are understood. Only the last few matter.
   history: z
     .array(
+      // Trimmed rather than rejected: an over-long earlier answer mustn't
+      // make the next question fail.
       z.object({
-        question: z.string().max(300),
-        reply: z.string().max(1000),
-        pickIds: z.array(z.string()).max(10),
+        question: z.string().transform((v) => v.slice(0, 300)),
+        reply: z.string().transform((v) => v.slice(0, 1000)),
+        pickIds: z.array(z.string().max(40)).transform((v) => v.slice(0, 10)),
       })
     )
     .max(20)

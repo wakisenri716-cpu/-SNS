@@ -804,7 +804,8 @@
     "timeNote": "Times assume arriving at the first place at {{time}}.",
     "addAll_one": "Add {{count}} place to my trip plan",
     "addAll_other": "Add all {{count}} places to my trip plan",
-    "loginToAdd": "Log in to add to your trip plan"
+    "loginToAdd": "Log in to add to your trip plan",
+    "addError": "Couldn't add to your trip plan. Please try again."
   },
   "season": {
     "now": "In season now",

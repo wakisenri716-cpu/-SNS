@@ -49,6 +49,8 @@ export default function TripPage() {
       setSaved((prev) => new Set([...prev, ...ids]));
       notifySavesChanged();
       showToast(t("trip.addedToast", { count: ids.length }), { label: t("feed.savedToastAction"), to: "/itinerary" });
+    } catch {
+      showToast(t("trip.addError"));
     } finally {
       setBusy(false);
     }

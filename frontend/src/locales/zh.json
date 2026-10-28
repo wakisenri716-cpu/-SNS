@@ -789,7 +789,8 @@
     "addOne": "加入我的行程",
     "timeNote": "时间按{{time}}到达第一个地点计算。",
     "addAll": "将{{count}}个地点全部加入我的行程",
-    "loginToAdd": "登录后加入我的行程"
+    "loginToAdd": "登录后加入我的行程",
+    "addError": "无法加入行程，请重试"
   },
   "season": {
     "now": "正值最佳季节",

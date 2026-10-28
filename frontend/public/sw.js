@@ -108,9 +108,18 @@ self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   const url = new URL(event.notification.data?.url || "/", self.location.origin).href;
   event.waitUntil(
-    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((windows) => {
+    self.clients.matchAll({ type: "window" }).then(async (windows) => {
+      // navigate() only works on windows this worker controls (hence no
+      // includeUncontrolled); if it fails anyway, open a new window.
       const open = windows.find((w) => new URL(w.url).origin === self.location.origin);
-      if (open) return open.navigate(url).then((w) => (w || open).focus());
+      if (open) {
+        try {
+          const navigated = await open.navigate(url);
+          return (navigated || open).focus();
+        } catch {
+          // fall through
+        }
+      }
       return self.clients.openWindow(url);
     })
   );
