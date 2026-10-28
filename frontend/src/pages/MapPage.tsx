@@ -9,6 +9,7 @@ import { api } from "../api/client";
 import AutoplayVideo from "../components/AutoplayVideo";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import { useReelActions } from "../lib/useReelActions";
+import { isInSeason } from "../lib/season";
 import { useIsDark } from "../lib/theme";
 import { REEL_CATEGORIES, type Reel } from "../types";
 
@@ -21,7 +22,8 @@ const JAPAN_CENTER: [number, number] = [137.5, 36.2];
 // on their own once the library is pre-bundled).
 setWorkerUrl(workerUrl);
 
-type Filter = "all" | (typeof REEL_CATEGORIES)[number];
+// "season" = 今が見頃 (see lib/season).
+type Filter = "all" | "season" | (typeof REEL_CATEGORIES)[number];
 
 // 地図で探す: every located post as a video bubble on a tilted 3D map.
 // Tapping a bubble opens a card with the clip, directions, しおり and the
@@ -41,7 +43,13 @@ export default function MapPage() {
   const fittedRef = useRef(false);
   const actions = useReelActions(setReels);
 
-  const visible = useMemo(() => reels.filter((r) => filter === "all" || r.category === filter), [reels, filter]);
+  const visible = useMemo(
+    () =>
+      reels.filter((r) =>
+        filter === "all" ? true : filter === "season" ? isInSeason(r.bestMonths ?? []) : r.category === filter
+      ),
+    [reels, filter]
+  );
   const selected = reels.find((r) => r.id === selectedId) ?? null;
 
   useEffect(() => {
@@ -136,7 +144,7 @@ export default function MapPage() {
 
       {/* Category filter over the map */}
       <div className="scrollbar-none absolute inset-x-0 top-0 z-10 flex gap-2 overflow-x-auto p-3">
-        {(["all", ...REEL_CATEGORIES] as const).map((c) => (
+        {(["all", "season", ...REEL_CATEGORIES] as const).map((c) => (
           <button
             key={c}
             type="button"
