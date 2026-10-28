@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowUp, Bookmark, Mic, Navigation, Sparkles, X } from "lucide-react";
+import { ArrowUp, Bookmark, Mic, Navigation, RotateCcw, Sparkles, X } from "lucide-react";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { notifySavesChanged } from "../lib/savesChanged";
@@ -127,6 +128,11 @@ export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
     const q = question.trim();
     if (!q || busy) return;
     const id = nextId.current++;
+    // Earlier answered turns go along so follow-ups ("子連れだと？") make sense.
+    const history = turns
+      .filter((turn) => turn.reply != null && !turn.error)
+      .slice(-4)
+      .map((turn) => ({ question: turn.question, reply: turn.reply!, pickIds: (turn.picks ?? []).map((p) => p.reel.id) }));
     setTurns((prev) => [...prev, { id, question: q }]);
     setInput("");
     setBusy(true);
@@ -134,6 +140,7 @@ export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
       const { data } = await api.post<{ mode: "ai" | "keyword"; reply: string | null; picks: Pick[] }>("/concierge", {
         message: q,
         lang: i18n.language,
+        history,
       });
       const reply =
         data.reply ??
@@ -165,7 +172,9 @@ export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
     void ask(input);
   }
 
-  return (
+  // Portaled to <body> so no ancestor's stacking context (e.g. the feed
+  // hero's `isolate`) can put page content above the sheet.
+  return createPortal(
     <div className="animate-fade-in fixed inset-0 z-[65] flex items-end justify-center bg-black/40 md:items-center" onClick={onClose}>
       <div
         role="dialog"
@@ -184,6 +193,18 @@ export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
               {aiEnabled == null ? "" : aiEnabled ? t("concierge.modeAi") : t("concierge.modeKeyword")}
             </p>
           </div>
+          {turns.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setTurns([])}
+              disabled={busy}
+              aria-label={t("concierge.newChat")}
+              title={t("concierge.newChat")}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 disabled:opacity-40"
+            >
+              <RotateCcw className="h-[18px] w-[18px]" />
+            </button>
+          )}
           <button
             type="button"
             onClick={onClose}
@@ -244,6 +265,9 @@ export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
           ))}
         </div>
 
+        {turns.length === 1 && turns[0].picks && turns[0].picks.length > 0 && !busy && (
+          <p className="animate-fade-in px-5 pb-1 text-[11px] text-gray-500">{t("concierge.followUpHint")}</p>
+        )}
         <form onSubmit={submit} className="flex items-center gap-2 border-t border-gray-100 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           <input
             value={input}
@@ -276,6 +300,7 @@ export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
           </button>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

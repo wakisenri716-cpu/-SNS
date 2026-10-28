@@ -630,7 +630,9 @@
     "keywordNote": "由于未设置AI，按关键词匹配查找。",
     "matchCategory": "{{category}}帖子",
     "matchPlace": "地名一致",
-    "error": "查找失败，请稍后再试。"
+    "error": "查找失败，请稍后再试。",
+    "newChat": "开始新的咨询",
+    "followUpHint": "可以继续追问，例如“带孩子呢？”“还有别的吗？”"
   },
   "stories": {
     "tapHint": "点右侧下一个，点左侧上一个，长按暂停",

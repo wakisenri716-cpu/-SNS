@@ -29,6 +29,13 @@ export interface ConciergePick {
   matched: { category: boolean; tags: TravelerTag[]; text: boolean } | null;
 }
 
+/** An earlier exchange in the same conversation, oldest first. */
+export interface ConciergeTurn {
+  question: string;
+  reply: string;
+  pickIds: string[];
+}
+
 export interface ConciergeResult {
   mode: "ai" | "keyword";
   reply: string | null;
@@ -57,7 +64,16 @@ const TAG_WORDS: Record<TravelerTag, string[]> = {
   multilingual: ["外国語", "英語", "多言語", "海外", "english", "multilingual", "外语", "英语", "외국어", "영어"],
 };
 
-function keywordConcierge(message: string, candidates: ConciergeCandidate[]): ConciergeResult {
+// "他には？" / "something else?": the traveler wants different posts than the
+// ones already shown.
+const MORE_WORDS = ["他に", "ほかに", "他の", "ほかの", "別の", "違う", "其他", "别的", "还有", "다른"];
+const MORE_WORDS_LATIN = /\b(other|others|else|another|more)\b/i;
+
+function wantsOthers(message: string) {
+  return MORE_WORDS.some((w) => message.includes(w)) || MORE_WORDS_LATIN.test(message);
+}
+
+function keywordScore(message: string, candidates: ConciergeCandidate[]) {
   const text = message.toLowerCase();
   const wantedCategories = REEL_CATEGORIES.filter((c) => CATEGORY_WORDS[c].some((w) => text.includes(w.toLowerCase())));
   const wantedTags = TRAVELER_TAGS.filter((t) => TAG_WORDS[t].some((w) => text.includes(w.toLowerCase())));
@@ -82,11 +98,25 @@ function keywordConcierge(message: string, candidates: ConciergeCandidate[]): Co
     return { c, score, matched: { category, tags, text: textHit } };
   });
 
-  const picks = scored
-    .filter((s) => s.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, MAX_PICKS)
-    .map((s) => ({ id: s.c.id, reason: null, matched: s.matched }));
+  return scored.filter((s) => s.score > 0).sort((a, b) => b.score - a.score);
+}
+
+function keywordConcierge(message: string, candidates: ConciergeCandidate[], history: ConciergeTurn[]): ConciergeResult {
+  let scored = keywordScore(message, candidates);
+  const others = wantsOthers(message);
+  const previous = history.at(-1);
+  // A follow-up that names no kind of place and no place itself ("子連れだと？",
+  // "他には？") refines the question before it, so read the two together.
+  const namesSomething = scored.some((s) => s.matched.category || s.matched.text);
+  if (previous && (!namesSomething || others)) {
+    const combined = keywordScore(`${previous.question} ${message}`, candidates);
+    if (combined.length > 0) scored = combined;
+  }
+  if (others && history.length > 0) {
+    const shown = new Set(history.flatMap((h) => h.pickIds));
+    scored = scored.filter((s) => !shown.has(s.c.id));
+  }
+  const picks = scored.slice(0, MAX_PICKS).map((s) => ({ id: s.c.id, reason: null, matched: s.matched }));
   return { mode: "keyword", reply: null, picks };
 }
 
@@ -99,9 +129,16 @@ A traveler describes the kind of trip they want. You are given the posts current
 
 Ground everything in the post data you are given: each reason must refer only to what that post's caption, place, category or tags actually say. Do not add facts about the places (opening hours, prices, access, accessibility, seasons) that the data does not state, and do not suggest places that are not in the list. If nothing fits, return no picks and say so kindly in the reply, suggesting what the traveler could try asking instead.
 
+The traveler may be following up on earlier messages in the same conversation, which you are given with the posts you picked then. Read the new request in that context (for example "with kids?" refines the previous wish), and when they ask for something else or more, prefer posts you have not picked yet.
+
 The reply is one or two friendly sentences addressed to the traveler, written in the requested language, as are the reasons.`;
 
-async function aiConcierge(message: string, lang: string, candidates: ConciergeCandidate[]): Promise<ConciergeResult> {
+async function aiConcierge(
+  message: string,
+  lang: string,
+  candidates: ConciergeCandidate[],
+  history: ConciergeTurn[]
+): Promise<ConciergeResult> {
   const ids = candidates.map((c) => c.id);
   const posts = candidates.map((c) => ({
     id: c.id,
@@ -147,7 +184,11 @@ async function aiConcierge(message: string, lang: string, candidates: ConciergeC
     messages: [
       {
         role: "user",
-        content: `Answer in ${LANGUAGE_NAMES[lang] ?? "Japanese"}.\n\n<posts>\n${JSON.stringify(posts)}\n</posts>\n\n<traveler_request>\n${message}\n</traveler_request>`,
+        content: `Answer in ${LANGUAGE_NAMES[lang] ?? "Japanese"}.\n\n<posts>\n${JSON.stringify(posts)}\n</posts>\n\n${
+          history.length > 0
+            ? `<conversation_so_far>\n${JSON.stringify(history.map((h) => ({ traveler: h.question, you: h.reply, picked: h.pickIds })))}\n</conversation_so_far>\n\n`
+            : ""
+        }<traveler_request>\n${message}\n</traveler_request>`,
       },
     ],
   });
@@ -167,13 +208,18 @@ async function aiConcierge(message: string, lang: string, candidates: ConciergeC
   return { mode: "ai", reply: parsed.reply, picks };
 }
 
-export async function runConcierge(message: string, lang: string, candidates: ConciergeCandidate[]): Promise<ConciergeResult> {
+export async function runConcierge(
+  message: string,
+  lang: string,
+  candidates: ConciergeCandidate[],
+  history: ConciergeTurn[] = []
+): Promise<ConciergeResult> {
   if (isAiConciergeConfigured() && candidates.length > 0) {
     try {
-      return await aiConcierge(message, lang, candidates);
+      return await aiConcierge(message, lang, candidates, history);
     } catch (err) {
       logClaudeError("concierge, using keyword matching", err);
     }
   }
-  return keywordConcierge(message, candidates);
+  return keywordConcierge(message, candidates, history);
 }

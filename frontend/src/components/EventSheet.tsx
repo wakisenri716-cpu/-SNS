@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CalendarPlus, ExternalLink, MapPin, X } from "lucide-react";
@@ -30,7 +31,9 @@ export default function EventSheet({ event, onClose }: { event: EventItem; onClo
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  return (
+  // Portaled to <body> so no ancestor's stacking context (e.g. the feed
+  // hero's `isolate`) can put page content above the sheet.
+  return createPortal(
     <div className="animate-fade-in fixed inset-0 z-[65] flex items-end justify-center bg-black/40 md:items-center" onClick={onClose}>
       <div
         role="dialog"
@@ -83,6 +86,7 @@ export default function EventSheet({ event, onClose }: { event: EventItem; onClo
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

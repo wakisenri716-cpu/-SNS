@@ -635,7 +635,9 @@
     "keywordNote": "AI is not configured, so this matched keywords.",
     "matchCategory": "{{category}} post",
     "matchPlace": "Place name matches",
-    "error": "Something went wrong. Please try again in a moment."
+    "error": "Something went wrong. Please try again in a moment.",
+    "newChat": "Start a new conversation",
+    "followUpHint": "You can follow up, e.g. \"With kids?\" or \"Anything else?\""
   },
   "stories": {
     "tapHint": "Tap right for next, left for previous, hold to pause",

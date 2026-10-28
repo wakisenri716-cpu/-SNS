@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Clock, Sparkles, X } from "lucide-react";
 import { api } from "../api/client";
@@ -70,7 +71,9 @@ export default function TripPlanSheet({
     }
   }
 
-  return (
+  // Portaled to <body> so no ancestor's stacking context (e.g. the feed
+  // hero's `isolate`) can put page content above the sheet.
+  return createPortal(
     <div className="animate-fade-in fixed inset-0 z-[65] flex items-end justify-center bg-black/40 md:items-center" onClick={onClose}>
       <div
         role="dialog"
@@ -188,6 +191,7 @@ export default function TripPlanSheet({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

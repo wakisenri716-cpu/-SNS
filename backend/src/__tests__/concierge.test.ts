@@ -30,3 +30,25 @@ test("nothing matching means no picks", async () => {
   const result = await runConcierge("宇宙旅行", "ja", posts);
   assert.deepEqual(result.picks, []);
 });
+
+test("a follow-up that names nothing is read with the previous question", async () => {
+  const first = await runConcierge("お城が見たい", "ja", posts);
+  assert.equal(first.picks[0].id, "castle");
+  const history = [{ question: "お城が見たい", reply: "", pickIds: first.picks.map((p) => p.id) }];
+  const followUp = await runConcierge("子連れだと？", "ja", posts, history);
+  assert.equal(followUp.picks[0].id, "castle");
+  // Castle (from the first question) and family-friendly (from the follow-up).
+  assert.deepEqual(followUp.picks[0].matched, { category: true, tags: ["familyFriendly"], text: false });
+});
+
+test("asking for something else skips posts already shown", async () => {
+  const history = [{ question: "家族で行きたい", reply: "", pickIds: ["castle"] }];
+  const result = await runConcierge("他には？", "ja", posts, history);
+  assert.deepEqual(
+    result.picks.map((p) => p.id),
+    ["bridge"]
+  );
+  // "mother" is not "other".
+  const plain = await runConcierge("trip with my mother to a castle", "en", posts, history);
+  assert.equal(plain.picks[0].id, "castle");
+});

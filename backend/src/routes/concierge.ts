@@ -16,6 +16,19 @@ const CANDIDATE_POOL = 60;
 const bodySchema = z.object({
   message: z.string().trim().min(1).max(300),
   lang: z.enum(["ja", "en", "zh", "ko"]).default("ja"),
+  // Earlier turns of the same conversation (the client keeps them), so
+  // follow-ups like "子連れだと？" are understood. Only the last few matter.
+  history: z
+    .array(
+      z.object({
+        question: z.string().max(300),
+        reply: z.string().max(1000),
+        pickIds: z.array(z.string()).max(10),
+      })
+    )
+    .max(20)
+    .default([])
+    .transform((h) => h.slice(-4)),
 });
 
 // Whether answers come from Claude or from keyword matching, so the UI can label them.
@@ -48,7 +61,8 @@ router.post("/", conciergeLimiter, optionalAuth, async (req, res) => {
       locationName: r.locationName,
       municipalityName: r.company?.name ?? r.municipality.name,
       prefecture: r.municipality.prefecture,
-    }))
+    })),
+    parsed.data.history
   );
 
   const followed = await getFollowedIds(req.auth?.userId);
