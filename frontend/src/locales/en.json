@@ -713,7 +713,15 @@
     "count_other": "{{count}} stamps",
     "bookEmpty": "No stamps yet. Open a spot's directions page and tap \"I'm here\" when you arrive.",
     "pointsNote_one": "{{count}} stamp",
-    "pointsNote_other": "{{count}} stamps"
+    "pointsNote_other": "{{count}} stamps",
+    "cardButton": "Share as image",
+    "cardTitle": "{{name}}'s travel stamps",
+    "cardStats_one": "{{count}} stamp · {{prefectures}} prefecture(s) visited",
+    "cardStats_other": "{{count}} stamps · {{prefectures}} prefecture(s) visited",
+    "cardMore": "+{{count}} more",
+    "cardFooter": "Find and record your trips on Jaziba",
+    "cardSaved": "Image saved",
+    "cardError": "Couldn't create the image"
   },
   "events": {
     "upcoming": "Upcoming events",

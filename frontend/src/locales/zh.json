@@ -704,7 +704,14 @@
     "bookHeading": "集章册",
     "count": "{{count}}个",
     "bookEmpty": "还没有印章。打开想去地点的交通页面，到达后点击“到达现场盖章”。",
-    "pointsNote": "印章 {{count}}个"
+    "pointsNote": "印章 {{count}}个",
+    "cardButton": "分享为图片",
+    "cardTitle": "{{name}}的旅行印章册",
+    "cardStats": "印章 {{count}}个・去过的都道府县 {{prefectures}}",
+    "cardMore": "另有 {{count}}个",
+    "cardFooter": "在Jaziba发现并记录旅行",
+    "cardSaved": "已保存图片",
+    "cardError": "无法生成图片"
   },
   "events": {
     "upcoming": "近期活动",

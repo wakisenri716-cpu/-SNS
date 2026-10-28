@@ -704,7 +704,14 @@
     "bookHeading": "スタンプ帳",
     "count": "{{count}}個",
     "bookEmpty": "まだスタンプはありません。行きたい場所のアクセス画面を開き、現地に着いたら「現地でスタンプを押す」を押してください。",
-    "pointsNote": "スタンプ {{count}}個"
+    "pointsNote": "スタンプ {{count}}個",
+    "cardButton": "画像でシェア",
+    "cardTitle": "{{name}}さんの旅のスタンプ帳",
+    "cardStats": "スタンプ {{count}}個・訪れた都道府県 {{prefectures}}",
+    "cardMore": "ほか {{count}}個",
+    "cardFooter": "ジャジバで、旅を見つけて記録しよう",
+    "cardSaved": "画像を保存しました",
+    "cardError": "画像を作れませんでした"
   },
   "events": {
     "upcoming": "近日のイベント",

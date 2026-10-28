@@ -704,7 +704,14 @@
     "bookHeading": "스탬프북",
     "count": "{{count}}개",
     "bookEmpty": "아직 스탬프가 없어요. 가고 싶은 장소의 교통 화면을 열고, 도착하면 \"현장에서 스탬프 찍기\"를 눌러 주세요.",
-    "pointsNote": "스탬프 {{count}}개"
+    "pointsNote": "스탬프 {{count}}개",
+    "cardButton": "이미지로 공유",
+    "cardTitle": "{{name}}님의 여행 스탬프북",
+    "cardStats": "스탬프 {{count}}개・방문한 도도부현 {{prefectures}}",
+    "cardMore": "외 {{count}}개",
+    "cardFooter": "Jaziba에서 여행을 찾고 기록하세요",
+    "cardSaved": "이미지를 저장했습니다",
+    "cardError": "이미지를 만들지 못했습니다"
   },
   "events": {
     "upcoming": "다가오는 이벤트",

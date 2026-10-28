@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Bookmark, Grid3x3, Heart, Settings, Users } from "lucide-react";
+import { Bookmark, Grid3x3, Heart, ImageDown, Settings, Users } from "lucide-react";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import Avatar from "../components/Avatar";
@@ -9,6 +9,8 @@ import Stamp from "../components/Stamp";
 import ReelThumb from "../components/ReelGrid";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import { formatStampDate } from "../lib/stampDate";
+import { renderStampCard, shareOrDownload } from "../lib/stampCard";
+import { showToast } from "../lib/toast";
 import { PREFECTURES } from "../lib/regions";
 import { useReelActions } from "../lib/useReelActions";
 import type { Reel } from "../types";
@@ -86,6 +88,32 @@ export default function MyPage() {
     api.get("/auth/me/points").then(({ data }) => setPoints(data));
     api.get<{ items: StampItem[] }>("/auth/me/stamps").then(({ data }) => setStamps(data.items));
   }, []);
+
+  const [makingCard, setMakingCard] = useState(false);
+
+  // The スタンプ帳 as a story-sized image to post anywhere.
+  async function shareStampCard() {
+    if (!user || !stamps) return;
+    setMakingCard(true);
+    try {
+      const prefectureCount = new Set(stamps.map((s) => s.reel.municipality.prefecture)).size;
+      const blob = await renderStampCard(
+        stamps.map((s) => ({ place: s.reel.locationName, date: formatStampDate(s.visitedAt) })),
+        {
+          title: t("stamps.cardTitle", { name: user.name }),
+          stats: t("stamps.cardStats", { count: stamps.length, prefectures: prefectureCount }),
+          more: (count) => t("stamps.cardMore", { count }),
+          footer: t("stamps.cardFooter"),
+        }
+      );
+      const result = await shareOrDownload(blob, "jaziba-stamps.png", t("stamps.cardTitle", { name: user.name }));
+      if (result === "downloaded") showToast(t("stamps.cardSaved"));
+    } catch {
+      showToast(t("stamps.cardError"));
+    } finally {
+      setMakingCard(false);
+    }
+  }
 
   async function unfollow(f: FollowItem) {
     await api.delete(`/${f.kind === "municipality" ? "municipalities" : "companies"}/${f.id}/follow`);
@@ -165,10 +193,22 @@ export default function MyPage() {
         )}
 
         <section className="mt-7">
-          <h2 className="text-sm font-bold text-gray-900">
-            {t("stamps.bookHeading")}
-            {stamps && <span className="ml-2 font-normal text-gray-500">{t("stamps.count", { count: stamps.length })}</span>}
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="flex-1 text-sm font-bold text-gray-900">
+              {t("stamps.bookHeading")}
+              {stamps && <span className="ml-2 font-normal text-gray-500">{t("stamps.count", { count: stamps.length })}</span>}
+            </h2>
+            {stamps && stamps.length > 0 && (
+              <button
+                type="button"
+                onClick={() => void shareStampCard()}
+                disabled={makingCard}
+                className="inline-flex items-center gap-1.5 rounded-full bg-jz-tint px-3 py-1.5 text-xs font-bold text-jz-red transition active:scale-95 disabled:opacity-50"
+              >
+                <ImageDown className="h-3.5 w-3.5" /> {t("stamps.cardButton")}
+              </button>
+            )}
+          </div>
           {stamps && stamps.length === 0 ? (
             <p className="mt-3 rounded-2xl bg-gray-50 p-4 text-xs leading-relaxed text-gray-500">{t("stamps.bookEmpty")}</p>
           ) : (
