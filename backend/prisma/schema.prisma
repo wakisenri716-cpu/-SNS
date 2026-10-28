@@ -54,6 +54,7 @@ model User {
   notifications       Notification[] @relation("NotificationRecipient")
   notificationsCaused Notification[] @relation("NotificationActor")
   visits        Visit[]
+  commentReports CommentReport[]
 }
 
 model Municipality {
@@ -257,6 +258,23 @@ model Comment {
   body      String
   createdAt DateTime @default(now())
   notifications Notification[]
+  reports   CommentReport[]
+}
+
+// 通報: a user flags someone else's comment. At COMMENT_HIDE_THRESHOLD
+// distinct reporters the comment is hidden from everyone but its author and
+// the account managing the post, who reviews it (delete, or dismiss reports).
+model CommentReport {
+  id         String   @id @default(cuid())
+  commentId  String
+  comment    Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  reporterId String
+  reporter   User     @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  // "spam" | "abuse" | "other"
+  reason     String
+  createdAt  DateTime @default(now())
+
+  @@unique([commentId, reporterId])
 }
 
 // Public contact-form submissions (no login required to send one). There's no

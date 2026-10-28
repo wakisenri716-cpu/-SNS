@@ -199,3 +199,40 @@ test("a wrong password on password change is 403, not a logout-triggering 401", 
   const del = await call("DELETE", "/api/auth/me", { password: "wrong-password" }, traveler);
   assert.equal(del.status, 403);
 });
+
+test("comment reports: hidden after 3 reporters, still visible to author and moderator, dismissible", async () => {
+  const municipalityToken = await login("demo-matsumoto@example.com");
+  const { json: map } = await call("GET", "/api/reels/map");
+  const reelId = map.items[0].id;
+  const author = (await call("POST", "/api/auth/register", { email: "author@example.com", password: "password123", name: "書いた人" })).json.token;
+  const posted = await call("POST", `/api/reels/${reelId}/comments`, { body: "スパムっぽいコメント" }, author);
+  assert.equal(posted.status, 201);
+  const commentId = posted.json.id;
+
+  assert.equal((await call("POST", `/api/reels/${reelId}/comments/${commentId}/report`, { reason: "spam" }, author)).status, 400);
+
+  const reporters: string[] = [];
+  for (const n of [1, 2, 3]) {
+    const tok = (await call("POST", "/api/auth/register", { email: `r${n}@example.com`, password: "password123", name: `通報者${n}` })).json.token;
+    reporters.push(tok);
+    assert.equal((await call("POST", `/api/reels/${reelId}/comments/${commentId}/report`, { reason: "spam" }, tok)).status, 204);
+  }
+  // Reporting twice still counts once.
+  await call("POST", `/api/reels/${reelId}/comments/${commentId}/report`, { reason: "abuse" }, reporters[0]);
+
+  const visibleTo = async (token?: string) =>
+    (await call("GET", `/api/reels/${reelId}/comments`, undefined, token)).json.items.some((c: any) => c.id === commentId);
+  assert.equal(await visibleTo(), false);
+  assert.equal(await visibleTo(traveler), false);
+  assert.equal(await visibleTo(author), true);
+  assert.equal(await visibleTo(municipalityToken), true);
+
+  const queue = await call("GET", "/api/reels/mine/reported-comments", undefined, municipalityToken);
+  const item = queue.json.items.find((c: any) => c.id === commentId);
+  assert.equal(item.reportCount, 3);
+  assert.deepEqual(item.reasons, { abuse: 1, spam: 2 });
+
+  assert.equal((await call("DELETE", `/api/reels/${reelId}/comments/${commentId}/reports`, undefined, traveler)).status, 403);
+  assert.equal((await call("DELETE", `/api/reels/${reelId}/comments/${commentId}/reports`, undefined, municipalityToken)).status, 204);
+  assert.equal(await visibleTo(), true);
+});

@@ -394,6 +394,38 @@ router.get("/mine", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (
 // recorded an actual travel time, and where travelers say they came from —
 // origins only once enough different users share them (lib/travelReports.ts).
 // Must be registered before "/:id" so "mine" isn't matched as a reel id.
+// Reported comments on the signed-in poster's posts, most-reported first, for
+// review in the dashboard. Must be registered before "/:id".
+router.get("/mine/reported-comments", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (req, res) => {
+  const poster = await resolvePosterContext(req, res);
+  if (!poster) return;
+  const comments = await prisma.comment.findMany({
+    where: {
+      reports: { some: {} },
+      reel: poster.companyId ? { companyId: poster.companyId } : { municipalityId: poster.municipalityId },
+    },
+    include: {
+      user: { select: { name: true } },
+      reel: { select: { id: true, locationName: true, caption: true } },
+      reports: { select: { reason: true } },
+    },
+  });
+  res.json({
+    hideThreshold: COMMENT_HIDE_THRESHOLD,
+    items: comments
+      .map((c) => ({
+        id: c.id,
+        body: c.body,
+        authorName: c.user.name,
+        createdAt: c.createdAt,
+        reel: { id: c.reel.id, title: c.reel.locationName || c.reel.caption.slice(0, 30) },
+        reportCount: c.reports.length,
+        reasons: c.reports.reduce<Record<string, number>>((acc, r) => ({ ...acc, [r.reason]: (acc[r.reason] ?? 0) + 1 }), {}),
+      }))
+      .sort((a, b) => b.reportCount - a.reportCount),
+  });
+});
+
 router.get("/mine/trip-planning", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (req, res) => {
   const poster = await resolvePosterContext(req, res);
   if (!poster) return;
@@ -948,13 +980,25 @@ router.get("/:id/comments", optionalAuth, async (req, res) => {
     prisma.comment.findMany({
       where: { reelId: reel.id },
       orderBy: { createdAt: "asc" },
-      include: { user: { select: { id: true, name: true } } },
+      include: {
+        user: { select: { id: true, name: true } },
+        reports: { select: { reporterId: true } },
+      },
     }),
     canModerateComments(req.auth, reel),
   ]);
   res.json({
     commentsEnabled: commentsEnabledFor(reel),
-    items: comments.map((c) => ({ ...c, canDelete: moderator || c.userId === req.auth?.userId })),
+    items: comments
+      // Hidden once enough people report it — except to its author and the
+      // moderator, who still see it (flagged) so it can be reviewed.
+      .filter((c) => c.reports.length < COMMENT_HIDE_THRESHOLD || moderator || c.userId === req.auth?.userId)
+      .map(({ reports, ...c }) => ({
+        ...c,
+        canDelete: moderator || c.userId === req.auth?.userId,
+        reportedByMe: !!req.auth && reports.some((r) => r.reporterId === req.auth!.userId),
+        hidden: reports.length >= COMMENT_HIDE_THRESHOLD,
+      })),
   });
 });
 
@@ -990,6 +1034,36 @@ router.delete("/:id/comments/:commentId", requireAuth, async (req, res) => {
   }
 
   await prisma.comment.delete({ where: { id: comment.id } });
+  res.status(204).end();
+});
+
+// 通報 a comment (not your own). One report per person per comment.
+const COMMENT_HIDE_THRESHOLD = 3;
+const reportSchema = z.object({ reason: z.enum(["spam", "abuse", "other"]) });
+
+router.post("/:id/comments/:commentId/report", writeLimiter, requireAuth, async (req, res) => {
+  const parsed = reportSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "通報の理由を選んでください" });
+  const comment = await prisma.comment.findUnique({ where: { id: req.params.commentId }, select: { id: true, reelId: true, userId: true } });
+  if (!comment || comment.reelId !== req.params.id) return res.status(404).json({ error: "コメントが見つかりません" });
+  if (comment.userId === req.auth!.userId) return res.status(400).json({ error: "自分のコメントは通報できません" });
+  await prisma.commentReport.upsert({
+    where: { commentId_reporterId: { commentId: comment.id, reporterId: req.auth!.userId } },
+    create: { commentId: comment.id, reporterId: req.auth!.userId, reason: parsed.data.reason },
+    update: { reason: parsed.data.reason },
+  });
+  res.status(204).end();
+});
+
+// Moderator: keep a reported comment — clears its reports (and un-hides it).
+router.delete("/:id/comments/:commentId/reports", requireAuth, async (req, res) => {
+  const comment = await prisma.comment.findUnique({
+    where: { id: req.params.commentId },
+    include: { reel: { select: { id: true, municipalityId: true, companyId: true } } },
+  });
+  if (!comment || comment.reel.id !== req.params.id) return res.status(404).json({ error: "コメントが見つかりません" });
+  if (!(await canModerateComments(req.auth, comment.reel))) return res.status(403).json({ error: "権限がありません" });
+  await prisma.commentReport.deleteMany({ where: { commentId: comment.id } });
   res.status(204).end();
 });
 

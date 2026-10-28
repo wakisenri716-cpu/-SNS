@@ -4,9 +4,10 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import type { Comment } from "../types";
-import { X } from "lucide-react";
+import { Flag, X } from "lucide-react";
+import { showToast } from "../lib/toast";
 
-type CommentRow = Comment & { canDelete: boolean };
+type CommentRow = Comment & { canDelete: boolean; reportedByMe?: boolean; hidden?: boolean };
 
 // Comments on one reel, as a bottom sheet over the fullscreen viewer
 // (GET/POST/DELETE /reels/:id/comments). Posting needs an account and the
@@ -66,6 +67,16 @@ export default function CommentsSheet({
     }
   }
 
+  const [reportingId, setReportingId] = useState<string | null>(null);
+
+  async function report(id: string, reason: "spam" | "abuse" | "other") {
+    if (!items) return;
+    await api.post(`/reels/${reelId}/comments/${id}/report`, { reason });
+    setItems(items.map((c) => (c.id === id ? { ...c, reportedByMe: true } : c)));
+    setReportingId(null);
+    showToast(t("comments.reported"));
+  }
+
   async function remove(id: string) {
     if (!items || !window.confirm(t("comments.deleteConfirm"))) return;
     await api.delete(`/reels/${reelId}/comments/${id}`);
@@ -109,6 +120,7 @@ export default function CommentsSheet({
                   <div className="flex items-baseline gap-2">
                     <span className="font-semibold text-gray-900">{c.user.name}</span>
                     <span className="text-[11px] text-gray-400">{new Date(c.createdAt).toLocaleDateString(i18n.language)}</span>
+                    {c.hidden && <span className="rounded-full bg-jz-tint px-2 py-0.5 text-[10px] font-semibold text-jz-red">{t("comments.hiddenBadge")}</span>}
                     {c.canDelete && (
                       <button
                         type="button"
@@ -118,8 +130,34 @@ export default function CommentsSheet({
                         {t("comments.delete")}
                       </button>
                     )}
+                    {user && c.user.id !== user.id && !c.canDelete && (
+                      <button
+                        type="button"
+                        onClick={() => setReportingId(reportingId === c.id ? null : c.id)}
+                        disabled={c.reportedByMe}
+                        aria-expanded={reportingId === c.id}
+                        className="ml-auto inline-flex items-center gap-0.5 text-[11px] text-gray-400 hover:text-gray-700 disabled:hover:text-gray-400"
+                      >
+                        <Flag className="h-3 w-3" /> {c.reportedByMe ? t("comments.reportedLabel") : t("comments.report")}
+                      </button>
+                    )}
                   </div>
                   <p className="mt-0.5 whitespace-pre-wrap break-words text-gray-700">{c.body}</p>
+                  {reportingId === c.id && (
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5 rounded-xl bg-gray-50 p-2">
+                      <span className="text-[11px] text-gray-500">{t("comments.reportWhy")}</span>
+                      {(["spam", "abuse", "other"] as const).map((reason) => (
+                        <button
+                          key={reason}
+                          type="button"
+                          onClick={() => void report(c.id, reason)}
+                          className="rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100"
+                        >
+                          {t(`comments.reason.${reason}`)}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

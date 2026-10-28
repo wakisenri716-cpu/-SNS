@@ -562,7 +562,17 @@
     "delete": "삭제",
     "deleteConfirm": "이 댓글을 삭제하시겠습니까?",
     "error": "보내지 못했습니다",
-    "close": "닫기"
+    "close": "닫기",
+    "report": "신고",
+    "reportedLabel": "신고함",
+    "reportWhy": "이유:",
+    "reason": {
+      "spam": "스팸·광고",
+      "abuse": "비방·괴롭힘",
+      "other": "기타"
+    },
+    "reported": "신고했어요. 게시한 지자체·기업이 확인해요",
+    "hiddenBadge": "숨김"
   },
   "notifications": {
     "heading": "알림",
@@ -705,5 +715,12 @@
     "notFoundTitle": "페이지를 찾을 수 없어요",
     "notFoundBody": "주소가 잘못되었거나 게시물이 삭제되었을 수 있어요.",
     "goHome": "홈으로"
+  },
+  "moderation": {
+    "heading": "신고된 댓글 ({{count}}건)",
+    "note": "내 게시물의 댓글 중 신고된 것이에요. {{count}}명에게 신고된 댓글은 자동으로 숨겨져요 (작성자 본인과 나에게는 보여요). 삭제하거나, 문제가 없으면 \"남기기\"로 신고를 취소해 주세요.",
+    "reportCount": "신고 {{count}}건",
+    "delete": "삭제",
+    "keep": "남기기 (신고 취소)"
   }
 }

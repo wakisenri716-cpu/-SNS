@@ -566,7 +566,17 @@
     "delete": "Delete",
     "deleteConfirm": "Delete this comment?",
     "error": "Could not send",
-    "close": "Close"
+    "close": "Close",
+    "report": "Report",
+    "reportedLabel": "Reported",
+    "reportWhy": "Reason:",
+    "reason": {
+      "spam": "Spam / advertising",
+      "abuse": "Harassment / abuse",
+      "other": "Other"
+    },
+    "reported": "Reported. The posting account will review it",
+    "hiddenBadge": "Hidden"
   },
   "notifications": {
     "heading": "Notifications",
@@ -714,5 +724,13 @@
     "notFoundTitle": "Page not found",
     "notFoundBody": "The link may be wrong, or the post may have been removed.",
     "goHome": "Back to home"
+  },
+  "moderation": {
+    "heading": "Reported comments ({{count}})",
+    "note": "Comments on your posts that someone reported. A comment reported by {{count}} people is hidden automatically (its author and you can still see it). Delete it, or choose \"Keep\" to clear the reports.",
+    "reportCount_one": "{{count}} report",
+    "reportCount_other": "{{count}} reports",
+    "delete": "Delete",
+    "keep": "Keep (clear reports)"
   }
 }

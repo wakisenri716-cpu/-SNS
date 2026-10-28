@@ -562,7 +562,17 @@
     "delete": "删除",
     "deleteConfirm": "确定要删除这条评论吗？",
     "error": "发送失败",
-    "close": "关闭"
+    "close": "关闭",
+    "report": "举报",
+    "reportedLabel": "已举报",
+    "reportWhy": "理由：",
+    "reason": {
+      "spam": "垃圾信息・广告",
+      "abuse": "诽谤・骚扰",
+      "other": "其他"
+    },
+    "reported": "已举报，发布方会进行确认",
+    "hiddenBadge": "已隐藏"
   },
   "notifications": {
     "heading": "通知",
@@ -705,5 +715,12 @@
     "notFoundTitle": "找不到页面",
     "notFoundBody": "网址可能有误，或帖子已被删除。",
     "goHome": "返回首页"
+  },
+  "moderation": {
+    "heading": "被举报的评论（{{count}}条）",
+    "note": "您的帖子下被举报的评论。被{{count}}人举报的评论会自动隐藏（作者本人和您仍可看到）。请删除，或在没有问题时选择“保留”取消举报。",
+    "reportCount": "举报{{count}}次",
+    "delete": "删除",
+    "keep": "保留（取消举报）"
   }
 }

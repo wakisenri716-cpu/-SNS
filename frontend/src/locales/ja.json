@@ -562,7 +562,17 @@
     "delete": "削除",
     "deleteConfirm": "このコメントを削除しますか？",
     "error": "送信できませんでした",
-    "close": "閉じる"
+    "close": "閉じる",
+    "report": "通報",
+    "reportedLabel": "通報済み",
+    "reportWhy": "理由：",
+    "reason": {
+      "spam": "スパム・宣伝",
+      "abuse": "誹謗中傷・嫌がらせ",
+      "other": "その他"
+    },
+    "reported": "通報しました。投稿した自治体・企業が確認します",
+    "hiddenBadge": "非表示中"
   },
   "notifications": {
     "heading": "お知らせ",
@@ -705,5 +715,12 @@
     "notFoundTitle": "ページが見つかりません",
     "notFoundBody": "URLが間違っているか、投稿が削除された可能性があります。",
     "goHome": "ホームに戻る"
+  },
+  "moderation": {
+    "heading": "通報されたコメント（{{count}}件）",
+    "note": "あなたの投稿へのコメントのうち、通報があったものです。{{count}}人から通報されたコメントは自動で非表示になります（書いた本人とあなたには見えます）。削除するか、問題なければ「残す」で通報を取り消してください。",
+    "reportCount": "通報{{count}}件",
+    "delete": "削除する",
+    "keep": "残す（通報を取り消す）"
   }
 }
