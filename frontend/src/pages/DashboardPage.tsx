@@ -495,11 +495,11 @@ export default function DashboardPage() {
         <div className="-mt-10 flex items-end justify-between lg:-mt-12">
           <label className="group relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-gray-200 to-gray-300 text-2xl font-bold text-white ring-4 ring-white lg:h-24 lg:w-24">
             {municipality.avatarUrl ? (
-              <img src={municipality.avatarUrl} className="h-full w-full rounded-full object-cover" />
+              <img src={municipality.avatarUrl} alt="" className="h-full w-full rounded-full object-cover" />
             ) : (
               municipality.name.slice(0, 1)
             )}
-            <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 text-[10px] text-white opacity-0 group-hover:opacity-100">
+            <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 text-[10px] text-white opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">
               {t("dashboard.avatarChange")}
             </span>
             <input

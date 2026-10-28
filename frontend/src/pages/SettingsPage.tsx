@@ -42,11 +42,11 @@ function AvatarSection() {
       <h2 className="mb-3 text-sm font-semibold text-gray-600">{t("settings.avatarHeading")}</h2>
       <label className="group relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-gray-200 to-gray-300 text-2xl font-bold text-white ring-1 ring-gray-200">
         {avatarUrl ? (
-          <img src={avatarUrl} className="h-full w-full rounded-full object-cover" />
+          <img src={avatarUrl} alt="" className="h-full w-full rounded-full object-cover" />
         ) : (
           label
         )}
-        <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 text-[10px] text-white opacity-0 group-hover:opacity-100">
+        <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 text-[10px] text-white opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">
           {uploading ? "..." : t("settings.avatarChange")}
         </span>
         <input
