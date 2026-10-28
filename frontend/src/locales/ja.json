@@ -169,7 +169,10 @@
     "stopSharing": "共有を停止",
     "stopSharingConfirm": "共有リンクを無効にしますか？送ったリンクは開けなくなります。",
     "stopSharingDone": "共有を停止しました",
-    "sharingNote": "共有中：リンクを知っている人は、このしおりを見られます（出発地点は表示されません）。"
+    "sharingNote": "共有中：リンクを知っている人は、このしおりを見られます（出発地点は表示されません）。",
+    "dayLabel": "{{day}}日目",
+    "dayTime": "{{day}}日目 {{time}}",
+    "overnight": "ここで1泊（翌朝、出発時刻に出発）"
   },
   "dashboard": {
     "tabPosts": "投稿",

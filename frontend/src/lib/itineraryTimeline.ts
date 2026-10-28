@@ -14,26 +14,47 @@ export function splitClock(totalMin: number) {
   return { day, time: `${String(Math.floor(min / 60)).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}` };
 }
 
-// Arrival/departure minute at each stop, plus when the trip leaves its origin.
+// Stay overnight at a place to stay that isn't the last stop: leave the next
+// morning at the trip's start time, after at least this much rest.
+const MIN_REST_MIN = 6 * 60;
+
+// Arrival/departure minute at each stop (counted from the first day's
+// midnight), plus when the trip leaves its origin. `overnight[i]` marks a
+// stop where the traveler sleeps; its stay length is ignored.
 export function computeTimeline(
   startTime: string,
   originLegMin: number | null,
   stayMinutes: number[],
-  legMinutes: number[]
+  legMinutes: number[],
+  overnight: boolean[] = []
 ) {
   const departAt = parseClock(startTime);
   let clock = departAt + (originLegMin ?? 0);
   const times = stayMinutes.map((stay, i) => {
     const arrive = clock;
-    const leave = arrive + stay;
+    const leave = overnight[i]
+      ? Math.ceil((arrive + MIN_REST_MIN - departAt) / (24 * 60)) * 24 * 60 + departAt
+      : arrive + stay;
     clock = leave + (legMinutes[i] ?? 0);
-    return { arrive, leave };
+    return { arrive, leave, day: Math.floor(arrive / (24 * 60)) };
   });
   return { departAt, times };
 }
 
-// "HH:MM", or "翌HH:MM" (in the UI language) once the trip runs past midnight.
-export function formatClock(totalMin: number, t: (key: string, opts?: Record<string, unknown>) => string) {
+// Which stops are overnight stays: places to stay before the last stop.
+export function overnightStops(stops: { category: string }[]) {
+  return stops.map((s, i) => s.category === "lodging" && i < stops.length - 1);
+}
+
+// "HH:MM" on `onDay` (0 = the first day), "翌HH:MM" the day after, and
+// "3日目 HH:MM" further on — in the UI language.
+export function formatClock(
+  totalMin: number,
+  t: (key: string, opts?: Record<string, unknown>) => string,
+  onDay = 0
+) {
   const { day, time } = splitClock(totalMin);
-  return day > 0 ? t("itinerary.nextDay", { time }) : time;
+  if (day === onDay) return time;
+  if (day === onDay + 1) return t("itinerary.nextDay", { time });
+  return t("itinerary.dayTime", { day: day + 1, time });
 }

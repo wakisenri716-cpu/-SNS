@@ -171,7 +171,10 @@
     "stopSharing": "Stop sharing",
     "stopSharingConfirm": "Turn off the share link? Links you've sent will stop working.",
     "stopSharingDone": "Sharing stopped",
-    "sharingNote": "Shared: anyone with the link can see this plan (your starting point isn't shown)."
+    "sharingNote": "Shared: anyone with the link can see this plan (your starting point isn't shown).",
+    "dayLabel": "Day {{day}}",
+    "dayTime": "Day {{day}} {{time}}",
+    "overnight": "Overnight here (leave next morning at the start time)"
   },
   "dashboard": {
     "tabPosts": "Posts",

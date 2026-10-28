@@ -48,8 +48,8 @@ test("itinerary timeline: travel and stays accumulate, past midnight counts as t
   const { departAt, times } = computeTimeline("22:00", 30, [60, 90], [45]);
   assert.equal(departAt, 22 * 60);
   assert.deepEqual(times, [
-    { arrive: 22 * 60 + 30, leave: 23 * 60 + 30 },
-    { arrive: 24 * 60 + 15, leave: 25 * 60 + 45 },
+    { arrive: 22 * 60 + 30, leave: 23 * 60 + 30, day: 0 },
+    { arrive: 24 * 60 + 15, leave: 25 * 60 + 45, day: 1 },
   ]);
   assert.deepEqual(splitClock(times[1].leave), { day: 1, time: "01:45" });
   assert.equal(computeTimeline("bad", null, [0], []).departAt, 9 * 60);
@@ -66,4 +66,24 @@ test("見頃: month runs wrap around the new year and format per language", asyn
   const lateMarchUtc = new Date("2026-03-31T23:30:00Z");
   assert.equal(monthInJapan(lateMarchUtc), 4);
   assert.equal(isInSeason([4], lateMarchUtc), true);
+});
+
+test("itinerary timeline: a place to stay mid-trip means leaving the next morning", async () => {
+  const { computeTimeline, formatClock, overnightStops } = await import("../src/lib/itineraryTimeline.ts");
+  const stops = [{ category: "culture" }, { category: "lodging" }, { category: "nature" }, { category: "lodging" }];
+  const overnight = overnightStops(stops);
+  // The last stop is where the trip ends, not a night.
+  assert.deepEqual(overnight, [false, true, false, false]);
+  const { times } = computeTimeline("09:00", null, [120, 60, 90, 60], [300, 60, 30], overnight);
+  // Castle 9–11, inn at 16:00, out at 9:00 the next day, river at 10:00.
+  assert.deepEqual(times[1], { arrive: 16 * 60, leave: 24 * 60 + 9 * 60, day: 0 });
+  assert.deepEqual(times[2], { arrive: 24 * 60 + 10 * 60, leave: 24 * 60 + 11 * 60 + 30, day: 1 });
+  // Arriving at 5:00 leaves too little rest before 9:00, so it's the morning after.
+  const late = computeTimeline("09:00", null, [0], [], [true]);
+  assert.equal(computeTimeline("09:00", 20 * 60, [0], [], [true]).times[0].leave, 2 * 24 * 60 + 9 * 60);
+  assert.equal(late.times[0].leave, 24 * 60 + 9 * 60);
+  const t = (key: string, o?: Record<string, unknown>) => `${key}:${JSON.stringify(o)}`;
+  assert.equal(formatClock(24 * 60 + 9 * 60, t, 1), "09:00");
+  assert.equal(formatClock(24 * 60 + 9 * 60, t, 0), 'itinerary.nextDay:{"time":"09:00"}');
+  assert.equal(formatClock(2 * 24 * 60, t, 0), 'itinerary.dayTime:{"day":3,"time":"00:00"}');
 });

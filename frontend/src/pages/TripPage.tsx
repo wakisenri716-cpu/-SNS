@@ -6,8 +6,8 @@ import { Bookmark, Check, Clock, Flag, MapPin } from "lucide-react";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { useIsTraveler } from "../components/ItineraryRail";
-import LegRow from "../components/ItineraryLegRow";
-import { computeTimeline, formatClock } from "../lib/itineraryTimeline";
+import LegRow, { DayDivider } from "../components/ItineraryLegRow";
+import { computeTimeline, formatClock, overnightStops } from "../lib/itineraryTimeline";
 import { notifySavesChanged } from "../lib/savesChanged";
 import { showToast } from "../lib/toast";
 import type { SharedTrip } from "../types";
@@ -78,12 +78,15 @@ export default function TripPage() {
     );
   }
 
+  const overnight = overnightStops(trip.stops);
   const { times } = computeTimeline(
     trip.startTime,
     null,
     trip.stops.map((s) => s.stayMinutes),
-    trip.legs.map((l) => l.totalDurationMin)
+    trip.legs.map((l) => l.totalDurationMin),
+    overnight
   );
+  const multiDay = times.length > 0 && times[times.length - 1].day > 0;
   const unsaved = trip.stops.filter((s) => !saved.has(s.id)).map((s) => s.id);
   const canCopy = !trip.isMine && (isTraveler || !authToken);
   const municipalities = [...new Set(trip.stops.map((s) => s.municipality.name))];
@@ -107,8 +110,10 @@ export default function TripPage() {
         <ol className="mt-6">
           {trip.stops.map((stop, i) => {
             const isSaved = saved.has(stop.id);
+            const { day } = times[i];
             return (
               <li key={stop.id} className="animate-page-in" style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}>
+                {multiDay && (i === 0 || day !== times[i - 1].day) && <DayDivider day={day} />}
                 <div className="flex gap-3">
                   <span className="mt-3 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-jz-red text-xs font-bold text-white">
                     {i + 1}
@@ -126,8 +131,12 @@ export default function TripPage() {
                         </span>
                         <span className="mt-1.5 flex items-center gap-1 text-xs tabular-nums text-gray-700">
                           <Clock className="h-3 w-3 shrink-0" />
-                          {t("itinerary.arriveDepart", { arrive: formatClock(times[i].arrive, t), depart: formatClock(times[i].leave, t) })}
+                          {t("itinerary.arriveDepart", {
+                            arrive: formatClock(times[i].arrive, t, day),
+                            depart: formatClock(times[i].leave, t, day),
+                          })}
                         </span>
+                        {overnight[i] && <span className="mt-1 block text-[11px] font-semibold text-jz-red">{t("itinerary.overnight")}</span>}
                       </span>
                     </Link>
                     {canCopy && (
@@ -157,7 +166,7 @@ export default function TripPage() {
           <span className="flex w-7 justify-center">
             <Flag className="h-4 w-4 text-gray-500" />
           </span>
-          <span className="tabular-nums">{t("itinerary.finish", { time: formatClock(times[times.length - 1].leave, t) })}</span>
+          <span className="tabular-nums">{t("itinerary.finish", { time: formatClock(times[times.length - 1].leave, t, times[times.length - 1].day) })}</span>
         </p>
       )}
       <p className="mt-4 text-[11px] leading-relaxed text-gray-500">{t("trip.timeNote", { time: trip.startTime })}</p>

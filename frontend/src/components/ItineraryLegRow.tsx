@@ -30,3 +30,17 @@ export default function ItineraryLegRow({ leg, className = "my-1.5 ml-9" }: { le
     </p>
   );
 }
+
+// "2日目" between the stops of a multi-day しおり.
+export function DayDivider({ day }: { day: number }) {
+  const { t } = useTranslation();
+  return (
+    <p className="mb-1 mt-4 flex items-center gap-2 text-[11px] font-bold tracking-wide text-jz-red first:mt-0">
+      <span className="flex w-7 justify-center">
+        <span className="h-1.5 w-1.5 rounded-full bg-jz-red" />
+      </span>
+      {t("itinerary.dayLabel", { day: day + 1 })}
+      <span className="h-px flex-1 bg-gray-200" />
+    </p>
+  );
+}

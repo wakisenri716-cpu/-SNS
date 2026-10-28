@@ -9,8 +9,8 @@ import { notifySavesChanged, onSavesChanged } from "../lib/savesChanged";
 import type { Itinerary } from "../types";
 import { CalendarPlus, ChevronDown, ChevronUp, Flag, House, Link2Off, Share2, Sparkles, WifiOff, X } from "lucide-react";
 import { downloadItineraryIcs } from "../lib/ics";
-import { computeTimeline, formatClock } from "../lib/itineraryTimeline";
-import LegRow from "./ItineraryLegRow";
+import { computeTimeline, formatClock, overnightStops } from "../lib/itineraryTimeline";
+import LegRow, { DayDivider } from "./ItineraryLegRow";
 import { shareLink } from "../lib/shareLink";
 import { showToast } from "../lib/toast";
 
@@ -123,15 +123,19 @@ export function ItineraryPanel({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
     void mutate(() => api.put("/reels/itinerary/settings", { originLabel: originDraft, startTime: startDraft }));
   }
 
-  // Timeline: clock time at each arrival/departure, accumulated from the start.
+  // Timeline: clock time at each arrival/departure, accumulated from the start;
+  // a place to stay before the last stop means a night there.
+  const overnight = itinerary ? overnightStops(itinerary.stops) : [];
   const { departAt, times } = itinerary
     ? computeTimeline(
         itinerary.startTime,
         itinerary.originLeg?.totalDurationMin ?? null,
         itinerary.stops.map((s) => s.stayMinutes),
-        itinerary.legs.map((l) => l.totalDurationMin)
+        itinerary.legs.map((l) => l.totalDurationMin),
+        overnight
       )
     : { departAt: 0, times: [] };
+  const multiDay = times.length > 0 && times[times.length - 1].day > 0;
 
   return (
     <>
@@ -234,6 +238,7 @@ export function ItineraryPanel({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
 
           {view === "list" && (
             <div className={busy ? "pointer-events-none opacity-60" : ""}>
+              {multiDay && <DayDivider day={0} />}
               <p className="flex items-center gap-2 text-xs font-semibold text-gray-700">
                 <span className="flex w-7 justify-center"><House className="h-4 w-4 text-gray-500" /></span>
                 {(!itinerary.originLabel || itinerary.originLocated) && (
@@ -248,8 +253,10 @@ export function ItineraryPanel({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
 
               {itinerary.stops.map((stop, i) => {
                 const leg = itinerary.legs[i];
+                const { day } = times[i];
                 return (
                   <div key={stop.id}>
+                    {multiDay && day !== (i === 0 ? 0 : times[i - 1].day) && <DayDivider day={day} />}
                     <div className="mt-1.5 flex gap-2">
                       <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white">
                         {i + 1}
@@ -288,26 +295,30 @@ export function ItineraryPanel({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
                         </div>
                         <p className="mt-0.5 text-xs tabular-nums text-gray-600">
                           {t("itinerary.arriveDepart", {
-                            arrive: formatClock(times[i].arrive, t),
-                            depart: formatClock(times[i].leave, t),
+                            arrive: formatClock(times[i].arrive, t, day),
+                            depart: formatClock(times[i].leave, t, day),
                           })}
                         </p>
-                        <label className="mt-1 flex items-center gap-1.5 text-[11px] text-gray-500">
-                          {t("itinerary.stayLabel")}
-                          <select
-                            value={stop.stayMinutes}
-                            onChange={(e) => setStay(stop.id, Number(e.target.value))}
-                            className="rounded border border-gray-200 bg-white px-1 py-0.5 text-[11px] text-gray-700"
-                          >
-                            {[...new Set([...STAY_OPTIONS, stop.stayMinutes])]
-                              .sort((a, b) => a - b)
-                              .map((m) => (
-                                <option key={m} value={m}>
-                                  {t("itinerary.stayMinutes", { minutes: m })}
-                                </option>
-                              ))}
-                          </select>
-                        </label>
+                        {overnight[i] ? (
+                          <p className="mt-1 text-[11px] font-semibold text-jz-red">{t("itinerary.overnight")}</p>
+                        ) : (
+                          <label className="mt-1 flex items-center gap-1.5 text-[11px] text-gray-500">
+                            {t("itinerary.stayLabel")}
+                            <select
+                              value={stop.stayMinutes}
+                              onChange={(e) => setStay(stop.id, Number(e.target.value))}
+                              className="rounded border border-gray-200 bg-white px-1 py-0.5 text-[11px] text-gray-700"
+                            >
+                              {[...new Set([...STAY_OPTIONS, stop.stayMinutes])]
+                                .sort((a, b) => a - b)
+                                .map((m) => (
+                                  <option key={m} value={m}>
+                                    {t("itinerary.stayMinutes", { minutes: m })}
+                                  </option>
+                                ))}
+                            </select>
+                          </label>
+                        )}
                       </div>
                     </div>
                     {leg && <LegRow leg={leg} />}
@@ -318,7 +329,9 @@ export function ItineraryPanel({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
               <p className="mt-3 flex items-center gap-2 text-xs font-semibold text-gray-700">
                 <span className="flex w-7 justify-center"><Flag className="h-4 w-4 text-gray-500" /></span>
                 <span className="tabular-nums">
-                  {t("itinerary.finish", { time: formatClock(times[times.length - 1].leave, t) })}
+                  {t("itinerary.finish", {
+                    time: formatClock(times[times.length - 1].leave, t, times[times.length - 1].day),
+                  })}
                 </span>
               </p>
             </div>

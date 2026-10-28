@@ -82,10 +82,10 @@ function autoPlan(stops: PlanStopInput[]): PlanResult {
 
 const LANGUAGE_NAMES: Record<string, string> = { ja: "Japanese", en: "English", zh: "Simplified Chinese", ko: "Korean" };
 
-const SYSTEM_PROMPT = `You plan a day trip for a traveler using Jaziba, a tourism app for Japan. You get the spots they saved (with coordinates, category and the poster's caption) and, optionally, their wishes.
+const SYSTEM_PROMPT = `You plan a trip for a traveler using Jaziba, a tourism app for Japan. You get the spots they saved (with coordinates, category and the poster's caption) and, optionally, their wishes.
 Return the visiting order (every spot exactly once), a sensible stay length for each in minutes (multiples of 15, between 15 and 240), a short practical note per spot, and a two-sentence summary of the plan.
 
-Order spots to avoid backtracking, using the coordinates; put meals near usual meal times and a place to stay at the end of the day. Base notes only on what the spot data says plus general, non-factual advice (for example "a good place for lunch"); do not state opening hours, prices, reservations, accessibility or seasonal facts that the data does not contain. Write the notes and summary in the requested language.`;
+Order spots to avoid backtracking, using the coordinates; put meals near usual meal times and a place to stay at the end of the day. The app treats a place to stay that is not the last stop as a night there, continuing the next morning at the start time, so with several places to stay plan one day per place to stay, each day ending at one (its stay length is ignored). Base notes only on what the spot data says plus general, non-factual advice (for example "a good place for lunch"); do not state opening hours, prices, reservations, accessibility or seasonal facts that the data does not contain. Write the notes and summary in the requested language.`;
 
 async function aiPlan(stops: PlanStopInput[], wishes: string, startTime: string, lang: string): Promise<PlanResult> {
   const ids = stops.map((s) => s.id);

@@ -169,7 +169,10 @@
     "stopSharing": "停止分享",
     "stopSharingConfirm": "要停用分享链接吗？已发送的链接将无法打开。",
     "stopSharingDone": "已停止分享",
-    "sharingNote": "分享中：知道链接的人可以查看此行程（不会显示出发地点）。"
+    "sharingNote": "分享中：知道链接的人可以查看此行程（不会显示出发地点）。",
+    "dayLabel": "第{{day}}天",
+    "dayTime": "第{{day}}天 {{time}}",
+    "overnight": "在此住一晚（次日早上按出发时间出发）"
   },
   "dashboard": {
     "tabPosts": "投稿",
