@@ -462,7 +462,9 @@
     "csvPlace": "장소",
     "csvCaption": "설명",
     "csvCategory": "카테고리",
-    "csvPostedBy": "게시자"
+    "csvPostedBy": "게시자",
+    "totalVisits": "방문 스탬프 수",
+    "sortVisits": "방문 스탬프 순"
   },
   "nationality": {
     "japan": "일본",

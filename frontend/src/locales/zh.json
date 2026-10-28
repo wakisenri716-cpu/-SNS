@@ -462,7 +462,9 @@
     "csvPlace": "地点",
     "csvCaption": "说明文字",
     "csvCategory": "类别",
-    "csvPostedBy": "投稿者"
+    "csvPostedBy": "投稿者",
+    "totalVisits": "到访印章数",
+    "sortVisits": "按到访印章"
   },
   "nationality": {
     "japan": "日本",

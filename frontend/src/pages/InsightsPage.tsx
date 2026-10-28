@@ -5,15 +5,15 @@ import { useAuth } from "../auth/AuthContext";
 import { REEL_CATEGORIES, type Demographics, type Reel, type TravelMode } from "../types";
 import { TRAVEL_MODE_LABEL_KEY } from "../components/TravelReportSection";
 import ModeIcon from "../components/ModeIcon";
-import { Bookmark, Download, Eye, Heart, MessageCircle, Timer } from "lucide-react";
+import { Bookmark, Download, Eye, Heart, MapPinCheck, MessageCircle, Timer } from "lucide-react";
 import { downloadCsv } from "../lib/csv";
 
-type SortKey = "views" | "likes" | "comments" | "saves" | "date";
+type SortKey = "views" | "likes" | "comments" | "saves" | "visits" | "date";
 
 // GET /reels/mine/trip-planning
 interface TripPlanning {
-  totals: { saves: number; travelReports: number };
-  byReel: Record<string, { saves: number; travelReports: number }>;
+  totals: { saves: number; travelReports: number; visits: number };
+  byReel: Record<string, { saves: number; travelReports: number; visits: number }>;
   origins: { originLabel: string; reportCount: number; modeCounts: Partial<Record<TravelMode, number>> }[];
   hiddenCount: number;
 }
@@ -93,6 +93,8 @@ export default function InsightsPage() {
       if (sortKey === "views") return b.viewCount - a.viewCount;
       if (sortKey === "likes") return b.likeCount - a.likeCount;
       if (sortKey === "comments") return b.commentCount - a.commentCount;
+      if (sortKey === "visits")
+        return (tripPlanning?.byReel[b.id]?.visits ?? 0) - (tripPlanning?.byReel[a.id]?.visits ?? 0);
       if (sortKey === "saves")
         return (tripPlanning?.byReel[b.id]?.saves ?? 0) - (tripPlanning?.byReel[a.id]?.saves ?? 0);
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -117,6 +119,7 @@ export default function InsightsPage() {
         t("insights.totalComments"),
         t("insights.totalSaves"),
         t("insights.totalTravelReports"),
+        t("insights.totalVisits"),
       ],
       sortedReels.map((r) => [
         new Date(r.createdAt).toLocaleDateString(i18n.language),
@@ -129,6 +132,7 @@ export default function InsightsPage() {
         r.commentCount,
         tripPlanning?.byReel[r.id]?.saves ?? 0,
         tripPlanning?.byReel[r.id]?.travelReports ?? 0,
+        tripPlanning?.byReel[r.id]?.visits ?? 0,
       ])
     );
   }
@@ -157,6 +161,7 @@ export default function InsightsPage() {
               <>
                 <SummaryCard label={t("insights.totalSaves")} value={tripPlanning.totals.saves} />
                 <SummaryCard label={t("insights.totalTravelReports")} value={tripPlanning.totals.travelReports} />
+                <SummaryCard label={t("insights.totalVisits")} value={tripPlanning.totals.visits} />
               </>
             )}
           </div>
@@ -271,6 +276,7 @@ export default function InsightsPage() {
                 <option value="likes">{t("insights.sortLikes")}</option>
                 <option value="comments">{t("insights.sortComments")}</option>
                 <option value="saves">{t("insights.sortSaves")}</option>
+                <option value="visits">{t("insights.sortVisits")}</option>
                 <option value="date">{t("insights.sortDate")}</option>
               </select>
             </div>
@@ -306,6 +312,9 @@ export default function InsightsPage() {
                         </span>
                         <span title={t("insights.totalTravelReports")}>
                           <Timer className="inline h-3.5 w-3.5 align-[-2px]" /> {tripPlanning.byReel[reel.id]?.travelReports ?? 0}
+                        </span>
+                        <span title={t("insights.totalVisits")}>
+                          <MapPinCheck className="inline h-3.5 w-3.5 align-[-2px]" /> {tripPlanning.byReel[reel.id]?.visits ?? 0}
                         </span>
                       </>
                     )}

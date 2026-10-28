@@ -465,7 +465,9 @@
     "csvPlace": "Place",
     "csvCaption": "Caption",
     "csvCategory": "Category",
-    "csvPostedBy": "Posted by"
+    "csvPostedBy": "Posted by",
+    "totalVisits": "Visit stamps",
+    "sortVisits": "Most visit stamps"
   },
   "nationality": {
     "japan": "Japan",

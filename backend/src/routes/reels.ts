@@ -426,23 +426,27 @@ router.get("/mine/trip-planning", requireAuth, requireRole("MUNICIPALITY", "COMP
   });
   const reelIds = reels.map((r) => r.id);
 
-  const [saveCounts, reports] = await Promise.all([
+  const [saveCounts, visitCounts, reports] = await Promise.all([
     prisma.savedReel.groupBy({ by: ["reelId"], where: { reelId: { in: reelIds } }, _count: { _all: true } }),
+    prisma.visit.groupBy({ by: ["reelId"], where: { reelId: { in: reelIds } }, _count: { _all: true } }),
     prisma.travelTimeReport.findMany({
       where: { reelId: { in: reelIds } },
       select: { reelId: true, userId: true, mode: true, durationMin: true, originLabel: true },
     }),
   ]);
 
-  const byReel: Record<string, { saves: number; travelReports: number }> = {};
-  for (const id of reelIds) byReel[id] = { saves: 0, travelReports: 0 };
+  const byReel: Record<string, { saves: number; travelReports: number; visits: number }> = {};
+  for (const id of reelIds) byReel[id] = { saves: 0, travelReports: 0, visits: 0 };
   for (const s of saveCounts) byReel[s.reelId].saves = s._count._all;
+  for (const v of visitCounts) byReel[v.reelId].visits = v._count._all;
   for (const r of reports) byReel[r.reelId].travelReports++;
 
   res.json({
     totals: {
       saves: saveCounts.reduce((sum, s) => sum + s._count._all, 0),
       travelReports: reports.length,
+      // スタンプラリー check-ins: people who were actually there.
+      visits: visitCounts.reduce((sum, v) => sum + v._count._all, 0),
     },
     byReel,
     ...summarizeOrigins(reports),

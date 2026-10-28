@@ -462,7 +462,9 @@
     "csvPlace": "場所",
     "csvCaption": "説明文",
     "csvCategory": "カテゴリ",
-    "csvPostedBy": "投稿者"
+    "csvPostedBy": "投稿者",
+    "totalVisits": "来訪スタンプ数",
+    "sortVisits": "来訪スタンプ順"
   },
   "nationality": {
     "japan": "日本",
