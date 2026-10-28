@@ -54,3 +54,16 @@ test("itinerary timeline: travel and stays accumulate, past midnight counts as t
   assert.deepEqual(splitClock(times[1].leave), { day: 1, time: "01:45" });
   assert.equal(computeTimeline("bad", null, [0], []).departAt, 9 * 60);
 });
+
+test("見頃: month runs wrap around the new year and format per language", async () => {
+  const { formatBestMonths, isInSeason, monthInJapan, monthRuns } = await import("../src/lib/season.ts");
+  assert.deepEqual(monthRuns([10, 5, 6]), [[5, 6], [10, 10]]);
+  assert.deepEqual(monthRuns([1, 2, 12]), [[12, 2]]);
+  assert.deepEqual(monthRuns([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]), [[1, 12]]);
+  assert.equal(formatBestMonths([5, 6, 10], "ja"), "5月–6月・10月");
+  assert.equal(formatBestMonths([12, 1], "en"), "Dec–Jan");
+  // 23:30 UTC on Mar 31 is already April in Japan.
+  const lateMarchUtc = new Date("2026-03-31T23:30:00Z");
+  assert.equal(monthInJapan(lateMarchUtc), 4);
+  assert.equal(isInSeason([4], lateMarchUtc), true);
+});

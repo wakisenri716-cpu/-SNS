@@ -1,6 +1,6 @@
 import { getTransitSuggestion } from "../services/maasProvider";
 import type { FollowedIds } from "./followState";
-import { parseTravelerTags } from "../types";
+import { parseBestMonths, parseTravelerTags } from "../types";
 
 export const reelInclude = {
   municipality: {
@@ -43,6 +43,7 @@ export async function serializeReel(
     caption: string;
     category: string;
     travelerTags: string;
+    bestMonths: string;
     locationName: string | null;
     locationLat: number | null;
     locationLng: number | null;
@@ -75,6 +76,7 @@ export async function serializeReel(
     caption: reel.caption,
     category: reel.category,
     travelerTags: parseTravelerTags(reel.travelerTags),
+    bestMonths: parseBestMonths(reel.bestMonths),
     locationName: reel.locationName,
     locationLat: reel.locationLat,
     locationLng: reel.locationLng,

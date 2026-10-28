@@ -273,3 +273,25 @@ test("comment reports: hidden after 3 reporters, still visible to author and mod
   assert.equal((await call("DELETE", `/api/reels/${reelId}/comments/${commentId}/reports`, undefined, municipalityToken)).status, 204);
   assert.equal(await visibleTo(), true);
 });
+
+test("見頃: posters set the months, and ?season=now lists only posts in season this month", async () => {
+  const municipalityToken = await login("demo-matsumoto@example.com");
+  const { monthInJapan } = await import("../lib/season");
+  const month = monthInJapan();
+  const { json: map } = await call("GET", "/api/reels/map");
+  const castle = map.items.find((r: any) => r.locationName === "松本城");
+  const bridge = map.items.find((r: any) => r.locationName === "上高地 河童橋");
+
+  const set = await call("PUT", `/api/reels/${castle.id}`, { bestMonths: [month, month, 13, "x"] }, municipalityToken);
+  assert.equal(set.status, 200);
+  assert.deepEqual(set.json.bestMonths, [month]);
+  // Every other month — e.g. "10,11,12" must not count as month 1.
+  const others = Array.from({ length: 12 }, (_, i) => i + 1).filter((m) => m !== month);
+  assert.equal((await call("PUT", `/api/reels/${bridge.id}`, { bestMonths: others }, municipalityToken)).status, 200);
+
+  const inSeason = await call("GET", "/api/reels?season=now", undefined, traveler);
+  const ids = inSeason.json.items.map((r: any) => r.id);
+  assert.ok(ids.includes(castle.id));
+  assert.ok(!ids.includes(bridge.id));
+  assert.ok(inSeason.json.items.every((r: any) => r.bestMonths.includes(month)));
+});

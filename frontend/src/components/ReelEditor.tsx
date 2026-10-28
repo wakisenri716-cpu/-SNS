@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { TravelerTagPicker } from "./TravelerTagChips";
+import { BestMonthsPicker } from "./BestMonths";
 import { REEL_CATEGORIES, type Reel, type ReelCategory, type TravelerTag } from "../types";
 
 const inputClass =
@@ -25,6 +26,7 @@ export default function ReelEditor({
   const [lat, setLat] = useState(reel.locationLat?.toString() ?? "");
   const [lng, setLng] = useState(reel.locationLng?.toString() ?? "");
   const [tags, setTags] = useState<TravelerTag[]>(reel.travelerTags);
+  const [bestMonths, setBestMonths] = useState<number[]>(reel.bestMonths ?? []);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,6 +48,7 @@ export default function ReelEditor({
         locationLat: latNum,
         locationLng: lngNum,
         travelerTags: tags,
+        bestMonths,
       });
       onSaved(data);
       onClose();
@@ -99,6 +102,12 @@ export default function ReelEditor({
             <TravelerTagPicker value={tags} onChange={setTags} />
           </div>
           <p className="mt-1 text-[11px] font-normal leading-relaxed text-gray-500">{t("reelEditor.tagsNote")}</p>
+        </div>
+        <div className="text-xs font-medium text-gray-500">
+          {t("season.pickerLabel")}
+          <div className="mt-1">
+            <BestMonthsPicker value={bestMonths} onChange={setBestMonths} />
+          </div>
         </div>
         {error && <p className="text-xs text-jz-red">{error}</p>}
         <div className="flex justify-end gap-2">

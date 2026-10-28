@@ -6,6 +6,7 @@ import AutoplayVideo from "./AutoplayVideo";
 import Avatar from "./Avatar";
 import HeartBurst from "./HeartBurst";
 import ShareButton from "./ShareButton";
+import { SeasonBadge } from "./BestMonths";
 import TranslatedCaption from "./TranslatedCaption";
 import { toggleSound, useSoundOn } from "../lib/videoPlayback";
 import { useTapGestures } from "../lib/useTapGestures";
@@ -110,6 +111,11 @@ export default function FeedPost({
         {/* Place + directions, bottom */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end gap-2 bg-gradient-to-t from-black/65 via-black/25 to-transparent p-3 pt-16">
           <div className="min-w-0 flex-1 text-white">
+            {reel.bestMonths?.length > 0 && (
+              <div className="mb-1.5">
+                <SeasonBadge months={reel.bestMonths} dark />
+              </div>
+            )}
             {reel.locationName && (
               <p className="flex items-center gap-1 truncate text-[15px] font-bold drop-shadow">
                 <MapPin className="h-4 w-4 shrink-0" />

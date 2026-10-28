@@ -8,7 +8,7 @@ import { getFollowedIds } from "../lib/followState";
 import { geocode, getRouteEstimate, getStaticMapImage, haversineMeters, isGoogleMapsConfigured } from "../services/googleMaps";
 import { getTransitSuggestion } from "../services/maasProvider";
 import { parseDepartureTime } from "../lib/parseDepartureTime";
-import { AGE_BUCKETS, REEL_CATEGORIES, TRAVEL_MODES, ageBucketFromBirthYear, parseTravelerTags } from "../types";
+import { AGE_BUCKETS, REEL_CATEGORIES, TRAVEL_MODES, ageBucketFromBirthYear, parseBestMonths, parseTravelerTags } from "../types";
 import { POINTS_PER_TRAVEL_REPORT, getUserPoints } from "../lib/points";
 import { hasTravelStyle, scoreReel } from "../lib/personalize";
 import { notifyFollowersOfNewPost, notifyPoster } from "../lib/notifications";
@@ -19,6 +19,7 @@ import { planTrip } from "../services/tripPlanner";
 import { isClaudeConfigured, logClaudeError } from "../services/claude";
 import { translateCaption } from "../services/translate";
 import { buildItinerary } from "../lib/itinerary";
+import { inSeasonWhere, monthInJapan } from "../lib/season";
 import { randomBytes } from "node:crypto";
 
 const PERSONALIZED_POOL = 100;
@@ -38,13 +39,19 @@ const router = Router();
 
 
 // Feed: main "おすすめ" reel feed, newest first (paginated). Optionally filtered to
-// a single category tab (自然/文化/アクティビティー/宿/飲食店) via ?category=.
+// a single category tab (自然/文化/アクティビティー/宿/飲食店) via ?category=,
+// or to posts whose poster-set 見頃 includes this month via ?season=now.
 router.get("/", optionalAuth, async (req, res) => {
   const cursor = typeof req.query.cursor === "string" ? req.query.cursor : undefined;
   const category =
     typeof req.query.category === "string" && (REEL_CATEGORIES as readonly string[]).includes(req.query.category)
       ? req.query.category
       : undefined;
+  const inSeason = req.query.season === "now";
+  const where = {
+    ...(category ? { category } : {}),
+    ...(inSeason ? inSeasonWhere(monthInJapan()) : {}),
+  };
   const take = 10;
 
   const followed = await getFollowedIds(req.auth?.userId);
@@ -54,7 +61,7 @@ router.get("/", optionalAuth, async (req, res) => {
   // newest-first), each tagged with why. Ranking needs the whole candidate
   // set, so this returns the latest PERSONALIZED_POOL posts in one page
   // instead of cursor-paginating.
-  if (req.auth && !category && !cursor) {
+  if (req.auth && !category && !inSeason && !cursor) {
     const style = await prisma.user.findUnique({
       where: { id: req.auth.userId },
       select: { travelCompanion: true, needsBarrierFree: true, needsMultilingual: true, favoriteCategories: true },
@@ -85,7 +92,7 @@ router.get("/", optionalAuth, async (req, res) => {
   const reels = await prisma.reel.findMany({
     take,
     ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-    ...(category ? { where: { category } } : {}),
+    where,
     orderBy: { createdAt: "desc" },
     include: {
       ...reelInclude,
@@ -590,11 +597,13 @@ router.post("/:id/travel-reports", writeLimiter, requireAuth, requireRole("USER"
 });
 
 const travelerTagsField = z.preprocess(parseTravelerTags, z.array(z.string()));
+const bestMonthsField = z.preprocess(parseBestMonths, z.array(z.number()));
 
 const createSchema = z.object({
   caption: z.string().max(2000).optional().default(""),
   category: z.enum(REEL_CATEGORIES),
   travelerTags: travelerTagsField.optional().default([]),
+  bestMonths: bestMonthsField.optional().default([]),
   locationName: z.string().max(200).optional(),
   locationLat: z.coerce.number().min(-90).max(90).optional(),
   locationLng: z.coerce.number().min(-180).max(180).optional(),
@@ -641,6 +650,7 @@ router.post(
         caption: parsed.data.caption,
         category: parsed.data.category,
         travelerTags: parsed.data.travelerTags.join(","),
+        bestMonths: parsed.data.bestMonths.join(","),
         locationName: parsed.data.locationName,
         locationLat,
         locationLng,
@@ -664,6 +674,7 @@ const updateSchema = z.object({
   caption: z.string().max(2000).optional(),
   category: z.enum(REEL_CATEGORIES).optional(),
   travelerTags: travelerTagsField.optional(),
+  bestMonths: bestMonthsField.optional(),
   locationName: z
     .string()
     .max(200)
@@ -695,7 +706,7 @@ router.put("/:id", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (r
     return res.status(404).json({ error: "投稿が見つかりません" });
   }
 
-  const { travelerTags, locationLat, locationLng, ...rest } = parsed.data;
+  const { travelerTags, bestMonths, locationLat, locationLng, ...rest } = parsed.data;
   const coords: { locationLat?: number | null; locationLng?: number | null } = {};
   if (locationLat !== undefined || locationLng !== undefined) {
     const latMissing = locationLat == null;
@@ -723,7 +734,12 @@ router.put("/:id", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (r
 
   const updated = await prisma.reel.update({
     where: { id: reel.id },
-    data: { ...rest, ...coords, ...(travelerTags ? { travelerTags: travelerTags.join(",") } : {}) },
+    data: {
+      ...rest,
+      ...coords,
+      ...(travelerTags ? { travelerTags: travelerTags.join(",") } : {}),
+      ...(bestMonths ? { bestMonths: bestMonths.join(",") } : {}),
+    },
     include: reelInclude,
   });
   // Cached translations no longer match an edited caption.

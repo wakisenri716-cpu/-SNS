@@ -148,6 +148,9 @@ model Reel {
   // Comma-separated subset of TRAVELER_TAGS (see src/types.ts), e.g.
   // "barrierFree,familyFriendly" — who/what the spot suits, set by the poster.
   travelerTags   String   @default("")
+  // 見頃: comma-separated months (1–12) when the place is at its best, e.g.
+  // "4,5" for spring flowers — chosen by the poster. Empty means not stated.
+  bestMonths     String   @default("")
   viewCount      Int      @default(0)
   createdAt      DateTime @default(now())
 

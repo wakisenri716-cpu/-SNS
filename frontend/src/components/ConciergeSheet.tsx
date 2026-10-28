@@ -13,7 +13,7 @@ import type { Reel, TravelerTag } from "../types";
 interface Pick {
   reel: Reel;
   reason: string | null;
-  matched: { category: boolean; tags: TravelerTag[]; text: boolean } | null;
+  matched: { category: boolean; tags: TravelerTag[]; text: boolean; season?: boolean } | null;
 }
 
 interface Turn {
@@ -52,6 +52,7 @@ function PickCard({ pick, onSave }: { pick: Pick; onSave: (reel: Reel) => void }
       pick.matched?.category ? t("concierge.matchCategory", { category: t(`category.${reel.category}`) }) : null,
       ...(pick.matched?.tags ?? []).map((tag) => t(`travelerTag.${tag}`)),
       pick.matched?.text ? t("concierge.matchPlace") : null,
+      pick.matched?.season ? t("concierge.matchSeason") : null,
     ]
       .filter(Boolean)
       .join("・");

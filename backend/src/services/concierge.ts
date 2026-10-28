@@ -19,6 +19,8 @@ export interface ConciergeCandidate {
   locationName: string | null;
   municipalityName: string;
   prefecture: string;
+  /** 見頃 months (1–12) set by the poster; empty if not stated. */
+  bestMonths: number[];
 }
 
 export interface ConciergePick {
@@ -26,7 +28,7 @@ export interface ConciergePick {
   /** Claude's one-line reason (AI mode only). */
   reason: string | null;
   /** What matched (keyword mode), so the UI can explain it in any language. */
-  matched: { category: boolean; tags: TravelerTag[]; text: boolean } | null;
+  matched: { category: boolean; tags: TravelerTag[]; text: boolean; season: boolean } | null;
 }
 
 /** An earlier exchange in the same conversation, oldest first. */
@@ -64,6 +66,26 @@ const TAG_WORDS: Record<TravelerTag, string[]> = {
   multilingual: ["外国語", "英語", "多言語", "海外", "english", "multilingual", "外语", "英语", "외국어", "영어"],
 };
 
+// When the traveler wants to go: "4月", "秋", "autumn"... -> months.
+const SEASON_WORDS: [string[], number[]][] = [
+  [["春", "spring", "春天", "봄", "桜", "花見", "cherry blossom", "樱花", "벚꽃"], [3, 4, 5]],
+  [["夏", "summer", "夏天", "여름"], [6, 7, 8]],
+  [["秋", "autumn", "fall", "秋天", "가을", "紅葉", "红叶", "단풍"], [9, 10, 11]],
+  [["冬", "winter", "冬天", "겨울"], [12, 1, 2]],
+];
+const MONTH_NAMES = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+
+function wantedMonths(message: string) {
+  const text = message.toLowerCase();
+  const months = new Set<number>();
+  for (const [words, ms] of SEASON_WORDS) if (words.some((w) => text.includes(w))) ms.forEach((m) => months.add(m));
+  // "4月" / "10月" (ja, zh), "4월" (ko)
+  for (const m of text.matchAll(/(1[0-2]|[1-9])\s*[月월]/g)) months.add(Number(m[1]));
+  // ("may" is skipped: far more often "may I..." than the month.)
+  MONTH_NAMES.forEach((name, i) => name !== "may" && new RegExp(`\\b${name}\\b`).test(text) && months.add(i + 1));
+  return months;
+}
+
 // "他には？" / "something else?": the traveler wants different posts than the
 // ones already shown.
 const MORE_WORDS = ["他に", "ほかに", "他の", "ほかの", "別の", "違う", "其他", "别的", "还有", "다른"];
@@ -77,6 +99,7 @@ function keywordScore(message: string, candidates: ConciergeCandidate[]) {
   const text = message.toLowerCase();
   const wantedCategories = REEL_CATEGORIES.filter((c) => CATEGORY_WORDS[c].some((w) => text.includes(w.toLowerCase())));
   const wantedTags = TRAVELER_TAGS.filter((t) => TAG_WORDS[t].some((w) => text.includes(w.toLowerCase())));
+  const months = wantedMonths(message);
   // Free-text hits on place names: any 2+ character run of the message that
   // appears in the post's place, municipality, prefecture or caption.
   const terms = message
@@ -94,8 +117,9 @@ function keywordScore(message: string, candidates: ConciergeCandidate[]) {
       .filter((n) => n.length >= 2);
     const textHit =
       terms.some((term) => haystack.includes(term.toLowerCase())) || names.some((n) => text.includes(n.toLowerCase()));
-    const score = (category ? 3 : 0) + tags.length * 2 + (textHit ? 4 : 0);
-    return { c, score, matched: { category, tags, text: textHit } };
+    const season = c.bestMonths.some((m) => months.has(m));
+    const score = (category ? 3 : 0) + tags.length * 2 + (textHit ? 4 : 0) + (season ? 3 : 0);
+    return { c, score, matched: { category, tags, text: textHit, season } };
   });
 
   return scored.filter((s) => s.score > 0).sort((a, b) => b.score - a.score);
@@ -107,7 +131,7 @@ function keywordConcierge(message: string, candidates: ConciergeCandidate[], his
   const previous = history.at(-1);
   // A follow-up that names no kind of place and no place itself ("子連れだと？",
   // "他には？") refines the question before it, so read the two together.
-  const namesSomething = scored.some((s) => s.matched.category || s.matched.text);
+  const namesSomething = scored.some((s) => s.matched.category || s.matched.text || s.matched.season);
   if (previous && (!namesSomething || others)) {
     const combined = keywordScore(`${previous.question} ${message}`, candidates);
     if (combined.length > 0) scored = combined;
@@ -127,7 +151,7 @@ const LANGUAGE_NAMES: Record<string, string> = { ja: "Japanese", en: "English", 
 const SYSTEM_PROMPT = `You are the travel concierge of Jaziba, a tourism social network where only municipalities and local businesses post short videos about places in Japan.
 A traveler describes the kind of trip they want. You are given the posts currently on Jaziba, as JSON. Choose the posts that best fit the request (at most ${MAX_PICKS}, best first) and explain each choice in one short sentence.
 
-Ground everything in the post data you are given: each reason must refer only to what that post's caption, place, category or tags actually say. Do not add facts about the places (opening hours, prices, access, accessibility, seasons) that the data does not state, and do not suggest places that are not in the list. If nothing fits, return no picks and say so kindly in the reply, suggesting what the traveler could try asking instead.
+Ground everything in the post data you are given: each reason must refer only to what that post's caption, place, category, tags or best_months (the months the poster says it is at its best; empty means not stated) actually say. Do not add facts about the places (opening hours, prices, access, accessibility, seasons) that the data does not state, and do not suggest places that are not in the list. If nothing fits, return no picks and say so kindly in the reply, suggesting what the traveler could try asking instead.
 
 The traveler may be following up on earlier messages in the same conversation, which you are given with the posts you picked then. Read the new request in that context (for example "with kids?" refines the previous wish), and when they ask for something else or more, prefer posts you have not picked yet.
 
@@ -147,6 +171,7 @@ async function aiConcierge(
     prefecture: c.prefecture,
     category: c.category,
     tags: c.travelerTags,
+    best_months: c.bestMonths,
     caption: c.caption.slice(0, 280),
   }));
 

@@ -9,6 +9,7 @@ import ShareButton from "../components/ShareButton";
 import MunicipalityStayInfo from "../components/MunicipalityStayInfo";
 import VisitStampCard from "../components/VisitStampCard";
 import { TravelerTagChips } from "../components/TravelerTagChips";
+import { SeasonBadge } from "../components/BestMonths";
 import TravelReportSection, { normalizeOrigin } from "../components/TravelReportSection";
 import { formatDateTime, localDateTimeToIso, nowAsDatetimeLocalValue } from "../lib/departureTime";
 import {
@@ -336,8 +337,9 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
           <p className="text-base font-bold text-white drop-shadow lg:text-xl">
             {reel.locationName || reel.municipality.name}
           </p>
-          {reel.travelerTags.length > 0 && (
-            <div className="mt-1.5">
+          {(reel.travelerTags.length > 0 || reel.bestMonths?.length > 0) && (
+            <div className="mt-1.5 flex flex-wrap items-center gap-1">
+              <SeasonBadge months={reel.bestMonths ?? []} dark />
               <TravelerTagChips tags={reel.travelerTags} dark />
             </div>
           )}

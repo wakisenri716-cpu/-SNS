@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { REEL_CATEGORIES, type Reel, type ReelCategory, type TravelerTag } from "../types";
 import { TravelerTagPicker } from "./TravelerTagChips";
+import { BestMonthsPicker } from "./BestMonths";
 
 const inputClass =
   "rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-gray-400";
@@ -17,6 +18,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
   const [caption, setCaption] = useState("");
   const [category, setCategory] = useState<ReelCategory>("nature");
   const [travelerTags, setTravelerTags] = useState<TravelerTag[]>([]);
+  const [bestMonths, setBestMonths] = useState<number[]>([]);
   const [locationName, setLocationName] = useState("");
   const [locationLat, setLocationLat] = useState("");
   const [locationLng, setLocationLng] = useState("");
@@ -44,6 +46,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
       fd.append("caption", caption);
       fd.append("category", category);
       fd.append("travelerTags", travelerTags.join(","));
+      fd.append("bestMonths", bestMonths.join(","));
       if (locationName) fd.append("locationName", locationName);
       if (locationLat) fd.append("locationLat", locationLat);
       if (locationLng) fd.append("locationLng", locationLng);
@@ -101,6 +104,12 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
         {t("reelUploader.travelerTagsLabel")}
         <div className="mt-1">
           <TravelerTagPicker value={travelerTags} onChange={setTravelerTags} />
+        </div>
+      </div>
+      <div className="text-xs font-medium text-gray-500">
+        {t("season.pickerLabel")}
+        <div className="mt-1">
+          <BestMonthsPicker value={bestMonths} onChange={setBestMonths} />
         </div>
       </div>
       <div className="grid grid-cols-3 gap-2">

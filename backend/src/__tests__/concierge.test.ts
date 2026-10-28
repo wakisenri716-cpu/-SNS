@@ -5,9 +5,9 @@ import { runConcierge, type ConciergeCandidate } from "../services/concierge";
 delete process.env.ANTHROPIC_API_KEY;
 
 const posts: ConciergeCandidate[] = [
-  { id: "castle", caption: "国宝 松本城", category: "culture", travelerTags: ["familyFriendly"], locationName: "松本城", municipalityName: "松本市", prefecture: "長野県" },
-  { id: "soba", caption: "信州そばのランチ", category: "restaurant", travelerTags: ["couples"], locationName: "五千尺キッチン", municipalityName: "松本市", prefecture: "長野県" },
-  { id: "bridge", caption: "穂高連峰", category: "nature", travelerTags: ["familyFriendly", "couples"], locationName: "上高地 河童橋", municipalityName: "松本市", prefecture: "長野県" },
+  { id: "castle", caption: "国宝 松本城", category: "culture", travelerTags: ["familyFriendly"], locationName: "松本城", municipalityName: "松本市", prefecture: "長野県", bestMonths: [4] },
+  { id: "soba", caption: "信州そばのランチ", category: "restaurant", travelerTags: ["couples"], locationName: "五千尺キッチン", municipalityName: "松本市", prefecture: "長野県", bestMonths: [] },
+  { id: "bridge", caption: "穂高連峰", category: "nature", travelerTags: ["familyFriendly", "couples"], locationName: "上高地 河童橋", municipalityName: "松本市", prefecture: "長野県", bestMonths: [5, 6, 10] },
 ];
 
 test("without an API key it answers in keyword mode, never as AI", async () => {
@@ -15,7 +15,7 @@ test("without an API key it answers in keyword mode, never as AI", async () => {
   assert.equal(result.mode, "keyword");
   assert.equal(result.reply, null);
   assert.equal(result.picks[0].id, "soba");
-  assert.deepEqual(result.picks[0].matched, { category: true, tags: ["couples"], text: false });
+  assert.deepEqual(result.picks[0].matched, { category: true, tags: ["couples"], text: false, season: false });
 });
 
 test("a place named inside a sentence counts as a match", async () => {
@@ -38,7 +38,7 @@ test("a follow-up that names nothing is read with the previous question", async 
   const followUp = await runConcierge("子連れだと？", "ja", posts, history);
   assert.equal(followUp.picks[0].id, "castle");
   // Castle (from the first question) and family-friendly (from the follow-up).
-  assert.deepEqual(followUp.picks[0].matched, { category: true, tags: ["familyFriendly"], text: false });
+  assert.deepEqual(followUp.picks[0].matched, { category: true, tags: ["familyFriendly"], text: false, season: false });
 });
 
 test("asking for something else skips posts already shown", async () => {
@@ -51,4 +51,18 @@ test("asking for something else skips posts already shown", async () => {
   // "mother" is not "other".
   const plain = await runConcierge("trip with my mother to a castle", "en", posts, history);
   assert.equal(plain.picks[0].id, "castle");
+});
+
+test("seasons and months match the poster's 見頃", async () => {
+  assert.deepEqual(
+    (await runConcierge("秋に紅葉を見に行きたい", "ja", posts)).picks.map((p) => p.id),
+    ["bridge"]
+  );
+  assert.equal((await runConcierge("4月に行くならどこ？", "ja", posts)).picks[0].id, "castle");
+  assert.equal((await runConcierge("somewhere nice in april", "en", posts)).picks[0].id, "castle");
+  // "10月" is October, not January.
+  assert.deepEqual(
+    (await runConcierge("10月", "ja", posts)).picks.map((p) => p.id),
+    ["bridge"]
+  );
 });

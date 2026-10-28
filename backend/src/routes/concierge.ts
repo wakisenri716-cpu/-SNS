@@ -6,7 +6,7 @@ import { conciergeLimiter } from "../middleware/rateLimit";
 import { getFollowedIds } from "../lib/followState";
 import { reelInclude, serializeReel } from "../lib/reelSerializer";
 import { isAiConciergeConfigured, runConcierge } from "../services/concierge";
-import { parseTravelerTags } from "../types";
+import { parseBestMonths, parseTravelerTags } from "../types";
 
 const router = Router();
 
@@ -61,6 +61,7 @@ router.post("/", conciergeLimiter, optionalAuth, async (req, res) => {
       locationName: r.locationName,
       municipalityName: r.company?.name ?? r.municipality.name,
       prefecture: r.municipality.prefecture,
+      bestMonths: parseBestMonths(r.bestMonths),
     })),
     parsed.data.history
   );

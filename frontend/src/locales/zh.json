@@ -446,7 +446,8 @@
     "restaurant": "餐饮店",
     "saved": "收藏",
     "following": "关注中",
-    "nearby": "附近"
+    "nearby": "附近",
+    "season": "当季推荐"
   },
   "insights": {
     "heading": "投稿数据洞察",
@@ -632,7 +633,8 @@
     "matchPlace": "地名一致",
     "error": "查找失败，请稍后再试。",
     "newChat": "开始新的咨询",
-    "followUpHint": "可以继续追问，例如“带孩子呢？”“还有别的吗？”"
+    "followUpHint": "可以继续追问，例如“带孩子呢？”“还有别的吗？”",
+    "matchSeason": "季节合适"
   },
   "stories": {
     "tapHint": "点右侧下一个，点左侧上一个，长按暂停",
@@ -775,5 +777,11 @@
     "timeNote": "时间按{{time}}到达第一个地点计算。",
     "addAll": "将{{count}}个地点全部加入我的行程",
     "loginToAdd": "登录后加入我的行程"
+  },
+  "season": {
+    "now": "正值最佳季节",
+    "months": "最佳季节 {{months}}",
+    "pickerLabel": "最佳月份（可选）",
+    "feedEmpty": "本月还没有标注为最佳季节的帖子。发布者设置最佳月份后会显示在这里。"
   }
 }

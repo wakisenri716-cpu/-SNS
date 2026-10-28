@@ -8,6 +8,7 @@ import HeartBurst from "./HeartBurst";
 import CommentsSheet from "./CommentsSheet";
 import ShareButton from "./ShareButton";
 import { TravelerTagChips } from "./TravelerTagChips";
+import { SeasonBadge } from "./BestMonths";
 import { Bookmark, Heart, MapPin, MessageCircle, Navigation, Play, Sparkles, Volume2, VolumeX, X } from "lucide-react";
 import { toggleSound, useSoundOn } from "../lib/videoPlayback";
 import { useTapGestures } from "../lib/useTapGestures";
@@ -123,8 +124,9 @@ function ReelOverlayInfo({
             </span>
           </p>
         )}
-        {reel.travelerTags.length > 0 && (
-          <div className="mt-2">
+        {(reel.travelerTags.length > 0 || reel.bestMonths?.length > 0) && (
+          <div className="mt-2 flex flex-wrap items-center gap-1">
+            <SeasonBadge months={reel.bestMonths ?? []} dark />
             <TravelerTagChips tags={reel.travelerTags} dark />
           </div>
         )}

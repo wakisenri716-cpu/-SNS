@@ -30,7 +30,7 @@ interface SeedMunicipality {
   nearestStationName: string;
   nearestStationLat: number;
   nearestStationLng: number;
-  reels: { caption: string; locationName: string; lat: number; lng: number; category: string; video: string; tags: string[] }[];
+  reels: { caption: string; locationName: string; lat: number; lng: number; category: string; video: string; tags: string[]; bestMonths?: number[] }[];
 }
 
 // Single real destination (not a placeholder town): 上高地 (Kamikochi), the
@@ -71,8 +71,8 @@ const MUNICIPALITIES: SeedMunicipality[] = [
     // wrong barrier-free tag could genuinely mislead someone, so the seed
     // leaves those for the municipality to set.
     reels: [
-      { caption: "国宝 松本城。現存する五重六階の天守としては日本最古です。", locationName: "松本城", lat: 36.2391, lng: 137.9691, category: "culture", video: "matsumotojo.webm", tags: ["familyFriendly", "friends"] },
-      { caption: "河童橋から望む穂高連峰は圧巻です。", locationName: "上高地 河童橋", lat: 36.251, lng: 137.6389, category: "nature", video: "kamikochi.webm", tags: ["familyFriendly", "couples", "friends"] },
+      { caption: "国宝 松本城。現存する五重六階の天守としては日本最古です。", locationName: "松本城", lat: 36.2391, lng: 137.9691, category: "culture", video: "matsumotojo.webm", tags: ["familyFriendly", "friends"], bestMonths: [4] },
+      { caption: "河童橋から望む穂高連峰は圧巻です。", locationName: "上高地 河童橋", lat: 36.251, lng: 137.6389, category: "nature", video: "kamikochi.webm", tags: ["familyFriendly", "couples", "friends"], bestMonths: [5, 6, 10] },
       { caption: "河童橋を眺めながら信州そばのランチはいかが？", locationName: "五千尺キッチン", lat: 36.2508, lng: 137.6387, category: "restaurant", video: "gosenjaku.webm", tags: ["couples", "friends"] },
       { caption: "大正池のほとりに佇む、上高地を代表するクラシックホテルです。", locationName: "上高地帝国ホテル", lat: 36.2427, lng: 137.6284, category: "lodging", video: "teikoku.webm", tags: ["couples"] },
     ],
@@ -150,6 +150,7 @@ export async function seedIfEmpty() {
           caption: r.caption,
           category: r.category,
           travelerTags: r.tags.join(","),
+          bestMonths: (r.bestMonths ?? []).join(","),
           locationName: r.locationName,
           locationLat: r.lat,
           locationLng: r.lng,

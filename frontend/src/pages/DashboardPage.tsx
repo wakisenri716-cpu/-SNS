@@ -381,6 +381,7 @@ function PostsGrid({
     <div className="grid grid-cols-3 gap-2 p-3 lg:grid-cols-4 lg:gap-3 lg:p-4">
       <button
         onClick={onUpload}
+        aria-label={t("reelUploader.heading")}
         className="flex aspect-square w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-300 hover:border-gray-400 hover:text-gray-600"
       >
         <span className="text-4xl leading-none">＋</span>
@@ -482,6 +483,7 @@ export default function DashboardPage() {
         ) : (
           <button
             onClick={() => setShowUploader(true)}
+            aria-label={t("reelUploader.heading")}
             className="flex h-full w-full items-center justify-center text-gray-300 hover:text-gray-600"
           >
             <span className="text-5xl leading-none">＋</span>

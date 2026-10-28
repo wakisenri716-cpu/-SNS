@@ -446,7 +446,8 @@
     "restaurant": "음식점",
     "saved": "저장됨",
     "following": "팔로잉",
-    "nearby": "가까운 곳"
+    "nearby": "가까운 곳",
+    "season": "지금이 제철"
   },
   "insights": {
     "heading": "게시물 인사이트",
@@ -632,7 +633,8 @@
     "matchPlace": "장소 이름 일치",
     "error": "찾지 못했어요. 잠시 후 다시 시도해 주세요.",
     "newChat": "새 상담 시작",
-    "followUpHint": "\"아이와 함께라면?\", \"다른 곳은?\"처럼 이어서 물어볼 수 있어요"
+    "followUpHint": "\"아이와 함께라면?\", \"다른 곳은?\"처럼 이어서 물어볼 수 있어요",
+    "matchSeason": "제철이 맞음"
   },
   "stories": {
     "tapHint": "오른쪽을 탭하면 다음, 왼쪽은 이전, 길게 누르면 일시정지",
@@ -775,5 +777,11 @@
     "timeNote": "{{time}}에 첫 장소에 도착하는 것으로 계산했습니다.",
     "addAll": "{{count}}곳을 모두 내 일정에 추가",
     "loginToAdd": "로그인하고 내 일정에 추가"
+  },
+  "season": {
+    "now": "지금이 제철",
+    "months": "제철 {{months}}",
+    "pickerLabel": "제철 월(선택)",
+    "feedEmpty": "이번 달이 제철인 게시물이 아직 없습니다. 게시자가 제철 월을 설정하면 여기에 표시됩니다."
   }
 }

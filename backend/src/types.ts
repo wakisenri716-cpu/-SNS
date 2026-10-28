@@ -26,6 +26,13 @@ export function parseTravelerTags(input: unknown): TravelerTag[] {
   return TRAVELER_TAGS.filter((tag) => wanted.has(tag));
 }
 
+// 見頃 months, 1–12, sorted and deduplicated; anything else is dropped.
+export function parseBestMonths(input: unknown): number[] {
+  const raw = Array.isArray(input) ? input : typeof input === "string" ? input.split(",") : [];
+  const months = new Set(raw.map((v) => Number(String(v).trim())).filter((m) => Number.isInteger(m) && m >= 1 && m <= 12));
+  return [...months].sort((a, b) => a - b);
+}
+
 // Self-reported at registration or from Settings (optional). Covers Japan's top
 // inbound-tourism source countries plus a few other common ones, with "other" as
 // a catch-all — see GET /reels/mine/demographics for how this is aggregated.

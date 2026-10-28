@@ -139,6 +139,8 @@ export interface Reel {
   caption: string;
   category: ReelCategory;
   travelerTags: TravelerTag[];
+  // 見頃 months (1–12) set by the poster; empty if not stated.
+  bestMonths: number[];
   locationName: string | null;
   locationLat: number | null;
   locationLng: number | null;

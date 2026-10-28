@@ -22,7 +22,8 @@ import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import WelcomeIntro from "../components/WelcomeIntro";
 import { REEL_CATEGORIES, type Reel } from "../types";
 
-const CATEGORY_TABS = ["all", "nearby", ...REEL_CATEGORIES] as const;
+// "season" = 今が見頃: posts whose poster-set best months include this month.
+const CATEGORY_TABS = ["all", "nearby", "season", ...REEL_CATEGORIES] as const;
 const SPECIAL_TABS = ["saved", "following"] as const;
 type Tab = (typeof CATEGORY_TABS)[number] | (typeof SPECIAL_TABS)[number];
 
@@ -41,7 +42,10 @@ function feedRequest(tab: Tab, cursor?: string): Promise<{ data: { items: Reel[]
   if (tab === "saved") return api.get("/reels/saved");
   if (tab === "following") return api.get("/reels/following");
   return api.get("/reels", {
-    params: { ...(tab === "all" ? {} : { category: tab }), ...(cursor ? { cursor } : {}) },
+    params: {
+      ...(tab === "all" ? {} : tab === "season" ? { season: "now" } : { category: tab }),
+      ...(cursor ? { cursor } : {}),
+    },
   });
 }
 
@@ -322,7 +326,9 @@ export default function FeedPage() {
               ? t("feed.emptyFollowing")
               : tab === "nearby" && locationError
                 ? t("feed.nearbyNoLocation")
-                : t("feed.empty")}
+                : tab === "season"
+                  ? t("season.feedEmpty")
+                  : t("feed.empty")}
         </p>
       ) : (
         <div className="pb-6 pt-3">

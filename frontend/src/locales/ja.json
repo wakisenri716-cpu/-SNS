@@ -446,7 +446,8 @@
     "restaurant": "飲食店",
     "saved": "保存中",
     "following": "フォロー中",
-    "nearby": "近く"
+    "nearby": "近く",
+    "season": "今が見頃"
   },
   "insights": {
     "heading": "投稿インサイト",
@@ -632,7 +633,8 @@
     "matchPlace": "場所の名前が一致",
     "error": "うまく探せませんでした。少し時間をおいてもう一度お試しください。",
     "newChat": "新しい相談をはじめる",
-    "followUpHint": "続けて「子連れだと？」「他には？」のように聞けます"
+    "followUpHint": "続けて「子連れだと？」「他には？」のように聞けます",
+    "matchSeason": "見頃が合う"
   },
   "stories": {
     "tapHint": "右をタップで次へ、左で前へ、長押しで一時停止",
@@ -775,5 +777,11 @@
     "timeNote": "時刻は{{time}}に最初の場所へ着く想定です。",
     "addAll": "{{count}}か所をまとめてしおりに追加",
     "loginToAdd": "ログインして自分のしおりに追加"
+  },
+  "season": {
+    "now": "今が見頃",
+    "months": "見頃 {{months}}",
+    "pickerLabel": "見頃の月（任意）",
+    "feedEmpty": "今月が見頃の投稿はまだありません。投稿者が見頃の月を設定すると、ここに表示されます。"
   }
 }

@@ -448,7 +448,8 @@
     "restaurant": "Restaurants",
     "saved": "Saved",
     "following": "Following",
-    "nearby": "Nearby"
+    "nearby": "Nearby",
+    "season": "In season"
   },
   "insights": {
     "heading": "Post Insights",
@@ -637,7 +638,8 @@
     "matchPlace": "Place name matches",
     "error": "Something went wrong. Please try again in a moment.",
     "newChat": "Start a new conversation",
-    "followUpHint": "You can follow up, e.g. \"With kids?\" or \"Anything else?\""
+    "followUpHint": "You can follow up, e.g. \"With kids?\" or \"Anything else?\"",
+    "matchSeason": "in season then"
   },
   "stories": {
     "tapHint": "Tap right for next, left for previous, hold to pause",
@@ -789,5 +791,11 @@
     "addAll_one": "Add {{count}} place to my trip plan",
     "addAll_other": "Add all {{count}} places to my trip plan",
     "loginToAdd": "Log in to add to your trip plan"
+  },
+  "season": {
+    "now": "In season now",
+    "months": "Best in {{months}}",
+    "pickerLabel": "Best months to visit (optional)",
+    "feedEmpty": "No posts are marked as in season this month yet. They appear here once posters set their best months."
   }
 }
