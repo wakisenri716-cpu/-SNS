@@ -686,5 +686,16 @@
     "delete": "삭제",
     "confirmDelete": "\"{{title}}\"을(를) 삭제할까요?",
     "saveError": "저장하지 못했어요. 입력 내용을 확인해 주세요."
+  },
+  "onboarding": {
+    "companionTitle": "주로 누구와 여행하세요?",
+    "categoriesTitle": "어떤 곳을 좋아하세요?",
+    "needsTitle": "장소를 고를 때 중요한 게 있나요?",
+    "why": "나에게 맞는 게시물이 추천 맨 앞에 나와요. 나중에 설정에서 언제든 바꿀 수 있고, 다른 사람에게는 공개되지 않아요.",
+    "stepOf": "{{step}} / {{total}}",
+    "later": "나중에",
+    "back": "이전",
+    "next": "다음",
+    "start": "시작하기"
   }
 }

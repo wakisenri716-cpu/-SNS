@@ -22,6 +22,7 @@ const ReelsPage = lazy(() => import("./pages/ReelsPage"));
 const MapPage = lazy(() => import("./pages/MapPage"));
 const TagPage = lazy(() => import("./pages/TagPage"));
 const PosterPage = lazy(() => import("./pages/PosterPage"));
+const OnboardingPage = lazy(() => import("./pages/OnboardingPage"));
 const MyPage = lazy(() => import("./pages/MyPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
@@ -40,6 +41,16 @@ function App() {
 
   return (
     <Routes>
+      <Route
+        path="/welcome"
+        element={
+          <Suspense fallback={null}>
+            <RequireAuth>
+              <OnboardingPage />
+            </RequireAuth>
+          </Suspense>
+        }
+      />
       {/* Printable poster: outside the layout so the app chrome doesn't print. */}
       <Route
         path="/poster"

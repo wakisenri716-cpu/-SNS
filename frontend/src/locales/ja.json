@@ -686,5 +686,16 @@
     "delete": "削除",
     "confirmDelete": "「{{title}}」を削除しますか？",
     "saveError": "保存できませんでした。入力内容を確認してください。"
+  },
+  "onboarding": {
+    "companionTitle": "だれと旅することが多いですか？",
+    "categoriesTitle": "どんな場所が好きですか？",
+    "needsTitle": "場所選びで大事なことは？",
+    "why": "あなたに合う投稿が「おすすめ」の先頭に並ぶようになります。あとから設定画面でいつでも変えられ、ほかの人には公開されません。",
+    "stepOf": "{{step}} / {{total}}",
+    "later": "あとで",
+    "back": "戻る",
+    "next": "次へ",
+    "start": "はじめる"
   }
 }

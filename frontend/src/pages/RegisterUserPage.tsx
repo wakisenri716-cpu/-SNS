@@ -44,7 +44,8 @@ export default function RegisterUserPage() {
         nationality: nationality || undefined,
         birthYear: birthYear ? Number(birthYear) : undefined,
       });
-      navigate("/");
+      // Ask for a travel style first, so the very first feed is already theirs.
+      navigate("/welcome");
     } catch (err: any) {
       setError(err?.response?.data?.error ?? t("registerUser.genericError"));
     } finally {
