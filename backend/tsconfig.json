@@ -3,7 +3,9 @@
     "target": "ES2021",
     "module": "commonjs",
     "moduleResolution": "node",
-    "lib": ["ES2021"],
+    "lib": [
+      "ES2021"
+    ],
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
@@ -14,5 +16,10 @@
     "declaration": false,
     "sourceMap": false
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "src/**/*.test.ts"
+  ]
 }

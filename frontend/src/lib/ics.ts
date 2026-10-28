@@ -23,13 +23,13 @@ function localStamp(date: string, minutes: number) {
   return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}T${p(d.getHours())}${p(d.getMinutes())}00`;
 }
 
-export function downloadItineraryIcs(date: string, stops: CalendarStop[], fileName: string) {
-  const now = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
+export function buildItineraryIcs(date: string, stops: CalendarStop[], now = new Date()) {
+  const stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
   const events = stops.map((s, i) =>
     [
       "BEGIN:VEVENT",
       `UID:jaziba-${date}-${i}-${Math.random().toString(36).slice(2)}@jaziba.jp`,
-      `DTSTAMP:${now}`,
+      `DTSTAMP:${stamp}`,
       `DTSTART;TZID=Asia/Tokyo:${localStamp(date, s.start)}`,
       `DTEND;TZID=Asia/Tokyo:${localStamp(date, s.end)}`,
       `SUMMARY:${escapeText(s.title)}`,
@@ -40,7 +40,7 @@ export function downloadItineraryIcs(date: string, stops: CalendarStop[], fileNa
       "END:VEVENT",
     ].join("\r\n")
   );
-  const ics = [
+  return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//Jaziba//Itinerary//JA",
@@ -57,6 +57,10 @@ export function downloadItineraryIcs(date: string, stops: CalendarStop[], fileNa
     ...events,
     "END:VCALENDAR",
   ].join("\r\n");
+}
+
+export function downloadItineraryIcs(date: string, stops: CalendarStop[], fileName: string) {
+  const ics = buildItineraryIcs(date, stops);
   const url = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }));
   const a = document.createElement("a");
   a.href = url;
