@@ -810,7 +810,9 @@
     "now": "In season now",
     "months": "Best in {{months}}",
     "pickerLabel": "Best months to visit (optional)",
-    "feedEmpty": "No posts are marked as in season this month yet. They appear here once posters set their best months."
+    "feedEmpty": "No posts are marked as in season this month yet. They appear here once posters set their best months.",
+    "dashboardNudge_one": "{{count}} post has no best months set. Choose them under Edit and it shows in “In season” on the feed and map in those months.",
+    "dashboardNudge_other": "{{count}} posts have no best months set. Choose them under Edit and they show in “In season” on the feed and map in those months."
   },
   "compass": {
     "start": "Walk there with the compass",
@@ -843,6 +845,10 @@
     "needsInstall": "On iPhone, add the app to your Home Screen from Safari's share menu to use this.",
     "unsupported": "This browser doesn't support push notifications.",
     "denied": "Notifications are blocked. Allow them for this site in your browser settings.",
-    "error": "Couldn't set up push notifications"
+    "error": "Couldn't set up push notifications",
+    "prompt": "Get these on this device even when the app is closed",
+    "turnOn": "Turn on",
+    "dismiss": "Dismiss",
+    "enabledToast": "Push notifications are on"
   }
 }

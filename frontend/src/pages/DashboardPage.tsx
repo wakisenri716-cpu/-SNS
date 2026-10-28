@@ -550,6 +550,11 @@ export default function DashboardPage() {
         ))}
       </div>
 
+      {tab === "posts" && reels.some((r) => (r.bestMonths ?? []).length === 0) && (
+        <p className="mx-3 mt-3 rounded-2xl bg-jz-tint px-4 py-3 text-xs leading-relaxed text-jz-ink lg:mx-4">
+          {t("season.dashboardNudge", { count: reels.filter((r) => (r.bestMonths ?? []).length === 0).length })}
+        </p>
+      )}
       {tab === "posts" && (
         <PostsGrid
           reels={featured ? rest : []}

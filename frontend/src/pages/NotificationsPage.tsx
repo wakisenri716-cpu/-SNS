@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { notifyNotificationsRead } from "../lib/unreadNotifications";
+import PushPrompt from "../components/PushPrompt";
 import { Clapperboard, Heart, MessageCircle } from "lucide-react";
 
 interface NotificationItem {
@@ -42,6 +43,7 @@ export default function NotificationsPage() {
     <div className="mx-auto max-w-2xl px-4 py-6 lg:py-8">
       <h1 className="text-xl font-bold text-gray-900">{t("notifications.heading")}</h1>
       <p className="mt-1 text-xs text-gray-500">{t(user?.role === "USER" ? "notifications.subtitleTraveler" : "notifications.subtitle")}</p>
+      <PushPrompt />
 
       {items == null ? (
         <p className="mt-6 text-sm text-gray-500">{t("feed.loading")}</p>
