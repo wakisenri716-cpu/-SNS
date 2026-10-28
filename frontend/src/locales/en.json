@@ -706,5 +706,13 @@
     "back": "Back",
     "next": "Next",
     "start": "Get started"
+  },
+  "errors": {
+    "crashTitle": "Something went wrong",
+    "crashBody": "Please reload the page. If it keeps happening, let us know via the contact form.",
+    "reload": "Reload",
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "The link may be wrong, or the post may have been removed.",
+    "goHome": "Back to home"
   }
 }

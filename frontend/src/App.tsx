@@ -23,6 +23,7 @@ const MapPage = lazy(() => import("./pages/MapPage"));
 const TagPage = lazy(() => import("./pages/TagPage"));
 const PosterPage = lazy(() => import("./pages/PosterPage"));
 const OnboardingPage = lazy(() => import("./pages/OnboardingPage"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 const MyPage = lazy(() => import("./pages/MyPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
@@ -116,6 +117,7 @@ function App() {
             </RequirePoster>
           }
         />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );

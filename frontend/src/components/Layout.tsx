@@ -27,6 +27,7 @@ import { useAuth } from "../auth/AuthContext";
 import Avatar from "./Avatar";
 import JazibaLogo from "./JazibaLogo";
 import Toaster from "./Toaster";
+import ErrorBoundary from "./ErrorBoundary";
 import { showToast } from "../lib/toast";
 import ItineraryRail, { useIsTraveler } from "./ItineraryRail";
 import { useUnreadNotificationCount } from "../lib/unreadNotifications";
@@ -345,7 +346,9 @@ export default function Layout() {
         >
           {/* Re-keyed per page so each one fades in. */}
           <div key={location.pathname} className="animate-page-in">
-            <Outlet />
+            <ErrorBoundary resetKey={location.pathname}>
+              <Outlet />
+            </ErrorBoundary>
           </div>
         </Suspense>
       </main>
