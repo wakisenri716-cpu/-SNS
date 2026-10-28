@@ -22,3 +22,18 @@ export function currentPosition(): Promise<{ lat: number; lng: number }> {
     );
   });
 }
+
+// Initial compass bearing from a to b, in degrees clockwise from north (0–360).
+export function bearingDeg(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const y = Math.sin(toRad(b.lng - a.lng)) * Math.cos(toRad(b.lat));
+  const x =
+    Math.cos(toRad(a.lat)) * Math.sin(toRad(b.lat)) -
+    Math.sin(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.cos(toRad(b.lng - a.lng));
+  return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+}
+
+// 0 = north, 1 = north-east, … 7 = north-west.
+export function compassPoint(deg: number) {
+  return Math.round((((deg % 360) + 360) % 360) / 45) % 8;
+}

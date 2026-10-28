@@ -87,3 +87,15 @@ test("itinerary timeline: a place to stay mid-trip means leaving the next mornin
   assert.equal(formatClock(24 * 60 + 9 * 60, t, 0), 'itinerary.nextDay:{"time":"09:00"}');
   assert.equal(formatClock(2 * 24 * 60, t, 0), 'itinerary.dayTime:{"day":3,"time":"00:00"}');
 });
+
+test("compass: bearings and the eight points", async () => {
+  const { bearingDeg, compassPoint } = await import("../src/lib/geo.ts");
+  const castle = { lat: 36.2391, lng: 137.9691 };
+  assert.ok(Math.abs(bearingDeg(castle, { lat: 36.3, lng: 137.9691 }) - 0) < 0.01);
+  assert.ok(Math.abs(bearingDeg(castle, { lat: 36.2391, lng: 138.0 }) - 90) < 0.1);
+  assert.ok(Math.abs(bearingDeg(castle, { lat: 36.2, lng: 137.9691 }) - 180) < 0.01);
+  assert.equal(compassPoint(350), 0);
+  assert.equal(compassPoint(44), 1);
+  assert.equal(compassPoint(270), 6);
+  assert.equal(compassPoint(-90), 6);
+});

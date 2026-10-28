@@ -811,5 +811,29 @@
     "months": "Best in {{months}}",
     "pickerLabel": "Best months to visit (optional)",
     "feedEmpty": "No posts are marked as in season this month yet. They appear here once posters set their best months."
+  },
+  "compass": {
+    "start": "Walk there with the compass",
+    "startHint": "When you're close, an arrow points the way",
+    "label": "Compass to {{place}}",
+    "heading": "To {{place}}",
+    "stop": "Close compass",
+    "locating": "Finding your location…",
+    "arrived": "You're here!",
+    "arrivedHint": "You can get the stamp",
+    "noHeading": "north is up",
+    "lowAccuracy": "Location is approximate (about {{meters}}m)",
+    "noLocation": "Couldn't use your location. Check your browser settings.",
+    "note": "Straight-line distance and direction. Use a maps app for the route.",
+    "dir": {
+      "n": "North",
+      "ne": "Northeast",
+      "e": "East",
+      "se": "Southeast",
+      "s": "South",
+      "sw": "Southwest",
+      "w": "West",
+      "nw": "Northwest"
+    }
   }
 }

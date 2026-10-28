@@ -796,5 +796,29 @@
     "months": "最佳季节 {{months}}",
     "pickerLabel": "最佳月份（可选）",
     "feedEmpty": "本月还没有标注为最佳季节的帖子。发布者设置最佳月份后会显示在这里。"
+  },
+  "compass": {
+    "start": "用指南针前往",
+    "startHint": "靠近时，箭头会指向目的地",
+    "label": "前往{{place}}的指南针",
+    "heading": "距{{place}}",
+    "stop": "关闭指南针",
+    "locating": "正在确认当前位置…",
+    "arrived": "到达！",
+    "arrivedHint": "可以盖印章了",
+    "noHeading": "上方为北",
+    "lowAccuracy": "位置精度较低（约{{meters}}米）",
+    "noLocation": "无法使用位置信息，请检查浏览器设置。",
+    "note": "※为直线距离和方向。路线请用地图应用确认。",
+    "dir": {
+      "n": "北",
+      "ne": "东北",
+      "e": "东",
+      "se": "东南",
+      "s": "南",
+      "sw": "西南",
+      "w": "西",
+      "nw": "西北"
+    }
   }
 }
