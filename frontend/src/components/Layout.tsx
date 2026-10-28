@@ -346,7 +346,7 @@ export default function Layout() {
         >
           {/* Re-keyed per page so each one fades in. */}
           <div key={location.pathname} className="animate-page-in">
-            <ErrorBoundary resetKey={location.pathname}>
+            <ErrorBoundary>
               <Outlet />
             </ErrorBoundary>
           </div>

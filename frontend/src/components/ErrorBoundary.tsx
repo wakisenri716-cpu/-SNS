@@ -2,8 +2,9 @@ import { Component, type ReactNode } from "react";
 import i18n from "../i18n";
 
 // Catches a crash in a page so the rest of the app (menus, tab bar) keeps
-// working, and offers a reload. Reset by changing `resetKey` (the route).
-export default class ErrorBoundary extends Component<{ children: ReactNode; resetKey?: string }, { failed: boolean }> {
+// working, and offers a reload. Layout re-keys it per route, so moving to
+// another page starts fresh.
+export default class ErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false };
 
   static getDerivedStateFromError() {
@@ -12,10 +13,6 @@ export default class ErrorBoundary extends Component<{ children: ReactNode; rese
 
   componentDidCatch(error: unknown) {
     console.error("[ErrorBoundary]", error);
-  }
-
-  componentDidUpdate(prev: { resetKey?: string }) {
-    if (this.state.failed && prev.resetKey !== this.props.resetKey) this.setState({ failed: false });
   }
 
   render() {
