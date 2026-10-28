@@ -21,6 +21,7 @@ const SearchPage = lazy(() => import("./pages/SearchPage"));
 const ReelsPage = lazy(() => import("./pages/ReelsPage"));
 const MapPage = lazy(() => import("./pages/MapPage"));
 const TagPage = lazy(() => import("./pages/TagPage"));
+const AreasPage = lazy(() => import("./pages/AreasPage"));
 const PosterPage = lazy(() => import("./pages/PosterPage"));
 const OnboardingPage = lazy(() => import("./pages/OnboardingPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
@@ -67,6 +68,7 @@ function App() {
         <Route path="/reels" element={<ReelsPage />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/tags/:kind/:value" element={<TagPage />} />
+        <Route path="/areas" element={<AreasPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterUserPage />} />
         <Route path="/register-municipality" element={<RegisterMunicipalityPage />} />

@@ -732,5 +732,22 @@
     "reportCount_other": "{{count}} reports",
     "delete": "Delete",
     "keep": "Keep (clear reports)"
+  },
+  "areas": {
+    "heading": "Browse by area",
+    "sub_one": "{{count}} municipality on Jaziba",
+    "sub_other": "{{count}} municipalities on Jaziba",
+    "all": "All",
+    "none": "No municipalities here yet",
+    "region": {
+      "hokkaido": "Hokkaido",
+      "tohoku": "Tohoku",
+      "kanto": "Kanto",
+      "chubu": "Chubu",
+      "kinki": "Kinki (Kansai)",
+      "chugoku": "Chugoku",
+      "shikoku": "Shikoku",
+      "kyushu": "Kyushu & Okinawa"
+    }
   }
 }

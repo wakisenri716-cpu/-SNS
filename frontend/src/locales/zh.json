@@ -722,5 +722,21 @@
     "reportCount": "举报{{count}}次",
     "delete": "删除",
     "keep": "保留（取消举报）"
+  },
+  "areas": {
+    "heading": "按地区查找",
+    "sub": "已加入Jaziba的自治体 {{count}}个",
+    "all": "全部",
+    "none": "暂无加入的自治体",
+    "region": {
+      "hokkaido": "北海道",
+      "tohoku": "东北",
+      "kanto": "关东",
+      "chubu": "中部",
+      "kinki": "近畿",
+      "chugoku": "中国地区",
+      "shikoku": "四国",
+      "kyushu": "九州・冲绳"
+    }
   }
 }

@@ -722,5 +722,21 @@
     "reportCount": "신고 {{count}}건",
     "delete": "삭제",
     "keep": "남기기 (신고 취소)"
+  },
+  "areas": {
+    "heading": "지역으로 찾기",
+    "sub": "Jaziba에 참여한 지자체 {{count}}곳",
+    "all": "전체",
+    "none": "아직 참여한 지자체가 없어요",
+    "region": {
+      "hokkaido": "홋카이도",
+      "tohoku": "도호쿠",
+      "kanto": "간토",
+      "chubu": "주부",
+      "kinki": "긴키",
+      "chugoku": "주고쿠",
+      "shikoku": "시코쿠",
+      "kyushu": "규슈·오키나와"
+    }
   }
 }

@@ -722,5 +722,21 @@
     "reportCount": "通報{{count}}件",
     "delete": "削除する",
     "keep": "残す（通報を取り消す）"
+  },
+  "areas": {
+    "heading": "エリアから探す",
+    "sub": "ジャジバに参加している自治体：{{count}}",
+    "all": "すべて",
+    "none": "まだ参加している自治体はありません",
+    "region": {
+      "hokkaido": "北海道",
+      "tohoku": "東北",
+      "kanto": "関東",
+      "chubu": "中部",
+      "kinki": "近畿",
+      "chugoku": "中国",
+      "shikoku": "四国",
+      "kyushu": "九州・沖縄"
+    }
   }
 }

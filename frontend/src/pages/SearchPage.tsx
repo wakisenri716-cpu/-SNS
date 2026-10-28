@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Mic, Search as SearchIcon } from "lucide-react";
+import { ChevronRight, MapPinned, Mic, Search as SearchIcon } from "lucide-react";
 import ConciergeButton from "../components/ConciergeButton";
 import { useSpeechInput } from "../lib/useSpeechInput";
 import { api } from "../api/client";
@@ -51,6 +51,14 @@ export default function SearchPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-6">
       <ConciergeButton className="mb-4" />
+      <Link
+        to="/areas"
+        className="mb-4 flex items-center gap-3 rounded-2xl bg-gray-50 px-4 py-3 text-sm font-semibold text-jz-ink transition hover:bg-gray-100"
+      >
+        <MapPinned className="h-5 w-5 text-jz-red" />
+        <span className="flex-1">{t("areas.heading")}</span>
+        <ChevronRight className="h-4 w-4 text-gray-400" />
+      </Link>
       <div className="relative">
         <SearchIcon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
         <input
