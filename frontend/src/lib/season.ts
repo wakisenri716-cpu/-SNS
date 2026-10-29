@@ -28,8 +28,9 @@ export function monthRuns(months: number[]): [number, number][] {
 }
 
 // "5月–6月・10月" / "May–Jun, Oct", in the UI language.
-export function formatBestMonths(months: number[], lang: string) {
-  const name = (m: number) => new Intl.DateTimeFormat(lang, { month: "short", timeZone: "UTC" }).format(Date.UTC(2026, m - 1, 15));
+// `long` spells months out ("April"), e.g. for reading aloud.
+export function formatBestMonths(months: number[], lang: string, style: "short" | "long" = "short") {
+  const name = (m: number) => new Intl.DateTimeFormat(lang, { month: style, timeZone: "UTC" }).format(Date.UTC(2026, m - 1, 15));
   const sep = lang === "en" ? ", " : "・";
   return monthRuns(months)
     .map(([a, b]) => (a === b ? name(a) : `${name(a)}–${name(b)}`))

@@ -9,6 +9,7 @@ import ShareButton from "../components/ShareButton";
 import MunicipalityStayInfo from "../components/MunicipalityStayInfo";
 import VisitStampCard from "../components/VisitStampCard";
 import WalkCompass from "../components/WalkCompass";
+import AudioGuide from "../components/AudioGuide";
 import { addRecentlyViewed } from "../lib/recentlyViewed";
 import { useLiveViewers } from "../lib/useLiveViewers";
 import { TravelerTagChips } from "../components/TravelerTagChips";
@@ -365,6 +366,8 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
           )}
         </div>
       </div>
+
+      <AudioGuide reel={reel} />
 
       {reel.locationLat != null && reel.locationLng != null && (
         <>

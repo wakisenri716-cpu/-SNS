@@ -236,6 +236,19 @@ body {
 
 /* ---- Map ---------------------------------------------------------------- */
 /* Post markers: round video stills with the Jaziba red rim and a pointer. */
+/* 音声ガイド: a small equalizer while speaking. */
+.audio-bar {
+  height: 40%;
+  animation: audio-bar 0.9s ease-in-out infinite alternate;
+}
+@keyframes audio-bar {
+  from { height: 25%; }
+  to { height: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .audio-bar { animation: none; height: 60%; }
+}
+
 /* 3Dで巡る: numbered stops on the flyover map; the current one pulses. */
 .flyover-pin {
   display: flex;

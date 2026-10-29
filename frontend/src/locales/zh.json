@@ -851,5 +851,14 @@
   },
   "live": {
     "viewers": "现在有{{count}}人在看"
+  },
+  "audioGuide": {
+    "start": "收听语音导览",
+    "stop": "停止语音导览",
+    "preparing": "准备中…",
+    "hint": "朗读这个地方的介绍",
+    "japaneseOnly": "以日语朗读",
+    "intro": "{{place}}，位于{{town}}。",
+    "season": "最佳季节是{{months}}。"
   }
 }

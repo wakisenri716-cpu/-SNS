@@ -869,5 +869,14 @@
   "live": {
     "viewers_one": "{{count}} person viewing now",
     "viewers_other": "{{count}} people viewing now"
+  },
+  "audioGuide": {
+    "start": "Listen to the audio guide",
+    "stop": "Stop the audio guide",
+    "preparing": "Preparing…",
+    "hint": "Reads this place's introduction aloud",
+    "japaneseOnly": "Read aloud in Japanese",
+    "intro": "{{place}}, in {{town}}.",
+    "season": "Best in {{months}}."
   }
 }

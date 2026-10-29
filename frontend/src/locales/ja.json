@@ -851,5 +851,14 @@
   },
   "live": {
     "viewers": "いま{{count}}人が見ています"
+  },
+  "audioGuide": {
+    "start": "音声ガイドを聞く",
+    "stop": "音声ガイドを止める",
+    "preparing": "準備中…",
+    "hint": "この場所の紹介を読み上げます",
+    "japaneseOnly": "日本語で読み上げます",
+    "intro": "{{place}}。{{town}}にあります。",
+    "season": "見頃は{{months}}です。"
   }
 }

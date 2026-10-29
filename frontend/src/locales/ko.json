@@ -851,5 +851,14 @@
   },
   "live": {
     "viewers": "지금 {{count}}명이 보고 있어요"
+  },
+  "audioGuide": {
+    "start": "음성 가이드 듣기",
+    "stop": "음성 가이드 멈추기",
+    "preparing": "준비 중…",
+    "hint": "이 장소의 소개를 읽어 줍니다",
+    "japaneseOnly": "일본어로 읽어 줍니다",
+    "intro": "{{place}}. {{town}}에 있습니다.",
+    "season": "제철은 {{months}}입니다."
   }
 }
