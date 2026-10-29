@@ -1016,5 +1016,28 @@
     "removeStop": "Remove {{place}}",
     "afterNote": "After creating it you can still reorder, add or remove places and change stay times in the trip plan.",
     "error": "Couldn't build the trip. Please try again in a moment"
+  },
+  "passkey": {
+    "heading": "Passkeys",
+    "description": "Sign in with this device's face, fingerprint or screen lock (Face ID, Touch ID, Windows Hello...) instead of your password. Your face and fingerprint never leave the device and are never sent to Jaziba.",
+    "createHere": "Create a passkey on this device",
+    "create": "Create a passkey",
+    "created": "Passkey created. Next time, sign in with your face or fingerprint",
+    "createError": "Couldn't create the passkey",
+    "unnamed": "Passkey",
+    "synced": "(synced with your other devices)",
+    "lastUsed": "Last used {{when}}",
+    "neverUsed": "Not used yet",
+    "remove": "Delete {{name}}",
+    "removeConfirm": "Delete this passkey? You'll sign in with your password on this device again.",
+    "removed": "Passkey deleted",
+    "signIn": "Sign in with a passkey",
+    "or": "or",
+    "signInError": "Couldn't sign in with a passkey. Please sign in with your password",
+    "offerTitle": "Sign in with your face or fingerprint next time?",
+    "offerBody": "With a passkey you can sign in using just this device's face, fingerprint or screen lock — no password to type.",
+    "offerAccept": "Create a passkey",
+    "offerLater": "Not now",
+    "privacyNote": "Your face and fingerprint are checked only on the device and never sent to Jaziba."
   }
 }

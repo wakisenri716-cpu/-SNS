@@ -61,6 +61,7 @@ model User {
   pushSubscriptions PushSubscription[]
   trips         Trip[]
   tripMemberships TripMember[]
+  passkeys      Passkey[]
 }
 
 model Municipality {
@@ -393,6 +394,27 @@ model PushSubscription {
   auth      String
   lang      String   @default("ja")
   createdAt DateTime @default(now())
+}
+
+// パスキー (WebAuthn): sign in with the device's face/fingerprint/PIN instead
+// of the password. `id` is the credential id (base64url); the public key
+// verifies each sign-in, and `counter` helps spot cloned authenticators.
+model Passkey {
+  id         String    @id
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  publicKey  Bytes
+  counter    Int       @default(0)
+  // Comma-separated authenticator transports ("internal,hybrid").
+  transports String    @default("")
+  // Synced across the user's devices (iCloud Keychain, Google Password Manager).
+  backedUp   Boolean   @default(false)
+  // A label the user sees ("iPhone", "Mac"...), guessed from the browser.
+  name       String    @default("")
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+
+  @@index([userId])
 }
 
 // Small server-wide values that must survive restarts, e.g. the generated

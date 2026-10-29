@@ -605,6 +605,106 @@ test("AIで旅をつくる: proposed by keyword without an API key, then created
   await call("DELETE", `/api/me/trips/${created.json.id}`, undefined, traveler);
 });
 
+// A software passkey authenticator: an ES256 key pair making the same
+// attestation ("none") and assertions a phone or laptop would.
+async function softAuthenticator(origin: string) {
+  const { createHash, generateKeyPairSync, randomBytes, sign } = await import("node:crypto");
+  const { isoCBOR } = await import("@simplewebauthn/server/helpers");
+  const { privateKey, publicKey } = generateKeyPairSync("ec", { namedCurve: "P-256" });
+  const jwk = publicKey.export({ format: "jwk" });
+  const credentialId = randomBytes(16);
+  const rpIdHash = createHash("sha256").update(new URL(origin).hostname).digest();
+  const b64url = (b: Buffer | Uint8Array) => Buffer.from(b).toString("base64url");
+  let counter = 0;
+  const clientData = (type: string, challenge: string) => Buffer.from(JSON.stringify({ type, challenge, origin, crossOrigin: false }));
+  const counterBytes = () => {
+    const c = Buffer.alloc(4);
+    c.writeUInt32BE(++counter);
+    return c;
+  };
+  return {
+    id: b64url(credentialId),
+    register(challenge: string) {
+      const cose = isoCBOR.encode(
+        new Map<number, number | Uint8Array>([
+          [1, 2],
+          [3, -7],
+          [-1, 1],
+          [-2, Buffer.from(jwk.x!, "base64url")],
+          [-3, Buffer.from(jwk.y!, "base64url")],
+        ])
+      );
+      const idLen = Buffer.alloc(2);
+      idLen.writeUInt16BE(credentialId.length);
+      // Flags: user present + user verified + attested credential data.
+      const authData = Buffer.concat([rpIdHash, Buffer.from([0x45]), counterBytes(), Buffer.alloc(16), idLen, credentialId, Buffer.from(cose)]);
+      const attestationObject = isoCBOR.encode(new Map<string, unknown>([["fmt", "none"], ["attStmt", new Map()], ["authData", authData]]) as never);
+      return {
+        id: b64url(credentialId),
+        rawId: b64url(credentialId),
+        type: "public-key",
+        clientExtensionResults: {},
+        response: { clientDataJSON: b64url(clientData("webauthn.create", challenge)), attestationObject: b64url(attestationObject), transports: ["internal"] },
+      };
+    },
+    assert(challenge: string) {
+      const authData = Buffer.concat([rpIdHash, Buffer.from([0x05]), counterBytes()]);
+      const cd = clientData("webauthn.get", challenge);
+      const signature = sign("sha256", Buffer.concat([authData, createHash("sha256").update(cd).digest()]), privateKey);
+      return {
+        id: b64url(credentialId),
+        rawId: b64url(credentialId),
+        type: "public-key",
+        clientExtensionResults: {},
+        response: { clientDataJSON: b64url(cd), authenticatorData: b64url(authData), signature: b64url(signature), userHandle: null },
+      };
+    },
+  };
+}
+
+test("パスキー: add one while signed in, sign in with it without email or password, and a deleted one is refused", async () => {
+  const token = (await call("POST", "/api/auth/register", { email: "passkey@example.com", password: "password123", name: "パスキー派" })).json.token;
+  const device = await softAuthenticator(base);
+
+  assert.equal((await call("POST", "/api/auth/passkey/register/options")).status, 401);
+  const regOptions = (await call("POST", "/api/auth/passkey/register/options", undefined, token)).json;
+  assert.equal(regOptions.rp.id, new URL(base).hostname);
+  assert.equal(regOptions.authenticatorSelection.residentKey, "required");
+  // A response to some other challenge is rejected.
+  const forged = device.register("not-the-challenge");
+  assert.equal((await call("POST", "/api/auth/passkey/register/verify", { response: forged }, token)).status, 400);
+  // (That used up the challenge, so ask again.)
+  const fresh = (await call("POST", "/api/auth/passkey/register/options", undefined, token)).json;
+  const added = await call("POST", "/api/auth/passkey/register/verify", { response: device.register(fresh.challenge) }, token);
+  assert.equal(added.status, 201);
+  assert.equal(added.json.id, device.id);
+  assert.deepEqual((await call("GET", "/api/auth/passkey", undefined, token)).json.items.map((p: any) => p.id), [device.id]);
+  // The next registration excludes it, so a device can't add a second one.
+  assert.deepEqual((await call("POST", "/api/auth/passkey/register/options", undefined, token)).json.excludeCredentials.map((c: any) => c.id), [device.id]);
+
+  // Sign in: no email, the challenge only works once, the signature must verify.
+  const login = (await call("POST", "/api/auth/passkey/login/options")).json;
+  const signedIn = await call("POST", "/api/auth/passkey/login/verify", { flowId: login.flowId, response: device.assert(login.options.challenge) });
+  assert.equal(signedIn.status, 200);
+  assert.equal(signedIn.json.user.email, "passkey@example.com");
+  assert.equal((await call("GET", "/api/auth/me", undefined, signedIn.json.token)).status, 200);
+  assert.equal((await call("POST", "/api/auth/passkey/login/verify", { flowId: login.flowId, response: device.assert(login.options.challenge) })).status, 400);
+  const again = (await call("POST", "/api/auth/passkey/login/options")).json;
+  const tampered = device.assert(again.options.challenge);
+  tampered.response.signature = Buffer.from("not a signature").toString("base64url");
+  assert.equal((await call("POST", "/api/auth/passkey/login/verify", { flowId: again.flowId, response: tampered })).status, 401);
+  assert.ok((await call("GET", "/api/auth/passkey", undefined, token)).json.items[0].lastUsedAt);
+
+  // Someone else can't delete it; once its owner does, it no longer signs in.
+  const other = (await call("POST", "/api/auth/register", { email: "passkey-other@example.com", password: "password123", name: "別の人" })).json.token;
+  assert.equal((await call("DELETE", `/api/auth/passkey/${device.id}`, undefined, other)).status, 404);
+  assert.equal((await call("DELETE", `/api/auth/passkey/${device.id}`, undefined, token)).status, 204);
+  const last = (await call("POST", "/api/auth/passkey/login/options")).json;
+  const refused = await call("POST", "/api/auth/passkey/login/verify", { flowId: last.flowId, response: device.assert(last.options.challenge) });
+  assert.equal(refused.status, 401);
+  assert.equal(refused.json.unknownCredential, true);
+});
+
 test("共同編集: invite, join, edit together with live updates, and leave", async () => {
   const owner = (await call("POST", "/api/auth/register", { email: "collab-owner@example.com", password: "password123", name: "幹事" })).json.token;
   const friend = (await call("POST", "/api/auth/register", { email: "collab-friend@example.com", password: "password123", name: "友人" })).json.token;

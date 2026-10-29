@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { api, setAuthToken, setUnauthorizedHandler } from "../api/client";
+import { signInWithPasskey } from "../lib/passkeys";
 import { isAxiosError } from "axios";
 import i18n from "../i18n";
 import { clearOfflineItinerary } from "../lib/offlineItinerary";
@@ -14,6 +15,8 @@ interface AuthState {
   token: string | null;
   ready: boolean;
   login: (email: string, password: string) => Promise<void>;
+  /** false if the person cancelled the passkey dialog. */
+  loginWithPasskey: (autofill?: boolean) => Promise<boolean>;
   registerUser: (
     email: string,
     password: string,
@@ -131,6 +134,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     persist({ token: data.token, user: data.user, municipality: data.municipality, company: data.company });
   }
 
+  async function loginWithPasskey(autofill = false) {
+    const data = await signInWithPasskey(autofill);
+    if (!data) return false;
+    persist({ token: data.token, user: data.user, municipality: data.municipality, company: data.company });
+    return true;
+  }
+
   async function registerUser(
     email: string,
     password: string,
@@ -192,6 +202,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       token,
       ready,
       login,
+      loginWithPasskey,
       registerUser,
       registerMunicipality,
       registerCompany,

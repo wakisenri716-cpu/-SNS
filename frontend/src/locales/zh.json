@@ -991,5 +991,28 @@
     "removeStop": "移除{{place}}",
     "afterNote": "创建后仍可在旅行手册中调整顺序、添加或删除地点、修改停留时间。",
     "error": "无法规划旅行，请稍后再试"
+  },
+  "passkey": {
+    "heading": "通行密钥",
+    "description": "可以使用本设备的面容、指纹或屏幕锁（Face ID、Touch ID、Windows Hello等）代替密码登录。面容和指纹信息不会离开设备，也不会发送给Jaziba。",
+    "createHere": "在本设备上创建通行密钥",
+    "create": "创建通行密钥",
+    "created": "已创建通行密钥。下次可用面容或指纹登录",
+    "createError": "无法创建通行密钥",
+    "unnamed": "通行密钥",
+    "synced": "（与其他设备同步）",
+    "lastUsed": "上次使用：{{when}}",
+    "neverUsed": "尚未使用",
+    "remove": "删除{{name}}",
+    "removeConfirm": "要删除此通行密钥吗？此设备将恢复使用密码登录。",
+    "removed": "已删除通行密钥",
+    "signIn": "使用通行密钥登录",
+    "or": "或",
+    "signInError": "无法使用通行密钥登录，请使用密码登录",
+    "offerTitle": "下次用面容或指纹登录吗？",
+    "offerBody": "创建通行密钥后，无需输入密码，只需本设备的面容、指纹或屏幕锁即可登录。",
+    "offerAccept": "创建通行密钥",
+    "offerLater": "以后再说",
+    "privacyNote": "面容和指纹只在设备上验证，不会发送给Jaziba。"
   }
 }

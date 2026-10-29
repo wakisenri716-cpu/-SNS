@@ -227,14 +227,30 @@ router.post("/login", loginLimiter, async (req, res) => {
     return res.status(401).json({ error: "メールアドレスまたはパスワードが違います" });
   }
 
-  const token = issueToken(user.id, user.role as Role);
-  res.json({
-    token,
+  res.json(signedIn(user));
+});
+
+// The /login answer: a fresh token plus the account (also used by passkey sign-in).
+type SignedInUser = Parameters<typeof serializeUser>[0] & {
+  municipality: Parameters<typeof serializeMunicipality>[0] | null;
+  company: unknown;
+};
+function signedIn(user: SignedInUser) {
+  return {
+    token: issueToken(user.id, user.role as Role),
     user: serializeUser(user),
     municipality: user.municipality ? serializeMunicipality(user.municipality) : null,
     company: user.company ?? null,
+  };
+}
+
+export async function signedInPayload(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { municipality: { include: municipalityDetailInclude }, company: { select: companySelect } },
   });
-});
+  return user ? signedIn(user) : null;
+}
 
 // Session check: confirms the token's user still exists. Needed because the demo
 // deployment uses ephemeral storage — the database can reset independently of a

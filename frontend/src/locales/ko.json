@@ -991,5 +991,28 @@
     "removeStop": "{{place}} 빼기",
     "afterNote": "만든 뒤에도 일정표에서 순서 변경·장소 추가·삭제·머무는 시간 변경을 할 수 있어요.",
     "error": "여행을 만들지 못했어요. 잠시 후 다시 시도해 주세요"
+  },
+  "passkey": {
+    "heading": "패스키",
+    "description": "비밀번호 대신 이 기기의 얼굴 인식·지문·화면 잠금(Face ID, Touch ID, Windows Hello 등)으로 로그인할 수 있어요. 얼굴·지문 정보는 기기 밖으로 나가지 않으며 Jaziba로 전송되지 않아요.",
+    "createHere": "이 기기에서 패스키 만들기",
+    "create": "패스키 만들기",
+    "created": "패스키를 만들었어요. 다음부터 얼굴·지문으로 로그인할 수 있어요",
+    "createError": "패스키를 만들지 못했어요",
+    "unnamed": "패스키",
+    "synced": "(다른 기기와 동기화)",
+    "lastUsed": "마지막 사용: {{when}}",
+    "neverUsed": "아직 사용하지 않았어요",
+    "remove": "{{name}} 삭제",
+    "removeConfirm": "이 패스키를 삭제할까요? 이 기기에서는 다시 비밀번호로 로그인하게 돼요.",
+    "removed": "패스키를 삭제했어요",
+    "signIn": "패스키로 로그인",
+    "or": "또는",
+    "signInError": "패스키로 로그인하지 못했어요. 비밀번호로 로그인해 주세요",
+    "offerTitle": "다음부터 얼굴·지문으로 로그인할까요?",
+    "offerBody": "패스키를 만들면 비밀번호를 입력하지 않고 이 기기의 얼굴 인식·지문·화면 잠금만으로 로그인할 수 있어요.",
+    "offerAccept": "패스키 만들기",
+    "offerLater": "나중에",
+    "privacyNote": "얼굴·지문 정보는 기기 안에서만 확인되며 Jaziba로 전송되지 않아요."
   }
 }

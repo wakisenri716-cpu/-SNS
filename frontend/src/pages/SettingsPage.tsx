@@ -7,7 +7,9 @@ import { isDataSaverEnabled, setDataSaverEnabled } from "../components/AutoplayV
 import { setThemePref, useThemePref, type ThemePref } from "../lib/theme";
 import { disablePush, enablePush, getPushState, type PushState } from "../lib/push";
 import { showToast } from "../lib/toast";
-import { Monitor, Moon, Sun } from "lucide-react";
+import { Fingerprint, Monitor, Moon, Sun, Trash2 } from "lucide-react";
+import { createPasskey, deletePasskey, deviceCanCreatePasskey, listPasskeys, passkeysSupported, type PasskeyInfo } from "../lib/passkeys";
+import { relativeTime } from "../lib/relativeTime";
 import { SUPPORTED_LANGUAGES, setAppLanguage, type SupportedLanguage } from "../i18n";
 import { NATIONALITIES, REEL_CATEGORIES, TRAVEL_COMPANIONS, type AuthUser } from "../types";
 
@@ -510,6 +512,89 @@ function LanguageSection() {
   );
 }
 
+// パスキー: sign in with this device's face / fingerprint / PIN. Lists the
+// account's passkeys (each device or synced keychain has its own).
+function PasskeySection() {
+  const { t, i18n } = useTranslation();
+  const { user } = useAuth();
+  const [items, setItems] = useState<PasskeyInfo[] | null>(null);
+  const [canCreate, setCanCreate] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    listPasskeys().then(setItems).catch(() => setItems([]));
+    void deviceCanCreatePasskey().then(setCanCreate);
+  }, []);
+
+  async function add() {
+    setBusy(true);
+    try {
+      const created = await createPasskey();
+      if (created) {
+        setItems((prev) => [...(prev ?? []), created]);
+        showToast(t("passkey.created"));
+      }
+    } catch (err: any) {
+      showToast(err?.response?.data?.error ?? t("passkey.createError"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function remove(p: PasskeyInfo) {
+    if (!window.confirm(t("passkey.removeConfirm"))) return;
+    await deletePasskey(
+      p.id,
+      user!.id,
+      (items ?? []).filter((x) => x.id !== p.id).map((x) => x.id)
+    );
+    setItems((prev) => prev?.filter((x) => x.id !== p.id) ?? null);
+    showToast(t("passkey.removed"));
+  }
+
+  if (!passkeysSupported()) return null;
+  return (
+    <section className="border-b border-gray-200 p-4 lg:p-6">
+      <h2 className="mb-1 text-sm font-semibold text-gray-600">{t("passkey.heading")}</h2>
+      <p className="mb-3 text-xs leading-relaxed text-gray-500">{t("passkey.description")}</p>
+      {items && items.length > 0 && (
+        <ul className="mb-3 divide-y divide-gray-100 rounded-2xl border border-gray-200 lg:max-w-md">
+          {items.map((p) => (
+            <li key={p.id} className="flex items-center gap-3 px-3 py-2.5">
+              <Fingerprint className="h-5 w-5 shrink-0 text-jz-red" />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-semibold text-jz-ink">
+                  {p.name || t("passkey.unnamed")}
+                  {p.backedUp && <span className="ml-1.5 text-[11px] font-normal text-gray-500">{t("passkey.synced")}</span>}
+                </span>
+                <span className="block text-[11px] text-gray-500">
+                  {p.lastUsedAt ? t("passkey.lastUsed", { when: relativeTime(p.lastUsedAt, i18n.language) }) : t("passkey.neverUsed")}
+                </span>
+              </span>
+              <button
+                type="button"
+                onClick={() => void remove(p)}
+                aria-label={t("passkey.remove", { name: p.name || t("passkey.unnamed") })}
+                className="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-jz-red"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+      <button
+        type="button"
+        onClick={() => void add()}
+        disabled={busy}
+        className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+      >
+        <Fingerprint className="h-4 w-4" /> {canCreate ? t("passkey.createHere") : t("passkey.create")}
+      </button>
+    </section>
+  );
+}
+
 function PasswordSection() {
   const { t } = useTranslation();
   const [currentPassword, setCurrentPassword] = useState("");
@@ -690,6 +775,7 @@ export default function SettingsPage() {
       <DataSaverSection />
       <LanguageSection />
 
+      {user && <PasskeySection />}
       {user && <PasswordSection />}
 
       <div className="flex flex-col items-start gap-2 border-b border-gray-200 p-4 lg:p-6">
