@@ -837,5 +837,16 @@
     "turnOn": "켜기",
     "dismiss": "닫기",
     "enabledToast": "푸시 알림을 켰습니다"
+  },
+  "flyover": {
+    "button": "3D로 둘러보기",
+    "title": "일정을 3D로 둘러보기",
+    "stopOf": "{{total}}곳 중 {{n}}번째",
+    "overview": "{{count}}곳을 도는 여행",
+    "overviewHint": "순서대로 하늘을 날아 이동합니다",
+    "prev": "이전 장소",
+    "next": "다음 장소",
+    "pause": "일시 정지",
+    "play": "재생"
   }
 }

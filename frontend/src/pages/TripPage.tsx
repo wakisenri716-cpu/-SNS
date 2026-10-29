@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { isAxiosError } from "axios";
-import { Bookmark, Check, Clock, Flag, MapPin } from "lucide-react";
+import { Bookmark, Check, Clock, Flag, MapPin, Play } from "lucide-react";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { useIsTraveler } from "../components/ItineraryRail";
@@ -11,6 +11,8 @@ import { computeTimeline, formatClock, overnightStops } from "../lib/itineraryTi
 import { notifySavesChanged } from "../lib/savesChanged";
 import { showToast } from "../lib/toast";
 import type { SharedTrip } from "../types";
+
+const TripFlyover = lazy(() => import("../components/TripFlyover"));
 
 // A しおり a traveler shared with their companions (/trip/:token): the same
 // timed route, read-only and without where they start from. Signed-in
@@ -25,6 +27,7 @@ export default function TripPage() {
   const [missing, setMissing] = useState(false);
   const [saved, setSaved] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
+  const [flyoverOpen, setFlyoverOpen] = useState(false);
 
   useEffect(() => {
     setTrip(null);
@@ -102,6 +105,33 @@ export default function TripPage() {
       <p className="mt-1.5 text-sm text-gray-500">
         {t("trip.summary", { count: trip.stops.length, places: municipalities.slice(0, 3).join("・") })}
       </p>
+      {trip.stops.length > 0 && (
+        <button
+          type="button"
+          onClick={() => setFlyoverOpen(true)}
+          className="mt-4 inline-flex items-center gap-1.5 self-start rounded-full bg-jz-ink px-4 py-2 text-sm font-bold text-white active:scale-95"
+        >
+          <Play className="h-3.5 w-3.5 fill-white" /> {t("flyover.button")}
+        </button>
+      )}
+      {flyoverOpen && (
+        <Suspense fallback={null}>
+          <TripFlyover
+            onClose={() => setFlyoverOpen(false)}
+            stops={trip.stops.map((stop, i) => ({
+              id: stop.id,
+              name: stop.locationName || stop.caption.slice(0, 30),
+              sub: `${t("itinerary.arriveDepart", {
+                arrive: formatClock(times[i].arrive, t, times[i].day),
+                depart: formatClock(times[i].leave, t, times[i].day),
+              })}・${stop.municipality.name}`,
+              lat: stop.locationLat,
+              lng: stop.locationLng,
+              videoUrl: stop.videoUrl,
+            }))}
+          />
+        </Suspense>
+      )}
       {trip.isMine && (
         <p className="mt-4 rounded-2xl bg-jz-tint px-4 py-3 text-xs leading-relaxed text-jz-ink">{t("trip.mineNote")}</p>
       )}

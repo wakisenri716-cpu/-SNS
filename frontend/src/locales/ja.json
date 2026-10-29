@@ -837,5 +837,16 @@
     "turnOn": "オンにする",
     "dismiss": "閉じる",
     "enabledToast": "プッシュ通知をオンにしました"
+  },
+  "flyover": {
+    "button": "3Dで巡る",
+    "title": "しおりを3Dで巡る",
+    "stopOf": "{{n}} / {{total}} か所目",
+    "overview": "{{count}}か所をめぐる旅",
+    "overviewHint": "順番に空から飛んでいきます",
+    "prev": "前の場所",
+    "next": "次の場所",
+    "pause": "一時停止",
+    "play": "再生"
   }
 }

@@ -7,7 +7,7 @@ import SchematicRouteMap from "./SchematicRouteMap";
 import { projectLatLngToUnitSquare } from "../lib/schematicMap";
 import { notifySavesChanged, onSavesChanged } from "../lib/savesChanged";
 import type { Itinerary } from "../types";
-import { CalendarPlus, ChevronDown, ChevronUp, Flag, House, Link2Off, Share2, Sparkles, WifiOff, X } from "lucide-react";
+import { CalendarPlus, ChevronDown, ChevronUp, Flag, House, Link2Off, Play, Share2, Sparkles, WifiOff, X } from "lucide-react";
 import { downloadItineraryIcs } from "../lib/ics";
 import { computeTimeline, formatClock, overnightStops } from "../lib/itineraryTimeline";
 import LegRow, { DayDivider } from "./ItineraryLegRow";
@@ -15,6 +15,7 @@ import { shareLink } from "../lib/shareLink";
 import { showToast } from "../lib/toast";
 
 const TripPlanSheet = lazy(() => import("./TripPlanSheet"));
+const TripFlyover = lazy(() => import("./TripFlyover"));
 
 type ItineraryView = "list" | "map";
 
@@ -41,6 +42,7 @@ export function ItineraryPanel({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
   const [originDraft, setOriginDraft] = useState("");
   const [startDraft, setStartDraft] = useState("09:00");
   const [planOpen, setPlanOpen] = useState(false);
+  const [flyoverOpen, setFlyoverOpen] = useState(false);
   // Served from the service worker's saved copy because we're offline.
   const [offline, setOffline] = useState(false);
   const [calendarDate, setCalendarDate] = useState<string | null>(null);
@@ -224,7 +226,34 @@ export function ItineraryPanel({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
                 {t(v === "list" ? "itinerary.viewList" : "itinerary.viewMap")}
               </button>
             ))}
+            {!offline && (
+              <button
+                type="button"
+                onClick={() => setFlyoverOpen(true)}
+                className="ml-auto inline-flex items-center gap-1 rounded-full bg-jz-red px-3 py-1 text-xs font-bold text-white active:scale-95"
+              >
+                <Play className="h-3 w-3 fill-white" /> {t("flyover.button")}
+              </button>
+            )}
           </div>
+          {flyoverOpen && (
+            <Suspense fallback={null}>
+              <TripFlyover
+                onClose={() => setFlyoverOpen(false)}
+                stops={itinerary.stops.map((stop, i) => ({
+                  id: stop.id,
+                  name: stop.locationName || stop.caption.slice(0, 30),
+                  sub: `${t("itinerary.arriveDepart", {
+                    arrive: formatClock(times[i].arrive, t, times[i].day),
+                    depart: formatClock(times[i].leave, t, times[i].day),
+                  })}・${stop.municipality.name}`,
+                  lat: stop.locationLat,
+                  lng: stop.locationLng,
+                  videoUrl: stop.videoUrl,
+                }))}
+              />
+            </Suspense>
+          )}
 
           {view === "map" && (
             <SchematicRouteMap

@@ -236,6 +236,33 @@ body {
 
 /* ---- Map ---------------------------------------------------------------- */
 /* Post markers: round video stills with the Jaziba red rim and a pointer. */
+/* 3Dで巡る: numbered stops on the flyover map; the current one pulses. */
+.flyover-pin {
+  display: flex;
+  height: 30px;
+  width: 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 2px solid #fff;
+  background: #d7202e;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 6px 18px -4px rgba(215, 32, 46, 0.7);
+  transition: transform 0.4s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+.flyover-pin.is-current {
+  transform: scale(1.35);
+  animation: flyover-pulse 1.6s ease-out infinite;
+}
+@keyframes flyover-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(215, 32, 46, 0.6); }
+  100% { box-shadow: 0 0 0 18px rgba(215, 32, 46, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flyover-pin.is-current { animation: none; }
+}
 .map-bubble {
   position: relative;
   width: 54px;

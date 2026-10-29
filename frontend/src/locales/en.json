@@ -853,5 +853,17 @@
     "turnOn": "Turn on",
     "dismiss": "Dismiss",
     "enabledToast": "Push notifications are on"
+  },
+  "flyover": {
+    "button": "3D tour",
+    "title": "Your trip in 3D",
+    "stopOf": "Stop {{n}} of {{total}}",
+    "overview_one": "A trip to {{count}} place",
+    "overview_other": "A trip to {{count}} places",
+    "overviewHint": "Flying to each one in order",
+    "prev": "Previous stop",
+    "next": "Next stop",
+    "pause": "Pause",
+    "play": "Play"
   }
 }
