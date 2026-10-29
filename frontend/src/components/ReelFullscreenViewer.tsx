@@ -5,6 +5,7 @@ import { useAuth } from "../auth/AuthContext";
 import AutoplayVideo from "./AutoplayVideo";
 import Avatar from "./Avatar";
 import HeartBurst from "./HeartBurst";
+import LiveReactions from "./LiveReactions";
 import CommentsSheet from "./CommentsSheet";
 import ShareButton from "./ShareButton";
 import { TravelerTagChips } from "./TravelerTagChips";
@@ -253,6 +254,14 @@ export default function ReelFullscreenViewer({
   const [commentsReelId, setCommentsReelId] = useState<string | null>(null);
 
   const scrollerRef = useRef<HTMLDivElement>(null);
+  // The reel on screen, for the live layer (viewers + reactions).
+  const [currentId, setCurrentId] = useState(initialId);
+  function onScroll() {
+    const sc = scrollerRef.current;
+    if (!sc) return;
+    const id = reels[Math.min(Math.round(sc.scrollTop / Math.max(1, sc.clientHeight)), reels.length - 1)]?.id;
+    if (id && id !== currentId) setCurrentId(id);
+  }
   // Opened with a morph from the feed card: skip the zoom-in animation.
   const [morphedIn] = useState(() => !!heroId);
 
@@ -300,7 +309,8 @@ export default function ReelFullscreenViewer({
         </button>
       )}
 
-      <div ref={scrollerRef} className="h-full snap-y snap-mandatory overflow-y-scroll">
+      <LiveReactions reelId={currentId} />
+      <div ref={scrollerRef} onScroll={onScroll} className="h-full snap-y snap-mandatory overflow-y-scroll">
         {reels.map((reel) => (
           <div
             key={reel.id}

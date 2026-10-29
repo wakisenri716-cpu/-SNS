@@ -851,7 +851,15 @@
     "play": "재생"
   },
   "live": {
-    "viewers": "지금 {{count}}명이 보고 있어요"
+    "viewers": "지금 {{count}}명이 보고 있어요",
+    "watching": "{{count}}명 시청 중",
+    "reactLabel": "실시간 리액션",
+    "reaction": {
+      "heart": "하트 보내기",
+      "wow": "좋아요 보내기",
+      "clap": "박수 보내기",
+      "fire": "불꽃 보내기"
+    }
   },
   "audioGuide": {
     "start": "음성 가이드 듣기",

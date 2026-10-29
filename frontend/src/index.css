@@ -236,6 +236,21 @@ body {
 
 /* ---- Map ---------------------------------------------------------------- */
 /* Post markers: round video stills with the Jaziba red rim and a pointer. */
+/* ライブリアクション: emoji drifting up and fading. */
+.live-float {
+  animation: live-float 2.5s cubic-bezier(0.2, 0.6, 0.4, 1) forwards;
+}
+@keyframes live-float {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  12% { transform: translateY(-20px) scale(1.15); opacity: 1; }
+  50% { transform: translateY(-45%) translateX(10px); }
+  100% { transform: translateY(-100%) translateX(-6px) scale(0.9); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-float { animation: live-float-still 1.2s ease forwards; }
+  @keyframes live-float-still { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+}
+
 /* 音声ガイド: a small equalizer while speaking. */
 .audio-bar {
   height: 40%;

@@ -15,10 +15,7 @@ import { relativeTime } from "../lib/relativeTime";
 import { useTilt } from "../lib/useTilt";
 import { formatDistance } from "../lib/geo";
 import type { Reel } from "../types";
-
-function haptic() {
-  navigator.vibrate?.(8);
-}
+import { haptic } from "../lib/haptics";
 
 // One post in the home feed as a Jaziba travel card: the video carries the
 // poster (top) and the place with a "行き方" button (bottom) — getting there

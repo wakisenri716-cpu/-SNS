@@ -870,7 +870,16 @@
   },
   "live": {
     "viewers_one": "{{count}} person viewing now",
-    "viewers_other": "{{count}} people viewing now"
+    "viewers_other": "{{count}} people viewing now",
+    "watching_one": "{{count}} watching",
+    "watching_other": "{{count}} watching",
+    "reactLabel": "Live reactions",
+    "reaction": {
+      "heart": "Send a heart",
+      "wow": "Send love-it",
+      "clap": "Send applause",
+      "fire": "Send fire"
+    }
   },
   "audioGuide": {
     "start": "Listen to the audio guide",

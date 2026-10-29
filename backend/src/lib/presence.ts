@@ -15,6 +15,14 @@ export function viewerCount(reelId: string) {
   return watchers.get(reelId)?.size ?? 0;
 }
 
+// Sends one event to every tab watching this reel (live reactions).
+export function sendToWatchers(reelId: string, event: string, data: unknown) {
+  const line = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+  for (const streams of watchers.get(reelId)?.values() ?? []) {
+    for (const res of streams) res.write(line);
+  }
+}
+
 function broadcast(reelId: string) {
   const count = viewerCount(reelId);
   for (const streams of watchers.get(reelId)?.values() ?? []) {

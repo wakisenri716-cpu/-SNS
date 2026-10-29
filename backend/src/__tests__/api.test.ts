@@ -484,3 +484,34 @@ test("new-post stream: open feeds hear about a post as soon as it's published", 
   controller.abort();
   await reading;
 });
+
+test("live reactions reach everyone watching the reel, tagged with the sender", async () => {
+  const { json: map } = await call("GET", "/api/reels/map");
+  const reelId = map.items[0].id;
+  const controller = new AbortController();
+  const got: any[] = [];
+  const res = await fetch(`${base}/api/reels/${reelId}/live?client=watcher-1`, { signal: controller.signal });
+  const reading = (async () => {
+    const reader = res.body!.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    try {
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        for (const m of buffer.matchAll(/event: reaction\ndata: (\{.*\})\n\n/g)) got.push(JSON.parse(m[1]));
+        buffer = buffer.slice(buffer.lastIndexOf("\n\n") + 2);
+      }
+    } catch {
+      // aborted
+    }
+  })();
+  await new Promise((r) => setTimeout(r, 100));
+  assert.equal((await call("POST", `/api/reels/${reelId}/react`, { reaction: "fire", client: "sender-22" })).status, 204);
+  assert.equal((await call("POST", `/api/reels/${reelId}/react`, { reaction: "poop", client: "sender-22" })).status, 400);
+  for (let i = 0; i < 20 && got.length === 0; i++) await new Promise((r) => setTimeout(r, 25));
+  assert.deepEqual(got, [{ reaction: "fire", from: "sender-22" }]);
+  controller.abort();
+  await reading;
+});

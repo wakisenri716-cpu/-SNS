@@ -13,7 +13,7 @@ import { POINTS_PER_TRAVEL_REPORT, getUserPoints } from "../lib/points";
 import { hasTravelStyle, scoreReel } from "../lib/personalize";
 import { notifyFollowersOfNewPost, notifyPoster } from "../lib/notifications";
 import { summarizeByOriginAndMode, summarizeOrigins } from "../lib/travelReports";
-import { conciergeLimiter, translateLimiter, writeLimiter } from "../middleware/rateLimit";
+import { conciergeLimiter, reactionLimiter, translateLimiter, writeLimiter } from "../middleware/rateLimit";
 import { resolvePosterContext } from "../lib/posterContext";
 import { planTrip } from "../services/tripPlanner";
 import { isClaudeConfigured, logClaudeError } from "../services/claude";
@@ -21,7 +21,7 @@ import { translateCaption } from "../services/translate";
 import { buildItinerary } from "../lib/itinerary";
 import { inSeasonWhere, monthInJapan } from "../lib/season";
 import { todayInJapan } from "./events";
-import { announceNewPost, listenForNewPosts, watch } from "../lib/presence";
+import { announceNewPost, listenForNewPosts, sendToWatchers, watch } from "../lib/presence";
 import { randomBytes } from "node:crypto";
 
 const PERSONALIZED_POOL = 100;
@@ -1137,6 +1137,24 @@ router.post("/:id/comments/:commentId/translation", translateLimiter, optionalAu
 // tamper-proof). Travelers only — posters don't collect stamps.
 const VISIT_RADIUS_METERS = 1000;
 const visitSchema = z.object({ lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180) });
+
+// ライブリアクション: an emoji floats up on the screen of everyone watching
+// this reel right now (over their GET /:id/live stream). Not stored; `from`
+// lets the sender's own tab skip the echo of what it already showed.
+export const REACTIONS = ["heart", "wow", "clap", "fire"] as const;
+const reactionSchema = z.object({
+  reaction: z.enum(REACTIONS),
+  client: z.string().regex(/^[A-Za-z0-9_-]{8,64}$/),
+});
+
+router.post("/:id/react", reactionLimiter, async (req, res) => {
+  const parsed = reactionSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "リアクションが正しくありません" });
+  const reel = await prisma.reel.findUnique({ where: { id: req.params.id }, select: { id: true } });
+  if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
+  sendToWatchers(reel.id, "reaction", { reaction: parsed.data.reaction, from: parsed.data.client });
+  res.status(204).end();
+});
 
 // How many travelers have got this spot's stamp: today (Japan time) and in
 // total. Counts only — shown on the spot page as social proof.

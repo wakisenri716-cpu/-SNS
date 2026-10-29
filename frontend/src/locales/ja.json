@@ -851,7 +851,15 @@
     "play": "再生"
   },
   "live": {
-    "viewers": "いま{{count}}人が見ています"
+    "viewers": "いま{{count}}人が見ています",
+    "watching": "{{count}}人が視聴中",
+    "reactLabel": "ライブリアクション",
+    "reaction": {
+      "heart": "ハートを送る",
+      "wow": "すてき！を送る",
+      "clap": "拍手を送る",
+      "fire": "アツい！を送る"
+    }
   },
   "audioGuide": {
     "start": "音声ガイドを聞く",

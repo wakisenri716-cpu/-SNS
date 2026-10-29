@@ -851,7 +851,15 @@
     "play": "播放"
   },
   "live": {
-    "viewers": "现在有{{count}}人在看"
+    "viewers": "现在有{{count}}人在看",
+    "watching": "{{count}}人正在观看",
+    "reactLabel": "实时互动",
+    "reaction": {
+      "heart": "发送爱心",
+      "wow": "发送喜欢",
+      "clap": "发送鼓掌",
+      "fire": "发送火热"
+    }
   },
   "audioGuide": {
     "start": "收听语音导览",
