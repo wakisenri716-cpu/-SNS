@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "../prisma";
 import { optionalAuth, requireAuth, requireRole } from "../middleware/auth";
 import { uploadVideo } from "../middleware/upload";
-import { anonymousViewerState, reelInclude, serializeReel, type ReelViewerState } from "../lib/reelSerializer";
+import { anonymousViewerState, reelInclude, serializeReel, type ReelViewerState, REEL_ORDER } from "../lib/reelSerializer";
 import { getFollowedIds } from "../lib/followState";
 import { geocode, getRouteEstimate, getStaticMapImage, haversineMeters, isGoogleMapsConfigured } from "../services/googleMaps";
 import { getTransitSuggestion } from "../services/maasProvider";
@@ -70,7 +70,7 @@ router.get("/", optionalAuth, async (req, res) => {
     if (style && hasTravelStyle(style)) {
       const pool = await prisma.reel.findMany({
         take: PERSONALIZED_POOL,
-        orderBy: { createdAt: "desc" },
+        orderBy: REEL_ORDER,
         include: {
           ...reelInclude,
           likes: { where: { userId: req.auth.userId }, select: { id: true } },
@@ -94,7 +94,7 @@ router.get("/", optionalAuth, async (req, res) => {
     take,
     ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
     where,
-    orderBy: { createdAt: "desc" },
+    orderBy: REEL_ORDER,
     include: {
       ...reelInclude,
       likes: req.auth ? { where: { userId: req.auth.userId }, select: { id: true } } : false,
@@ -146,7 +146,7 @@ router.get("/map", optionalAuth, async (req, res) => {
   const reels = await prisma.reel.findMany({
     where: { locationLat: { not: null }, locationLng: { not: null } },
     take: MAP_LIMIT,
-    orderBy: { createdAt: "desc" },
+    orderBy: REEL_ORDER,
     include: {
       ...reelInclude,
       likes: req.auth ? { where: { userId: req.auth.userId }, select: { id: true } } : false,

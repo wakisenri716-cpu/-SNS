@@ -94,8 +94,12 @@ function ReelOverlayInfo({
             <Avatar name={reel.municipality.name} src={reel.municipality.avatarUrl} size={34} ring />
             <span className="min-w-0">
               <span className="block truncate text-sm font-semibold text-white drop-shadow">{poster.name}</span>
-              <span className="block truncate text-xs text-white/75 drop-shadow">
-                {reel.postedByCompany ? reel.municipality.name : reel.municipality.prefecture}
+              <span className={`block text-xs text-white/75 drop-shadow ${reel.editorial ? "text-[11px] leading-snug" : "truncate"}`}>
+                {reel.editorial
+                  ? t("editorial.byline")
+                  : reel.postedByCompany
+                    ? reel.municipality.name
+                    : reel.municipality.prefecture}
               </span>
             </span>
           </Link>

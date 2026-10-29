@@ -165,6 +165,10 @@ model Reel {
   // 見頃: comma-separated months (1–12) when the place is at its best, e.g.
   // "4,5" for spring flowers — chosen by the poster. Empty means not stated.
   bestMonths     String   @default("")
+  // An introduction Jaziba's editors wrote for a municipality that hasn't
+  // joined (see lib/municipalityListings.ts) — never shown as the town's own
+  // post; its video is an illustration.
+  editorial      Boolean  @default(false)
   viewCount      Int      @default(0)
   createdAt      DateTime @default(now())
 

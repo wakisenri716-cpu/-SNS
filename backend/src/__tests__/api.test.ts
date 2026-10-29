@@ -71,7 +71,11 @@ test("a new traveler can register and sees the seeded feed", async () => {
   traveler = reg.json.token;
   const feed = await call("GET", "/api/reels", undefined, traveler);
   assert.equal(feed.status, 200);
-  assert.equal(feed.json.items.length, 4);
+  // The demo town's own 4 posts first, then Jaziba's introductions of the towns that haven't joined.
+  assert.deepEqual(
+    feed.json.items.map((r: any) => r.editorial),
+    [false, false, false, false, true, true, true, true, true, true]
+  );
 });
 
 test("travelers cannot post reels", async () => {
@@ -691,7 +695,13 @@ test("長野県の全市町村: listing pages from public data, no one can sign 
   assert.equal(nagano_city.officeName, "長野市役所");
   const detail = (await call("GET", `/api/municipalities/${nagano_city.id}`)).json;
   assert.ok(detail.tourismSpots.some((s: any) => s.name === "善光寺"));
-  assert.deepEqual(detail.reels, []);
+  // Its posts are Jaziba's introductions, one per sight, never the town's own.
+  assert.equal(detail.reels.length, detail.tourismSpots.length);
+  assert.ok(detail.reels.every((r: any) => r.editorial === true));
+  assert.ok(detail.reels.some((r: any) => r.locationName === "善光寺" && r.category === "culture" && r.videoUrl === "/uploads/seed-theme-shrine.webm"));
+  // The demo 松本市 (joined) gets none.
+  const demo = (await call("GET", `/api/municipalities/${matsumoto.id}`)).json;
+  assert.ok(demo.reels.every((r: any) => r.editorial === false));
   // Directions work from the office when no station is set.
   const plan = await call("GET", `/api/municipalities/${nagano_city.id}/access-plan?origin=${encodeURIComponent("東京駅")}`);
   assert.equal(plan.status, 200);
@@ -707,9 +717,11 @@ test("長野県の全市町村: listing pages from public data, no one can sign 
   assert.ok(found.some((m: any) => m.name === "長野市"));
 
   // Running the sync again adds nothing.
+  const mapBefore = (await call("GET", "/api/reels/map")).json.items.length;
   const { syncMunicipalityListings } = await import("../lib/municipalityListings");
   await syncMunicipalityListings();
   assert.equal((await call("GET", "/api/municipalities")).json.length, list.length);
+  assert.equal((await call("GET", "/api/reels/map")).json.items.length, mapBefore);
 });
 
 // A software passkey authenticator: an ES256 key pair making the same

@@ -228,7 +228,8 @@ export default function FeedPage() {
   // Stories: the feed's posts grouped by municipality, ones with unwatched
   // posts first (each group keeps feed order).
   const storyGroups: StoryGroup[] = [];
-  for (const r of reels) {
+  // Stories are the towns' own posts, not Jaziba's introductions.
+  for (const r of reels.filter((r) => !r.editorial)) {
     const group = storyGroups.find((sg) => sg.municipality.id === r.municipality.id);
     if (group) group.reels.push(r);
     else storyGroups.push({ municipality: r.municipality, reels: [r] });

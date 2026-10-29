@@ -2,6 +2,11 @@ import { getTransitSuggestion } from "../services/maasProvider";
 import type { FollowedIds } from "./followState";
 import { parseBestMonths, parseTravelerTags } from "../types";
 
+// Towns' and businesses' own posts first (newest first), then Jaziba's
+// introductions of towns that haven't joined (see Reel.editorial) — for the
+// feed, the map and the AI's candidate posts.
+export const REEL_ORDER = [{ editorial: "asc" as const }, { createdAt: "desc" as const }, { id: "desc" as const }];
+
 export const reelInclude = {
   municipality: {
     select: {
@@ -48,6 +53,7 @@ export async function serializeReel(
     locationLat: number | null;
     locationLng: number | null;
     viewCount: number;
+    editorial?: boolean;
     createdAt: Date;
     municipality: {
       id: string;
@@ -81,6 +87,8 @@ export async function serializeReel(
     locationLat: reel.locationLat,
     locationLng: reel.locationLng,
     viewCount: reel.viewCount,
+    // Jaziba's own introduction, not the municipality's post (see Reel.editorial).
+    editorial: reel.editorial ?? false,
     createdAt: reel.createdAt,
     municipality: { ...municipality, isFollowing: viewer.followedMunicipalityIds.has(municipality.id) },
     postedByCompany: reel.company

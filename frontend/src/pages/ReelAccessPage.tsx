@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import EditorialBadge from "../components/EditorialBadge";
 import { api } from "../api/client";
 import AutoplayVideo from "../components/AutoplayVideo";
 import SchematicRouteMap from "../components/SchematicRouteMap";
@@ -353,8 +354,9 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
           </span>
         )}
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 to-transparent p-3 lg:p-5">
-          <span className="mb-1 self-start rounded bg-white/90 px-2 py-0.5 text-[10px] font-bold text-gray-800">
-            {t(`category.${reel.category}`)}
+          <span className="mb-1 flex flex-wrap items-center gap-1 self-start">
+            <span className="rounded bg-white/90 px-2 py-0.5 text-[10px] font-bold text-gray-800">{t(`category.${reel.category}`)}</span>
+            {reel.editorial && <EditorialBadge />}
           </span>
           <p className="text-base font-bold text-white drop-shadow lg:text-xl">
             {reel.locationName || reel.municipality.name}

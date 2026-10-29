@@ -1143,9 +1143,13 @@
     "catchphrase": "宣传口号",
     "website": "官方网站",
     "officeLabel": "起点：{{name}}（政府办公楼的位置）",
-    "notice": "{{name}}尚未加入Jaziba。本页面的市町村名、政府办公楼位置、官方网站和宣传口号来自公开数据（code4fukui/localgovjp），主要景点由Jaziba根据公开的一般信息整理。最新信息请以官方网站为准。",
+    "notice": "{{name}}尚未加入Jaziba。本页面的市町村名、政府办公楼位置、官方网站和宣传口号来自公开数据（code4fukui/localgovjp），主要景点由Jaziba根据公开的一般信息整理。帖子为Jaziba编辑部的介绍，影像为示意图。最新信息请以官方网站为准。",
     "forMunicipality": "地方政府相关人员：如需加入或修改内容，请联系我们",
     "spotsSource": "这是Jaziba根据一般公开信息整理的列表。山、湖、山口和高原的位置根据日本国土地理院《地名集日本》编辑而成（约1.5公里精度的大致位置）。",
     "spotsCount": "主要景点{{count}}处"
+  },
+  "editorial": {
+    "badge": "Jaziba编辑部介绍・影像为示意",
+    "byline": "Jaziba编辑部的介绍（并非地方政府的帖子）・影像为示意图"
   }
 }

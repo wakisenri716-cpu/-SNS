@@ -152,6 +152,8 @@ export interface Reel {
   locationLat: number | null;
   locationLng: number | null;
   viewCount: number;
+  /** Jaziba's introduction of a municipality that hasn't joined; the video is an illustration. */
+  editorial?: boolean;
   createdAt: string;
   municipality: { id: string; name: string; avatarUrl: string | null; prefecture: string; isFollowing: boolean };
   postedByCompany: { id: string; name: string; isFollowing: boolean } | null;

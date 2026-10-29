@@ -4,15 +4,16 @@ import { prisma } from "../prisma";
 import { optionalAuth } from "../middleware/auth";
 import { conciergeLimiter } from "../middleware/rateLimit";
 import { getFollowedIds } from "../lib/followState";
-import { reelInclude, serializeReel } from "../lib/reelSerializer";
+import { REEL_ORDER, reelInclude, serializeReel } from "../lib/reelSerializer";
 import { isAiConciergeConfigured, runConcierge, runPhotoConcierge } from "../services/concierge";
 import { logClaudeError } from "../services/claude";
 import { parseBestMonths, parseTravelerTags } from "../types";
 
 const router = Router();
 
-// The concierge looks at this many of the newest posts.
-const CANDIDATE_POOL = 60;
+// The concierge looks at this many posts: towns' own newest first, then
+// Jaziba's introductions (REEL_ORDER).
+const CANDIDATE_POOL = 120;
 
 const bodySchema = z.object({
   message: z.string().trim().min(1).max(300),
@@ -43,7 +44,7 @@ router.get("/status", (_req, res) => {
 async function loadCandidates(userId: string | undefined) {
   const reels = await prisma.reel.findMany({
     take: CANDIDATE_POOL,
-    orderBy: { createdAt: "desc" },
+    orderBy: REEL_ORDER,
     include: {
       ...reelInclude,
       likes: userId ? { where: { userId }, select: { id: true } } : false,

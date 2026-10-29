@@ -10,6 +10,7 @@ import { issueTicket, tripChanged } from "../lib/tripLive";
 import { planTrip } from "../services/tripPlanner";
 import { composeTrip } from "../services/tripComposer";
 import { parseBestMonths, parseTravelerTags } from "../types";
+import { REEL_ORDER } from "../lib/reelSerializer";
 
 // 旅 (trips) of the signed-in traveler: made first, then filled by choosing
 // them when bookmarking a post; each is its own しおり (see the Trip model).
@@ -350,7 +351,7 @@ router.post("/:id/plan", conciergeLimiter, async (req, res) => {
 // "AIで旅をつくる": a whole trip proposed from a description ("2泊3日で長野、
 // 温泉とお城"), built from posts that have a location (see
 // services/tripComposer). Only proposes — POST / with `items` creates it.
-const COMPOSE_POOL = 80;
+const COMPOSE_POOL = 120;
 const composeSchema = z.object({
   message: z.string().trim().min(1).max(300),
   lang: z.enum(["ja", "en", "zh", "ko"]).default("ja"),
@@ -362,7 +363,7 @@ router.post("/compose", conciergeLimiter, async (req, res) => {
   const reels = await prisma.reel.findMany({
     where: { locationLat: { not: null }, locationLng: { not: null } },
     take: COMPOSE_POOL,
-    orderBy: { createdAt: "desc" },
+    orderBy: REEL_ORDER,
     include: { municipality: { select: { name: true, prefecture: true } }, company: { select: { name: true } } },
   });
   const result = await composeTrip(

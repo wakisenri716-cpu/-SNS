@@ -1168,9 +1168,13 @@
     "catchphrase": "Slogan",
     "website": "Official website",
     "officeLabel": "Starting point: {{name}} (the municipal office)",
-    "notice": "{{name}} hasn't joined Jaziba yet. Jaziba made this page from public data (code4fukui/localgovjp) for the name, office location, official website and slogan, and from generally known information for the main sights. Please check the official website for the latest information.",
+    "notice": "{{name}} hasn't joined Jaziba yet. Jaziba made this page from public data (code4fukui/localgovjp) for the name, office location, official website and slogan, and from generally known information for the main sights. The posts are introductions by Jaziba's editors, and their videos are illustrations. Please check the official website for the latest information.",
     "forMunicipality": "For municipalities: contact us to join or correct this page",
     "spotsSource": "A list Jaziba made from generally known information. Positions of mountains, lakes, passes and highlands were made by editing the GSI \"Gazetteer of Japan\" (approximate, to about 1.5 km).",
     "spotsCount": "{{count}} main sights"
+  },
+  "editorial": {
+    "badge": "Introduced by Jaziba · illustration",
+    "byline": "Introduced by Jaziba's editors (not the town's own post) · the video is an illustration"
   }
 }
