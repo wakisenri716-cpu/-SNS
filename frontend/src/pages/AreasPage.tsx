@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Search } from "lucide-react";
 import { api } from "../api/client";
 import Avatar from "../components/Avatar";
 import { REGIONS } from "../lib/regions";
@@ -14,13 +14,19 @@ export default function AreasPage() {
   const { t } = useTranslation();
   const [municipalities, setMunicipalities] = useState<Municipality[] | null>(null);
   const [region, setRegion] = useState<string | null>(null);
+  const [filter, setFilter] = useState("");
 
   useEffect(() => {
     api.get<Municipality[]>("/municipalities").then(({ data }) => setMunicipalities(data));
   }, []);
 
+  // Filter by name or reading ("まつ" finds 松本市・松川町…).
+  const q = filter.trim();
+  const matches = (m: Municipality) => !q || m.name.includes(q) || m.kana.includes(q) || m.prefecture.includes(q);
+  const joined = (municipalities ?? []).filter((m) => !m.listing).length;
+  const listed = (municipalities ?? []).length;
   const byPrefecture = new Map<string, Municipality[]>();
-  for (const m of municipalities ?? []) byPrefecture.set(m.prefecture, [...(byPrefecture.get(m.prefecture) ?? []), m]);
+  for (const m of (municipalities ?? []).filter(matches)) byPrefecture.set(m.prefecture, [...(byPrefecture.get(m.prefecture) ?? []), m]);
   const countIn = (prefs: readonly string[]) => prefs.reduce((n, p) => n + (byPrefecture.get(p)?.length ?? 0), 0);
   const shown = REGIONS.filter((r) => !region || r.key === region);
 
@@ -30,7 +36,21 @@ export default function AreasPage() {
         {t("areas.heading")}
         <span className="ml-1 inline-block h-2 w-2 rounded-full bg-jz-red align-baseline" aria-hidden />
       </h1>
-      <p className="mt-1 text-sm text-gray-500">{t("areas.sub", { count: municipalities?.length ?? 0 })}</p>
+      <p className="mt-1 text-sm text-gray-500">
+        {t("areas.sub", { count: joined })}
+        {listed > joined && <span className="ml-2 inline-block">{t("areas.listed", { count: listed })}</span>}
+      </p>
+      <label className="mt-4 flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2.5 focus-within:ring-2 focus-within:ring-jz-red/30">
+        <Search className="h-4 w-4 shrink-0 text-gray-500" />
+        <input
+          type="search"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          placeholder={t("areas.filterPlaceholder")}
+          aria-label={t("areas.filterPlaceholder")}
+          className="min-w-0 flex-1 bg-transparent text-sm text-jz-ink outline-none placeholder:text-gray-500"
+        />
+      </label>
 
       <div className="scrollbar-none -mx-4 mt-4 flex gap-2 overflow-x-auto px-4">
         <button
@@ -85,15 +105,22 @@ export default function AreasPage() {
                         >
                           <Avatar name={m.name} src={m.avatarUrl} size={40} ring />
                           <span className="min-w-0 flex-1">
-                            <span className="block truncate text-sm font-bold text-jz-ink">{m.name}</span>
-                            <span className="block truncate text-xs text-gray-500">{m.description || p}</span>
+                            <span className="flex items-center gap-1.5 truncate text-sm font-bold text-jz-ink">
+                              {m.name}
+                              {m.listing && (
+                                <span className="shrink-0 rounded-full bg-gray-100 px-1.5 py-px text-[10px] font-semibold text-gray-500">{t("listing.badge")}</span>
+                              )}
+                            </span>
+                            <span className="block truncate text-xs text-gray-500">
+                              {m.listing ? t("listing.spotsCount", { count: m.tourismSpotCount ?? 0 }) : m.description || p}
+                            </span>
                           </span>
                           <ChevronRight className="h-4 w-4 shrink-0 text-gray-500" />
                         </Link>
                       ))}
                     </div>
                   ))}
-                {countIn(r.prefectures) === 0 && <p className="text-xs text-gray-500">{t("areas.none")}</p>}
+                {countIn(r.prefectures) === 0 && <p className="text-xs text-gray-500">{q ? t("areas.noMatch") : t("areas.none")}</p>}
               </div>
             </section>
           ))}

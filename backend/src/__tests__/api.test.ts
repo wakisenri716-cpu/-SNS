@@ -675,6 +675,43 @@ test("旅の振り返り: the year's saves, stamps, prefectures and busiest mont
   assert.equal((await call("GET", "/api/me/recap")).status, 401);
 });
 
+test("長野県の全市町村: listing pages from public data, no one can sign in to them, and the demo 松本市 isn't duplicated", async () => {
+  const list = (await call("GET", "/api/municipalities")).json;
+  const nagano = list.filter((m: any) => m.prefecture === "長野県");
+  assert.equal(nagano.length, 77);
+  assert.equal(nagano.filter((m: any) => m.name === "松本市").length, 1);
+  const matsumoto = nagano.find((m: any) => m.name === "松本市");
+  assert.equal(matsumoto.listing, false);
+  assert.equal(matsumoto.kana, "まつもとし");
+  // Joined ones are listed first.
+  assert.equal(list[0].listing, false);
+
+  const nagano_city = nagano.find((m: any) => m.name === "長野市");
+  assert.equal(nagano_city.listing, true);
+  assert.equal(nagano_city.officeName, "長野市役所");
+  const detail = (await call("GET", `/api/municipalities/${nagano_city.id}`)).json;
+  assert.ok(detail.tourismSpots.some((s: any) => s.name === "善光寺"));
+  assert.deepEqual(detail.reels, []);
+  // Directions work from the office when no station is set.
+  const plan = await call("GET", `/api/municipalities/${nagano_city.id}/access-plan?origin=${encodeURIComponent("東京駅")}`);
+  assert.equal(plan.status, 200);
+  assert.equal(plan.json.destinationLabel, "長野市役所");
+  const sakae = nagano.find((m: any) => m.name === "栄村");
+  assert.equal(sakae.officeName, "栄村役場");
+
+  // The listing account can't be signed in to.
+  const login = await call("POST", "/api/auth/login", { email: "listing-202011@listing.jaziba.invalid", password: "password123" });
+  assert.equal(login.status, 401);
+  // Searching by reading finds it.
+  const found = (await call("GET", `/api/search?q=${encodeURIComponent("ながのし")}`)).json.municipalities;
+  assert.ok(found.some((m: any) => m.name === "長野市"));
+
+  // Running the sync again adds nothing.
+  const { syncMunicipalityListings } = await import("../lib/municipalityListings");
+  await syncMunicipalityListings();
+  assert.equal((await call("GET", "/api/municipalities")).json.length, list.length);
+});
+
 // A software passkey authenticator: an ES256 key pair making the same
 // attestation ("none") and assertions a phone or laptop would.
 async function softAuthenticator(origin: string) {

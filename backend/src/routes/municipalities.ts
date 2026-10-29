@@ -29,8 +29,13 @@ export function serializeMunicipality(
     nearestStationLat: number | null;
     nearestStationLng: number | null;
     commentsEnabled: boolean;
+    kana?: string;
+    websiteUrl?: string;
+    officeLat?: number | null;
+    officeLng?: number | null;
+    listing?: boolean;
     createdAt: Date;
-    _count?: { followers: number };
+    _count?: { followers: number; tourismSpots?: number };
     tourismSpots?: {
       id: string;
       name: string;
@@ -58,14 +63,25 @@ export function serializeMunicipality(
     nearestStationLat: m.nearestStationLat,
     nearestStationLng: m.nearestStationLng,
     maasConfigured: isGoogleMapsConfigured(),
+    // Where directions lead when no station is set: the city hall / town office.
+    officeName: m.officeLat != null && m.officeLng != null ? officeName(m.name) : null,
+    kana: m.kana ?? "",
+    websiteUrl: m.websiteUrl ?? "",
+    listing: m.listing ?? false,
     commentsEnabled: m.commentsEnabled,
     followerCount: m._count?.followers ?? 0,
+    tourismSpotCount: m._count?.tourismSpots ?? m.tourismSpots?.length ?? 0,
     isFollowing: viewer.isFollowing,
     createdAt: m.createdAt,
   };
 }
 
-export const municipalityCountInclude = { _count: { select: { followers: true } } } as const;
+// 市 → 市役所, 町/村 → 町役場/村役場.
+export function officeName(name: string) {
+  return name.endsWith("市") ? `${name}役所` : `${name}役場`;
+}
+
+export const municipalityCountInclude = { _count: { select: { followers: true, tourismSpots: true } } } as const;
 export const tourismSpotsOrder = { tourismSpots: { orderBy: { createdAt: "asc" as const } } };
 // Shared by both this router and auth.ts (login/register-municipality/me),
 // so a municipality's serialized shape is identical no matter which endpoint
@@ -75,8 +91,9 @@ export const municipalityDetailInclude = { ...municipalityCountInclude, ...touri
 
 // List all municipalities (for directory / search)
 router.get("/", async (_req, res) => {
+  // Joined municipalities first, then the listings (in code order: cities, then towns and villages).
   const list = await prisma.municipality.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ listing: "asc" }, { lgCode: "asc" }, { createdAt: "desc" }],
     include: municipalityCountInclude,
   });
   res.json(list.map((m) => serializeMunicipality(m)));
@@ -149,9 +166,14 @@ router.get("/:id/access-plan", async (req, res) => {
 
   const municipality = await prisma.municipality.findUnique({ where: { id: req.params.id } });
   if (!municipality) return res.status(404).json({ error: "自治体が見つかりません" });
-  if (municipality.nearestStationLat == null || municipality.nearestStationLng == null) {
-    return res.status(400).json({ error: "この自治体はまだ起点駅が設定されていません" });
-  }
+  // The station the municipality set, else its office (public data).
+  const hasStation = municipality.nearestStationLat != null && municipality.nearestStationLng != null;
+  const point = hasStation
+    ? { name: municipality.nearestStationName || municipality.name, lat: municipality.nearestStationLat!, lng: municipality.nearestStationLng! }
+    : municipality.officeLat != null && municipality.officeLng != null
+      ? { name: officeName(municipality.name), lat: municipality.officeLat, lng: municipality.officeLng }
+      : null;
+  if (!point) return res.status(400).json({ error: "この自治体はまだ起点駅が設定されていません" });
 
   let originCoords: { lat: number; lng: number } | null = null;
   if (isGoogleMapsConfigured()) {
@@ -164,9 +186,9 @@ router.get("/:id/access-plan", async (req, res) => {
   }
 
   const suggestion = await getTransitSuggestion(
-    municipality.nearestStationName || municipality.name,
-    municipality.nearestStationLat,
-    municipality.nearestStationLng,
+    point.name,
+    point.lat,
+    point.lng,
     { label: origin, ...originCoords },
     parseDepartureTime(req.query.datetime)
   );

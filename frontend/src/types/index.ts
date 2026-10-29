@@ -109,6 +109,13 @@ export interface Municipality {
   nearestStationLat: number | null;
   nearestStationLng: number | null;
   maasConfigured: boolean;
+  /** "長野市役所" when the office position is known (directions fall back to it). */
+  officeName: string | null;
+  kana: string;
+  websiteUrl: string;
+  /** A page Jaziba made from public data; the municipality hasn't joined. */
+  listing: boolean;
+  tourismSpotCount?: number;
   commentsEnabled: boolean;
   followerCount: number;
   isFollowing: boolean;

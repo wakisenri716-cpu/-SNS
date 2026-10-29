@@ -26,11 +26,14 @@ router.get("/", async (req, res) => {
           where: {
             OR: [
               { name: { contains: q } },
+              { kana: { contains: q } },
               { prefecture: { contains: q } },
               { description: { contains: q } },
               { tourismSpots: { some: { OR: [{ name: { contains: q } }, { description: { contains: q } }] } } },
             ],
           },
+          // Joined municipalities before pages made from public data.
+          orderBy: [{ listing: "asc" }, { lgCode: "asc" }],
           take: SEARCH_LIMIT,
         })
       : Promise.resolve([]),

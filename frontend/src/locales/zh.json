@@ -780,7 +780,10 @@
       "chugoku": "中国地区",
       "shikoku": "四国",
       "kyushu": "九州・冲绳"
-    }
+    },
+    "listed": "已收录的地方政府（含未加入）：{{count}}",
+    "filterPlaceholder": "按名称或读音筛选",
+    "noMatch": "没有符合的地方政府"
   },
   "trip": {
     "loadError": "无法加载行程",
@@ -1134,5 +1137,15 @@
     "nearPoint": "分享地点附近的帖子",
     "noneNear": "{{km}}公里内没有帖子",
     "search": "用搜索寻找"
+  },
+  "listing": {
+    "badge": "未加入",
+    "catchphrase": "宣传口号",
+    "website": "官方网站",
+    "officeLabel": "起点：{{name}}（政府办公楼的位置）",
+    "notice": "{{name}}尚未加入Jaziba。本页面的市町村名、政府办公楼位置、官方网站和宣传口号来自公开数据（code4fukui/localgovjp），主要景点由Jaziba根据公开的一般信息整理。最新信息请以官方网站为准。",
+    "forMunicipality": "地方政府相关人员：如需加入或修改内容，请联系我们",
+    "spotsSource": "这是Jaziba根据一般公开信息整理的列表。山、湖、山口和高原的位置根据日本国土地理院《地名集日本》编辑而成（约1.5公里精度的大致位置）。",
+    "spotsCount": "主要景点{{count}}处"
   }
 }

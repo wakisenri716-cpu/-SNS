@@ -105,6 +105,7 @@ export default function SearchPage() {
                     className="rounded-2xl border border-gray-200/80 bg-white p-3 text-sm text-gray-800 hover:bg-gray-50"
                   >
                     {m.name}（{m.prefecture}）
+                    {m.listing && <span className="ml-1.5 rounded-full bg-gray-100 px-1.5 py-px text-[10px] font-semibold text-gray-500">{t("listing.badge")}</span>}
                   </Link>
                 ))}
               </div>

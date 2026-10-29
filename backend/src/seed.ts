@@ -4,6 +4,7 @@ import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 import { locateTourismSpot } from "./lib/locateTourismSpot";
+import { syncMunicipalityListings } from "./lib/municipalityListings";
 
 const SEED_ASSETS_DIR = path.resolve(__dirname, "../seed-assets");
 const UPLOAD_DIR = process.env.UPLOAD_DIR || "./uploads";
@@ -103,8 +104,13 @@ const DEMO_VIEWERS = [
 // otherwise greet every wake-up with a blank feed. Safe to run repeatedly: it
 // no-ops once any municipality already exists.
 export async function seedIfEmpty() {
-  const existing = await prisma.municipality.count();
-  if (existing > 0) return;
+  if ((await prisma.municipality.count()) === 0) await seedDemo();
+  // Every Nagano municipality's page (after the demo, so the demo 松本市 is
+  // kept and filled in rather than duplicated).
+  await syncMunicipalityListings();
+}
+
+async function seedDemo() {
 
   console.log("[seed] Database is empty, creating demo municipalities and reels...");
   const passwordHash = await bcrypt.hash(SEED_PASSWORD, 10);

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { fetchSavedReelIds, onSavesChanged } from "../lib/savesChanged";
@@ -16,7 +16,9 @@ import {
   BadgeCheck,
   BedDouble,
   CalendarDays,
+  Globe,
   Grid3x3,
+  Info,
   Landmark,
   MapPin,
   TrainFront,
@@ -78,6 +80,8 @@ export default function MunicipalityProfilePage() {
     api.get(`/municipalities/${id}`).then(({ data }) => {
       setMunicipality(data);
       setReels(data.reels ?? []);
+      // A page for a town that hasn't joined has no posts yet: open on its sights.
+      if (data.listing && (data.reels ?? []).length === 0) setTab("tourismInfo");
     });
   }, [id]);
 
@@ -188,7 +192,11 @@ export default function MunicipalityProfilePage() {
           <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
             <h1 className="flex items-center gap-1.5 text-xl text-gray-900">
               {municipality.name}
-              <BadgeCheck className="h-5 w-5 fill-jz-red text-white" aria-label={t("municipalityProfile.officialBadge")} />
+              {municipality.listing ? (
+                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">{t("listing.badge")}</span>
+              ) : (
+                <BadgeCheck className="h-5 w-5 fill-jz-red text-white" aria-label={t("municipalityProfile.officialBadge")} />
+              )}
             </h1>
             {token && (
               <button
@@ -214,16 +222,36 @@ export default function MunicipalityProfilePage() {
           </div>
 
           <div className="mt-1 text-sm text-gray-900 md:mt-5">
-            <p className="text-xs text-gray-500">{t("municipalityProfile.officialBadge")}</p>
-            {municipality.description && <p className="mt-1 whitespace-pre-wrap">{municipality.description}</p>}
+            {municipality.listing ? (
+              <>
+                {municipality.kana && <p className="text-xs text-gray-500">{municipality.kana}</p>}
+                {municipality.description && (
+                  <p className="mt-1 whitespace-pre-wrap">
+                    <span className="mr-1 text-xs text-gray-500">{t("listing.catchphrase")}</span>「{municipality.description}」
+                  </p>
+                )}
+              </>
+            ) : (
+              <>
+                <p className="text-xs text-gray-500">{t("municipalityProfile.officialBadge")}</p>
+                {municipality.description && <p className="mt-1 whitespace-pre-wrap">{municipality.description}</p>}
+              </>
+            )}
             <p className="mt-1 flex flex-wrap gap-x-3 text-gray-500">
               <span className="inline-flex items-center gap-1">
                 <MapPin className="h-3.5 w-3.5" /> {municipality.prefecture}
               </span>
-              <span className="inline-flex items-center gap-1">
-                <CalendarDays className="h-3.5 w-3.5" /> {formatDate(municipality.createdAt, i18n.language)}
-                {t("municipalityProfile.since")}
-              </span>
+              {!municipality.listing && (
+                <span className="inline-flex items-center gap-1">
+                  <CalendarDays className="h-3.5 w-3.5" /> {formatDate(municipality.createdAt, i18n.language)}
+                  {t("municipalityProfile.since")}
+                </span>
+              )}
+              {municipality.websiteUrl && (
+                <a href={municipality.websiteUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-jz-red hover:underline">
+                  <Globe className="h-3.5 w-3.5" /> {t("listing.website")}
+                </a>
+              )}
             </p>
           </div>
 
@@ -239,6 +267,18 @@ export default function MunicipalityProfilePage() {
           )}
         </div>
       </header>
+
+      {municipality.listing && (
+        <div className="mx-4 mt-4 flex gap-2.5 rounded-2xl bg-gray-50 p-3 text-xs leading-relaxed text-gray-600 md:mx-12">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+          <p>
+            {t("listing.notice", { name: municipality.name })}{" "}
+            <Link to="/contact" className="font-semibold text-jz-red hover:underline">
+              {t("listing.forMunicipality")}
+            </Link>
+          </p>
+        </div>
+      )}
 
       {/* Instagram-style tab strip: the active tab gets a top rule. */}
       <div className="scrollbar-none mt-4 flex overflow-x-auto border-t border-gray-200 md:mt-0 md:justify-center md:gap-12">
@@ -270,6 +310,9 @@ export default function MunicipalityProfilePage() {
         <UpcomingEvents municipalityId={municipality.id} layout="list" />
       ) : tab === "tourismInfo" ? (
         <div className="border-b border-gray-200 p-4 lg:p-6">
+          {municipality.listing && municipality.tourismSpots.length > 0 && (
+            <p className="mb-4 text-[11px] leading-relaxed text-gray-500">{t("listing.spotsSource")}</p>
+          )}
           {municipality.tourismSpots.length === 0 ? (
             <p className="text-sm text-gray-500">{t("municipalityProfile.noSpots")}</p>
           ) : (
@@ -293,9 +336,13 @@ export default function MunicipalityProfilePage() {
 
       {tab === "accessInfo" && (
         <>
-          {municipality.nearestStationName && (
+          {(municipality.nearestStationName || municipality.officeName) && (
             <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 bg-gray-50 px-4 py-3 text-xs text-gray-600 lg:px-6">
-              <span>{t("municipalityProfile.stationLabel", { name: municipality.nearestStationName })}</span>
+              <span>
+                {municipality.nearestStationName
+                  ? t("municipalityProfile.stationLabel", { name: municipality.nearestStationName })
+                  : t("listing.officeLabel", { name: municipality.officeName })}
+              </span>
               {municipality.maasConfigured ? (
                 <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-medium text-emerald-700">
                   {t("municipalityProfile.realData")}
@@ -307,7 +354,7 @@ export default function MunicipalityProfilePage() {
               )}
             </div>
           )}
-          <AccessPlanner municipalityId={municipality.id} stationConfigured={!!municipality.nearestStationName} />
+          <AccessPlanner municipalityId={municipality.id} stationConfigured={!!municipality.nearestStationName || !!municipality.officeName} />
         </>
       )}
 

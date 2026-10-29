@@ -780,7 +780,10 @@
       "chugoku": "주고쿠",
       "shikoku": "시코쿠",
       "kyushu": "규슈·오키나와"
-    }
+    },
+    "listed": "게재 중인 지자체(미참여 포함): {{count}}",
+    "filterPlaceholder": "이름·읽기로 찾기",
+    "noMatch": "일치하는 지자체가 없어요"
   },
   "trip": {
     "loadError": "일정을 불러오지 못했습니다",
@@ -1134,5 +1137,15 @@
     "nearPoint": "공유된 지점 근처 게시물",
     "noneNear": "{{km}}km 안에 게시물이 없어요",
     "search": "검색으로 찾기"
+  },
+  "listing": {
+    "badge": "미참여",
+    "catchphrase": "슬로건",
+    "website": "공식 사이트",
+    "officeLabel": "출발점: {{name}}(관공서 위치)",
+    "notice": "{{name}}은(는) 아직 Jaziba에 참여하지 않았어요. 이 페이지의 시정촌 이름·관공서 위치·공식 사이트·슬로건은 공개 데이터(code4fukui/localgovjp)에서, 주요 관광지는 Jaziba가 일반적으로 알려진 정보로 만들었어요. 최신 정보는 공식 사이트에서 확인해 주세요.",
+    "forMunicipality": "지자체 담당자분께: 참여·내용 수정 문의는 여기로",
+    "spotsSource": "Jaziba가 일반적으로 알려진 정보로 만든 목록이에요. 산·호수·고개·고원의 위치는 일본 국토지리원 「지명집 일본」을 편집해 만들었어요(약 1.5km 단위의 대략적인 위치).",
+    "spotsCount": "주요 관광지 {{count}}곳"
   }
 }

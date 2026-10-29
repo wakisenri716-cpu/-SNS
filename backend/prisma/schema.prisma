@@ -85,6 +85,16 @@ model Municipality {
   // Whether tourists can comment on this municipality's reels (including ones
   // posted by its linked companies). Toggled from Settings.
   commentsEnabled    Boolean  @default(true)
+  // From public data (src/data/naganoMunicipalities.ts): reading, official
+  // site, 地方公共団体コード and the city hall / town office position.
+  kana               String   @default("")
+  websiteUrl         String   @default("")
+  lgCode             String?  @unique
+  officeLat          Float?
+  officeLng          Float?
+  // A page Jaziba made from public data for a municipality that hasn't
+  // joined: no one can sign in to it, and the profile says so.
+  listing            Boolean  @default(false)
   createdAt          DateTime @default(now())
 
   reels        Reel[]
