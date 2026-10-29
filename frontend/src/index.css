@@ -264,6 +264,33 @@ body {
   .audio-bar { animation: none; height: 60%; }
 }
 
+/* いま見られている場所: a glowing ring and the viewer count on map bubbles. */
+.map-bubble.is-live {
+  z-index: 5;
+  box-shadow: 0 0 0 3px #d7202e, 0 0 24px 4px rgba(215, 32, 46, 0.55);
+}
+/* ::before, since ::after is the bubble's pointer. */
+.map-bubble.is-live::before {
+  content: "👀 " attr(data-live);
+  z-index: 1;
+  position: absolute;
+  top: -10px;
+  right: -12px;
+  border-radius: 9999px;
+  background: #d7202e;
+  padding: 1px 6px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .map-bubble.is-live { animation: live-glow 1.8s ease-in-out infinite; }
+  @keyframes live-glow {
+    50% { box-shadow: 0 0 0 3px #d7202e, 0 0 36px 10px rgba(215, 32, 46, 0.35); }
+  }
+}
+
 /* 3Dで巡る: numbered stops on the flyover map; the current one pulses. */
 .flyover-pin {
   display: flex;

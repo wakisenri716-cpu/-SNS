@@ -21,7 +21,7 @@ import { translateCaption } from "../services/translate";
 import { buildItinerary } from "../lib/itinerary";
 import { inSeasonWhere, monthInJapan } from "../lib/season";
 import { todayInJapan } from "./events";
-import { announceNewPost, listenForNewPosts, sendToWatchers, watch } from "../lib/presence";
+import { announceNewPost, listenForNewPosts, liveCounts, sendToWatchers, watch } from "../lib/presence";
 import { randomBytes } from "node:crypto";
 
 const PERSONALIZED_POOL = 100;
@@ -118,6 +118,13 @@ function openEventStream(res: Response) {
   });
   res.write("retry: 5000\n\n");
 }
+
+// いま見られている場所: { reelId: number of tabs with it open } for every
+// spot being viewed right now (counts only), for the map and feed to light
+// them up. Must be registered before "/:id".
+router.get("/live-counts", (_req, res) => {
+  res.set("Cache-Control", "no-store").json({ counts: liveCounts() });
+});
 
 // 新しい投稿: a Server-Sent Events stream with an "event: post" each time a
 // reel is published, so open feeds can offer "新しい投稿があります".

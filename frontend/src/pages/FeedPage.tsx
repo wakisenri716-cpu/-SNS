@@ -10,6 +10,7 @@ import { showToast } from "../lib/toast";
 import { isOnScreen, withViewTransition } from "../lib/viewTransition";
 import { usePullToRefresh } from "../lib/usePullToRefresh";
 import { useNewPosts } from "../lib/useNewPosts";
+import { useLiveCounts } from "../lib/useLiveCounts";
 import { currentPosition, distanceKm } from "../lib/geo";
 import Avatar from "../components/Avatar";
 import CommentsSheet from "../components/CommentsSheet";
@@ -78,6 +79,7 @@ export default function FeedPage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const refreshingRef = useRef(false);
+  const liveCounts = useLiveCounts();
   // 新しい投稿があります: posts published while this feed is open.
   const newPosts = useNewPosts(tab === "all" || tab === "season" || (REEL_CATEGORIES as readonly string[]).includes(tab));
   const unseenNew = newPosts.ids.filter((id) => !reels.some((r) => r.id === id));
@@ -358,6 +360,7 @@ export default function FeedPage() {
               reel={reel}
               heroName={heroId === reel.id && !openReelId ? "reel-hero" : undefined}
               distanceKm={tab === "nearby" ? distances[reel.id] : undefined}
+              liveCount={liveCounts[reel.id]}
               onOpen={openViewer}
               onToggleLike={toggleLike}
               onToggleSave={toggleSave}

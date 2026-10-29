@@ -440,6 +440,7 @@ test("live viewer count: streams the number of tabs on a spot, each tab once, an
   const aAgain = open("tab-aaaaaaaa"); // the same tab reconnecting
   await settle();
   assert.deepEqual(a.counts, [1, 2, 2]);
+  assert.equal((await call("GET", "/api/reels/live-counts")).json.counts[reelId], 2);
   assert.equal(b.counts.at(-1), 2);
 
   b.close();

@@ -10,6 +10,7 @@ import AutoplayVideo from "../components/AutoplayVideo";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import { useReelActions } from "../lib/useReelActions";
 import { isInSeason } from "../lib/season";
+import { useLiveCounts } from "../lib/useLiveCounts";
 import { useIsDark } from "../lib/theme";
 import { REEL_CATEGORIES, type Reel } from "../types";
 
@@ -115,6 +116,18 @@ export default function MapPage() {
   useEffect(() => {
     markersRef.current.forEach((m, k) => m.getElement().classList.toggle("is-selected", visible[k]?.id === selectedId));
   }, [selectedId, visible]);
+
+  // Spots someone is looking at right now glow, with the count on the bubble.
+  const liveCounts = useLiveCounts();
+  useEffect(() => {
+    markersRef.current.forEach((m, k) => {
+      const el = m.getElement();
+      const count = liveCounts[visible[k]?.id ?? ""] ?? 0;
+      el.classList.toggle("is-live", count > 0);
+      if (count > 0) el.dataset.live = String(count);
+      else delete el.dataset.live;
+    });
+  }, [liveCounts, visible]);
 
   function locate() {
     if (!navigator.geolocation || !mapRef.current) return;

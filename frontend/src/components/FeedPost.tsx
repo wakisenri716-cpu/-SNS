@@ -26,6 +26,7 @@ export default function FeedPost({
   reel,
   heroName,
   distanceKm,
+  liveCount,
   onOpen,
   onToggleLike,
   onToggleSave,
@@ -37,6 +38,8 @@ export default function FeedPost({
   heroName?: string;
   /** Shown as "ここから12km" on the 近く tab. */
   distanceKm?: number;
+  /** People with this spot open right now (see useLiveCounts). */
+  liveCount?: number;
   onOpen: (reel: Reel) => void;
   onToggleLike: (reel: Reel) => void;
   onToggleSave: (reel: Reel) => void;
@@ -108,9 +111,15 @@ export default function FeedPost({
         {/* Place + directions, bottom */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end gap-2 bg-gradient-to-t from-black/65 via-black/25 to-transparent p-3 pt-16">
           <div className="min-w-0 flex-1 text-white">
-            {reel.bestMonths?.length > 0 && (
-              <div className="mb-1.5">
-                <SeasonBadge months={reel.bestMonths} dark />
+            {(reel.bestMonths?.length > 0 || (liveCount ?? 0) > 0) && (
+              <div className="mb-1.5 flex flex-wrap items-center gap-1">
+                {(liveCount ?? 0) > 0 && (
+                  <span className="animate-fade-in inline-flex items-center gap-1 rounded-full bg-black/45 px-2.5 py-0.5 text-[11px] font-semibold text-white backdrop-blur">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-jz-red" />
+                    {t("live.viewers", { count: liveCount })}
+                  </span>
+                )}
+                <SeasonBadge months={reel.bestMonths ?? []} dark />
               </div>
             )}
             {reel.locationName && (

@@ -11,6 +11,11 @@ let connections = 0;
 // connections can't exhaust the server.
 export const MAX_CONNECTIONS = 2000;
 
+// Every reel someone has open right now, with how many tabs.
+export function liveCounts() {
+  return Object.fromEntries([...watchers].map(([reelId, byClient]) => [reelId, byClient.size]));
+}
+
 export function viewerCount(reelId: string) {
   return watchers.get(reelId)?.size ?? 0;
 }
