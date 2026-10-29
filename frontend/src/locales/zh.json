@@ -861,5 +861,9 @@
     "japaneseOnly": "以日语朗读",
     "intro": "{{place}}，位于{{town}}。",
     "season": "最佳季节是{{months}}。"
+  },
+  "visitStats": {
+    "today": "今天有{{count}}人在这里盖了印章",
+    "total": "已有{{count}}人在这里盖了印章"
   }
 }

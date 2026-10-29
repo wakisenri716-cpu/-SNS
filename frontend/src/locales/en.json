@@ -880,5 +880,11 @@
     "japaneseOnly": "Read aloud in Japanese",
     "intro": "{{place}}, in {{town}}.",
     "season": "Best in {{months}}."
+  },
+  "visitStats": {
+    "today_one": "{{count}} traveler got this stamp today",
+    "today_other": "{{count}} travelers got this stamp today",
+    "total_one": "{{count}} traveler has got this stamp",
+    "total_other": "{{count}} travelers have got this stamp"
   }
 }

@@ -861,5 +861,9 @@
     "japaneseOnly": "日本語で読み上げます",
     "intro": "{{place}}。{{town}}にあります。",
     "season": "見頃は{{months}}です。"
+  },
+  "visitStats": {
+    "today": "今日{{count}}人がここでスタンプを押しました",
+    "total": "これまでに{{count}}人がここでスタンプを押しました"
   }
 }

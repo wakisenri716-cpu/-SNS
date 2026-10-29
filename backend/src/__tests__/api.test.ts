@@ -146,6 +146,7 @@ test("stamp rally: refused far away, granted on site, only once", async () => {
   assert.equal(again.json.points, 20);
   const stamps = await call("GET", "/api/auth/me/stamps", undefined, traveler);
   assert.equal(stamps.json.items.length, 1);
+  assert.deepEqual((await call("GET", `/api/reels/${castle.id}/visits`)).json, { today: 1, total: 1 });
 });
 
 test("concierge answers by keyword without an API key, and says so", async () => {

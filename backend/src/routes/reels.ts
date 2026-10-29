@@ -20,6 +20,7 @@ import { isClaudeConfigured, logClaudeError } from "../services/claude";
 import { translateCaption } from "../services/translate";
 import { buildItinerary } from "../lib/itinerary";
 import { inSeasonWhere, monthInJapan } from "../lib/season";
+import { todayInJapan } from "./events";
 import { announceNewPost, listenForNewPosts, watch } from "../lib/presence";
 import { randomBytes } from "node:crypto";
 
@@ -1136,6 +1137,19 @@ router.post("/:id/comments/:commentId/translation", translateLimiter, optionalAu
 // tamper-proof). Travelers only — posters don't collect stamps.
 const VISIT_RADIUS_METERS = 1000;
 const visitSchema = z.object({ lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180) });
+
+// How many travelers have got this spot's stamp: today (Japan time) and in
+// total. Counts only — shown on the spot page as social proof.
+router.get("/:id/visits", async (req, res) => {
+  const reel = await prisma.reel.findUnique({ where: { id: req.params.id }, select: { id: true } });
+  if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
+  const startOfToday = new Date(`${todayInJapan()}T00:00:00+09:00`);
+  const [today, total] = await Promise.all([
+    prisma.visit.count({ where: { reelId: reel.id, createdAt: { gte: startOfToday } } }),
+    prisma.visit.count({ where: { reelId: reel.id } }),
+  ]);
+  res.json({ today, total });
+});
 
 router.post("/:id/visit", requireAuth, requireRole("USER"), writeLimiter, async (req, res) => {
   const parsed = visitSchema.safeParse(req.body);

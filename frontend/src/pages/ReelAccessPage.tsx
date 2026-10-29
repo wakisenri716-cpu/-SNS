@@ -10,6 +10,7 @@ import MunicipalityStayInfo from "../components/MunicipalityStayInfo";
 import VisitStampCard from "../components/VisitStampCard";
 import WalkCompass from "../components/WalkCompass";
 import AudioGuide from "../components/AudioGuide";
+import SpotVisitStats from "../components/SpotVisitStats";
 import { addRecentlyViewed } from "../lib/recentlyViewed";
 import { useLiveViewers } from "../lib/useLiveViewers";
 import { TravelerTagChips } from "../components/TravelerTagChips";
@@ -371,6 +372,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
 
       {reel.locationLat != null && reel.locationLng != null && (
         <>
+          <SpotVisitStats reelId={reel.id} />
           <WalkCompass lat={reel.locationLat} lng={reel.locationLng} place={reel.locationName || reel.municipality.name} />
           <VisitStampCard reelId={reel.id} place={reel.locationName || reel.municipality.name} />
         </>
