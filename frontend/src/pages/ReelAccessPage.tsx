@@ -9,6 +9,7 @@ import ShareButton from "../components/ShareButton";
 import MunicipalityStayInfo from "../components/MunicipalityStayInfo";
 import VisitStampCard from "../components/VisitStampCard";
 import WalkCompass from "../components/WalkCompass";
+import { addRecentlyViewed } from "../lib/recentlyViewed";
 import { TravelerTagChips } from "../components/TravelerTagChips";
 import { SeasonBadge } from "../components/BestMonths";
 import TravelReportSection, { normalizeOrigin } from "../components/TravelReportSection";
@@ -284,6 +285,13 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
       .catch(() => setNotFound(true));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  // Remember this spot for 最近見た on the search page.
+  useEffect(() => {
+    if (reel) {
+      addRecentlyViewed({ id: reel.id, videoUrl: reel.videoUrl, place: reel.locationName || reel.caption.slice(0, 30), municipality: reel.municipality.name });
+    }
+  }, [reel]);
 
   async function search(e: FormEvent) {
     e.preventDefault();

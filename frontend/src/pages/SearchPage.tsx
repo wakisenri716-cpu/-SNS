@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ChevronRight, MapPinned, Mic, Search as SearchIcon } from "lucide-react";
+import { ChevronRight, History, MapPinned, Mic, Search as SearchIcon } from "lucide-react";
+import { clearRecentlyViewed, getRecentlyViewed, type RecentItem } from "../lib/recentlyViewed";
 import ConciergeButton from "../components/ConciergeButton";
 import { useSpeechInput } from "../lib/useSpeechInput";
 import { api } from "../api/client";
@@ -26,6 +27,7 @@ export default function SearchPage() {
   const [municipalities, setMunicipalities] = useState<Municipality[]>([]);
   const [reels, setReels] = useState<Reel[]>([]);
   const [recommend, setRecommend] = useState<RecommendItem[]>([]);
+  const [recent, setRecent] = useState<RecentItem[]>(getRecentlyViewed);
 
   useEffect(() => {
     api.get("/search/recommend").then(({ data }) => setRecommend(data.items));
@@ -138,6 +140,37 @@ export default function SearchPage() {
           )}
         </div>
       ) : (
+        <>
+        {recent.length > 0 && (
+          <section className="mt-6">
+            <div className="mb-2 flex items-center justify-between">
+              <h2 className="flex items-center gap-1.5 text-xs font-semibold text-gray-500">
+                <History className="h-3.5 w-3.5" /> {t("search.recentHeading")}
+              </h2>
+              <button
+                type="button"
+                onClick={() => {
+                  clearRecentlyViewed();
+                  setRecent([]);
+                }}
+                className="text-[11px] font-semibold text-gray-500 hover:text-jz-ink"
+              >
+                {t("search.recentClear")}
+              </button>
+            </div>
+            <div className="scrollbar-none -mx-4 flex gap-2.5 overflow-x-auto px-4 pb-1">
+              {recent.map((r) => (
+                <Link key={r.id} to={`/reels/${r.id}/access`} className="w-28 shrink-0">
+                  <span className="on-media block aspect-[4/5] overflow-hidden rounded-2xl bg-gray-100">
+                    <video src={`${r.videoUrl}#t=0.1`} className="h-full w-full object-cover" muted playsInline preload="metadata" />
+                  </span>
+                  <span className="mt-1 block truncate text-xs font-semibold text-jz-ink">{r.place}</span>
+                  <span className="block truncate text-[11px] text-gray-500">{r.municipality}</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
         <div className="mt-6">
           <h2 className="mb-2 text-xs font-semibold text-gray-500">{t("search.recommendHeading")}</h2>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -151,6 +184,7 @@ export default function SearchPage() {
             ))}
           </div>
         </div>
+        </>
       )}
     </div>
   );

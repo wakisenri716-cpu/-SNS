@@ -99,3 +99,24 @@ test("compass: bearings and the eight points", async () => {
   assert.equal(compassPoint(270), 6);
   assert.equal(compassPoint(-90), 6);
 });
+
+test("recently viewed: newest first, each spot once, at most 12", async () => {
+  const store = new Map<string, string>();
+  (globalThis as { localStorage?: unknown }).localStorage = {
+    getItem: (k: string) => store.get(k) ?? null,
+    setItem: (k: string, v: string) => store.set(k, v),
+    removeItem: (k: string) => store.delete(k),
+  };
+  const { addRecentlyViewed, clearRecentlyViewed, getRecentlyViewed } = await import("../src/lib/recentlyViewed.ts");
+  const item = (id: string) => ({ id, videoUrl: `/v/${id}`, place: id, municipality: "松本市" });
+  for (let i = 0; i < 15; i++) addRecentlyViewed(item(`r${i}`));
+  addRecentlyViewed(item("r5"));
+  const ids = getRecentlyViewed().map((x) => x.id);
+  assert.equal(ids.length, 12);
+  assert.deepEqual(ids.slice(0, 3), ["r5", "r14", "r13"]);
+  assert.equal(ids.filter((x) => x === "r5").length, 1);
+  store.set("jaziba-recently-viewed", "not json");
+  assert.deepEqual(getRecentlyViewed(), []);
+  clearRecentlyViewed();
+  assert.deepEqual(getRecentlyViewed(), []);
+});

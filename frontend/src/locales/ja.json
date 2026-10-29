@@ -112,7 +112,9 @@
     "noResults": "該当する結果が見つかりませんでした",
     "recommendHeading": "AIレコメンド（人気・新着ベース）",
     "tagFilterLabel": "条件で絞り込む（すべて満たす投稿）",
-    "noTaggedPosts": "条件に合う投稿はありません"
+    "noTaggedPosts": "条件に合う投稿はありません",
+    "recentHeading": "最近見た場所",
+    "recentClear": "履歴を消す"
   },
   "myPage": {
     "viewOnlyNotice": "観光客アカウントの閲覧専用ページです。投稿の作成・編集はできません（自治体アカウントのみ可能です）。",

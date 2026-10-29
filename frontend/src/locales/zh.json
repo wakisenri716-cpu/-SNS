@@ -112,7 +112,9 @@
     "noResults": "未找到相关结果",
     "recommendHeading": "AI 推荐（人气・最新）",
     "tagFilterLabel": "按条件筛选（满足全部条件的投稿）",
-    "noTaggedPosts": "没有符合条件的投稿"
+    "noTaggedPosts": "没有符合条件的投稿",
+    "recentHeading": "最近浏览",
+    "recentClear": "清除记录"
   },
   "myPage": {
     "viewOnlyNotice": "这是游客账号的只读页面。无法创建或编辑投稿（仅自治体账号可以）。",
