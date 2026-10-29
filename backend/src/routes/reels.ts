@@ -347,6 +347,25 @@ router.get("/following", requireAuth, async (req, res) => {
 // reels under the municipality (including affiliated companies' posts) for a
 // municipality account, or only its own posts for a company account.
 // Must be registered before "/:id" so "mine" isn't matched as a reel id.
+// LIVE for posters: how many people have each of their posts open right now
+// (counts only, from lib/presence). Must be registered before "/:id".
+router.get("/mine/live", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (req, res) => {
+  const poster = await resolvePosterContext(req, res);
+  if (!poster) return;
+  const counts = liveCounts();
+  const ids = Object.keys(counts);
+  const mine = ids.length
+    ? await prisma.reel.findMany({
+        where: { id: { in: ids }, ...(poster.companyId ? { companyId: poster.companyId } : { municipalityId: poster.municipalityId }) },
+        select: { id: true, locationName: true, caption: true, videoUrl: true },
+      })
+    : [];
+  const items = mine
+    .map((r) => ({ id: r.id, place: r.locationName || r.caption.slice(0, 30), videoUrl: r.videoUrl, viewers: counts[r.id] }))
+    .sort((a, b) => b.viewers - a.viewers);
+  res.set("Cache-Control", "no-store").json({ total: items.reduce((n, i) => n + i.viewers, 0), items });
+});
+
 router.get("/mine", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (req, res) => {
   const poster = await resolvePosterContext(req, res);
   if (!poster) return;

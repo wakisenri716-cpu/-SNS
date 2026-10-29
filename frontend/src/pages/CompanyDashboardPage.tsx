@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import ReelUploader from "../components/ReelUploader";
+import PosterLiveCard from "../components/PosterLiveCard";
 import ReelManageGrid from "../components/ReelManageGrid";
 import EventManager from "../components/EventManager";
 import ReportedComments from "../components/ReportedComments";
@@ -32,6 +33,7 @@ export default function CompanyDashboardPage() {
             prefecture: company.municipality.prefecture,
           })}
         </p>
+        <PosterLiveCard />
         <ReelUploader onCreated={(reel) => setReels((prev) => [reel, ...prev])} />
       </section>
 

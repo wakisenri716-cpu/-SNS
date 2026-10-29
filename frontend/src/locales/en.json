@@ -917,5 +917,12 @@
     "delayed": "running {{m}} min late",
     "minutes": "{{m}} min",
     "hoursMinutes": "{{h}} h {{m}} min"
+  },
+  "posterLive": {
+    "label": "Live viewing",
+    "now_one": "{{count}} person is viewing your posts right now",
+    "now_other": "{{count}} people are viewing your posts right now",
+    "none": "No one is viewing your posts right now",
+    "note": "People with a spot page or fullscreen video open (updates every 10 seconds)"
   }
 }

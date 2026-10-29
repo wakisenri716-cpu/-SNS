@@ -446,6 +446,10 @@ test("live viewer count: streams the number of tabs on a spot, each tab once, an
   await settle();
   assert.deepEqual(a.counts, [1, 2, 2]);
   assert.equal((await call("GET", "/api/reels/live-counts")).json.counts[reelId], 2);
+  const poster = await call("GET", "/api/reels/mine/live", undefined, await login("demo-matsumoto@example.com"));
+  assert.equal(poster.json.total, 2);
+  assert.equal(poster.json.items[0].id, reelId);
+  assert.equal((await call("GET", "/api/reels/mine/live", undefined, traveler)).status, 403);
   assert.equal(b.counts.at(-1), 2);
 
   b.close();

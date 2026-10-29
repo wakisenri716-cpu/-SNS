@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import ReelUploader from "../components/ReelUploader";
+import PosterLiveCard from "../components/PosterLiveCard";
 import ReelEditor from "../components/ReelEditor";
 import { TravelerTagChips } from "../components/TravelerTagChips";
 import AutoplayVideo from "../components/AutoplayVideo";
@@ -550,6 +551,7 @@ export default function DashboardPage() {
         ))}
       </div>
 
+      <PosterLiveCard />
       {tab === "posts" && reels.some((r) => (r.bestMonths ?? []).length === 0) && (
         <p className="mx-3 mt-3 rounded-2xl bg-jz-tint px-4 py-3 text-xs leading-relaxed text-jz-ink lg:mx-4">
           {t("season.dashboardNudge", { count: reels.filter((r) => (r.bestMonths ?? []).length === 0).length })}
