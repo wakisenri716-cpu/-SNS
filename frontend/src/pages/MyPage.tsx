@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Bookmark, Grid3x3, Heart, ImageDown, Settings, Users } from "lucide-react";
+import { Bookmark, ChevronRight, Grid3x3, Heart, ImageDown, Settings, Sparkles, Users } from "lucide-react";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import Avatar from "../components/Avatar";
@@ -177,6 +177,15 @@ export default function MyPage() {
             )}
           </div>
         )}
+
+        <Link to="/recap" className="ai-card mt-5 flex items-center gap-3 rounded-2xl px-4 py-3 text-white transition active:scale-[0.99]">
+          <Sparkles className="h-5 w-5 shrink-0" />
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-extrabold">{t("recap.entry", { year: new Date().getFullYear() })}</span>
+            <span className="block truncate text-[11px] text-white/85">{t("recap.entrySub")}</span>
+          </span>
+          <ChevronRight className="h-5 w-5 shrink-0" />
+        </Link>
 
         {points && (
           <div className="mt-5 flex items-center gap-4 rounded-2xl bg-gray-100 px-4 py-3">

@@ -549,3 +549,13 @@ body {
 .dark :is(.text-sky-700, .text-sky-800, .text-sky-900) {
   color: #7cc8f8;
 }
+
+/* 旅の振り返り: story progress bars and the month chart. */
+@keyframes recap-progress {
+  from { width: 0; }
+  to { width: 100%; }
+}
+@keyframes recap-grow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}

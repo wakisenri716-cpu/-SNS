@@ -20,6 +20,7 @@ const CompanyDashboardPage = lazy(() => import("./pages/CompanyDashboardPage"));
 const SearchPage = lazy(() => import("./pages/SearchPage"));
 const ReelsPage = lazy(() => import("./pages/ReelsPage"));
 const ArPage = lazy(() => import("./pages/ArPage"));
+const RecapPage = lazy(() => import("./pages/RecapPage"));
 const MapPage = lazy(() => import("./pages/MapPage"));
 const TagPage = lazy(() => import("./pages/TagPage"));
 const AreasPage = lazy(() => import("./pages/AreasPage"));
@@ -71,6 +72,7 @@ function App() {
         <Route path="/reels" element={<ReelsPage />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/ar" element={<ArPage />} />
+        <Route path="/recap" element={<RecapPage />} />
         <Route path="/tags/:kind/:value" element={<TagPage />} />
         <Route path="/areas" element={<AreasPage />} />
         <Route path="/login" element={<LoginPage />} />

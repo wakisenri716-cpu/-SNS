@@ -15,7 +15,7 @@ export interface StampCardText {
   footer: string;
 }
 
-function loadImage(src: string) {
+export function loadImage(src: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
@@ -26,7 +26,7 @@ function loadImage(src: string) {
 
 // Largest font size (down to `min`) at which `text` fits `maxWidth`, then
 // truncated with "…" if it still doesn't.
-function fitText(ctx: CanvasRenderingContext2D, text: string, weight: number, size: number, min: number, maxWidth: number, family: string) {
+export function fitText(ctx: CanvasRenderingContext2D, text: string, weight: number, size: number, min: number, maxWidth: number, family: string) {
   let s = size;
   ctx.font = `${weight} ${s}px ${family}`;
   while (s > min && ctx.measureText(text).width > maxWidth) {

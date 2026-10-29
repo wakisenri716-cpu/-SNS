@@ -641,6 +641,40 @@ test("天気: forecasts for the しおり's days, and indoor posts near a wet da
   }
 });
 
+test("旅の振り返り: the year's saves, stamps, prefectures and busiest month, from the traveler's own activity", async () => {
+  const me = (await call("POST", "/api/auth/register", { email: "recap@example.com", password: "password123", name: "振り返り" })).json.token;
+  const { json: map } = await call("GET", "/api/reels/map");
+  const castle = map.items.find((r: any) => r.locationName === "松本城");
+  const bridge = map.items.find((r: any) => r.locationName === "上高地 河童橋");
+  await call("POST", `/api/reels/${castle.id}/save`, {}, me);
+  await call("POST", `/api/reels/${bridge.id}/save`, {}, me);
+  await call("POST", `/api/reels/${castle.id}/like`, undefined, me);
+  await call("POST", `/api/reels/${castle.id}/visit`, { lat: castle.locationLat, lng: castle.locationLng }, me);
+  await call("POST", `/api/reels/${castle.id}/comments`, { body: "また行きたい" }, me);
+
+  const year = new Date(Date.now() + 9 * 3600_000).getUTCFullYear();
+  const recap = await call("GET", "/api/me/recap", undefined, me);
+  assert.equal(recap.status, 200);
+  assert.equal(recap.json.year, year);
+  assert.equal(recap.json.saved.count, 2);
+  assert.deepEqual(recap.json.saved.prefectures, ["長野県"]);
+  assert.equal(recap.json.saved.first.id, castle.id);
+  assert.equal(recap.json.stamps.count, 1);
+  assert.equal(recap.json.stamps.places[0].name, "松本城");
+  assert.equal(recap.json.likes, 1);
+  assert.equal(recap.json.comments, 1);
+  assert.equal(recap.json.trips.count, 1);
+  assert.equal(recap.json.topMunicipality.name, "松本市");
+  assert.equal(recap.json.months.reduce((a: number, b: number) => a + b, 0), 4);
+  assert.equal(recap.json.busiestMonth, new Date(Date.now() + 9 * 3600_000).getUTCMonth() + 1);
+  // Another year is empty, not made up.
+  const empty = (await call("GET", `/api/me/recap?year=${year - 3}`, undefined, me)).json;
+  assert.equal(empty.saved.count, 0);
+  assert.equal(empty.busiestMonth, null);
+  assert.equal(empty.topCategory, null);
+  assert.equal((await call("GET", "/api/me/recap")).status, 401);
+});
+
 // A software passkey authenticator: an ES256 key pair making the same
 // attestation ("none") and assertions a phone or laptop would.
 async function softAuthenticator(origin: string) {
