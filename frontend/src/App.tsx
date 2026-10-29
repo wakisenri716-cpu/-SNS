@@ -77,6 +77,7 @@ function App() {
         <Route path="/municipalities/:id" element={<MunicipalityProfilePage />} />
         <Route path="/reels/:id/access" element={<ReelAccessPage />} />
         <Route path="/itinerary" element={<ItineraryPage />} />
+        <Route path="/itinerary/:tripId" element={<ItineraryPage />} />
         <Route path="/trip/:token" element={<TripPage />} />
         <Route
           path="/notifications"

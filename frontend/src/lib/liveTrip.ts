@@ -27,6 +27,8 @@ export interface LiveTripState {
   date: string;
   // Running late: every time after now shifts by this many minutes.
   delay: number;
+  // Which trip (旅) is under way.
+  tripId?: string;
 }
 
 export function localDate(d = new Date()) {

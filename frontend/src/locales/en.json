@@ -814,7 +814,9 @@
     "addAll_one": "Add {{count}} place to my trip plan",
     "addAll_other": "Add all {{count}} places to my trip plan",
     "loginToAdd": "Log in to add to your trip plan",
-    "addError": "Couldn't add to your trip plan. Please try again."
+    "addError": "Couldn't add to your trip plan. Please try again.",
+    "titleNamed": "{{name}}'s “{{trip}}”",
+    "fromTrip": "From {{name}}'s “{{trip}}”"
   },
   "season": {
     "now": "In season now",
@@ -924,5 +926,40 @@
     "now_other": "{{count}} people are viewing your posts right now",
     "none": "No one is viewing your posts right now",
     "note": "People with a spot page or fullscreen video open (updates every 10 seconds)"
+  },
+  "tripPicker": {
+    "title": "Add to which trip?",
+    "titleMany": "Add {{count}} places to which trip?",
+    "firstTrip": "Start by making a trip. Each trip gets its own plan.",
+    "count_one": "{{count}} place",
+    "count_other": "{{count}} places",
+    "newTrip": "New trip",
+    "namePlaceholder": "e.g. Kyoto, 3 days",
+    "nameLabel": "Trip name",
+    "create": "Create",
+    "seeTrips": "All trips",
+    "done": "Done",
+    "addedMany": "Added {{count}} places to “{{trip}}”",
+    "error": "That didn't work. Please try again."
+  },
+  "trips": {
+    "heading": "Trip plans",
+    "subtitle": "Make a plan for each trip, then pick the trip when you save a post.",
+    "noDate": "No date yet",
+    "rename": "Rename trip",
+    "delete": "Delete this trip",
+    "deleteConfirm": "Delete “{{name}}”? Places that aren't in another trip will be unsaved too.",
+    "deleted": "Trip deleted",
+    "notFound": "This trip wasn't found",
+    "emptyTrip": "“{{name}}” has no places yet. Tap save on a post and choose this trip.",
+    "dateLabel": "Trip date",
+    "dateLabelOptional": "Trip date (optional)",
+    "dragHandle": "Drag to reorder",
+    "removeFromTrip": "Remove from this trip",
+    "switch": "Trip to show",
+    "none": "No trips yet. Make one with “+”, then add posts with the save button.",
+    "allTrips": "All trips",
+    "cancel": "Cancel",
+    "createAction": "Create trip"
   }
 }

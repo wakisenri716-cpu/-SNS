@@ -27,6 +27,7 @@ import { useAuth } from "../auth/AuthContext";
 import Avatar from "./Avatar";
 import JazibaLogo from "./JazibaLogo";
 import Toaster from "./Toaster";
+import TripPickerHost from "./TripPickerSheet";
 import ErrorBoundary from "./ErrorBoundary";
 import { showToast } from "../lib/toast";
 import ItineraryRail, { useIsTraveler } from "./ItineraryRail";
@@ -354,6 +355,7 @@ export default function Layout() {
       </main>
 
       <Toaster />
+      <TripPickerHost />
 
       <ItineraryRail />
 

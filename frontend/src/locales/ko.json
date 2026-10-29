@@ -798,7 +798,9 @@
     "timeNote": "{{time}}에 첫 장소에 도착하는 것으로 계산했습니다.",
     "addAll": "{{count}}곳을 모두 내 일정에 추가",
     "loginToAdd": "로그인하고 내 일정에 추가",
-    "addError": "일정에 추가하지 못했습니다. 다시 시도해 주세요"
+    "addError": "일정에 추가하지 못했습니다. 다시 시도해 주세요",
+    "titleNamed": "{{name}}님의 「{{trip}}」",
+    "fromTrip": "{{name}}님의 「{{trip}}」에서"
   },
   "season": {
     "now": "지금이 제철",
@@ -901,5 +903,39 @@
     "now": "지금 {{count}}명이 내 게시물을 보고 있어요",
     "none": "지금 게시물을 보는 사람이 없습니다",
     "note": "장소 페이지·전체 화면 동영상을 연 사람 수(10초마다 갱신)"
+  },
+  "tripPicker": {
+    "title": "어느 여행에 넣을까요?",
+    "titleMany": "{{count}}곳을 어느 여행에 넣을까요?",
+    "firstTrip": "먼저 여행을 만들어 보세요. 여행마다 일정이 따로 만들어집니다.",
+    "count": "{{count}}곳",
+    "newTrip": "새 여행 만들기",
+    "namePlaceholder": "예: 교토 2박 3일",
+    "nameLabel": "여행 이름",
+    "create": "만들기",
+    "seeTrips": "여행 목록",
+    "done": "완료",
+    "addedMany": "{{count}}곳을 「{{trip}}」에 넣었습니다",
+    "error": "잘 되지 않았습니다. 다시 시도해 주세요"
+  },
+  "trips": {
+    "heading": "일정",
+    "subtitle": "여행마다 일정을 만들 수 있어요. 게시물 저장 버튼에서 넣을 여행을 고르세요.",
+    "noDate": "날짜 미정",
+    "rename": "여행 이름 바꾸기",
+    "delete": "이 여행 삭제",
+    "deleteConfirm": "「{{name}}」을(를) 삭제할까요? 다른 여행에 없는 장소는 저장도 해제됩니다.",
+    "deleted": "여행을 삭제했습니다",
+    "notFound": "이 여행을 찾을 수 없습니다",
+    "emptyTrip": "「{{name}}」에는 아직 장소가 없습니다. 게시물의 저장 버튼을 눌러 이 여행을 고르세요.",
+    "dateLabel": "여행 날짜",
+    "dateLabelOptional": "여행 날짜(선택)",
+    "dragHandle": "드래그해서 순서 바꾸기",
+    "removeFromTrip": "이 여행에서 빼기",
+    "switch": "표시할 여행",
+    "none": "아직 여행이 없습니다. 「＋」로 여행을 만들고 저장 버튼으로 게시물을 넣어 보세요.",
+    "allTrips": "여행 목록",
+    "cancel": "취소",
+    "createAction": "여행 만들기"
   }
 }

@@ -5,10 +5,10 @@ import { useTranslation } from "react-i18next";
 import { ArrowUp, Bookmark, Camera, Mic, Navigation, RotateCcw, Sparkles, X } from "lucide-react";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
-import { notifySavesChanged } from "../lib/savesChanged";
 import { showToast } from "../lib/toast";
 import { useSpeechInput } from "../lib/useSpeechInput";
 import { resizeImageToDataUrl } from "../lib/resizeImage";
+import { chooseTrips } from "../lib/trips";
 import type { Reel, TravelerTag } from "../types";
 
 interface Pick {
@@ -187,14 +187,11 @@ export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
 
   async function toggleSave(reel: Reel) {
     if (!token) return navigate("/login");
-    if (reel.savedByMe) await api.delete(`/reels/${reel.id}/save`);
-    else await api.post(`/reels/${reel.id}/save`);
-    notifySavesChanged();
-    if (!reel.savedByMe) showToast(t("feed.savedToast"), { label: t("feed.savedToastAction"), to: "/itinerary" });
+    const saved = await chooseTrips([reel.id], reel.locationName || reel.municipality.name);
     setTurns((prev) =>
       prev.map((turn) => ({
         ...turn,
-        picks: turn.picks?.map((p) => (p.reel.id === reel.id ? { ...p, reel: { ...p.reel, savedByMe: !reel.savedByMe } } : p)),
+        picks: turn.picks?.map((p) => (p.reel.id === reel.id ? { ...p, reel: { ...p.reel, savedByMe: saved } } : p)),
       }))
     );
   }
@@ -215,7 +212,7 @@ export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
         className="animate-sheet-in flex h-[92dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-[28px] bg-white md:h-[80vh] md:rounded-[28px]"
       >
-        <header className="flex items-center gap-3 border-b border-gray-100 px-5 py-4">
+        <div className="flex items-center gap-3 border-b border-gray-100 px-5 py-4">
           <span className="ai-orb flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white">
             <Sparkles className="h-4 w-4" />
           </span>
@@ -245,7 +242,7 @@ export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
           >
             <X className="h-5 w-5" />
           </button>
-        </header>
+        </div>
 
         <div ref={scrollRef} className="flex-1 space-y-5 overflow-y-auto px-4 py-5">
           {turns.length === 0 && (

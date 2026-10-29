@@ -798,7 +798,9 @@
     "timeNote": "时间按{{time}}到达第一个地点计算。",
     "addAll": "将{{count}}个地点全部加入我的行程",
     "loginToAdd": "登录后加入我的行程",
-    "addError": "无法加入行程，请重试"
+    "addError": "无法加入行程，请重试",
+    "titleNamed": "{{name}}的“{{trip}}”",
+    "fromTrip": "来自{{name}}的“{{trip}}”"
   },
   "season": {
     "now": "正值最佳季节",
@@ -901,5 +903,39 @@
     "now": "现在有{{count}}人在看你的帖子",
     "none": "现在没有人在看你的帖子",
     "note": "打开了地点页面或全屏视频的人数（每10秒更新）"
+  },
+  "tripPicker": {
+    "title": "加入哪个旅程？",
+    "titleMany": "把{{count}}个地点加入哪个旅程？",
+    "firstTrip": "先创建一个旅程吧。每个旅程都有自己的行程。",
+    "count": "{{count}}个地点",
+    "newTrip": "新建旅程",
+    "namePlaceholder": "例：京都 3天2夜",
+    "nameLabel": "旅程名称",
+    "create": "创建",
+    "seeTrips": "旅程列表",
+    "done": "完成",
+    "addedMany": "已将{{count}}个地点加入“{{trip}}”",
+    "error": "操作失败，请重试"
+  },
+  "trips": {
+    "heading": "行程",
+    "subtitle": "可以为每次旅行制作行程。收藏帖子时选择要加入的旅程。",
+    "noDate": "日期未定",
+    "rename": "修改旅程名称",
+    "delete": "删除此旅程",
+    "deleteConfirm": "要删除“{{name}}”吗？未加入其他旅程的地点也会取消收藏。",
+    "deleted": "已删除旅程",
+    "notFound": "找不到此旅程",
+    "emptyTrip": "“{{name}}”中还没有地点。点击帖子的收藏按钮并选择此旅程。",
+    "dateLabel": "旅行日期",
+    "dateLabelOptional": "旅行日期（可选）",
+    "dragHandle": "拖动以调整顺序",
+    "removeFromTrip": "从此旅程移除",
+    "switch": "显示的旅程",
+    "none": "还没有旅程。用“＋”创建旅程，再用收藏按钮加入帖子。",
+    "allTrips": "旅程列表",
+    "cancel": "取消",
+    "createAction": "创建旅程"
   }
 }

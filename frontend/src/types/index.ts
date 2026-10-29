@@ -187,7 +187,7 @@ export interface Comment {
   user: { id: string; name: string };
 }
 
-// One stop in the しおり (itinerary) rail — see GET /reels/itinerary.
+// One stop in a trip's しおり — see GET /me/trips/:id/itinerary.
 export interface ItineraryStop {
   id: string;
   caption: string;
@@ -197,13 +197,15 @@ export interface ItineraryStop {
   locationLng: number;
   videoUrl: string;
   municipality: { id: string; name: string; avatarUrl: string | null; prefecture: string };
-  // Planned stay at this stop (PATCH /reels/:id/save).
+  // Planned stay at this stop (PATCH /me/trips/:id/items/:reelId).
   stayMinutes: number;
 }
 
 export interface Itinerary {
-  // Trip settings (PUT /reels/itinerary/settings): where the trip starts —
-  // "" if unset — and the start time of day, "HH:MM".
+  // The 旅 this しおり belongs to (GET /me/trips/:id/itinerary).
+  trip: { id: string; name: string; startDate: string | null };
+  // Trip settings (PATCH /me/trips/:id): where the trip starts — "" if
+  // unset — and the start time of day, "HH:MM".
   originLabel: string;
   startTime: string;
   // Travel estimate from originLabel to the first stop.
@@ -222,6 +224,8 @@ export interface Itinerary {
 // A しおり someone shared (GET /trips/:token): no trip origin, read-only.
 export interface SharedTrip {
   ownerName: string;
+  tripName: string;
+  startDate: string | null;
   isMine: boolean;
   startTime: string;
   stops: ItineraryStop[];

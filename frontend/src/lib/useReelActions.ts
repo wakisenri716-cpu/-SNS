@@ -1,10 +1,8 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
-import { notifySavesChanged } from "./savesChanged";
-import { showToast } from "./toast";
+import { chooseTrips } from "./trips";
 import type { Reel } from "../types";
 
 // Like / save / follow / comment-count handlers for a page holding its own
@@ -12,7 +10,6 @@ import type { Reel } from "../types";
 export function useReelActions(setReels: Dispatch<SetStateAction<Reel[]>>) {
   const { token } = useAuth();
   const navigate = useNavigate();
-  const { t } = useTranslation();
 
   async function toggleLike(reel: Reel) {
     if (!token) return navigate("/login");
@@ -25,11 +22,9 @@ export function useReelActions(setReels: Dispatch<SetStateAction<Reel[]>>) {
 
   async function toggleSave(reel: Reel) {
     if (!token) return navigate("/login");
-    if (reel.savedByMe) await api.delete(`/reels/${reel.id}/save`);
-    else await api.post(`/reels/${reel.id}/save`);
-    notifySavesChanged();
-    if (!reel.savedByMe) showToast(t("feed.savedToast"), { label: t("feed.savedToastAction"), to: "/itinerary" });
-    setReels((prev) => prev.map((r) => (r.id === reel.id ? { ...r, savedByMe: !r.savedByMe } : r)));
+    // Which trip(s) it goes in is chosen in the "どの旅に入れる？" sheet.
+    const saved = await chooseTrips([reel.id], reel.locationName || reel.municipality.name);
+    setReels((prev) => prev.map((r) => (r.id === reel.id ? { ...r, savedByMe: saved } : r)));
   }
 
   async function toggleFollow(reel: Reel) {

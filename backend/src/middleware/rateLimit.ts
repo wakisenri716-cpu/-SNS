@@ -10,6 +10,8 @@ function limiter(windowMinutes: number, max: number, message: string, skipSucces
     limit: max,
     skipSuccessfulRequests,
     standardHeaders: "draft-7",
+    // The API tests make many accounts and requests from one address.
+    skip: () => process.env.DISABLE_RATE_LIMITS === "1",
     legacyHeaders: false,
     handler: (_req, res) => res.status(429).json({ error: message }),
   });

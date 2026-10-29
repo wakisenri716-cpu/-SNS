@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
-import { fetchSavedReelIds, notifySavesChanged, onSavesChanged } from "../lib/savesChanged";
+import { fetchSavedReelIds, onSavesChanged } from "../lib/savesChanged";
+import { chooseTrips } from "../lib/trips";
 import { useAuth } from "../auth/AuthContext";
-import { showToast } from "../lib/toast";
 import Avatar from "../components/Avatar";
 import UpcomingEvents from "../components/UpcomingEvents";
 import ReelThumb from "../components/ReelGrid";
@@ -108,14 +108,8 @@ export default function MunicipalityProfilePage() {
 
   async function toggleSave(reel: Reel) {
     if (!token) return;
-    if (reel.savedByMe) {
-      await api.delete(`/reels/${reel.id}/save`);
-    } else {
-      await api.post(`/reels/${reel.id}/save`);
-    }
-    notifySavesChanged();
-    if (!reel.savedByMe) showToast(t("feed.savedToast"), { label: t("feed.savedToastAction"), to: "/itinerary" });
-    setReels((prev) => prev.map((r) => (r.id === reel.id ? { ...r, savedByMe: !r.savedByMe } : r)));
+    const saved = await chooseTrips([reel.id], reel.locationName || reel.municipality.name);
+    setReels((prev) => prev.map((r) => (r.id === reel.id ? { ...r, savedByMe: saved } : r)));
   }
 
   async function toggleFollowMunicipality() {

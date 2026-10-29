@@ -2,11 +2,12 @@
 // available offline. Built assets (hashed file names) are cached on first
 // use; page loads try the network first and fall back to the cached shell;
 // the API and uploaded videos go to the network — except the signed-in
-// traveler's しおり, whose last copy is kept so it can be opened offline
-// (cleared on logout, see src/lib/offlineItinerary.ts).
-const CACHE = "jaziba-v2";
+// traveler's trips and each trip's しおり, whose last copies are kept so they
+// can be opened offline (cleared on logout, see src/lib/offlineItinerary.ts).
+const CACHE = "jaziba-v3";
 const ITINERARY_CACHE = "jaziba-itinerary";
-const ITINERARY_PATH = "/api/reels/itinerary";
+// GET /api/me/trips and GET /api/me/trips/:id/itinerary
+const OFFLINE_API = /^\/api\/me\/trips(\/[^/]+\/itinerary)?$/;
 const SHELL = ["/", "/manifest.webmanifest", "/brand/jaziba-logo.png", "/icons/icon-192.png"];
 
 self.addEventListener("install", (event) => {
@@ -27,18 +28,19 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(req.url);
   if (req.method !== "GET" || url.origin !== self.location.origin) return;
 
-  if (url.pathname === ITINERARY_PATH) {
+  if (OFFLINE_API.test(url.pathname) && !url.search) {
+    const key = url.pathname;
     event.respondWith(
       fetch(req)
         .then((res) => {
           if (res.ok) {
             const copy = res.clone();
-            caches.open(ITINERARY_CACHE).then((c) => c.put(ITINERARY_PATH, copy));
+            caches.open(ITINERARY_CACHE).then((c) => c.put(key, copy));
           }
           return res;
         })
         .catch(async () => {
-          const hit = await caches.match(ITINERARY_PATH, { cacheName: ITINERARY_CACHE });
+          const hit = await caches.match(key, { cacheName: ITINERARY_CACHE });
           if (!hit) throw new Error("offline and no saved itinerary");
           // Mark it so the page can say this is the last saved copy.
           const headers = new Headers(hit.headers);

@@ -18,11 +18,10 @@ import { resolvePosterContext } from "../lib/posterContext";
 import { planTrip } from "../services/tripPlanner";
 import { isClaudeConfigured, logClaudeError } from "../services/claude";
 import { translateCaption } from "../services/translate";
-import { buildItinerary } from "../lib/itinerary";
+import { addToTrip, defaultTripFor, syncSaved } from "../lib/trips";
 import { inSeasonWhere, monthInJapan } from "../lib/season";
 import { todayInJapan } from "./events";
 import { announceNewPost, listenForNewPosts, liveCounts, sendToWatchers, watch } from "../lib/presence";
-import { randomBytes } from "node:crypto";
 
 const PERSONALIZED_POOL = 100;
 
@@ -201,115 +200,6 @@ router.get("/saved", requireAuth, async (req, res) => {
       saves.map((s) => serializeReel(s.reel, { likedByMe: s.reel.likes.length > 0, savedByMe: true, ...followed }))
     ),
   });
-});
-
-// しおり (itinerary) for the signed-in traveler — see lib/itinerary.ts.
-// Must be registered before "/:id" so "itinerary" isn't matched as a reel id.
-router.get("/itinerary", requireAuth, async (req, res) => {
-  const [itinerary, user] = await Promise.all([
-    buildItinerary(req.auth!.userId, { withOrigin: true }),
-    prisma.user.findUnique({ where: { id: req.auth!.userId }, select: { itineraryShareToken: true } }),
-  ]);
-  res.json({ ...itinerary, shareToken: user?.itineraryShareToken ?? null });
-});
-
-// Share the しおり as a read-only link (GET /api/trips/:token). Reuses the
-// existing token so a link already sent to companions keeps working.
-router.post("/itinerary/share", requireAuth, async (req, res) => {
-  const user = await prisma.user.findUnique({ where: { id: req.auth!.userId }, select: { itineraryShareToken: true } });
-  const token = user?.itineraryShareToken ?? randomBytes(12).toString("base64url");
-  if (!user?.itineraryShareToken) {
-    await prisma.user.update({ where: { id: req.auth!.userId }, data: { itineraryShareToken: token } });
-  }
-  res.json({ token });
-});
-
-// Stop sharing: the old link stops working immediately.
-router.delete("/itinerary/share", requireAuth, async (req, res) => {
-  await prisma.user.update({ where: { id: req.auth!.userId }, data: { itineraryShareToken: null } });
-  res.status(204).end();
-});
-
-const itineraryOrderSchema = z.object({ reelIds: z.array(z.string()).max(200) });
-
-// Rearrange the しおり: positions follow the given order. Ids the user hasn't
-// "AIでプランを作る": a proposed order and stay times for the しおり (see
-// services/tripPlanner). Only proposes — the client applies it with the
-// order and stay-time endpoints if the traveler accepts.
-const planSchema = z.object({
-  wishes: z.string().trim().max(300).default(""),
-  lang: z.enum(["ja", "en", "zh", "ko"]).default("ja"),
-});
-
-router.post("/itinerary/plan", requireAuth, conciergeLimiter, async (req, res) => {
-  const parsed = planSchema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
-
-  const [user, saves] = await Promise.all([
-    prisma.user.findUnique({ where: { id: req.auth!.userId }, select: { itineraryStartTime: true } }),
-    prisma.savedReel.findMany({
-      where: { userId: req.auth!.userId, reel: { locationLat: { not: null }, locationLng: { not: null } } },
-      include: { reel: { include: { municipality: { select: { name: true } } } } },
-      orderBy: [{ position: "asc" }, { createdAt: "asc" }],
-    }),
-  ]);
-  if (saves.length < 2) return res.status(400).json({ error: "しおりに2か所以上保存すると、プランを作れます" });
-
-  const plan = await planTrip(
-    saves.map((s) => ({
-      id: s.reelId,
-      name: s.reel.locationName || s.reel.caption.slice(0, 30),
-      municipality: s.reel.municipality.name,
-      category: s.reel.category,
-      caption: s.reel.caption,
-      lat: s.reel.locationLat,
-      lng: s.reel.locationLng,
-      stayMinutes: s.stayMinutes,
-    })),
-    parsed.data.wishes,
-    user?.itineraryStartTime ?? "09:00",
-    parsed.data.lang
-  );
-  res.json(plan);
-});
-
-// saved are ignored rather than rejected, so a stale client list can't fail.
-router.put("/itinerary/order", requireAuth, async (req, res) => {
-  const parsed = itineraryOrderSchema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
-
-  await prisma.$transaction(
-    parsed.data.reelIds.map((reelId, position) =>
-      prisma.savedReel.updateMany({ where: { userId: req.auth!.userId, reelId }, data: { position } })
-    )
-  );
-  res.status(204).end();
-});
-
-const itinerarySettingsSchema = z.object({
-  originLabel: z
-    .string()
-    .transform((v) => v.trim().replace(/\s+/g, " "))
-    .pipe(z.string().max(100))
-    .optional(),
-  startTime: z
-    .string()
-    .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
-    .optional(),
-});
-
-router.put("/itinerary/settings", requireAuth, async (req, res) => {
-  const parsed = itinerarySettingsSchema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
-
-  await prisma.user.update({
-    where: { id: req.auth!.userId },
-    data: {
-      ...(parsed.data.originLabel !== undefined ? { itineraryOrigin: parsed.data.originLabel } : {}),
-      ...(parsed.data.startTime !== undefined ? { itineraryStartTime: parsed.data.startTime } : {}),
-    },
-  });
-  res.status(204).end();
 });
 
 // Reels from municipalities/companies the signed-in user follows — the feed's
@@ -849,36 +739,30 @@ router.delete("/:id/like", requireAuth, async (req, res) => {
   res.status(204).end();
 });
 
-// Save / unsave (bookmark a reel to find again later — the feed's "保存中" tab)
+// Bookmark a post into a trip (旅): the chosen one (tripId), or else the trip
+// touched most recently — a new "はじめての旅" for someone without any. Says
+// which trip it went to, so the app can offer to change it. Choosing several
+// trips is done with PUT /me/trips/:id/items/:reelId.
+const saveSchema = z.object({ tripId: z.string().optional() });
+
 router.post("/:id/save", requireAuth, async (req, res) => {
-  const reel = await prisma.reel.findUnique({ where: { id: req.params.id } });
+  const parsed = saveSchema.safeParse(req.body ?? {});
+  if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
+  const reel = await prisma.reel.findUnique({ where: { id: req.params.id }, select: { id: true } });
   if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
 
-  await prisma.savedReel.upsert({
-    where: { userId_reelId: { userId: req.auth!.userId, reelId: reel.id } },
-    create: { userId: req.auth!.userId, reelId: reel.id },
-    update: {},
-  });
-  res.status(204).end();
+  const trip = parsed.data.tripId
+    ? await prisma.trip.findFirst({ where: { id: parsed.data.tripId, userId: req.auth!.userId } })
+    : await defaultTripFor(req.auth!.userId);
+  if (!trip) return res.status(404).json({ error: "旅が見つかりません" });
+  await addToTrip(req.auth!.userId, trip.id, reel.id);
+  res.json({ trip: { id: trip.id, name: trip.name } });
 });
 
-const stayMinutesSchema = z.object({ stayMinutes: z.coerce.number().int().min(0).max(24 * 60) });
-
-// Planned stay at one しおり stop.
-router.patch("/:id/save", requireAuth, async (req, res) => {
-  const parsed = stayMinutesSchema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
-
-  const { count } = await prisma.savedReel.updateMany({
-    where: { userId: req.auth!.userId, reelId: req.params.id },
-    data: { stayMinutes: parsed.data.stayMinutes },
-  });
-  if (count === 0) return res.status(404).json({ error: "保存されていない投稿です" });
-  res.status(204).end();
-});
-
+// Un-bookmark: out of every trip.
 router.delete("/:id/save", requireAuth, async (req, res) => {
-  await prisma.savedReel.deleteMany({ where: { userId: req.auth!.userId, reelId: req.params.id } });
+  await prisma.tripItem.deleteMany({ where: { reelId: req.params.id, trip: { userId: req.auth!.userId } } });
+  await syncSaved(req.auth!.userId, [req.params.id]);
   res.status(204).end();
 });
 

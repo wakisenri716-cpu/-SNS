@@ -54,21 +54,22 @@ export async function metaForPath(pathname: string, origin: string): Promise<Pag
   }
   const tripMatch = pathname.match(/^\/trip\/([^/]+)\/?$/);
   if (tripMatch) {
-    const owner = await prisma.user.findUnique({
-      where: { itineraryShareToken: tripMatch[1] },
+    const trip = await prisma.trip.findUnique({
+      where: { shareToken: tripMatch[1] },
       select: {
         name: true,
-        savedReels: {
+        user: { select: { name: true } },
+        items: {
           where: { reel: { locationLat: { not: null }, locationLng: { not: null } } },
-          orderBy: [{ position: { sort: "asc", nulls: "last" } }, { createdAt: "asc" }],
+          orderBy: [{ position: "asc" }, { createdAt: "asc" }],
           select: { reel: { select: { locationName: true, municipality: { select: { name: true } } } } },
         },
       },
     });
-    if (!owner) return null;
-    const names = owner.savedReels.map((s) => s.reel.locationName || s.reel.municipality.name);
+    if (!trip) return null;
+    const names = trip.items.map((s) => s.reel.locationName || s.reel.municipality.name);
     return {
-      title: `${owner.name}さんの旅のしおり（${names.length}か所）| ジャジバ`,
+      title: `${trip.user.name}さんの「${trip.name}」（${names.length}か所）| ジャジバ`,
       description: clip(names.join(" → ") || "ジャジバで作った旅のしおり", 120),
       url: `${origin}${pathname}`,
       type: "article",

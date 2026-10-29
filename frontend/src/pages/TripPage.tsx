@@ -8,7 +8,7 @@ import { useAuth } from "../auth/AuthContext";
 import { useIsTraveler } from "../components/ItineraryRail";
 import LegRow, { DayDivider } from "../components/ItineraryLegRow";
 import { computeTimeline, formatClock, overnightStops } from "../lib/itineraryTimeline";
-import { notifySavesChanged } from "../lib/savesChanged";
+import { chooseTrips } from "../lib/trips";
 import { showToast } from "../lib/toast";
 import type { SharedTrip } from "../types";
 
@@ -44,16 +44,27 @@ export default function TripPage() {
       });
   }, [token, authToken, t]);
 
+  // Into the traveler's own trip(s), chosen in the "どの旅に入れる？" sheet.
   async function save(ids: string[]) {
     if (!authToken) return navigate("/login", { state: { from: `/trip/${token}` } });
+    if (!trip) return;
+    const title =
+      ids.length === 1
+        ? (trip.stops.find((s) => s.id === ids[0])?.locationName ?? trip.tripName)
+        : t("trip.fromTrip", { name: trip.ownerName, trip: trip.tripName });
     setBusy(true);
     try {
-      await Promise.all(ids.map((id) => api.post(`/reels/${id}/save`)));
-      setSaved((prev) => new Set([...prev, ...ids]));
-      notifySavesChanged();
-      showToast(t("trip.addedToast", { count: ids.length }), { label: t("feed.savedToastAction"), to: "/itinerary" });
-    } catch {
-      showToast(t("trip.addError"));
+      const savedOne = await chooseTrips(ids, title);
+      if (ids.length === 1) {
+        setSaved((prev) => {
+          const next = new Set(prev);
+          if (savedOne) next.add(ids[0]);
+          else next.delete(ids[0]);
+          return next;
+        });
+      } else if (savedOne) {
+        setSaved((prev) => new Set([...prev, ...ids]));
+      }
     } finally {
       setBusy(false);
     }
@@ -100,7 +111,7 @@ export default function TripPage() {
     <div className="mx-auto flex max-w-lg flex-col p-4 pb-44 md:p-8 md:pb-28">
       <p className="text-xs font-semibold tracking-wide text-jz-red">{t("trip.eyebrow")}</p>
       <h1 className="mt-1 text-2xl font-extrabold leading-snug tracking-tight text-jz-ink">
-        {t("trip.title", { name: trip.ownerName })}
+        {t("trip.titleNamed", { name: trip.ownerName, trip: trip.tripName })}
       </h1>
       <p className="mt-1.5 text-sm text-gray-500">
         {t("trip.summary", { count: trip.stops.length, places: municipalities.slice(0, 3).join("・") })}
@@ -174,7 +185,7 @@ export default function TripPage() {
                     {canCopy && (
                       <button
                         type="button"
-                        disabled={isSaved || busy}
+                        disabled={busy}
                         onClick={() => void save([stop.id])}
                         className={`flex w-full items-center justify-center gap-1.5 border-t border-gray-100 py-2 text-xs font-semibold ${
                           isSaved ? "text-gray-500" : "text-jz-ink hover:bg-gray-50"

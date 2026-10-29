@@ -13,6 +13,7 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "jaziba-test-"));
 process.env.DATABASE_URL = `file:${path.join(tmp, "test.db")}`;
 process.env.UPLOAD_DIR = path.join(tmp, "uploads");
 process.env.JWT_SECRET = "test-secret";
+process.env.DISABLE_RATE_LIMITS = "1";
 delete process.env.ANTHROPIC_API_KEY;
 delete process.env.GOOGLE_MAPS_API_KEY;
 
@@ -84,12 +85,22 @@ test("the map lists only located posts", async () => {
   assert.ok(json.items.every((r: any) => r.locationLat != null && r.locationLng != null));
 });
 
-test("saving builds the しおり, and the plan endpoint proposes an order for it", async () => {
+let firstTrip = "";
+
+test("a quick bookmark goes to はじめての旅, and the trip's plan proposes an order", async () => {
   const { json: map } = await call("GET", "/api/reels/map");
-  for (const r of map.items) assert.equal((await call("POST", `/api/reels/${r.id}/save`, undefined, traveler)).status < 300, true);
-  const itinerary = await call("GET", "/api/reels/itinerary", undefined, traveler);
+  for (const r of map.items) {
+    const saved = await call("POST", `/api/reels/${r.id}/save`, undefined, traveler);
+    assert.equal(saved.status, 200);
+    assert.equal(saved.json.trip.name, "はじめての旅");
+    firstTrip = saved.json.trip.id;
+  }
+  const trips = await call("GET", "/api/me/trips", undefined, traveler);
+  assert.deepEqual(trips.json.items.map((t: any) => [t.id, t.count]), [[firstTrip, map.items.length]]);
+  const itinerary = await call("GET", `/api/me/trips/${firstTrip}/itinerary`, undefined, traveler);
   assert.equal(itinerary.json.stops.length, map.items.length);
-  const plan = await call("POST", "/api/reels/itinerary/plan", { lang: "ja" }, traveler);
+  assert.equal(itinerary.json.trip.name, "はじめての旅");
+  const plan = await call("POST", `/api/me/trips/${firstTrip}/plan`, { lang: "ja" }, traveler);
   assert.equal(plan.status, 200);
   assert.equal(plan.json.mode, "auto");
   assert.equal(plan.json.stops.length, map.items.length);
@@ -98,36 +109,81 @@ test("saving builds the しおり, and the plan endpoint proposes an order for i
   assert.equal(last.category, "lodging");
 });
 
+test("trips: made first, posts chosen into one or several, reordered, and bookmarks follow membership", async () => {
+  const { json: map } = await call("GET", "/api/reels/map");
+  const [a, b] = map.items;
+  assert.equal((await call("POST", "/api/me/trips", { name: "  " }, traveler)).status, 400);
+  const kyoto = (await call("POST", "/api/me/trips", { name: "京都 2泊3日", startDate: "2026-11-20" }, traveler)).json;
+  assert.equal(kyoto.name, "京都 2泊3日");
+
+  // Into a chosen trip, and into a second one.
+  assert.equal((await call("POST", `/api/reels/${a.id}/save`, { tripId: kyoto.id }, traveler)).json.trip.id, kyoto.id);
+  assert.equal((await call("PUT", `/api/me/trips/${kyoto.id}/items/${b.id}`, undefined, traveler)).status, 204);
+  const picker = await call("GET", `/api/me/trips?reel=${b.id}`, undefined, traveler);
+  assert.deepEqual(
+    picker.json.items.map((t: any) => [t.name, t.containsReel]),
+    [["京都 2泊3日", true], ["はじめての旅", true]]
+  );
+
+  // Each trip has its own order and stay times.
+  assert.equal((await call("PUT", `/api/me/trips/${kyoto.id}/order`, { reelIds: [b.id, a.id] }, traveler)).status, 204);
+  assert.equal((await call("PATCH", `/api/me/trips/${kyoto.id}/items/${b.id}`, { stayMinutes: 150 }, traveler)).status, 204);
+  const kyotoPlan = (await call("GET", `/api/me/trips/${kyoto.id}/itinerary`, undefined, traveler)).json;
+  assert.deepEqual(kyotoPlan.stops.map((s: any) => [s.id, s.stayMinutes]), [[b.id, 150], [a.id, 60]]);
+  assert.equal(kyotoPlan.trip.startDate, "2026-11-20");
+  const firstPlan = (await call("GET", `/api/me/trips/${firstTrip}/itinerary`, undefined, traveler)).json;
+  assert.equal(firstPlan.stops.find((s: any) => s.id === b.id).stayMinutes, 60);
+
+  // Taken out of one trip it stays bookmarked; out of all of them it isn't.
+  const savedIds = async () => (await call("GET", "/api/reels/saved", undefined, traveler)).json.items.map((r: any) => r.id);
+  await call("DELETE", `/api/me/trips/${firstTrip}/items/${b.id}`, undefined, traveler);
+  assert.ok((await savedIds()).includes(b.id));
+  await call("DELETE", `/api/me/trips/${kyoto.id}/items/${b.id}`, undefined, traveler);
+  assert.ok(!(await savedIds()).includes(b.id));
+
+  // Someone else's trip is out of reach.
+  const stranger = (await call("POST", "/api/auth/register", { email: "stranger@example.com", password: "password123", name: "他人" })).json.token;
+  assert.equal((await call("GET", `/api/me/trips/${kyoto.id}/itinerary`, undefined, stranger)).status, 404);
+  assert.equal((await call("PUT", `/api/me/trips/${kyoto.id}/items/${b.id}`, undefined, stranger)).status, 404);
+
+  // Deleting a trip un-bookmarks what was only in it; un-saving clears every trip.
+  await call("DELETE", `/api/me/trips/${kyoto.id}`, undefined, traveler);
+  assert.ok((await savedIds()).includes(a.id)); // still in はじめての旅
+  await call("PUT", `/api/me/trips/${firstTrip}/items/${b.id}`, undefined, traveler);
+  assert.equal((await call("GET", `/api/me/trips`, undefined, traveler)).json.items.length, 1);
+});
+
 test("a shared しおり link is read-only, hides the origin, and stops working when unshared", async () => {
-  assert.equal((await call("PUT", "/api/reels/itinerary/settings", { originLabel: "東京都杉並区1-2-3" }, traveler)).status, 204);
-  const shared = await call("POST", "/api/reels/itinerary/share", undefined, traveler);
+  assert.equal((await call("PATCH", `/api/me/trips/${firstTrip}`, { originLabel: "東京都杉並区1-2-3" }, traveler)).status, 204);
+  const shared = await call("POST", `/api/me/trips/${firstTrip}/share`, undefined, traveler);
   assert.equal(shared.status, 200);
   const token = shared.json.token;
   // Sharing again keeps the same link.
-  assert.equal((await call("POST", "/api/reels/itinerary/share", undefined, traveler)).json.token, token);
-  assert.equal((await call("GET", "/api/reels/itinerary", undefined, traveler)).json.shareToken, token);
+  assert.equal((await call("POST", `/api/me/trips/${firstTrip}/share`, undefined, traveler)).json.token, token);
+  assert.equal((await call("GET", `/api/me/trips/${firstTrip}/itinerary`, undefined, traveler)).json.shareToken, token);
 
   const view = await call("GET", `/api/trips/${token}`);
   assert.equal(view.status, 200);
   assert.equal(view.json.ownerName, "テスト旅行者");
+  assert.equal(view.json.tripName, "はじめての旅");
   assert.equal(view.json.isMine, false);
   assert.ok(view.json.stops.length > 1);
   assert.equal(view.json.legs.length, view.json.stops.length - 1);
   assert.ok(!JSON.stringify(view.json).includes("杉並"));
 
   const other = (await call("POST", "/api/auth/register", { email: "friend@example.com", password: "password123", name: "友だち" })).json.token;
-  assert.equal((await call("POST", `/api/reels/${view.json.stops[0].id}/save`, undefined, other)).status < 300, true);
+  assert.equal((await call("POST", `/api/reels/${view.json.stops[0].id}/save`, undefined, other)).status, 200);
   assert.deepEqual((await call("GET", `/api/trips/${token}`, undefined, other)).json.savedIds, [view.json.stops[0].id]);
   assert.equal((await call("GET", `/api/trips/${token}`, undefined, traveler)).json.isMine, true);
 
   const page = await fetch(`${base}/trip/${token}`);
   if (page.headers.get("content-type")?.includes("html")) {
-    assert.match(await page.text(), /<title>テスト旅行者さんの旅のしおり（\d+か所）\| ジャジバ<\/title>/);
+    assert.match(await page.text(), /<title>テスト旅行者さんの「はじめての旅」（\d+か所）\| ジャジバ<\/title>/);
   }
 
-  assert.equal((await call("DELETE", "/api/reels/itinerary/share", undefined, traveler)).status, 204);
+  assert.equal((await call("DELETE", `/api/me/trips/${firstTrip}/share`, undefined, traveler)).status, 204);
   assert.equal((await call("GET", `/api/trips/${token}`)).status, 404);
-  await call("PUT", "/api/reels/itinerary/settings", { originLabel: "" }, traveler);
+  await call("PATCH", `/api/me/trips/${firstTrip}`, { originLabel: "" }, traveler);
 });
 
 test("stamp rally: refused far away, granted on site, only once", async () => {

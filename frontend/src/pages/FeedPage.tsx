@@ -4,12 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ArrowUp, ChevronRight, Sparkles } from "lucide-react";
 import { api } from "../api/client";
-import { fetchSavedReelIds, notifySavesChanged, onSavesChanged } from "../lib/savesChanged";
+import { fetchSavedReelIds, onSavesChanged } from "../lib/savesChanged";
 import { useAuth } from "../auth/AuthContext";
-import { showToast } from "../lib/toast";
 import { isOnScreen, withViewTransition } from "../lib/viewTransition";
 import { usePullToRefresh } from "../lib/usePullToRefresh";
 import { useNewPosts } from "../lib/useNewPosts";
+import { chooseTrips } from "../lib/trips";
 import { useLiveCounts } from "../lib/useLiveCounts";
 import { currentPosition, distanceKm } from "../lib/geo";
 import Avatar from "../components/Avatar";
@@ -178,15 +178,10 @@ export default function FeedPage() {
 
   async function toggleSave(reel: Reel) {
     if (!token) return navigate("/login");
-    if (reel.savedByMe) {
-      await api.delete(`/reels/${reel.id}/save`);
-    } else {
-      await api.post(`/reels/${reel.id}/save`);
-    }
-    notifySavesChanged();
-    if (!reel.savedByMe) showToast(t("feed.savedToast"), { label: t("feed.savedToastAction"), to: "/itinerary" });
+    // Which trip(s) it goes in is chosen in the "どの旅に入れる？" sheet.
+    const saved = await chooseTrips([reel.id], reel.locationName || reel.municipality.name);
     setReels((prev) => {
-      const next = prev.map((r) => (r.id === reel.id ? { ...r, savedByMe: !r.savedByMe } : r));
+      const next = prev.map((r) => (r.id === reel.id ? { ...r, savedByMe: saved } : r));
       // Unsaving while viewing the "saved" tab should drop it from view immediately.
       return tab === "saved" ? next.filter((r) => r.savedByMe) : next;
     });

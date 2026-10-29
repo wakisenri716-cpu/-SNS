@@ -798,7 +798,9 @@
     "timeNote": "時刻は{{time}}に最初の場所へ着く想定です。",
     "addAll": "{{count}}か所をまとめてしおりに追加",
     "loginToAdd": "ログインして自分のしおりに追加",
-    "addError": "しおりに追加できませんでした。もう一度お試しください"
+    "addError": "しおりに追加できませんでした。もう一度お試しください",
+    "titleNamed": "{{name}}さんの「{{trip}}」",
+    "fromTrip": "{{name}}さんの「{{trip}}」から"
   },
   "season": {
     "now": "今が見頃",
@@ -901,5 +903,39 @@
     "now": "いま{{count}}人があなたの投稿を見ています",
     "none": "いま投稿を見ている人はいません",
     "note": "アクセス画面・全画面の動画を開いている人数（10秒ごとに更新）"
+  },
+  "tripPicker": {
+    "title": "どの旅に入れる？",
+    "titleMany": "{{count}}か所をどの旅に入れる？",
+    "firstTrip": "まずは旅を作りましょう。旅ごとにしおりが分かれます。",
+    "count": "{{count}}か所",
+    "newTrip": "新しい旅を作る",
+    "namePlaceholder": "例：京都 2泊3日",
+    "nameLabel": "旅の名前",
+    "create": "作成",
+    "seeTrips": "旅の一覧へ",
+    "done": "完了",
+    "addedMany": "{{count}}か所を「{{trip}}」に入れました",
+    "error": "うまくいきませんでした。もう一度お試しください"
+  },
+  "trips": {
+    "heading": "しおり",
+    "subtitle": "旅ごとにしおりを作れます。投稿の保存ボタンで、入れる旅を選べます。",
+    "noDate": "日付未定",
+    "rename": "旅の名前を変える",
+    "delete": "この旅を削除",
+    "deleteConfirm": "「{{name}}」を削除しますか？ほかの旅に入っていない場所は保存も解除されます。",
+    "deleted": "旅を削除しました",
+    "notFound": "この旅は見つかりませんでした",
+    "emptyTrip": "「{{name}}」にはまだ場所がありません。気になる投稿の保存ボタンを押して、この旅を選んでください。",
+    "dateLabel": "旅行日",
+    "dateLabelOptional": "旅行日（任意）",
+    "dragHandle": "ドラッグして並べ替え",
+    "removeFromTrip": "この旅から外す",
+    "switch": "表示する旅",
+    "none": "まだ旅がありません。「＋」から旅を作り、投稿の保存ボタンで入れていきましょう。",
+    "allTrips": "旅の一覧",
+    "cancel": "やめる",
+    "createAction": "旅を作る"
   }
 }

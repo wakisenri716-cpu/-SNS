@@ -7,44 +7,37 @@ import { ttlCache } from "./ttlCache";
 // changes, so its geocode is kept for a few hours.
 const originGeocodes = ttlCache<Awaited<ReturnType<typeof geocode>>>(6 * 60 * 60 * 1000, 2000);
 
-// しおり (itinerary): chains a user's saved/bookmarked reels into a route — in
-// the order they arranged (PUT /reels/itinerary/order), falling back to save
-// order — with a real-or-mock travel estimate between each consecutive pair
-// (see getTransitSuggestion), reusing the exact same mock fallback this app
-// uses everywhere else. Both ends of those legs are known reel coordinates, so
-// nothing needs geocoding; only the optional leg from the user's typed trip
-// origin to the first stop does, like the access planner. Reels without
-// location data can't be chained and are skipped. The frontend turns the legs
-// + each stop's stayMinutes + the start time into a timeline.
+// しおり (itinerary) of one trip: chains the trip's posts into a route — in
+// the order the traveler arranged — with a real-or-mock travel estimate
+// between each consecutive pair (see getTransitSuggestion), reusing the exact
+// same mock fallback this app uses everywhere else. Both ends of those legs
+// are known reel coordinates, so nothing needs geocoding; only the optional
+// leg from the trip's typed origin to the first stop does, like the access
+// planner. Posts without location data can't be chained and are skipped. The
+// frontend turns the legs + each stop's stayMinutes + the start time into a
+// timeline.
 //
 // withOrigin: false leaves the trip origin out entirely — used for the shared
 // read-only link, since the origin is often the traveler's home.
-export async function buildItinerary(userId: string, { withOrigin }: { withOrigin: boolean }) {
-  const [user, saves] = await Promise.all([
-    prisma.user.findUnique({
-      where: { id: userId },
-      select: { itineraryOrigin: true, itineraryStartTime: true },
-    }),
-    prisma.savedReel.findMany({
-      where: { userId },
-      include: {
-        reel: {
-          include: { municipality: { select: { id: true, name: true, avatarUrl: true, prefecture: true } } },
+export async function buildItinerary(tripId: string, { withOrigin }: { withOrigin: boolean }) {
+  const trip = await prisma.trip.findUniqueOrThrow({
+    where: { id: tripId },
+    include: {
+      items: {
+        orderBy: [{ position: "asc" }, { createdAt: "asc" }],
+        include: {
+          reel: {
+            include: { municipality: { select: { id: true, name: true, avatarUrl: true, prefecture: true } } },
+          },
         },
       },
-    }),
-  ]);
+    },
+  });
 
-  const ordered = saves
-    .filter((s) => s.reel.locationLat != null && s.reel.locationLng != null)
-    .sort(
-      (a, b) =>
-        (a.position ?? Number.MAX_SAFE_INTEGER) - (b.position ?? Number.MAX_SAFE_INTEGER) ||
-        a.createdAt.getTime() - b.createdAt.getTime()
-    );
+  const ordered = trip.items.filter((s) => s.reel.locationLat != null && s.reel.locationLng != null);
   const stops = ordered.map((s) => s.reel);
 
-  const originLabel = withOrigin ? user?.itineraryOrigin ?? "" : "";
+  const originLabel = withOrigin ? trip.originLabel : "";
   let originLeg = null;
   if (originLabel && stops.length > 0) {
     let originCoords: { lat: number; lng: number } | null = null;
@@ -86,8 +79,9 @@ export async function buildItinerary(userId: string, { withOrigin }: { withOrigi
   }
 
   return {
+    trip: { id: trip.id, name: trip.name, startDate: trip.startDate },
     originLabel,
-    startTime: user?.itineraryStartTime ?? "09:00",
+    startTime: trip.startTime,
     originLeg,
     originLocated: originLeg != null,
     stops: ordered.map(({ reel: r, stayMinutes }) => ({

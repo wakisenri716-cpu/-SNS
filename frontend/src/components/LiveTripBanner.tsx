@@ -13,6 +13,7 @@ function formatWait(minutes: number, t: (k: string, o?: Record<string, unknown>)
 // in the list. "+15分" shifts the rest of the day when running late. Works
 // from the clock alone, so it keeps going offline.
 export default function LiveTripBanner({
+  tripId,
   state,
   onChange,
   times,
@@ -20,6 +21,7 @@ export default function LiveTripBanner({
   stopNames,
   onStatus,
 }: {
+  tripId: string;
   state: LiveTripState | null;
   onChange: (s: LiveTripState | null) => void;
   times: { arrive: number; leave: number }[];
@@ -53,7 +55,7 @@ export default function LiveTripBanner({
     return (
       <button
         type="button"
-        onClick={() => set({ date: localDate(), delay: 0 })}
+        onClick={() => set({ date: localDate(), delay: 0, tripId })}
         className="mb-4 flex w-full items-center gap-3 rounded-2xl border border-dashed border-gray-300 px-3 py-2.5 text-left transition hover:bg-gray-50"
       >
         <Navigation className="h-4 w-4 shrink-0 text-jz-red" />

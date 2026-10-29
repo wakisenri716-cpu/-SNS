@@ -17,10 +17,12 @@ const WISHES = ["wishRelaxed", "wishEfficient", "wishFoodie"] as const;
 // "AIでプランを作る": asks for a proposed order + stay times for the しおり,
 // shows it, and applies it only if the traveler accepts.
 export default function TripPlanSheet({
+  tripId,
   stops,
   onClose,
   onApplied,
 }: {
+  tripId: string;
   stops: ItineraryStop[];
   onClose: () => void;
   onApplied: () => void;
@@ -43,7 +45,7 @@ export default function TripPlanSheet({
     setPlanning(true);
     setError(null);
     try {
-      const { data } = await api.post<Plan>("/reels/itinerary/plan", { wishes, lang: i18n.language });
+      const { data } = await api.post<Plan>(`/me/trips/${tripId}/plan`, { wishes, lang: i18n.language });
       setPlan(data);
     } catch {
       setError(t("tripPlan.error"));
@@ -56,11 +58,11 @@ export default function TripPlanSheet({
     if (!plan) return;
     setApplying(true);
     try {
-      await api.put("/reels/itinerary/order", { reelIds: plan.stops.map((s) => s.id) });
+      await api.put(`/me/trips/${tripId}/order`, { reelIds: plan.stops.map((s) => s.id) });
       await Promise.all(
         plan.stops
           .filter((s) => byId.get(s.id)?.stayMinutes !== s.stayMinutes)
-          .map((s) => api.patch(`/reels/${s.id}/save`, { stayMinutes: s.stayMinutes }))
+          .map((s) => api.patch(`/me/trips/${tripId}/items/${s.id}`, { stayMinutes: s.stayMinutes }))
       );
       showToast(t("tripPlan.applied"));
       onApplied();
@@ -82,7 +84,7 @@ export default function TripPlanSheet({
         onClick={(e) => e.stopPropagation()}
         className="animate-sheet-in flex max-h-[90dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-[28px] bg-white md:rounded-[28px]"
       >
-        <header className="flex items-center gap-3 border-b border-gray-100 px-5 py-4">
+        <div className="flex items-center gap-3 border-b border-gray-100 px-5 py-4">
           <span className="ai-orb flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white">
             <Sparkles className="h-4 w-4" />
           </span>
@@ -95,7 +97,7 @@ export default function TripPlanSheet({
           >
             <X className="h-5 w-5" />
           </button>
-        </header>
+        </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-5">
           {!plan ? (
