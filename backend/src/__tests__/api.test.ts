@@ -335,15 +335,18 @@ test("web push: devices subscribe, get each お知らせ in their language, and 
 
     const fan = (await call("POST", "/api/auth/register", { email: "fan@example.com", password: "password123", name: "ファン" })).json.token;
     const keys = { p256dh: "BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTpQtUbVlUls0VJXg7A8u-Ts1XbjhazAkj7I99e8QcYP7DkM", auth: "tBHItJI5svbpez7KI4CCXg" };
-    assert.equal((await call("POST", "/api/push/subscribe", { endpoint: "https://push.example/phone", keys, lang: "en" }, fan)).status, 204);
-    assert.equal((await call("POST", "/api/push/subscribe", { endpoint: "https://push.example/old-tablet", keys, lang: "ja" }, fan)).status, 204);
-    assert.equal((await call("POST", "/api/push/subscribe", { endpoint: "not a url", keys }, fan)).status, 400);
+    assert.equal((await call("POST", "/api/push/subscribe", { endpoint: "https://fcm.googleapis.com/fcm/send/test-phone", keys, lang: "en" }, fan)).status, 204);
+    assert.equal((await call("POST", "/api/push/subscribe", { endpoint: "https://web.push.apple.com/test-old-tablet", keys, lang: "ja" }, fan)).status, 204);
+    // Only real push services: no arbitrary or internal addresses.
+    for (const endpoint of ["not a url", "https://169.254.169.254/latest", "http://fcm.googleapis.com/x", "https://fcm.googleapis.com.evil.example/x", "https://fcm.googleapis.com:8443/x"]) {
+      assert.equal((await call("POST", "/api/push/subscribe", { endpoint, keys }, fan)).status, 400, endpoint);
+    }
 
     const { json: map } = await call("GET", "/api/reels/map");
     const municipalityId = map.items[0].municipality.id;
     await call("POST", `/api/municipalities/${municipalityId}/follow`, undefined, fan);
 
-    gone = new Set(["https://push.example/old-tablet"]);
+    gone = new Set(["https://web.push.apple.com/test-old-tablet"]);
     const municipalityToken = await login("demo-matsumoto@example.com");
     const form = new FormData();
     form.append("video", new Blob([fs.readFileSync(path.resolve(__dirname, "../../seed-assets/kamikochi.webm"))], { type: "video/webm" }), "clip.webm");
@@ -357,7 +360,7 @@ test("web push: devices subscribe, get each お知らせ in their language, and 
     // Sending isn't awaited by the request; give it a moment.
     for (let i = 0; i < 50 && send.mock.callCount() < 2; i++) await new Promise((r) => setTimeout(r, 20));
     await new Promise((r) => setTimeout(r, 50));
-    const toPhone = sent.find((s) => s.endpoint === "https://push.example/phone");
+    const toPhone = sent.find((s) => s.endpoint === "https://fcm.googleapis.com/fcm/send/test-phone");
     assert.deepEqual(toPhone?.payload, {
       title: `New post from ${map.items[0].municipality.name}`,
       body: "大正池",
@@ -366,12 +369,12 @@ test("web push: devices subscribe, get each お知らせ in their language, and 
     });
     const { prisma } = await import("../prisma");
     assert.deepEqual(
-      (await prisma.pushSubscription.findMany({ where: { endpoint: { startsWith: "https://push.example/" } } })).map((s) => s.endpoint),
-      ["https://push.example/phone"]
+      (await prisma.pushSubscription.findMany({ where: { endpoint: { contains: "/test-" } } })).map((s) => s.endpoint),
+      ["https://fcm.googleapis.com/fcm/send/test-phone"]
     );
 
-    assert.equal((await call("DELETE", "/api/push/subscribe", { endpoint: "https://push.example/phone" }, fan)).status, 204);
-    assert.equal(await prisma.pushSubscription.count({ where: { endpoint: { startsWith: "https://push.example/" } } }), 0);
+    assert.equal((await call("DELETE", "/api/push/subscribe", { endpoint: "https://fcm.googleapis.com/fcm/send/test-phone" }, fan)).status, 204);
+    assert.equal(await prisma.pushSubscription.count({ where: { endpoint: { contains: "/test-" } } }), 0);
   } finally {
     send.mock.restore();
   }

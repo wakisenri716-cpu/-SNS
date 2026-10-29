@@ -11,8 +11,27 @@ router.get("/public-key", async (_req, res) => {
   res.json({ key: (await getVapidKeys()).publicKey });
 });
 
+// The server POSTs to each endpoint, so only the browsers' real push
+// services are accepted — otherwise anyone could make it send requests to
+// arbitrary (including internal) addresses.
+const PUSH_SERVICE_HOSTS = [
+  /^fcm\.googleapis\.com$/, // Chrome, Edge (Android/desktop), Samsung Internet
+  /^updates\.push\.services\.mozilla\.com$/, // Firefox
+  /^web\.push\.apple\.com$/, // Safari / iOS home-screen apps
+  /\.notify\.windows\.com$/, // Edge on Windows (legacy WNS endpoints)
+];
+
+export function isPushServiceEndpoint(endpoint: string) {
+  try {
+    const url = new URL(endpoint);
+    return url.protocol === "https:" && !url.port && PUSH_SERVICE_HOSTS.some((h) => h.test(url.hostname));
+  } catch {
+    return false;
+  }
+}
+
 const subscribeSchema = z.object({
-  endpoint: z.string().url().max(1000),
+  endpoint: z.string().max(1000).refine(isPushServiceEndpoint),
   keys: z.object({ p256dh: z.string().min(1).max(200), auth: z.string().min(1).max(100) }),
   lang: z.enum(["ja", "en", "zh", "ko"]).default("ja"),
 });
