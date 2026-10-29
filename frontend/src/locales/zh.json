@@ -1120,5 +1120,19 @@
     "cardLikes": "点赞",
     "cardTopTown": "最感兴趣的城镇：{{town}}",
     "cardFooter": "Jaziba — 由地方政府和当地店铺带来的旅行视频"
+  },
+  "shareIn": {
+    "title": "分享的内容",
+    "nothing": "没有找到分享的内容。请再次把照片或地图链接分享给Jaziba。",
+    "home": "返回首页",
+    "photoAlt": "分享的照片",
+    "photoHasPlace": "已找到照片的拍摄地点（在设备上读取，未发送）",
+    "photoNoPlace": "这张照片没有拍摄地点信息",
+    "similar": "按照片氛围寻找（AI）",
+    "similarSub": "AI会选出景色或氛围相似的帖子",
+    "nearPhoto": "拍摄地点附近的帖子",
+    "nearPoint": "分享地点附近的帖子",
+    "noneNear": "{{km}}公里内没有帖子",
+    "search": "用搜索寻找"
   }
 }

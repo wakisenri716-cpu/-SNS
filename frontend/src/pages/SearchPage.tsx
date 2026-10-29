@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ChevronRight, History, MapPinned, Mic, Search as SearchIcon } from "lucide-react";
 import { clearRecentlyViewed, getRecentlyViewed, type RecentItem } from "../lib/recentlyViewed";
@@ -21,7 +21,9 @@ interface RecommendItem {
 
 export default function SearchPage() {
   const { t, i18n } = useTranslation();
-  const [q, setQ] = useState("");
+  // ?q= starts a search (e.g. text shared from another app, see SharePage).
+  const [params] = useSearchParams();
+  const [q, setQ] = useState(() => params.get("q") ?? "");
   const speech = useSpeechInput(i18n.language, (text) => setQ(text));
   const [tags, setTags] = useState<TravelerTag[]>([]);
   const [municipalities, setMunicipalities] = useState<Municipality[]>([]);

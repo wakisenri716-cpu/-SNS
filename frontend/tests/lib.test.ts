@@ -205,3 +205,44 @@ test("weather: trip days map to dates, and only trips within the forecast range 
   assert.equal(forecastWindow("2026-10-20", now), "inRange");
   assert.equal(forecastWindow("2026-10-01", now), "past");
 });
+
+import { coordsInText, readExifGps } from "../src/lib/exifGps.ts";
+
+// A minimal JPEG with an EXIF GPS block (big-endian TIFF), like a phone writes.
+function jpegWithGps(lat: [number, number, number], latRef: string, lng: [number, number, number], lngRef: string) {
+  const tiff: number[] = [];
+  const u16 = (v: number) => tiff.push(v >> 8, v & 255);
+  const u32 = (v: number) => tiff.push((v >>> 24) & 255, (v >>> 16) & 255, (v >>> 8) & 255, v & 255);
+  // Header, IFD0 at 8 with one entry (GPS pointer), then the GPS IFD at 26.
+  tiff.push(0x4d, 0x4d); u16(42); u32(8);
+  u16(1); u16(0x8825); u16(4); u32(1); u32(26); u32(0);
+  // GPS IFD: 4 entries; rationals start after it at 26 + 2 + 4*12 + 4 = 80.
+  u16(4);
+  u16(1); u16(2); u32(2); tiff.push(latRef.charCodeAt(0), 0, 0, 0);
+  u16(2); u16(5); u32(3); u32(80);
+  u16(3); u16(2); u32(2); tiff.push(lngRef.charCodeAt(0), 0, 0, 0);
+  u16(4); u16(5); u32(3); u32(104);
+  u32(0);
+  for (const v of [...lat, ...lng]) { u32(Math.round(v * 100)); u32(100); }
+  const exif = [0x45, 0x78, 0x69, 0x66, 0, 0, ...tiff];
+  const size = exif.length + 2;
+  return new Uint8Array([0xff, 0xd8, 0xff, 0xe1, size >> 8, size & 255, ...exif, 0xff, 0xda, 0, 2]).buffer;
+}
+
+test("photo location: EXIF GPS is read from a JPEG, and its absence gives null", () => {
+  const at = readExifGps(jpegWithGps([36, 14, 20.76], "N", [137, 58, 8.76], "E"))!;
+  assert.ok(Math.abs(at.lat - 36.2391) < 1e-4 && Math.abs(at.lng - 137.9691) < 1e-4);
+  const west = readExifGps(jpegWithGps([40, 42, 46], "N", [74, 0, 22], "W"))!;
+  assert.ok(west.lng < 0);
+  assert.equal(readExifGps(new Uint8Array([0xff, 0xd8, 0xff, 0xda, 0, 2]).buffer), null);
+  assert.equal(readExifGps(new Uint8Array([0x89, 0x50, 0x4e, 0x47]).buffer), null);
+});
+
+test("shared map links: coordinates are found in the usual URL forms", () => {
+  assert.deepEqual(coordsInText("https://www.google.com/maps/place/x/@36.2391,137.9691,17z"), { lat: 36.2391, lng: 137.9691 });
+  assert.deepEqual(coordsInText("https://maps.google.com/?q=36.2391,137.9691"), { lat: 36.2391, lng: 137.9691 });
+  assert.deepEqual(coordsInText("https://maps.apple.com/?ll=36.2391,137.9691&q=Castle"), { lat: 36.2391, lng: 137.9691 });
+  assert.deepEqual(coordsInText("ここ 36.2391, 137.9691"), { lat: 36.2391, lng: 137.9691 });
+  assert.equal(coordsInText("https://maps.app.goo.gl/abc123"), null);
+  assert.equal(coordsInText("松本城に行きたい"), null);
+});

@@ -99,7 +99,9 @@ function PickCard({ pick, onSave }: { pick: Pick; onSave: (reel: Reel) => void }
 
 // "AIに旅を相談": describe a trip in your own words (or by voice) and get
 // matching posts with why they fit, plus directions and one-tap しおり saving.
-export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
+// `initialPhoto` starts with 写真で探す for that photo (e.g. one shared from
+// another app); the caller only offers it when AI is available.
+export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () => void; initialPhoto?: File }) {
   const { t, i18n } = useTranslation();
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -117,6 +119,15 @@ export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
   useEffect(() => {
     api.get<{ ai: boolean }>("/concierge/status").then(({ data }) => setAiEnabled(data.ai)).catch(() => setAiEnabled(false));
   }, []);
+
+  const startedPhoto = useRef(false);
+  useEffect(() => {
+    if (!initialPhoto || startedPhoto.current) return;
+    startedPhoto.current = true;
+    void askPhoto(initialPhoto);
+    // Once, for the photo it opened with.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialPhoto]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();

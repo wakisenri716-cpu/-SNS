@@ -1120,5 +1120,19 @@
     "cardLikes": "좋아요",
     "cardTopTown": "가장 관심 있던 마을: {{town}}",
     "cardFooter": "Jaziba — 지자체와 지역 가게가 전하는 여행 영상"
+  },
+  "shareIn": {
+    "title": "공유된 내용",
+    "nothing": "공유된 내용을 찾지 못했어요. 사진이나 지도 링크를 다시 Jaziba로 공유해 보세요.",
+    "home": "홈으로",
+    "photoAlt": "공유된 사진",
+    "photoHasPlace": "사진을 찍은 장소를 찾았어요(기기 안에서 읽었고 전송하지 않았어요)",
+    "photoNoPlace": "이 사진에는 촬영 장소 정보가 없어요",
+    "similar": "이 사진의 분위기로 찾기(AI)",
+    "similarSub": "비슷한 경치나 분위기의 게시물을 AI가 골라요",
+    "nearPhoto": "사진을 찍은 장소 근처 게시물",
+    "nearPoint": "공유된 지점 근처 게시물",
+    "noneNear": "{{km}}km 안에 게시물이 없어요",
+    "search": "검색으로 찾기"
   }
 }

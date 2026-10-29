@@ -4,8 +4,10 @@
 // the API and uploaded videos go to the network — except the signed-in
 // traveler's trips and each trip's しおり, whose last copies are kept so they
 // can be opened offline (cleared on logout, see src/lib/offlineItinerary.ts).
-const CACHE = "jaziba-v3";
+const CACHE = "jaziba-v4";
 const ITINERARY_CACHE = "jaziba-itinerary";
+// What another app shared to Jaziba (manifest share_target), picked up by /share.
+const SHARE_CACHE = "jaziba-share";
 // GET /api/me/trips and GET /api/me/trips/:id/itinerary
 const OFFLINE_API = /^\/api\/me\/trips(\/[^/]+\/itinerary)?$/;
 const SHELL = ["/", "/manifest.webmanifest", "/brand/jaziba-logo.png", "/icons/icon-192.png"];
@@ -18,7 +20,7 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE && k !== ITINERARY_CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE && k !== ITINERARY_CACHE && k !== SHARE_CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -26,6 +28,12 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
+  // 共有で受け取る: a photo, link or text shared from another app arrives as
+  // a form POST; keep it on the device for the /share page and go there.
+  if (req.method === "POST" && url.origin === self.location.origin && url.pathname === "/share-target") {
+    event.respondWith(receiveShare(req));
+    return;
+  }
   if (req.method !== "GET" || url.origin !== self.location.origin) return;
 
   if (OFFLINE_API.test(url.pathname) && !url.search) {
@@ -86,6 +94,22 @@ self.addEventListener("fetch", (event) => {
   }
 });
 
+async function receiveShare(req) {
+  try {
+    const form = await req.formData();
+    const cache = await caches.open(SHARE_CACHE);
+    await cache.delete("/shared/photo");
+    const photo = form.get("photo");
+    const hasPhoto = photo instanceof File && photo.size > 0;
+    if (hasPhoto) await cache.put("/shared/photo", new Response(photo, { headers: { "Content-Type": photo.type || "image/jpeg" } }));
+    const meta = { title: form.get("title") || "", text: form.get("text") || "", url: form.get("url") || "", hasPhoto, at: Date.now() };
+    await cache.put("/shared/meta", new Response(JSON.stringify(meta), { headers: { "Content-Type": "application/json" } }));
+  } catch {
+    // The page says nothing arrived.
+  }
+  return Response.redirect("/share", 303);
+}
+
 // Web Push (see src/lib/push.ts, backend lib/push.ts): show the お知らせ, and
 // open its page when tapped — focusing an open Jaziba window if there is one.
 self.addEventListener("push", (event) => {
@@ -95,6 +119,8 @@ self.addEventListener("push", (event) => {
   } catch {
     data = { title: "Jaziba", body: event.data ? event.data.text() : "" };
   }
+  // A dot on the home-screen icon until the app is opened (Badging API).
+  self.navigator.setAppBadge?.().catch(() => {});
   event.waitUntil(
     self.registration.showNotification(data.title || "Jaziba", {
       body: data.body || "",

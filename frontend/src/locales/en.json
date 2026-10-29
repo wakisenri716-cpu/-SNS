@@ -1145,5 +1145,19 @@
     "cardLikes": "Likes",
     "cardTopTown": "Favourite town: {{town}}",
     "cardFooter": "Jaziba — travel videos from towns and local shops"
+  },
+  "shareIn": {
+    "title": "Shared with Jaziba",
+    "nothing": "Nothing shared was found. Try sharing a photo or map link to Jaziba again.",
+    "home": "Go home",
+    "photoAlt": "The shared photo",
+    "photoHasPlace": "Found where the photo was taken (read on your device, not sent)",
+    "photoNoPlace": "This photo has no location information",
+    "similar": "Find places with this feel (AI)",
+    "similarSub": "AI picks posts with a similar view or atmosphere",
+    "nearPhoto": "Posts near where the photo was taken",
+    "nearPoint": "Posts near the shared place",
+    "noneNear": "No posts within {{km}} km",
+    "search": "Search instead"
   }
 }

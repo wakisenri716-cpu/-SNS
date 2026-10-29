@@ -58,6 +58,11 @@ app.use("/api/trips", tripRoutes);
 app.use("/api/me/trips", myTripRoutes);
 app.use("/api/push", pushRoutes);
 
+// 共有で受け取る is normally caught by the service worker (frontend/public/sw.js)
+// on the device; if it isn't running yet, the share lands here and the page
+// says nothing arrived instead of showing an error.
+app.post("/share-target", (_req, res) => res.redirect(303, "/share"));
+
 // Serve the built frontend (frontend/npm run build -> frontend/dist) so a single
 // backend process can host both the API and the SPA, e.g. one Render web service.
 // In local dev this directory doesn't exist — the Vite dev server handles the
