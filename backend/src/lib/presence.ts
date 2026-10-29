@@ -45,3 +45,23 @@ export function watch(reelId: string, clientId: string, res: Response, onClose: 
   });
   return true;
 }
+
+// 新しい投稿: open feeds listening for posts as they're published.
+const feedListeners = new Set<Response>();
+
+export function listenForNewPosts(res: Response, onClose: (fn: () => void) => void) {
+  if (connections >= MAX_CONNECTIONS) return false;
+  connections++;
+  feedListeners.add(res);
+  const heartbeat = setInterval(() => res.write(": keep-alive\n\n"), 25_000);
+  onClose(() => {
+    clearInterval(heartbeat);
+    connections--;
+    feedListeners.delete(res);
+  });
+  return true;
+}
+
+export function announceNewPost(reelId: string) {
+  for (const res of feedListeners) res.write(`event: post\ndata: ${JSON.stringify({ id: reelId })}\n\n`);
+}

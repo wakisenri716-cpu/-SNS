@@ -103,7 +103,8 @@
     "savedPill": "저장됨",
     "heroTitle": "다음 여행지를 찾아보세요",
     "distanceFromHere": "여기서 {{distance}}",
-    "nearbyNoLocation": "현재 위치를 가져오지 못했어요. 브라우저에서 위치 권한을 허용하면 가까운 순으로 볼 수 있어요."
+    "nearbyNoLocation": "현재 위치를 가져오지 못했어요. 브라우저에서 위치 권한을 허용하면 가까운 순으로 볼 수 있어요.",
+    "newPosts": "새 게시물 {{count}}개"
   },
   "search": {
     "placeholder": "지역명・키워드로 검색",

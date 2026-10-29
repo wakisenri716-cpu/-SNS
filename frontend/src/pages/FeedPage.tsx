@@ -2,13 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ChevronRight, Sparkles } from "lucide-react";
+import { ArrowUp, ChevronRight, Sparkles } from "lucide-react";
 import { api } from "../api/client";
 import { fetchSavedReelIds, notifySavesChanged, onSavesChanged } from "../lib/savesChanged";
 import { useAuth } from "../auth/AuthContext";
 import { showToast } from "../lib/toast";
 import { isOnScreen, withViewTransition } from "../lib/viewTransition";
 import { usePullToRefresh } from "../lib/usePullToRefresh";
+import { useNewPosts } from "../lib/useNewPosts";
 import { currentPosition, distanceKm } from "../lib/geo";
 import Avatar from "../components/Avatar";
 import CommentsSheet from "../components/CommentsSheet";
@@ -77,6 +78,16 @@ export default function FeedPage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const refreshingRef = useRef(false);
+  // 新しい投稿があります: posts published while this feed is open.
+  const newPosts = useNewPosts(tab === "all" || tab === "season" || (REEL_CATEGORIES as readonly string[]).includes(tab));
+  const unseenNew = newPosts.ids.filter((id) => !reels.some((r) => r.id === id));
+  function showNewPosts() {
+    newPosts.reset();
+    window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    refreshingRef.current = true;
+    setRefreshing(true);
+    setRefreshKey((k) => k + 1);
+  }
   const { pull, progress } = usePullToRefresh(() => {
     if (refreshingRef.current) return;
     refreshingRef.current = true;
@@ -245,6 +256,15 @@ export default function FeedPage() {
           />
         </span>
       </div>
+      {unseenNew.length > 0 && (
+        <button
+          type="button"
+          onClick={showNewPosts}
+          className="animate-sheet-in fixed left-1/2 top-[calc(var(--header-offset,53px)+3.75rem)] z-40 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-jz-red px-4 py-2 text-sm font-bold text-white shadow-[0_10px_30px_-8px_rgba(215,32,46,0.8)] active:scale-95 md:top-4"
+        >
+          <ArrowUp className="h-4 w-4" strokeWidth={2.5} /> {t("feed.newPosts", { count: unseenNew.length })}
+        </button>
+      )}
       <WelcomeIntro />
 
       <div className="relative isolate">

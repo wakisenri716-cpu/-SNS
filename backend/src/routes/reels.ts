@@ -20,7 +20,7 @@ import { isClaudeConfigured, logClaudeError } from "../services/claude";
 import { translateCaption } from "../services/translate";
 import { buildItinerary } from "../lib/itinerary";
 import { inSeasonWhere, monthInJapan } from "../lib/season";
-import { watch } from "../lib/presence";
+import { announceNewPost, listenForNewPosts, watch } from "../lib/presence";
 import { randomBytes } from "node:crypto";
 
 const PERSONALIZED_POOL = 100;
@@ -105,6 +105,28 @@ router.get("/", optionalAuth, async (req, res) => {
   const items = await Promise.all(reels.map((r) => serializeReel(r, viewerStateFor(r, followed))));
   const nextCursor = reels.length === take ? reels[reels.length - 1].id : null;
   res.json({ items, nextCursor, personalized: false });
+});
+
+function openEventStream(res: Response) {
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache, no-transform",
+    Connection: "keep-alive",
+    // Tell nginx-style proxies not to buffer the stream.
+    "X-Accel-Buffering": "no",
+  });
+  res.write("retry: 5000\n\n");
+}
+
+// 新しい投稿: a Server-Sent Events stream with an "event: post" each time a
+// reel is published, so open feeds can offer "新しい投稿があります".
+// Must be registered before "/:id".
+router.get("/feed/live", (req, res) => {
+  openEventStream(res);
+  if (!listenForNewPosts(res, (fn) => req.on("close", fn))) {
+    res.write("event: busy\ndata: 0\n\n");
+    res.end();
+  }
 });
 
 // Reels the signed-in user has liked (used by the read-only tourist "マイページ").
@@ -487,14 +509,7 @@ router.get("/:id/live", async (req, res) => {
   const reel = await prisma.reel.findUnique({ where: { id: req.params.id }, select: { id: true } });
   if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
 
-  res.writeHead(200, {
-    "Content-Type": "text/event-stream",
-    "Cache-Control": "no-cache, no-transform",
-    Connection: "keep-alive",
-    // Tell nginx-style proxies not to buffer the stream.
-    "X-Accel-Buffering": "no",
-  });
-  res.write("retry: 5000\n\n");
+  openEventStream(res);
   const ok = watch(reel.id, clientId, res, (fn) => req.on("close", fn));
   if (!ok) {
     res.write("event: busy\ndata: 0\n\n");
@@ -683,6 +698,7 @@ router.post(
       include: reelInclude,
     });
 
+    announceNewPost(reel.id);
     await notifyFollowersOfNewPost({
       reelId: reel.id,
       actorId: req.auth!.userId,

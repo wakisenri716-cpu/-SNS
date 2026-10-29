@@ -103,7 +103,8 @@
     "savedPill": "已加入",
     "heroTitle": "发现下一个目的地",
     "distanceFromHere": "距这里{{distance}}",
-    "nearbyNoLocation": "无法获取当前位置。请在浏览器中允许位置信息，即可按距离显示。"
+    "nearbyNoLocation": "无法获取当前位置。请在浏览器中允许位置信息，即可按距离显示。",
+    "newPosts": "{{count}}条新帖子"
   },
   "search": {
     "placeholder": "按地区名或关键词搜索",

@@ -105,7 +105,9 @@
     "savedPill": "Saved",
     "heroTitle": "Find your next trip",
     "distanceFromHere": "{{distance}} away",
-    "nearbyNoLocation": "Couldn't get your location. Allow location access in your browser to see the nearest posts."
+    "nearbyNoLocation": "Couldn't get your location. Allow location access in your browser to see the nearest posts.",
+    "newPosts_one": "{{count}} new post",
+    "newPosts_other": "{{count}} new posts"
   },
   "search": {
     "placeholder": "Search by region or keyword",

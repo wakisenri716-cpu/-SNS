@@ -103,7 +103,8 @@
     "savedPill": "しおり済み",
     "heroTitle": "次の旅先を見つけよう",
     "distanceFromHere": "ここから{{distance}}",
-    "nearbyNoLocation": "現在地を取得できませんでした。ブラウザの設定で位置情報を許可すると、近い順に表示できます。"
+    "nearbyNoLocation": "現在地を取得できませんでした。ブラウザの設定で位置情報を許可すると、近い順に表示できます。",
+    "newPosts": "新しい投稿が{{count}}件"
   },
   "search": {
     "placeholder": "地域名・キーワードで検索",

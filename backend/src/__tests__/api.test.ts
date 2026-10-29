@@ -450,3 +450,36 @@ test("live viewer count: streams the number of tabs on a spot, each tab once, an
   const { viewerCount } = await import("../lib/presence");
   assert.equal(viewerCount(reelId), 0);
 });
+
+test("new-post stream: open feeds hear about a post as soon as it's published", async () => {
+  const controller = new AbortController();
+  const ids: string[] = [];
+  const res = await fetch(`${base}/api/reels/feed/live`, { signal: controller.signal });
+  assert.equal(res.headers.get("content-type"), "text/event-stream");
+  const reading = (async () => {
+    const reader = res.body!.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    try {
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        for (const m of buffer.matchAll(/event: post\ndata: (\{.*\})\n\n/g)) ids.push(JSON.parse(m[1]).id);
+        buffer = buffer.slice(buffer.lastIndexOf("\n\n") + 2);
+      }
+    } catch {
+      // aborted
+    }
+  })();
+
+  const municipalityToken = await login("demo-matsumoto@example.com");
+  const form = new FormData();
+  form.append("video", new Blob([fs.readFileSync(path.resolve(__dirname, "../../seed-assets/kamikochi.webm"))], { type: "video/webm" }), "clip.webm");
+  form.append("category", "nature");
+  const created = await (await fetch(`${base}/api/reels`, { method: "POST", headers: { Authorization: `Bearer ${municipalityToken}` }, body: form })).json();
+  for (let i = 0; i < 20 && ids.length === 0; i++) await new Promise((r) => setTimeout(r, 25));
+  assert.deepEqual(ids, [created.id]);
+  controller.abort();
+  await reading;
+});
