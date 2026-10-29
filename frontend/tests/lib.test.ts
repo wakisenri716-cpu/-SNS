@@ -120,3 +120,12 @@ test("recently viewed: newest first, each spot once, at most 12", async () => {
   clearRecentlyViewed();
   assert.deepEqual(getRecentlyViewed(), []);
 });
+
+test("first-visit language follows the browser's preferences", async () => {
+  const { detectLanguage } = await import("../src/lib/detectLanguage.ts");
+  assert.equal(detectLanguage(["en-US", "ja"]), "en");
+  assert.equal(detectLanguage(["zh-TW"]), "zh");
+  assert.equal(detectLanguage(["fr-FR", "ko-KR"]), "ko");
+  assert.equal(detectLanguage(["fr-FR", "de"]), "ja");
+  assert.equal(detectLanguage(["ja-JP", "en"]), "ja");
+});

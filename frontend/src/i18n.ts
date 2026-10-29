@@ -1,17 +1,23 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import ja from "./locales/ja.json";
+import { detectLanguage } from "./lib/detectLanguage";
 
 export const LANGUAGE_STORAGE_KEY = "tourism-sns-language";
 export const SUPPORTED_LANGUAGES = ["ja", "en", "zh", "ko"] as const;
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 function getInitialLanguage(): SupportedLanguage {
-  const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+  let stored: string | null = null;
+  try {
+    stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+  } catch {
+    // Storage blocked: fall through to the browser's languages.
+  }
   if (stored && (SUPPORTED_LANGUAGES as readonly string[]).includes(stored)) {
     return stored as SupportedLanguage;
   }
-  return "ja";
+  return detectLanguage(navigator.languages?.length ? navigator.languages : [navigator.language ?? "ja"]);
 }
 
 // Japanese (the default and fallback) is bundled; the other languages are
@@ -35,7 +41,8 @@ i18n.use(initReactI18next).init({
   interpolation: { escapeValue: false },
 });
 
-// A returning visitor who chose another language: switch once it's loaded
+// A returning visitor who chose another language, or a first visit from a
+// browser set to English/Chinese/Korean: switch once it's loaded
 // (the page shows Japanese for that moment rather than blocking on it).
 const initial = getInitialLanguage();
 if (initial !== "ja") {
