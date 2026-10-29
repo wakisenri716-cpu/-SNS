@@ -1039,5 +1039,29 @@
     "offerAccept": "Create a passkey",
     "offerLater": "Not now",
     "privacyNote": "Your face and fingerprint are checked only on the device and never sent to Jaziba."
+  },
+  "ar": {
+    "entry": "AR",
+    "title": "Explore in AR",
+    "intro": "Hold up your phone and Jaziba's spots in that direction float over the camera picture, with how far they are. Tap one for directions or to save it to a trip.",
+    "start": "Start the camera",
+    "privacy": "The camera picture, your location and direction are used only on this device — nothing is recorded or sent to Jaziba.",
+    "backToMap": "Explore on the map",
+    "close": "Close AR",
+    "facing": "Direction you're facing",
+    "dragHint": "No compass on this device: drag left or right to look around",
+    "range": "Range",
+    "noCamera": "The camera isn't available, so only directions are shown",
+    "noLocation": "Couldn't use your location. Please check your browser settings",
+    "locating": "Finding your location…",
+    "noneInRange": "No posts within {{km}} km. Try a wider range at the top right",
+    "moreLeft": "{{count}} more to the left",
+    "moreRight": "{{count}} more to the right",
+    "spotLabel": "{{place}}, {{distance}}",
+    "radar": "{{count}} posts around you",
+    "closeCard": "Close",
+    "distanceDirection": "{{distance}} to the {{dir}} (straight line)",
+    "directions": "Directions",
+    "save": "Save"
   }
 }

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Bookmark, LocateFixed, Navigation, Play, X } from "lucide-react";
+import { Bookmark, LocateFixed, Navigation, Play, ScanEye, X } from "lucide-react";
 import { LngLatBounds, Map as MapLibreMap, Marker, setWorkerUrl } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
@@ -172,6 +172,12 @@ export default function MapPage() {
         ))}
       </div>
 
+      <Link
+        to="/ar"
+        className="ai-orb absolute bottom-[4.25rem] right-3 z-10 flex h-11 items-center gap-1.5 rounded-full px-3.5 text-sm font-bold text-white transition active:scale-90"
+      >
+        <ScanEye className="h-5 w-5" /> {t("ar.entry")}
+      </Link>
       <button
         type="button"
         onClick={locate}

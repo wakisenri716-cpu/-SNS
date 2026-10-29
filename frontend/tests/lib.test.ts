@@ -144,3 +144,51 @@ test("旅行中モード: before, at a stop, moving to the next, done", async ()
   // Day 2 counts on from the first midnight.
   assert.equal(minutesSince("2026-11-03", new Date(2026, 10, 4, 9, 15)), 24 * 60 + 9 * 60 + 15);
 });
+
+import { angleDiff, cameraHeading, project, spread } from "../src/lib/arProjection.ts";
+
+test("AR: the camera heading of an upright phone follows where it points", () => {
+  // Upright (beta 90), not rolled: alpha 0 faces north, alpha 90 (turned left) faces west.
+  assert.ok(Math.abs(cameraHeading(0, 90, 0) - 0) < 1e-6 || Math.abs(cameraHeading(0, 90, 0) - 360) < 1e-6);
+  assert.ok(Math.abs(cameraHeading(90, 90, 0) - 270) < 1e-6);
+  assert.ok(Math.abs(cameraHeading(270, 90, 0) - 90) < 1e-6);
+  assert.equal(angleDiff(10, 350), 20);
+  assert.equal(angleDiff(350, 10), -20);
+  assert.equal(angleDiff(180, 0), 180);
+});
+
+test("AR: spots ahead are in view, behind are not, and nearer ones sit lower and bigger", () => {
+  const me = { lat: 36.2, lng: 137.9 };
+  const spots = [
+    { id: "north-near", lat: 36.205, lng: 137.9 },
+    { id: "north-far", lat: 36.25, lng: 137.9 },
+    { id: "east", lat: 36.2, lng: 137.95 },
+    { id: "south", lat: 36.15, lng: 137.9 },
+    { id: "too-far", lat: 37.5, lng: 137.9 },
+  ];
+  const facingNorth = project(me, 0, 90, spots, 10);
+  assert.deepEqual(facingNorth.map((p) => p.spot.id), ["north-near", "east", "north-far", "south"]);
+  const byId = Object.fromEntries(facingNorth.map((p) => [p.spot.id, p]));
+  assert.ok(byId["north-near"].inView && byId["north-far"].inView);
+  assert.ok(!byId.east.inView && !byId.south.inView);
+  assert.ok(Math.abs(byId["north-near"].x - 0.5) < 0.01);
+  assert.ok(byId["north-near"].y > byId["north-far"].y);
+  assert.ok(byId["north-near"].scale > byId["north-far"].scale);
+  // Turn to face east: now the east spot is in the middle.
+  const east = project(me, 90, 90, spots, 10).find((p) => p.spot.id === "east")!;
+  assert.ok(east.inView && Math.abs(east.x - 0.5) < 0.02);
+  // Tilting the phone up moves things down the screen.
+  const up = project(me, 0, 110, spots, 10).find((p) => p.spot.id === "north-near")!;
+  assert.ok(up.y > byId["north-near"].y);
+});
+
+test("AR: overlapping labels are stacked instead of covering each other", () => {
+  const out = spread([
+    { x: 0.5, y: 0.5 },
+    { x: 0.52, y: 0.5 },
+    { x: 0.9, y: 0.5 },
+  ]);
+  assert.equal(out[0].y, 0.5);
+  assert.ok(out[1].y < 0.5 - 0.08);
+  assert.equal(out[2].y, 0.5);
+});

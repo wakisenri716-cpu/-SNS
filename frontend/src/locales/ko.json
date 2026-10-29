@@ -1014,5 +1014,29 @@
     "offerAccept": "패스키 만들기",
     "offerLater": "나중에",
     "privacyNote": "얼굴·지문 정보는 기기 안에서만 확인되며 Jaziba로 전송되지 않아요."
+  },
+  "ar": {
+    "entry": "AR",
+    "title": "AR로 찾기",
+    "intro": "휴대폰을 들어 비추면 그 방향에 있는 Jaziba 게시물 장소가 거리와 함께 카메라 화면 위에 떠올라요. 궁금한 곳을 누르면 가는 방법을 보거나 일정표에 저장할 수 있어요.",
+    "start": "카메라 켜기",
+    "privacy": "카메라 화면·위치·방향은 이 기기 안에서만 사용하며, 녹화하거나 Jaziba로 보내지 않아요.",
+    "backToMap": "지도에서 찾기",
+    "close": "AR 닫기",
+    "facing": "지금 향한 방향",
+    "dragHint": "나침반이 없는 기기예요. 좌우로 드래그해 둘러볼 수 있어요",
+    "range": "표시 범위",
+    "noCamera": "카메라를 사용할 수 없어 방향만 표시하고 있어요",
+    "noLocation": "위치 정보를 사용할 수 없어요. 브라우저 설정을 확인해 주세요",
+    "locating": "현재 위치 확인 중…",
+    "noneInRange": "{{km}}km 안에 게시물이 없어요. 오른쪽 위에서 범위를 넓혀 보세요",
+    "moreLeft": "왼쪽에 {{count}}곳 더",
+    "moreRight": "오른쪽에 {{count}}곳 더",
+    "spotLabel": "{{place}}, {{distance}}",
+    "radar": "주변 게시물 {{count}}곳",
+    "closeCard": "닫기",
+    "distanceDirection": "{{dir}}쪽으로 {{distance}}(직선거리)",
+    "directions": "가는 방법",
+    "save": "저장"
   }
 }

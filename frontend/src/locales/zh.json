@@ -1014,5 +1014,29 @@
     "offerAccept": "创建通行密钥",
     "offerLater": "以后再说",
     "privacyNote": "面容和指纹只在设备上验证，不会发送给Jaziba。"
+  },
+  "ar": {
+    "entry": "AR",
+    "title": "AR探索",
+    "intro": "举起手机，该方向上的Jaziba帖子地点会带着距离浮现在相机画面上。点击感兴趣的地点即可查看路线或保存到旅行手册。",
+    "start": "启动相机",
+    "privacy": "相机画面、位置和方向仅在本设备上使用，不会录制，也不会发送给Jaziba。",
+    "backToMap": "在地图上探索",
+    "close": "关闭AR",
+    "facing": "当前朝向",
+    "dragHint": "此设备没有指南针，可左右拖动环顾四周",
+    "range": "显示范围",
+    "noCamera": "无法使用相机，仅显示方向",
+    "noLocation": "无法使用位置信息，请检查浏览器设置",
+    "locating": "正在确认当前位置…",
+    "noneInRange": "{{km}}公里内没有帖子。请在右上角扩大范围",
+    "moreLeft": "左侧还有{{count}}处",
+    "moreRight": "右侧还有{{count}}处",
+    "spotLabel": "{{place}}，{{distance}}",
+    "radar": "周围的帖子{{count}}处",
+    "closeCard": "关闭",
+    "distanceDirection": "向{{dir}} {{distance}}（直线距离）",
+    "directions": "路线",
+    "save": "手册"
   }
 }
