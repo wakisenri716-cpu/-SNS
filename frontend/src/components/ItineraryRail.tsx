@@ -11,6 +11,8 @@ import { CalendarPlus, ChevronDown, ChevronUp, Flag, House, Link2Off, Play, Shar
 import { downloadItineraryIcs } from "../lib/ics";
 import { computeTimeline, formatClock, overnightStops } from "../lib/itineraryTimeline";
 import LegRow, { DayDivider } from "./ItineraryLegRow";
+import LiveTripBanner from "./LiveTripBanner";
+import { loadLiveTrip, type LiveStatus } from "../lib/liveTrip";
 import { shareLink } from "../lib/shareLink";
 import { showToast } from "../lib/toast";
 
@@ -43,6 +45,9 @@ export function ItineraryPanel({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
   const [startDraft, setStartDraft] = useState("09:00");
   const [planOpen, setPlanOpen] = useState(false);
   const [flyoverOpen, setFlyoverOpen] = useState(false);
+  const [liveTrip, setLiveTrip] = useState(loadLiveTrip);
+  const [live, setLive] = useState<LiveStatus | null>(null);
+  const liveIndex = live && (live.kind === "at" || live.kind === "moving") ? live.index : -1;
   // Served from the service worker's saved copy because we're offline.
   const [offline, setOffline] = useState(false);
   const [calendarDate, setCalendarDate] = useState<string | null>(null);
@@ -213,6 +218,15 @@ export function ItineraryPanel({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
             </Suspense>
           )}
 
+          <LiveTripBanner
+            state={liveTrip}
+            onChange={setLiveTrip}
+            times={times}
+            departAt={departAt}
+            stopNames={itinerary.stops.map((s) => s.locationName || s.caption.slice(0, 30))}
+            onStatus={setLive}
+          />
+
           <div className="mb-4 flex gap-1.5">
             {(["list", "map"] as const).map((v) => (
               <button
@@ -287,10 +301,19 @@ export function ItineraryPanel({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
                   <div key={stop.id}>
                     {multiDay && day !== (i === 0 ? 0 : times[i - 1].day) && <DayDivider day={day} />}
                     <div className="mt-1.5 flex gap-2">
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white">
+                      <span
+                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white ${
+                          liveIndex === i ? "bg-jz-red" : "bg-gray-900"
+                        }`}
+                      >
                         {i + 1}
                       </span>
-                      <div className="min-w-0 flex-1 rounded-2xl border border-gray-200/80 bg-white p-2">
+                      <div
+                        className={`min-w-0 flex-1 rounded-2xl border bg-white p-2 ${
+                          liveIndex === i ? "border-jz-red ring-2 ring-jz-red/20" : "border-gray-200/80"
+                        }`}
+                        aria-current={liveIndex === i ? "step" : undefined}
+                      >
                         <div className="flex items-start gap-1">
                           <Link to={`/reels/${stop.id}/access`} className="min-w-0 flex-1 hover:underline">
                             <p className="truncate text-sm font-semibold text-gray-900">{stop.locationName || stop.caption}</p>

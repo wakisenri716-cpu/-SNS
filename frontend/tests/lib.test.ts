@@ -129,3 +129,18 @@ test("first-visit language follows the browser's preferences", async () => {
   assert.equal(detectLanguage(["fr-FR", "de"]), "ja");
   assert.equal(detectLanguage(["ja-JP", "en"]), "ja");
 });
+
+test("旅行中モード: before, at a stop, moving to the next, done", async () => {
+  const { liveStatus, minutesSince } = await import("../src/lib/liveTrip.ts");
+  const times = [
+    { arrive: 9 * 60, leave: 10 * 60 },
+    { arrive: 10 * 60 + 30, leave: 12 * 60 },
+  ];
+  assert.deepEqual(liveStatus(times, 8 * 60 + 30, 8 * 60), { kind: "before", minutes: 30 });
+  assert.deepEqual(liveStatus(times, 8 * 60 + 30, 8 * 60 + 45), { kind: "moving", index: 0, minutes: 15 });
+  assert.deepEqual(liveStatus(times, 8 * 60 + 30, 9 * 60 + 35), { kind: "at", index: 0, minutes: 25 });
+  assert.deepEqual(liveStatus(times, 8 * 60 + 30, 10 * 60 + 10), { kind: "moving", index: 1, minutes: 20 });
+  assert.deepEqual(liveStatus(times, 8 * 60 + 30, 13 * 60), { kind: "done" });
+  // Day 2 counts on from the first midnight.
+  assert.equal(minutesSince("2026-11-03", new Date(2026, 10, 4, 9, 15)), 24 * 60 + 9 * 60 + 15);
+});

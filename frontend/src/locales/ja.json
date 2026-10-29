@@ -873,5 +873,22 @@
   "visitStats": {
     "today": "今日{{count}}人がここでスタンプを押しました",
     "total": "これまでに{{count}}人がここでスタンプを押しました"
+  },
+  "liveTrip": {
+    "start": "今日この旅をはじめる",
+    "startHint": "旅行中は「いまどこにいる予定か」と次の場所までの時間を表示します",
+    "label": "旅行中",
+    "badge": "旅行中",
+    "before": "出発まであと{{wait}}",
+    "at": "いま：{{place}}",
+    "leaveIn": "あと{{wait}}で出発",
+    "moving": "移動中：次は{{place}}",
+    "arriveIn": "あと{{wait}}で到着予定",
+    "done": "おつかれさまでした！旅はここまでです",
+    "late": "＋15分遅れ",
+    "end": "旅行中モードを終える",
+    "delayed": "{{m}}分遅れで計算中",
+    "minutes": "{{m}}分",
+    "hoursMinutes": "{{h}}時間{{m}}分"
   }
 }

@@ -873,5 +873,22 @@
   "visitStats": {
     "today": "今天有{{count}}人在这里盖了印章",
     "total": "已有{{count}}人在这里盖了印章"
+  },
+  "liveTrip": {
+    "start": "今天开始这趟旅行",
+    "startHint": "旅行中会显示按计划现在应在哪里，以及到下一个地点的时间",
+    "label": "旅行中",
+    "badge": "旅行中",
+    "before": "还有{{wait}}出发",
+    "at": "现在：{{place}}",
+    "leaveIn": "还有{{wait}}出发",
+    "moving": "前往：{{place}}",
+    "arriveIn": "预计{{wait}}后到达",
+    "done": "辛苦了！旅程到此结束",
+    "late": "＋晚15分钟",
+    "end": "结束旅行模式",
+    "delayed": "按晚{{m}}分钟计算",
+    "minutes": "{{m}}分钟",
+    "hoursMinutes": "{{h}}小时{{m}}分钟"
   }
 }

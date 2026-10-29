@@ -895,5 +895,22 @@
     "today_other": "{{count}} travelers got this stamp today",
     "total_one": "{{count}} traveler has got this stamp",
     "total_other": "{{count}} travelers have got this stamp"
+  },
+  "liveTrip": {
+    "start": "Start this trip today",
+    "startHint": "While traveling, shows where the plan has you now and how long to the next stop",
+    "label": "On the trip",
+    "badge": "ON THE TRIP",
+    "before": "Setting off in {{wait}}",
+    "at": "Now: {{place}}",
+    "leaveIn": "Leave in {{wait}}",
+    "moving": "On the way to {{place}}",
+    "arriveIn": "Arriving in about {{wait}}",
+    "done": "That's the trip — well done!",
+    "late": "+15 min late",
+    "end": "End trip mode",
+    "delayed": "running {{m}} min late",
+    "minutes": "{{m}} min",
+    "hoursMinutes": "{{h}} h {{m}} min"
   }
 }
