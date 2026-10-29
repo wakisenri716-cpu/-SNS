@@ -124,7 +124,13 @@ function TripPickerSheet({ request, onClose }: { request: TripPickerRequest; onC
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-bold text-jz-ink">{trip.name}</span>
                     <span className="block text-[11px] text-gray-500">
-                      {[trip.startDate?.replace(/-/g, "/"), t("tripPicker.count", { count: trip.count })].filter(Boolean).join("・")}
+                      {[
+                        trip.startDate?.replace(/-/g, "/"),
+                        t("tripPicker.count", { count: trip.count }),
+                        !trip.isOwner ? t("collab.ownersTrip", { name: trip.ownerName }) : trip.people > 1 ? `👥 ${trip.people}` : null,
+                      ]
+                        .filter(Boolean)
+                        .join("・")}
                     </span>
                   </span>
                   {single ? (

@@ -581,3 +581,83 @@ test("live reactions reach everyone watching the reel, tagged with the sender", 
   controller.abort();
   await reading;
 });
+
+test("共同編集: invite, join, edit together with live updates, and leave", async () => {
+  const owner = (await call("POST", "/api/auth/register", { email: "collab-owner@example.com", password: "password123", name: "幹事" })).json.token;
+  const friend = (await call("POST", "/api/auth/register", { email: "collab-friend@example.com", password: "password123", name: "友人" })).json.token;
+  const { json: map } = await call("GET", "/api/reels/map");
+  const [a, b] = map.items;
+  const trip = (await call("POST", "/api/me/trips", { name: "みんなの旅" }, owner)).json;
+  await call("PUT", `/api/me/trips/${trip.id}/items/${a.id}`, undefined, owner);
+
+  // Only the owner makes the invite link; anyone can preview it.
+  assert.equal((await call("POST", `/api/me/trips/${trip.id}/invite`, undefined, friend)).status, 404);
+  const invite = (await call("POST", `/api/me/trips/${trip.id}/invite`, undefined, owner)).json.token;
+  assert.deepEqual(
+    (({ tripName, ownerName, count, people }) => ({ tripName, ownerName, count, people }))((await call("GET", `/api/trips/invite/${invite}`)).json),
+    { tripName: "みんなの旅", ownerName: "幹事", count: 1, people: 1 }
+  );
+
+  // Live stream for the owner (one-time ticket).
+  const ticket = (await call("POST", `/api/me/trips/${trip.id}/live-ticket`, undefined, owner)).json.ticket;
+  const controller = new AbortController();
+  const events: { event: string; data: any }[] = [];
+  const stream = await fetch(`${base}/api/trips/live/${ticket}`, { signal: controller.signal });
+  const reading = (async () => {
+    const reader = stream.body!.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    try {
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        for (const m of buffer.matchAll(/event: (\w+)\ndata: (.*)\n\n/g)) events.push({ event: m[1], data: JSON.parse(m[2]) });
+        buffer = buffer.slice(buffer.lastIndexOf("\n\n") + 2);
+      }
+    } catch {
+      // aborted
+    }
+  })();
+  assert.equal((await fetch(`${base}/api/trips/live/${ticket}`)).status, 404); // used up
+
+  // The friend joins and edits; the owner hears about it.
+  assert.equal((await call("POST", `/api/me/trips/join/${invite}`, undefined, friend)).json.tripId, trip.id);
+  const friendList = (await call("GET", "/api/me/trips", undefined, friend)).json.items;
+  assert.deepEqual(friendList.map((t: any) => [t.name, t.isOwner, t.ownerName, t.people]), [["みんなの旅", false, "幹事", 2]]);
+  assert.equal((await call("PUT", `/api/me/trips/${trip.id}/items/${b.id}`, undefined, friend)).status, 204);
+  assert.equal((await call("PUT", `/api/me/trips/${trip.id}/order`, { reelIds: [b.id, a.id] }, friend)).status, 204);
+  for (let i = 0; i < 20 && events.filter((e) => e.event === "changed").length < 3; i++) await new Promise((r) => setTimeout(r, 25));
+  const changes = events.filter((e) => e.event === "changed");
+  assert.ok(changes.length >= 3);
+  assert.equal(changes.at(-1)!.data.by.name, "友人");
+  assert.equal(events.find((e) => e.event === "presence")!.data.people[0].name, "幹事");
+
+  const seen = (await call("GET", `/api/me/trips/${trip.id}/itinerary`, undefined, owner)).json;
+  assert.deepEqual(seen.stops.map((s: any) => s.id), [b.id, a.id]);
+  assert.deepEqual(seen.members.map((m: any) => m.name), ["友人"]);
+  assert.equal(seen.inviteToken, invite);
+  const asFriend = (await call("GET", `/api/me/trips/${trip.id}/itinerary`, undefined, friend)).json;
+  assert.equal(asFriend.isOwner, false);
+  assert.equal(asFriend.inviteToken, null);
+  // Both now have both posts bookmarked.
+  for (const tok of [owner, friend]) {
+    const ids = (await call("GET", "/api/reels/saved", undefined, tok)).json.items.map((r: any) => r.id);
+    assert.ok(ids.includes(a.id) && ids.includes(b.id));
+  }
+
+  // Members can't delete the trip or remove others; they can leave.
+  assert.equal((await call("DELETE", `/api/me/trips/${trip.id}`, undefined, friend)).status, 404);
+  const friendId = asFriend.members[0].id;
+  const ownerId = asFriend.owner.id;
+  assert.equal((await call("DELETE", `/api/me/trips/${trip.id}/members/${ownerId}`, undefined, friend)).status, 403);
+  assert.equal((await call("DELETE", `/api/me/trips/${trip.id}/members/${friendId}`, undefined, friend)).status, 204);
+  assert.equal((await call("GET", `/api/me/trips/${trip.id}/itinerary`, undefined, friend)).status, 404);
+  assert.deepEqual((await call("GET", "/api/reels/saved", undefined, friend)).json.items, []);
+
+  // Turning the invite off stops new joins.
+  assert.equal((await call("DELETE", `/api/me/trips/${trip.id}/invite`, undefined, owner)).status, 204);
+  assert.equal((await call("POST", `/api/me/trips/join/${invite}`, undefined, friend)).status, 404);
+  controller.abort();
+  await reading;
+});

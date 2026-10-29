@@ -18,7 +18,7 @@ import { resolvePosterContext } from "../lib/posterContext";
 import { planTrip } from "../services/tripPlanner";
 import { isClaudeConfigured, logClaudeError } from "../services/claude";
 import { translateCaption } from "../services/translate";
-import { addToTrip, defaultTripFor, syncSaved } from "../lib/trips";
+import { accessibleTrip, addToTrip, defaultTripFor, syncSaved, syncSavedForTrip, tripsOf } from "../lib/trips";
 import { inSeasonWhere, monthInJapan } from "../lib/season";
 import { todayInJapan } from "./events";
 import { announceNewPost, listenForNewPosts, liveCounts, sendToWatchers, watch } from "../lib/presence";
@@ -752,16 +752,21 @@ router.post("/:id/save", requireAuth, async (req, res) => {
   if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
 
   const trip = parsed.data.tripId
-    ? await prisma.trip.findFirst({ where: { id: parsed.data.tripId, userId: req.auth!.userId } })
+    ? (await accessibleTrip(req.auth!.userId, parsed.data.tripId))?.trip
     : await defaultTripFor(req.auth!.userId);
   if (!trip) return res.status(404).json({ error: "旅が見つかりません" });
   await addToTrip(req.auth!.userId, trip.id, reel.id);
   res.json({ trip: { id: trip.id, name: trip.name } });
 });
 
-// Un-bookmark: out of every trip.
+// Un-bookmark: out of every trip the user can edit.
 router.delete("/:id/save", requireAuth, async (req, res) => {
-  await prisma.tripItem.deleteMany({ where: { reelId: req.params.id, trip: { userId: req.auth!.userId } } });
+  const items = await prisma.tripItem.findMany({
+    where: { reelId: req.params.id, trip: tripsOf(req.auth!.userId) },
+    select: { tripId: true },
+  });
+  await prisma.tripItem.deleteMany({ where: { reelId: req.params.id, tripId: { in: items.map((i) => i.tripId) } } });
+  for (const { tripId } of items) await syncSavedForTrip(tripId, [req.params.id]);
   await syncSaved(req.auth!.userId, [req.params.id]);
   res.status(204).end();
 });

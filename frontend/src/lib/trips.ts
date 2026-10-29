@@ -12,6 +12,10 @@ export interface TripSummary {
   updatedAt: string;
   /** Only when listed for one post (?reel=): whether it's in this trip. */
   containsReel?: boolean;
+  /** Joined trips (共同編集) aren't yours: whose they are and how many plan it. */
+  isOwner: boolean;
+  ownerName: string;
+  people: number;
 }
 
 export async function listTrips(reelId?: string) {

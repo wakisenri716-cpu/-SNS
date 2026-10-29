@@ -217,8 +217,15 @@ export interface Itinerary {
   // legs[i] is the travel estimate from stops[i] to stops[i+1] — always
   // legs.length === stops.length - 1.
   legs: TransitSuggestion[];
-  // Set while a read-only link (/trip/:token) to this しおり is shared.
+  // Set while a read-only link (/trip/:token) to this しおり is shared
+  // (owner only; null for members).
   shareToken: string | null;
+  // 一緒に計画する: whether you made the trip, who did, who joined, and the
+  // invite link while it's on (owner only).
+  isOwner: boolean;
+  owner: { id: string; name: string };
+  members: { id: string; name: string }[];
+  inviteToken: string | null;
 }
 
 // A しおり someone shared (GET /trips/:token): no trip origin, read-only.

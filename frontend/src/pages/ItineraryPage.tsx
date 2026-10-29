@@ -149,6 +149,11 @@ function TripList() {
                     <span className="block text-[11px] text-white/80">
                       {[trip.startDate?.replace(/-/g, "/"), t("tripPicker.count", { count: trip.count })].filter(Boolean).join("・")}
                     </span>
+                    {(trip.people > 1 || !trip.isOwner) && (
+                      <span className="mt-0.5 block truncate text-[11px] font-semibold text-white">
+                        👥 {trip.isOwner ? t("collab.peopleCount", { count: trip.people }) : t("collab.ownersTrip", { name: trip.ownerName })}
+                      </span>
+                    )}
                   </span>
                 </span>
               </Link>

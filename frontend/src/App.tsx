@@ -26,6 +26,7 @@ const PosterPage = lazy(() => import("./pages/PosterPage"));
 const OnboardingPage = lazy(() => import("./pages/OnboardingPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 const TripPage = lazy(() => import("./pages/TripPage"));
+const JoinTripPage = lazy(() => import("./pages/JoinTripPage"));
 const MyPage = lazy(() => import("./pages/MyPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
@@ -79,6 +80,7 @@ function App() {
         <Route path="/itinerary" element={<ItineraryPage />} />
         <Route path="/itinerary/:tripId" element={<ItineraryPage />} />
         <Route path="/trip/:token" element={<TripPage />} />
+        <Route path="/join/:token" element={<JoinTripPage />} />
         <Route
           path="/notifications"
           element={

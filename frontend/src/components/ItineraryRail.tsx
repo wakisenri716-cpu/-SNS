@@ -16,6 +16,8 @@ import { loadLiveTrip, type LiveStatus } from "../lib/liveTrip";
 import { shareLink } from "../lib/shareLink";
 import { showToast } from "../lib/toast";
 import { useDragReorder } from "../lib/useDragReorder";
+import { useTripLive } from "../lib/useTripLive";
+import TripCollab from "./TripCollab";
 import { getCurrentTripId, setCurrentTripId } from "../lib/trips";
 import { useTrips } from "../lib/useTrips";
 
@@ -178,6 +180,19 @@ export function ItineraryPanel({
 
   const dragger = useDragReorder(itinerary?.stops.map((s) => s.id) ?? [], reorder);
 
+  // 共同編集: others' edits reload this しおり; who else has it open now.
+  const { user } = useAuth();
+  const here = useTripLive(
+    tripId,
+    (by) => {
+      if (by.id === user?.id) return;
+      void load().catch(() => {});
+      showToast(t("collab.changedBy", { name: by.name }));
+    },
+    !offline
+  );
+  const othersHere = here.filter((p) => p.id !== user?.id);
+
   // Timeline: clock time at each arrival/departure, accumulated from the start;
   // a place to stay before the last stop means a night there.
   const overnight = itinerary ? overnightStops(itinerary.stops) : [];
@@ -217,17 +232,34 @@ export function ItineraryPanel({
               <h2 className="truncate text-base font-bold text-jz-ink">{itinerary.trip.name}</h2>
             )}
             <p className="mt-0.5 text-xs text-gray-500">
-              {[itinerary.trip.startDate?.replace(/-/g, "/") ?? t("trips.noDate"), t("tripPicker.count", { count: itinerary.stops.length })].join("・")}
+              {[
+                itinerary.trip.startDate?.replace(/-/g, "/") ?? t("trips.noDate"),
+                t("tripPicker.count", { count: itinerary.stops.length }),
+                !itinerary.isOwner ? t("collab.ownersTrip", { name: itinerary.owner.name }) : null,
+              ]
+                .filter(Boolean)
+                .join("・")}
             </p>
+            {othersHere.length > 0 && (
+              <p className="animate-fade-in mt-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700" aria-live="polite">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75 motion-reduce:hidden" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                </span>
+                {t("collab.hereNow", { names: othersHere.map((p) => p.name).join("、") })}
+              </p>
+            )}
           </div>
           {!offline && !editingName && (
             <>
               <button type="button" onClick={() => setEditingName(true)} aria-label={t("trips.rename")} className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100">
                 <Pencil className="h-4 w-4" />
               </button>
-              <button type="button" onClick={() => void deleteTrip()} aria-label={t("trips.delete")} className="rounded-full p-1.5 text-gray-500 hover:bg-jz-tint hover:text-jz-red">
-                <Trash2 className="h-4 w-4" />
-              </button>
+              {itinerary.isOwner && (
+                <button type="button" onClick={() => void deleteTrip()} aria-label={t("trips.delete")} className="rounded-full p-1.5 text-gray-500 hover:bg-jz-tint hover:text-jz-red">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              )}
             </>
           )}
         </div>
@@ -243,12 +275,15 @@ export function ItineraryPanel({
       ) : !itinerary ? (
         <p className="mt-6 text-xs text-gray-500">{t("trips.notFound")}</p>
       ) : itinerary.stops.length === 0 ? (
+        <>
         <div className="mt-6 rounded-lg border border-dashed border-gray-300 p-4 text-center">
           <p className="text-xs leading-relaxed text-gray-500">{t("trips.emptyTrip", { name: itinerary.trip.name })}</p>
           <Link to="/" className="mt-2 inline-block text-xs font-medium text-gray-900 hover:underline">
             {t("itinerary.emptyCta")}
           </Link>
         </div>
+        {!offline && <TripCollab itinerary={itinerary} here={here} onChange={() => void load()} onLeft={onDeleted} />}
+        </>
       ) : (
         <div className="mt-5 flex flex-col">
           <form onSubmit={saveTripSettings} className="mb-4 flex flex-col gap-2 rounded-lg bg-gray-50 p-3">
@@ -502,6 +537,7 @@ export function ItineraryPanel({
             </div>
           )}
           <div className="mt-4 flex flex-wrap items-center gap-2">
+            {itinerary.isOwner && (
             <button
               type="button"
               onClick={() => void shareTrip()}
@@ -510,6 +546,7 @@ export function ItineraryPanel({
             >
               <Share2 className="h-3.5 w-3.5" /> {t("itinerary.share")}
             </button>
+            )}
             {itinerary.shareToken && !offline && (
               <button
                 type="button"
@@ -573,6 +610,7 @@ export function ItineraryPanel({
               </>
             )}
           </div>
+          {!offline && <TripCollab itinerary={itinerary} here={here} onChange={() => void load()} onLeft={onDeleted} />}
           <p className="mt-3 text-[11px] leading-relaxed text-gray-500">{t("itinerary.disclaimer")}</p>
         </div>
       )}

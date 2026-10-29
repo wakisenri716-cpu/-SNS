@@ -75,6 +75,20 @@ export async function metaForPath(pathname: string, origin: string): Promise<Pag
       type: "article",
     };
   }
+  const joinMatch = pathname.match(/^\/join\/([^/]+)\/?$/);
+  if (joinMatch) {
+    const trip = await prisma.trip.findUnique({
+      where: { inviteToken: joinMatch[1] },
+      select: { name: true, user: { select: { name: true } } },
+    });
+    if (!trip) return null;
+    return {
+      title: `${trip.user.name}さんから「${trip.name}」への招待 | ジャジバ`,
+      description: "ジャジバで、旅のしおりを一緒に作りましょう。変更はみんなの画面にすぐ反映されます。",
+      url: `${origin}${pathname}`,
+      type: "website",
+    };
+  }
   return null;
 }
 

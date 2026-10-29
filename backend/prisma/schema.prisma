@@ -60,6 +60,7 @@ model User {
   commentReports CommentReport[]
   pushSubscriptions PushSubscription[]
   trips         Trip[]
+  tripMemberships TripMember[]
 }
 
 model Municipality {
@@ -419,11 +420,28 @@ model Trip {
   startTime   String     @default("09:00")
   // Set while a read-only link (/trip/:token) is shared.
   shareToken  String?    @unique
+  // Set while an invite link (/join/:token) lets companions join and edit.
+  inviteToken String?    @unique
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   items       TripItem[]
+  members     TripMember[]
 
   @@index([userId])
+}
+
+// 一緒に計画する人: companions who joined a trip with its invite link. They
+// can edit its しおり like the owner (add, remove, reorder, settings, plan);
+// only the owner can delete the trip or manage its links and members.
+model TripMember {
+  id        String   @id @default(cuid())
+  tripId    String
+  trip      Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([tripId, userId])
 }
 
 model TripItem {

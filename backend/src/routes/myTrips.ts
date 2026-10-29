@@ -5,19 +5,32 @@ import { prisma } from "../prisma";
 import { requireAuth } from "../middleware/auth";
 import { conciergeLimiter } from "../middleware/rateLimit";
 import { buildItinerary } from "../lib/itinerary";
-import { syncSaved, addToTrip } from "../lib/trips";
+import { accessibleTrip, addToTrip, syncSavedForTrip, syncSavedForUsers, tripParticipants, tripsOf } from "../lib/trips";
+import { issueTicket, tripChanged } from "../lib/tripLive";
 import { planTrip } from "../services/tripPlanner";
 
 // 旅 (trips) of the signed-in traveler: made first, then filled by choosing
 // them when bookmarking a post; each is its own しおり (see the Trip model).
+// Companions who joined with the invite link edit it too; only the owner
+// deletes it or manages its links and members.
 const router = Router();
 router.use(requireAuth);
 
 const MAX_TRIPS = 100;
 
-// The trip if it's the signed-in user's, else null (answered as 404).
+// The trip if it's the signed-in user's own, else null (answered as 404).
 function ownTrip(userId: string, tripId: string) {
   return prisma.trip.findFirst({ where: { id: tripId, userId } });
+}
+
+async function actor(userId: string) {
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, name: true } });
+  return user ?? { id: userId, name: "" };
+}
+
+// After an edit: tell the others with this しおり open (they reload).
+async function changed(tripId: string, userId: string) {
+  tripChanged(tripId, await actor(userId));
 }
 
 const dateField = z
@@ -34,16 +47,17 @@ const nameField = z
 router.get("/", async (req, res) => {
   const reelId = typeof req.query.reel === "string" ? req.query.reel : null;
   const trips = await prisma.trip.findMany({
-    where: { userId: req.auth!.userId },
+    where: tripsOf(req.auth!.userId),
     orderBy: { updatedAt: "desc" },
     include: {
       items: { orderBy: { position: "asc" }, take: 1, include: { reel: { select: { videoUrl: true } } } },
-      _count: { select: { items: true } },
+      user: { select: { name: true } },
+      _count: { select: { items: true, members: true } },
     },
   });
   const containing = reelId
     ? new Set(
-        (await prisma.tripItem.findMany({ where: { reelId, trip: { userId: req.auth!.userId } }, select: { tripId: true } })).map(
+        (await prisma.tripItem.findMany({ where: { reelId, trip: tripsOf(req.auth!.userId) }, select: { tripId: true } })).map(
           (i) => i.tripId
         )
       )
@@ -56,6 +70,10 @@ router.get("/", async (req, res) => {
       count: t._count.items,
       coverVideoUrl: t.items[0]?.reel.videoUrl ?? null,
       updatedAt: t.updatedAt,
+      // Joined trips say whose they are; members counts everyone planning it.
+      isOwner: t.userId === req.auth!.userId,
+      ownerName: t.user.name,
+      people: t._count.members + 1,
       ...(containing ? { containsReel: containing.has(t.id) } : {}),
     })),
   });
@@ -72,7 +90,17 @@ router.post("/", async (req, res) => {
   const trip = await prisma.trip.create({
     data: { userId: req.auth!.userId, name: parsed.data.name, startDate: parsed.data.startDate ?? null },
   });
-  res.status(201).json({ id: trip.id, name: trip.name, startDate: trip.startDate, count: 0, coverVideoUrl: null, updatedAt: trip.updatedAt });
+  res.status(201).json({
+    id: trip.id,
+    name: trip.name,
+    startDate: trip.startDate,
+    count: 0,
+    coverVideoUrl: null,
+    updatedAt: trip.updatedAt,
+    isOwner: true,
+    ownerName: (await actor(req.auth!.userId)).name,
+    people: 1,
+  });
 });
 
 const updateSchema = z.object({
@@ -92,8 +120,9 @@ const updateSchema = z.object({
 router.patch("/:id", async (req, res) => {
   const parsed = updateSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
-  if (!(await ownTrip(req.auth!.userId, req.params.id))) return res.status(404).json({ error: "旅が見つかりません" });
+  if (!(await accessibleTrip(req.auth!.userId, req.params.id))) return res.status(404).json({ error: "旅が見つかりません" });
   await prisma.trip.update({ where: { id: req.params.id }, data: parsed.data });
+  await changed(req.params.id, req.auth!.userId);
   res.status(204).end();
 });
 
@@ -102,27 +131,30 @@ router.delete("/:id", async (req, res) => {
   const trip = await ownTrip(req.auth!.userId, req.params.id);
   if (!trip) return res.status(404).json({ error: "旅が見つかりません" });
   const reelIds = (await prisma.tripItem.findMany({ where: { tripId: trip.id }, select: { reelId: true } })).map((i) => i.reelId);
+  const people = await tripParticipants(trip.id);
   await prisma.trip.delete({ where: { id: trip.id } });
-  await syncSaved(req.auth!.userId, reelIds);
+  await syncSavedForUsers(people, reelIds);
   res.status(204).end();
 });
 
 // Put a post into this trip (at the end) / take it out.
 router.put("/:id/items/:reelId", async (req, res) => {
-  const trip = await ownTrip(req.auth!.userId, req.params.id);
-  if (!trip) return res.status(404).json({ error: "旅が見つかりません" });
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
   const reel = await prisma.reel.findUnique({ where: { id: req.params.reelId }, select: { id: true } });
   if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
-  await addToTrip(req.auth!.userId, trip.id, reel.id);
+  await addToTrip(req.auth!.userId, access.trip.id, reel.id);
+  await changed(access.trip.id, req.auth!.userId);
   res.status(204).end();
 });
 
 router.delete("/:id/items/:reelId", async (req, res) => {
-  const trip = await ownTrip(req.auth!.userId, req.params.id);
-  if (!trip) return res.status(404).json({ error: "旅が見つかりません" });
-  await prisma.tripItem.deleteMany({ where: { tripId: trip.id, reelId: req.params.reelId } });
-  await prisma.trip.update({ where: { id: trip.id }, data: { updatedAt: new Date() } });
-  await syncSaved(req.auth!.userId, [req.params.reelId]);
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  await prisma.tripItem.deleteMany({ where: { tripId: access.trip.id, reelId: req.params.reelId } });
+  await prisma.trip.update({ where: { id: access.trip.id }, data: { updatedAt: new Date() } });
+  await syncSavedForTrip(access.trip.id, [req.params.reelId]);
+  await changed(access.trip.id, req.auth!.userId);
   res.status(204).end();
 });
 
@@ -132,12 +164,13 @@ const stayMinutesSchema = z.object({ stayMinutes: z.coerce.number().int().min(0)
 router.patch("/:id/items/:reelId", async (req, res) => {
   const parsed = stayMinutesSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
-  if (!(await ownTrip(req.auth!.userId, req.params.id))) return res.status(404).json({ error: "旅が見つかりません" });
+  if (!(await accessibleTrip(req.auth!.userId, req.params.id))) return res.status(404).json({ error: "旅が見つかりません" });
   const { count } = await prisma.tripItem.updateMany({
     where: { tripId: req.params.id, reelId: req.params.reelId },
     data: { stayMinutes: parsed.data.stayMinutes },
   });
   if (count === 0) return res.status(404).json({ error: "この旅に入っていない投稿です" });
+  await changed(req.params.id, req.auth!.userId);
   res.status(204).end();
 });
 
@@ -148,21 +181,89 @@ const orderSchema = z.object({ reelIds: z.array(z.string()).max(200) });
 router.put("/:id/order", async (req, res) => {
   const parsed = orderSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
-  if (!(await ownTrip(req.auth!.userId, req.params.id))) return res.status(404).json({ error: "旅が見つかりません" });
+  if (!(await accessibleTrip(req.auth!.userId, req.params.id))) return res.status(404).json({ error: "旅が見つかりません" });
   await prisma.$transaction([
     ...parsed.data.reelIds.map((reelId, position) =>
       prisma.tripItem.updateMany({ where: { tripId: req.params.id, reelId }, data: { position } })
     ),
     prisma.trip.update({ where: { id: req.params.id }, data: { updatedAt: new Date() } }),
   ]);
+  await changed(req.params.id, req.auth!.userId);
   res.status(204).end();
 });
 
 // The trip's しおり — see lib/itinerary.ts.
+// Members see who's planning it; only the owner gets the link tokens.
 router.get("/:id/itinerary", async (req, res) => {
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  const { trip, isOwner } = access;
+  const people = await prisma.trip.findUniqueOrThrow({
+    where: { id: trip.id },
+    select: { user: { select: { id: true, name: true } }, members: { orderBy: { createdAt: "asc" }, select: { user: { select: { id: true, name: true } } } } },
+  });
+  res.json({
+    ...(await buildItinerary(trip.id, { withOrigin: true })),
+    isOwner,
+    owner: people.user,
+    members: people.members.map((m) => m.user),
+    shareToken: isOwner ? trip.shareToken : null,
+    inviteToken: isOwner ? trip.inviteToken : null,
+  });
+});
+
+// A one-time ticket for this しおり's live stream (GET /api/trips-live/:ticket).
+router.post("/:id/live-ticket", async (req, res) => {
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  const me = await actor(req.auth!.userId);
+  res.json({ ticket: issueTicket(access.trip.id, me.id, me.name) });
+});
+
+// 一緒に計画する: an invite link (/join/:token) to join and edit this trip.
+// Reused while it exists; turning it off stops new joins (members stay).
+router.post("/:id/invite", async (req, res) => {
   const trip = await ownTrip(req.auth!.userId, req.params.id);
   if (!trip) return res.status(404).json({ error: "旅が見つかりません" });
-  res.json({ ...(await buildItinerary(trip.id, { withOrigin: true })), shareToken: trip.shareToken });
+  const token = trip.inviteToken ?? randomBytes(12).toString("base64url");
+  if (!trip.inviteToken) await prisma.trip.update({ where: { id: trip.id }, data: { inviteToken: token } });
+  res.json({ token });
+});
+
+router.delete("/:id/invite", async (req, res) => {
+  const trip = await ownTrip(req.auth!.userId, req.params.id);
+  if (!trip) return res.status(404).json({ error: "旅が見つかりません" });
+  await prisma.trip.update({ where: { id: trip.id }, data: { inviteToken: null } });
+  res.status(204).end();
+});
+
+// Join with an invite link. Joining your own trip, or again, is harmless.
+router.post("/join/:token", async (req, res) => {
+  const trip = await prisma.trip.findUnique({ where: { inviteToken: req.params.token } });
+  if (!trip) return res.status(404).json({ error: "招待リンクが無効です" });
+  if (trip.userId !== req.auth!.userId) {
+    await prisma.tripMember.upsert({
+      where: { tripId_userId: { tripId: trip.id, userId: req.auth!.userId } },
+      create: { tripId: trip.id, userId: req.auth!.userId },
+      update: {},
+    });
+    const reelIds = (await prisma.tripItem.findMany({ where: { tripId: trip.id }, select: { reelId: true } })).map((i) => i.reelId);
+    await syncSavedForUsers([req.auth!.userId], reelIds);
+    await changed(trip.id, req.auth!.userId);
+  }
+  res.json({ tripId: trip.id });
+});
+
+// The owner removes a member; a member removes themselves (leaves).
+router.delete("/:id/members/:userId", async (req, res) => {
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  if (!access.isOwner && req.params.userId !== req.auth!.userId) return res.status(403).json({ error: "メンバーを外せるのは旅を作った人だけです" });
+  await prisma.tripMember.deleteMany({ where: { tripId: access.trip.id, userId: req.params.userId } });
+  const reelIds = (await prisma.tripItem.findMany({ where: { tripId: access.trip.id }, select: { reelId: true } })).map((i) => i.reelId);
+  await syncSavedForUsers([req.params.userId], reelIds);
+  await changed(access.trip.id, req.auth!.userId);
+  res.status(204).end();
 });
 
 // Share the trip as a read-only link (GET /api/trips/:token). Reuses the
@@ -194,8 +295,9 @@ const planSchema = z.object({
 router.post("/:id/plan", conciergeLimiter, async (req, res) => {
   const parsed = planSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
-  const trip = await ownTrip(req.auth!.userId, req.params.id);
-  if (!trip) return res.status(404).json({ error: "旅が見つかりません" });
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  const { trip } = access;
 
   const items = await prisma.tripItem.findMany({
     where: { tripId: trip.id, reel: { locationLat: { not: null }, locationLng: { not: null } } },
