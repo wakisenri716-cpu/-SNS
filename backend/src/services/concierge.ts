@@ -157,11 +157,20 @@ The traveler may be following up on earlier messages in the same conversation, w
 
 The reply is one or two friendly sentences addressed to the traveler, written in the requested language, as are the reasons.`;
 
+export interface ConciergeImage {
+  mediaType: "image/jpeg" | "image/png" | "image/webp";
+  /** Base64, no data: prefix. */
+  data: string;
+}
+
+const PHOTO_INSTRUCTIONS = `The traveler sent a photo instead of words: a scene they like or want to find in Japan. Start the reply by saying in a few words what the photo shows, then pick the posts whose places would give a similar experience (kind of landscape or place, season, atmosphere, activity), judged only from each post's data. Do not claim the photo shows a specific real place unless it is unmistakable, and never say a post is the place in the photo.`;
+
 async function aiConcierge(
   message: string,
   lang: string,
   candidates: ConciergeCandidate[],
-  history: ConciergeTurn[]
+  history: ConciergeTurn[],
+  image?: ConciergeImage
 ): Promise<ConciergeResult> {
   const ids = candidates.map((c) => c.id);
   const posts = candidates.map((c) => ({
@@ -174,6 +183,12 @@ async function aiConcierge(
     best_months: c.bestMonths,
     caption: c.caption.slice(0, 280),
   }));
+
+  const userText = `Answer in ${LANGUAGE_NAMES[lang] ?? "Japanese"}.\n\n<posts>\n${JSON.stringify(posts)}\n</posts>\n\n${
+    history.length > 0
+      ? `<conversation_so_far>\n${JSON.stringify(history.map((h) => ({ traveler: h.question, you: h.reply, picked: h.pickIds })))}\n</conversation_so_far>\n\n`
+      : ""
+  }${image ? `<photo_request>\n${PHOTO_INSTRUCTIONS}\n</photo_request>` : `<traveler_request>\n${message}\n</traveler_request>`}`;
 
   const response = await getClaudeClient().beta.messages.create({
     model: CLAUDE_MODEL,
@@ -209,11 +224,11 @@ async function aiConcierge(
     messages: [
       {
         role: "user",
-        content: `Answer in ${LANGUAGE_NAMES[lang] ?? "Japanese"}.\n\n<posts>\n${JSON.stringify(posts)}\n</posts>\n\n${
-          history.length > 0
-            ? `<conversation_so_far>\n${JSON.stringify(history.map((h) => ({ traveler: h.question, you: h.reply, picked: h.pickIds })))}\n</conversation_so_far>\n\n`
-            : ""
-        }<traveler_request>\n${message}\n</traveler_request>`,
+        content: [
+          // The photo first, then the instructions that refer to it.
+          ...(image ? [{ type: "image" as const, source: { type: "base64" as const, media_type: image.mediaType, data: image.data } }] : []),
+          { type: "text" as const, text: userText },
+        ],
       },
     ],
   });
@@ -247,4 +262,12 @@ export async function runConcierge(
     }
   }
   return keywordConcierge(message, candidates, history);
+}
+
+// 写真で探す: Claude looks at the traveler's photo and picks posts with a
+// similar feel. Needs the API key — there is no keyword fallback for a photo,
+// so this throws when Claude isn't configured or the request fails.
+export async function runPhotoConcierge(image: ConciergeImage, lang: string, candidates: ConciergeCandidate[]): Promise<ConciergeResult> {
+  if (!isAiConciergeConfigured()) throw new Error("photo concierge needs ANTHROPIC_API_KEY");
+  return aiConcierge("", lang, candidates, [], image);
 }

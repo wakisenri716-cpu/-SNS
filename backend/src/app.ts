@@ -31,6 +31,8 @@ const app = express();
 app.set("trust proxy", Number(process.env.TRUST_PROXY_HOPS ?? 1));
 
 app.use(cors());
+// 写真で探す sends a resized photo as JSON, well over the 100kb default.
+app.use("/api/concierge/photo", express.json({ limit: "3mb" }));
 app.use(express.json());
 app.use("/uploads", express.static(path.resolve(UPLOAD_DIR)));
 
@@ -68,8 +70,8 @@ if (fs.existsSync(frontendDist)) {
 // message; anything else gets a generic one, so internal details such as
 // database errors never reach the browser.
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error(err);
   const status = err?.status || err?.statusCode || (err?.name === "MulterError" ? 400 : 500);
+  if (status >= 500) console.error(err);
   res.status(status).json({ error: status < 500 && err?.message ? err.message : "サーバーエラーが発生しました" });
 });
 

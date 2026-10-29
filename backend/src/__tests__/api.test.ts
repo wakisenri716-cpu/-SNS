@@ -158,6 +158,11 @@ test("concierge answers by keyword without an API key, and says so", async () =>
   assert.equal(res.json.picks[0].reel.locationName, "松本城");
 });
 
+test("写真で探す is unavailable without an API key", async () => {
+  const res = await call("POST", "/api/concierge/photo", { image: "data:image/jpeg;base64,AAAA", lang: "ja" });
+  assert.equal(res.status, 503);
+});
+
 test("translation is unavailable without an API key", async () => {
   const { json: map } = await call("GET", "/api/reels/map");
   const res = await call("POST", `/api/reels/${map.items[0].id}/translation`, { lang: "en" });

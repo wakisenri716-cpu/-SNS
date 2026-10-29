@@ -649,7 +649,12 @@
     "error": "Something went wrong. Please try again in a moment.",
     "newChat": "Start a new conversation",
     "followUpHint": "You can follow up, e.g. \"With kids?\" or \"Anything else?\"",
-    "matchSeason": "in season then"
+    "matchSeason": "in season then",
+    "photo": "Search by photo",
+    "photoQuestion": "Places like this photo",
+    "photoUnreadable": "Couldn't open this image",
+    "photoError": "Couldn't read the photo. Please try again.",
+    "photoHint": "📷 Send a photo to find places with a similar feel"
   },
   "stories": {
     "tapHint": "Tap right for next, left for previous, hold to pause",

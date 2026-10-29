@@ -643,7 +643,12 @@
     "error": "찾지 못했어요. 잠시 후 다시 시도해 주세요.",
     "newChat": "새 상담 시작",
     "followUpHint": "\"아이와 함께라면?\", \"다른 곳은?\"처럼 이어서 물어볼 수 있어요",
-    "matchSeason": "제철이 맞음"
+    "matchSeason": "제철이 맞음",
+    "photo": "사진으로 찾기",
+    "photoQuestion": "이 사진 같은 곳",
+    "photoUnreadable": "이 이미지를 열 수 없습니다",
+    "photoError": "사진을 읽지 못했습니다. 다시 시도해 주세요",
+    "photoHint": "📷 사진을 보내면 분위기가 비슷한 곳을 찾아 드려요"
   },
   "stories": {
     "tapHint": "오른쪽을 탭하면 다음, 왼쪽은 이전, 길게 누르면 일시정지",

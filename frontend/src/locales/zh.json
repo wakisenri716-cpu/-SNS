@@ -643,7 +643,12 @@
     "error": "查找失败，请稍后再试。",
     "newChat": "开始新的咨询",
     "followUpHint": "可以继续追问，例如“带孩子呢？”“还有别的吗？”",
-    "matchSeason": "季节合适"
+    "matchSeason": "季节合适",
+    "photo": "用照片搜索",
+    "photoQuestion": "像这张照片的地方",
+    "photoUnreadable": "无法读取这张图片",
+    "photoError": "无法识别照片，请重试",
+    "photoHint": "📷 发送照片，寻找氛围相似的地方"
   },
   "stories": {
     "tapHint": "点右侧下一个，点左侧上一个，长按暂停",

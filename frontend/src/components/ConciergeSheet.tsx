@@ -2,12 +2,13 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowUp, Bookmark, Mic, Navigation, RotateCcw, Sparkles, X } from "lucide-react";
+import { ArrowUp, Bookmark, Camera, Mic, Navigation, RotateCcw, Sparkles, X } from "lucide-react";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { notifySavesChanged } from "../lib/savesChanged";
 import { showToast } from "../lib/toast";
 import { useSpeechInput } from "../lib/useSpeechInput";
+import { resizeImageToDataUrl } from "../lib/resizeImage";
 import type { Reel, TravelerTag } from "../types";
 
 interface Pick {
@@ -19,6 +20,8 @@ interface Pick {
 interface Turn {
   id: number;
   question: string;
+  // 写真で探す: the (resized) photo sent instead of words.
+  image?: string;
   mode?: "ai" | "keyword";
   reply?: string;
   picks?: Pick[];
@@ -131,7 +134,7 @@ export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
     const id = nextId.current++;
     // Earlier answered turns go along so follow-ups ("子連れだと？") make sense.
     const history = turns
-      .filter((turn) => turn.reply != null && !turn.error)
+      .filter((turn) => turn.reply != null && !turn.error && !turn.image)
       .slice(-4)
       .map((turn) => ({ question: turn.question, reply: turn.reply!, pickIds: (turn.picks ?? []).map((p) => p.reel.id) }));
     setTurns((prev) => [...prev, { id, question: q }]);
@@ -149,6 +152,34 @@ export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
       setTurns((prev) => prev.map((turn) => (turn.id === id ? { ...turn, mode: data.mode, reply, picks: data.picks } : turn)));
     } catch {
       setTurns((prev) => prev.map((turn) => (turn.id === id ? { ...turn, error: true, reply: t("concierge.error") } : turn)));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // 写真で探す: the photo is shrunk on the device, then Claude picks posts
+  // with a similar feel (needs the API key; the button is hidden otherwise).
+  async function askPhoto(file: File) {
+    if (busy) return;
+    let image: string;
+    try {
+      image = await resizeImageToDataUrl(file, 1024);
+    } catch {
+      showToast(t("concierge.photoUnreadable"));
+      return;
+    }
+    const id = nextId.current++;
+    setTurns((prev) => [...prev, { id, question: t("concierge.photoQuestion"), image }]);
+    setBusy(true);
+    try {
+      const { data } = await api.post<{ mode: "ai" | "keyword"; reply: string | null; picks: Pick[] }>("/concierge/photo", {
+        image,
+        lang: i18n.language,
+      });
+      const reply = data.reply ?? (data.picks.length > 0 ? t("concierge.keywordReply", { count: data.picks.length }) : t("concierge.noMatch"));
+      setTurns((prev) => prev.map((turn) => (turn.id === id ? { ...turn, mode: data.mode, reply, picks: data.picks } : turn)));
+    } catch {
+      setTurns((prev) => prev.map((turn) => (turn.id === id ? { ...turn, error: true, reply: t("concierge.photoError") } : turn)));
     } finally {
       setBusy(false);
     }
@@ -221,6 +252,7 @@ export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
             <div className="animate-page-in px-1">
               <p className="text-2xl font-extrabold leading-snug tracking-tight text-jz-ink">{t("concierge.greeting")}</p>
               <p className="mt-2 text-sm leading-relaxed text-gray-500">{t("concierge.intro")}</p>
+              {aiEnabled && <p className="mt-1.5 text-sm leading-relaxed text-gray-500">{t("concierge.photoHint")}</p>}
               <div className="mt-5 flex flex-wrap gap-2">
                 {SUGGESTIONS.map((key) => (
                   <button
@@ -239,7 +271,11 @@ export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
           {turns.map((turn) => (
             <div key={turn.id} className="space-y-3">
               <div className="flex justify-end">
-                <p className="animate-page-in max-w-[80%] rounded-3xl rounded-br-lg bg-jz-ink px-4 py-2.5 text-sm text-white">{turn.question}</p>
+                {turn.image ? (
+                  <img src={turn.image} alt={turn.question} className="animate-page-in max-h-56 max-w-[70%] rounded-3xl rounded-br-lg object-cover" />
+                ) : (
+                  <p className="animate-page-in max-w-[80%] rounded-3xl rounded-br-lg bg-jz-ink px-4 py-2.5 text-sm text-white">{turn.question}</p>
+                )}
               </div>
               {turn.reply == null ? (
                 <div className="flex items-center gap-1.5 px-2 py-2" role="status" aria-label={t("concierge.thinking")}>
@@ -277,6 +313,27 @@ export default function ConciergeSheet({ onClose }: { onClose: () => void }) {
             placeholder={speech.listening ? t("concierge.listening") : t("concierge.placeholder")}
             className="min-w-0 flex-1 rounded-full bg-gray-100 px-4 py-3 text-sm text-jz-ink outline-none placeholder:text-gray-500 focus:ring-2 focus:ring-jz-red/30"
           />
+          {aiEnabled && (
+            <label
+              className={`flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-gray-100 text-jz-ink transition focus-within:ring-2 focus-within:ring-jz-red/30 active:scale-90 ${
+                busy ? "pointer-events-none opacity-40" : ""
+              }`}
+              title={t("concierge.photo")}
+            >
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="sr-only"
+                aria-label={t("concierge.photo")}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  e.target.value = "";
+                  if (file) void askPhoto(file);
+                }}
+              />
+              <Camera className="h-5 w-5" />
+            </label>
+          )}
           {speech.supported && (
             <button
               type="button"
