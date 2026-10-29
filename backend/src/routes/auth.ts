@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { prisma } from "../prisma";
 import { JWT_SECRET, requireAuth } from "../middleware/auth";
-import { upload } from "../middleware/upload";
+import { uploadImage } from "../middleware/upload";
 import { guessNationalityFromIp } from "../services/geoLookup";
 import { NATIONALITIES, TRAVEL_COMPANIONS, type Role } from "../types";
 import { parseFavoriteCategories } from "../lib/personalize";
@@ -354,7 +354,7 @@ router.put("/me", requireAuth, async (req, res) => {
 
 // Profile picture — shared by all account types (general users, and municipality/
 // company accounts that don't yet have a separate branded avatar set elsewhere).
-router.post("/me/avatar", requireAuth, upload.single("avatar"), async (req, res) => {
+router.post("/me/avatar", requireAuth, uploadImage.single("avatar"), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: "ファイルがありません" });
 
   const updated = await prisma.user.update({

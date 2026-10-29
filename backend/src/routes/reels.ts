@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma";
 import { optionalAuth, requireAuth, requireRole } from "../middleware/auth";
-import { upload } from "../middleware/upload";
+import { uploadVideo } from "../middleware/upload";
 import { anonymousViewerState, reelInclude, serializeReel, type ReelViewerState } from "../lib/reelSerializer";
 import { getFollowedIds } from "../lib/followState";
 import { geocode, getRouteEstimate, getStaticMapImage, haversineMeters, isGoogleMapsConfigured } from "../services/googleMaps";
@@ -616,7 +616,7 @@ router.post(
   "/",
   requireAuth,
   requireRole("MUNICIPALITY", "COMPANY"),
-  upload.single("video"),
+  uploadVideo.single("video"),
   async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "動画ファイルがありません" });
 

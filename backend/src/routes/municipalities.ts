@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma";
 import { optionalAuth, requireAuth, requireRole } from "../middleware/auth";
-import { upload } from "../middleware/upload";
+import { uploadImage } from "../middleware/upload";
 import { parseOtaLinks, serializeOtaLinks } from "../lib/otaLinks";
 import { suggestDefaultOtaLinks } from "../services/otaProvider";
 import { reelInclude, serializeReel } from "../lib/reelSerializer";
@@ -243,7 +243,7 @@ router.post(
   "/me/avatar",
   requireAuth,
   requireRole("MUNICIPALITY"),
-  upload.single("avatar"),
+  uploadImage.single("avatar"),
   async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "ファイルがありません" });
     const existing = await prisma.municipality.findUnique({ where: { userId: req.auth!.userId } });

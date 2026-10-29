@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma";
 import { requireAuth, requireRole } from "../middleware/auth";
-import { upload } from "../middleware/upload";
+import { uploadImage } from "../middleware/upload";
 
 const router = Router();
 
@@ -69,7 +69,7 @@ router.delete("/:id/follow", requireAuth, async (req, res) => {
 });
 
 // Upload / replace avatar (company-only)
-router.post("/me/avatar", requireAuth, requireRole("COMPANY"), upload.single("avatar"), async (req, res) => {
+router.post("/me/avatar", requireAuth, requireRole("COMPANY"), uploadImage.single("avatar"), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: "ファイルがありません" });
   const existing = await prisma.company.findUnique({ where: { userId: req.auth!.userId } });
   if (!existing) return res.status(404).json({ error: "企業プロフィールが見つかりません" });

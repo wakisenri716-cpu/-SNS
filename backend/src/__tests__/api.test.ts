@@ -379,3 +379,26 @@ test("web push: devices subscribe, get each お知らせ in their language, and 
     send.mock.restore();
   }
 });
+
+test("uploads: avatars must be images and posts must be videos, with a clear 400", async () => {
+  const municipalityToken = await login("demo-matsumoto@example.com");
+  const clip = new Blob([fs.readFileSync(path.resolve(__dirname, "../../seed-assets/kamikochi.webm"))], { type: "video/webm" });
+  const png = new Blob([Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64")], { type: "image/png" });
+
+  const videoAvatar = new FormData();
+  videoAvatar.append("avatar", clip, "clip.webm");
+  const bad = await fetch(`${base}/api/municipalities/me/avatar`, { method: "POST", headers: { Authorization: `Bearer ${municipalityToken}` }, body: videoAvatar });
+  assert.equal(bad.status, 400);
+  assert.match((await bad.json()).error, /画像ファイル/);
+
+  const imageAvatar = new FormData();
+  imageAvatar.append("avatar", png, "a.png");
+  assert.equal((await fetch(`${base}/api/auth/me/avatar`, { method: "POST", headers: { Authorization: `Bearer ${traveler}` }, body: imageAvatar })).status, 200);
+
+  const imagePost = new FormData();
+  imagePost.append("video", png, "a.png");
+  imagePost.append("category", "nature");
+  const badPost = await fetch(`${base}/api/reels`, { method: "POST", headers: { Authorization: `Bearer ${municipalityToken}` }, body: imagePost });
+  assert.equal(badPost.status, 400);
+  assert.match((await badPost.json()).error, /動画ファイル/);
+});
