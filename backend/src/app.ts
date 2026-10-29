@@ -8,6 +8,7 @@ import path from "path";
 import { UPLOAD_DIR } from "./middleware/upload";
 import authRoutes from "./routes/auth";
 import passkeyRoutes from "./routes/passkeys";
+import weatherRoutes from "./routes/weather";
 import municipalityRoutes from "./routes/municipalities";
 import companyRoutes from "./routes/companies";
 import reelRoutes from "./routes/reels";
@@ -41,6 +42,7 @@ app.use("/uploads", express.static(path.resolve(UPLOAD_DIR)));
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
 app.use("/api/auth/passkey", passkeyRoutes);
+app.use("/api/weather", weatherRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/municipalities", municipalityRoutes);
 app.use("/api/companies", companyRoutes);

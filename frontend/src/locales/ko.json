@@ -1038,5 +1038,32 @@
     "distanceDirection": "{{dir}}쪽으로 {{distance}}(직선거리)",
     "directions": "가는 방법",
     "save": "저장"
+  },
+  "weather": {
+    "heading": "일기 예보",
+    "needDate": "여행 날짜를 넣으면 날마다 일기 예보가 나와요(16일 후까지)",
+    "tooFar": "일기 예보는 여행 16일 전부터 표시돼요",
+    "unavailable": "일기 예보를 가져오지 못했어요",
+    "noForecast": "예보 없음",
+    "credit": "날씨:",
+    "thatDay": "당일",
+    "wetDay": "{{day}}에 비 예보가 있어요(강수 확률 {{pop}}%)",
+    "snowDay": "{{day}}에 눈 예보가 있어요(강수 확률 {{pop}}%)",
+    "indoorIntro": "근처 실내에서 즐길 만한 게시물:",
+    "noIndoor": "근처에 실내 게시물이 없어요",
+    "whyRestaurant": "음식점",
+    "whyWord": "\"{{word}}\" 게시물",
+    "add": "{{place}}을(를) 이날에 추가",
+    "added": "일정표에 추가했어요",
+    "kind": {
+      "clear": "맑음",
+      "partly": "구름 조금",
+      "cloudy": "흐림",
+      "fog": "안개",
+      "drizzle": "이슬비",
+      "rain": "비",
+      "snow": "눈",
+      "thunder": "뇌우"
+    }
   }
 }

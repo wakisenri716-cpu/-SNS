@@ -18,6 +18,7 @@ import { showToast } from "../lib/toast";
 import { useDragReorder } from "../lib/useDragReorder";
 import { useTripLive } from "../lib/useTripLive";
 import TripCollab from "./TripCollab";
+import TripWeather from "./TripWeather";
 import { getCurrentTripId, setCurrentTripId } from "../lib/trips";
 import { useTrips } from "../lib/useTrips";
 
@@ -106,6 +107,22 @@ export function ItineraryPanel({
     // Show the new order at once; times and legs follow from the server.
     setItinerary((prev) => prev && { ...prev, stops: ids.map((id) => prev.stops.find((s) => s.id === id)!) });
     void mutate(() => api.put(`${base}/order`, { reelIds: ids }));
+  }
+
+  // A rainy-day option goes into that day: after its last visit, before the
+  // night's stay if the day ends at one.
+  function addToDay(reelId: string, day: number, days: number[]) {
+    if (!itinerary) return;
+    const ids = itinerary.stops.map((s) => s.id);
+    const inDay = ids.map((_, i) => i).filter((i) => days[i] === day);
+    let at = (inDay.at(-1) ?? ids.length - 1) + 1;
+    if (inDay.length > 0 && itinerary.stops[inDay.at(-1)!].category === "lodging") at -= 1;
+    void mutate(async () => {
+      await api.put(`${base}/items/${reelId}`);
+      await api.put(`${base}/order`, { reelIds: [...ids.slice(0, at), reelId, ...ids.slice(at)] });
+      notifySavesChanged();
+    });
+    showToast(t("weather.added"));
   }
 
   function move(index: number, delta: -1 | 1) {
@@ -354,6 +371,15 @@ export function ItineraryPanel({
             stopNames={itinerary.stops.map((s) => s.locationName || s.caption.slice(0, 30))}
             onStatus={setLive}
           />
+
+          {!offline && (
+            <TripWeather
+              startDate={itinerary.trip.startDate}
+              stops={itinerary.stops}
+              days={times.map((x) => x.day)}
+              onAdd={(reelId, day) => addToDay(reelId, day, times.map((x) => x.day))}
+            />
+          )}
 
           <div className="mb-4 flex gap-1.5">
             {(["list", "map"] as const).map((v) => (

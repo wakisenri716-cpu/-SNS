@@ -192,3 +192,16 @@ test("AR: overlapping labels are stacked instead of covering each other", () => 
   assert.ok(out[1].y < 0.5 - 0.08);
   assert.equal(out[2].y, 0.5);
 });
+
+import { addDays, forecastWindow } from "../src/lib/weather.ts";
+
+test("weather: trip days map to dates, and only trips within the forecast range get one", () => {
+  assert.equal(addDays("2026-10-30", 3), "2026-11-02");
+  assert.equal(addDays("2026-12-31", 1), "2027-01-01");
+  const now = new Date(2026, 9, 29, 12);
+  assert.equal(forecastWindow("2026-10-29", now), "inRange");
+  assert.equal(forecastWindow("2026-11-13", now), "inRange");
+  assert.equal(forecastWindow("2026-11-14", now), "tooFar");
+  assert.equal(forecastWindow("2026-10-20", now), "inRange");
+  assert.equal(forecastWindow("2026-10-01", now), "past");
+});

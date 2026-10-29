@@ -1063,5 +1063,32 @@
     "distanceDirection": "{{distance}} to the {{dir}} (straight line)",
     "directions": "Directions",
     "save": "Save"
+  },
+  "weather": {
+    "heading": "Weather forecast",
+    "needDate": "Add a trip date to see each day's forecast (up to 16 days ahead)",
+    "tooFar": "The forecast appears from 16 days before the trip",
+    "unavailable": "Couldn't get the forecast",
+    "noForecast": "No forecast",
+    "credit": "Weather:",
+    "thatDay": "That day",
+    "wetDay": "Rain is forecast for {{day}} ({{pop}}% chance)",
+    "snowDay": "Snow is forecast for {{day}} ({{pop}}% chance)",
+    "indoorIntro": "Posts nearby you can enjoy indoors:",
+    "noIndoor": "No indoor posts nearby",
+    "whyRestaurant": "Restaurant",
+    "whyWord": "Mentions \"{{word}}\"",
+    "add": "Add {{place}} to this day",
+    "added": "Added to your trip",
+    "kind": {
+      "clear": "Sunny",
+      "partly": "Partly cloudy",
+      "cloudy": "Cloudy",
+      "fog": "Fog",
+      "drizzle": "Drizzle",
+      "rain": "Rain",
+      "snow": "Snow",
+      "thunder": "Thunderstorm"
+    }
   }
 }

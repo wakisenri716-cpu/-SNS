@@ -1038,5 +1038,32 @@
     "distanceDirection": "{{dir}}へ{{distance}}（直線距離）",
     "directions": "行き方",
     "save": "しおり"
+  },
+  "weather": {
+    "heading": "天気予報",
+    "needDate": "旅行日を入れると、各日の天気予報が出ます（16日先まで）",
+    "tooFar": "天気予報は旅行日の16日前から表示します",
+    "unavailable": "天気予報を取得できませんでした",
+    "noForecast": "予報なし",
+    "credit": "天気：",
+    "thatDay": "当日",
+    "wetDay": "{{day}}は雨の予報です（降水確率{{pop}}%）",
+    "snowDay": "{{day}}は雪の予報です（降水確率{{pop}}%）",
+    "indoorIntro": "近くの屋内で楽しめそうな投稿：",
+    "noIndoor": "近くに屋内の投稿は見つかりませんでした",
+    "whyRestaurant": "飲食店",
+    "whyWord": "「{{word}}」の投稿",
+    "add": "{{place}}をこの日に追加",
+    "added": "しおりに追加しました",
+    "kind": {
+      "clear": "晴れ",
+      "partly": "晴れ時々くもり",
+      "cloudy": "くもり",
+      "fog": "霧",
+      "drizzle": "小雨",
+      "rain": "雨",
+      "snow": "雪",
+      "thunder": "雷雨"
+    }
   }
 }

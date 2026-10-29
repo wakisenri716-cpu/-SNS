@@ -1038,5 +1038,32 @@
     "distanceDirection": "向{{dir}} {{distance}}（直线距离）",
     "directions": "路线",
     "save": "手册"
+  },
+  "weather": {
+    "heading": "天气预报",
+    "needDate": "填写旅行日期后，将显示每天的天气预报（最多16天后）",
+    "tooFar": "天气预报将在旅行日16天前显示",
+    "unavailable": "无法获取天气预报",
+    "noForecast": "暂无预报",
+    "credit": "天气：",
+    "thatDay": "当天",
+    "wetDay": "{{day}}预报有雨（降水概率{{pop}}%）",
+    "snowDay": "{{day}}预报有雪（降水概率{{pop}}%）",
+    "indoorIntro": "附近可在室内游玩的帖子：",
+    "noIndoor": "附近没有找到室内的帖子",
+    "whyRestaurant": "餐厅",
+    "whyWord": "提到“{{word}}”的帖子",
+    "add": "将{{place}}加入这一天",
+    "added": "已加入旅行手册",
+    "kind": {
+      "clear": "晴",
+      "partly": "晴间多云",
+      "cloudy": "多云",
+      "fog": "雾",
+      "drizzle": "小雨",
+      "rain": "雨",
+      "snow": "雪",
+      "thunder": "雷雨"
+    }
   }
 }

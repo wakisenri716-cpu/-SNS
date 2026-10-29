@@ -605,6 +605,42 @@ test("AIで旅をつくる: proposed by keyword without an API key, then created
   await call("DELETE", `/api/me/trips/${created.json.id}`, undefined, traveler);
 });
 
+test("天気: forecasts for the しおり's days, and indoor posts near a wet day's stop", async () => {
+  const real = globalThis.fetch;
+  const fetchMock = mock.method(globalThis, "fetch", async (input: any, init?: any) => {
+    if (!String(input).includes("open-meteo.com")) return real(input, init);
+    return new Response(
+      JSON.stringify({ daily: { time: ["2026-11-04"], weather_code: [63], temperature_2m_max: [12], temperature_2m_min: [8], precipitation_probability_max: [90] } })
+    );
+  });
+  try {
+    const { json: map } = await call("GET", "/api/reels/map");
+    const castle = map.items.find((r: any) => r.locationName === "松本城");
+    const forecast = await call("POST", "/api/weather", {
+      points: [
+        { lat: castle.locationLat, lng: castle.locationLng, date: "2026-11-04" },
+        { lat: castle.locationLat, lng: castle.locationLng, date: "2027-01-01" },
+      ],
+    });
+    assert.equal(forecast.status, 200);
+    assert.equal(forecast.json.source, "Open-Meteo");
+    assert.equal(forecast.json.days[0].kind, "rain");
+    assert.equal(forecast.json.days[1], null);
+    assert.equal((await call("POST", "/api/weather", { points: [] })).status, 400);
+
+    // Near 河童橋 the restaurant is suggested; the bridge itself (outdoors, and excluded) is not.
+    const bridge = map.items.find((r: any) => r.locationName === "上高地 河童橋");
+    const indoor = await call("GET", `/api/weather/indoor?lat=${bridge.locationLat}&lng=${bridge.locationLng}&exclude=${bridge.id}`);
+    assert.equal(indoor.status, 200);
+    assert.deepEqual(
+      indoor.json.items.map((i: any) => [i.reel.locationName, i.why.restaurant]),
+      [["五千尺キッチン", true]]
+    );
+  } finally {
+    fetchMock.mock.restore();
+  }
+});
+
 // A software passkey authenticator: an ES256 key pair making the same
 // attestation ("none") and assertions a phone or laptop would.
 async function softAuthenticator(origin: string) {

@@ -39,3 +39,5 @@ export const tripViewLimiter = limiter(10, 60, "表示の回数が多すぎま�
 export const reactionLimiter = limiter(1, 40, "リアクションが多すぎます。少し時間をおいてください");
 // Each passkey sign-in start holds a challenge in memory until it's used or expires.
 export const passkeyOptionsLimiter = limiter(10, 60, "ログインの回数が多すぎます。しばらく時間をおいてから再度お試しください");
+// Weather is cached per area, but each new area costs a forecast request.
+export const weatherLimiter = limiter(10, 120, "天気の表示が多すぎます。少し時間をおいてから再度お試しください");
