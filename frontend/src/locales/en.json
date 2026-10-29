@@ -865,5 +865,9 @@
     "next": "Next stop",
     "pause": "Pause",
     "play": "Play"
+  },
+  "live": {
+    "viewers_one": "{{count}} person viewing now",
+    "viewers_other": "{{count}} people viewing now"
   }
 }

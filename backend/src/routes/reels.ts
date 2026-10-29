@@ -20,6 +20,7 @@ import { isClaudeConfigured, logClaudeError } from "../services/claude";
 import { translateCaption } from "../services/translate";
 import { buildItinerary } from "../lib/itinerary";
 import { inSeasonWhere, monthInJapan } from "../lib/season";
+import { watch } from "../lib/presence";
 import { randomBytes } from "node:crypto";
 
 const PERSONALIZED_POOL = 100;
@@ -477,6 +478,30 @@ const NEARBY_RADIUS_METERS = 50_000;
 const NEARBY_LIMIT = 6;
 
 // Optional ?category= narrows it to one kind of place (e.g. 近くの宿).
+// いま見ている人数 for a spot, as a Server-Sent Events stream: an
+// "event: count" with the number of browser tabs on this spot now, sent on
+// connect and whenever it changes (see lib/presence.ts).
+router.get("/:id/live", async (req, res) => {
+  const clientId = typeof req.query.client === "string" && /^[A-Za-z0-9_-]{8,64}$/.test(req.query.client) ? req.query.client : null;
+  if (!clientId) return res.status(400).json({ error: "client が必要です" });
+  const reel = await prisma.reel.findUnique({ where: { id: req.params.id }, select: { id: true } });
+  if (!reel) return res.status(404).json({ error: "投稿が見つかりません" });
+
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache, no-transform",
+    Connection: "keep-alive",
+    // Tell nginx-style proxies not to buffer the stream.
+    "X-Accel-Buffering": "no",
+  });
+  res.write("retry: 5000\n\n");
+  const ok = watch(reel.id, clientId, res, (fn) => req.on("close", fn));
+  if (!ok) {
+    res.write("event: busy\ndata: 0\n\n");
+    res.end();
+  }
+});
+
 router.get("/:id/nearby", optionalAuth, async (req, res) => {
   const category =
     typeof req.query.category === "string" && (REEL_CATEGORIES as readonly string[]).includes(req.query.category)

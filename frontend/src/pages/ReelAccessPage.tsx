@@ -10,6 +10,7 @@ import MunicipalityStayInfo from "../components/MunicipalityStayInfo";
 import VisitStampCard from "../components/VisitStampCard";
 import WalkCompass from "../components/WalkCompass";
 import { addRecentlyViewed } from "../lib/recentlyViewed";
+import { useLiveViewers } from "../lib/useLiveViewers";
 import { TravelerTagChips } from "../components/TravelerTagChips";
 import { SeasonBadge } from "../components/BestMonths";
 import TravelReportSection, { normalizeOrigin } from "../components/TravelReportSection";
@@ -266,6 +267,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
   const [departureAt, setDepartureAt] = useState<Date | null>(null);
   const [searchedOrigin, setSearchedOrigin] = useState("");
   const [travelReports, setTravelReports] = useState<TravelReports | null>(null);
+  const liveViewers = useLiveViewers(id);
 
   function loadTravelReports() {
     if (!id) return;
@@ -339,6 +341,15 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
 
       <div className="on-media relative mb-4 h-40 overflow-hidden rounded-lg bg-gray-900 lg:h-56">
         <AutoplayVideo src={reel.videoUrl} className="h-full w-full object-cover opacity-90" />
+        {liveViewers != null && liveViewers >= 2 && (
+          <span className="glass-dark animate-fade-in absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold text-white" aria-live="polite">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-jz-red opacity-75 motion-reduce:hidden" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-jz-red" />
+            </span>
+            {t("live.viewers", { count: liveViewers })}
+          </span>
+        )}
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 to-transparent p-3 lg:p-5">
           <span className="mb-1 self-start rounded bg-white/90 px-2 py-0.5 text-[10px] font-bold text-gray-800">
             {t(`category.${reel.category}`)}

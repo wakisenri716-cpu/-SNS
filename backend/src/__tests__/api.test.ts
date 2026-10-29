@@ -402,3 +402,51 @@ test("uploads: avatars must be images and posts must be videos, with a clear 400
   assert.equal(badPost.status, 400);
   assert.match((await badPost.json()).error, /動画ファイル/);
 });
+
+test("live viewer count: streams the number of tabs on a spot, each tab once, and drops leavers", async () => {
+  const { json: map } = await call("GET", "/api/reels/map");
+  const reelId = map.items[0].id;
+  // Opens a stream and collects its "count" events.
+  function open(client: string) {
+    const controller = new AbortController();
+    const counts: number[] = [];
+    const done = fetch(`${base}/api/reels/${reelId}/live?client=${client}`, { signal: controller.signal })
+      .then(async (res) => {
+        assert.equal(res.headers.get("content-type"), "text/event-stream");
+        const reader = res.body!.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        for (;;) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          for (const m of buffer.matchAll(/event: count\ndata: (\d+)\n\n/g)) counts.push(Number(m[1]));
+          buffer = buffer.slice(buffer.lastIndexOf("\n\n") + 2);
+        }
+      })
+      .catch(() => {});
+    return { counts, close: () => controller.abort(), done };
+  }
+  const settle = () => new Promise((r) => setTimeout(r, 150));
+
+  assert.equal((await call("GET", `/api/reels/${reelId}/live`)).status, 400);
+  assert.equal((await call("GET", `/api/reels/nope/live?client=abcdefgh`)).status, 404);
+
+  const a = open("tab-aaaaaaaa");
+  await settle();
+  const b = open("tab-bbbbbbbb");
+  await settle();
+  const aAgain = open("tab-aaaaaaaa"); // the same tab reconnecting
+  await settle();
+  assert.deepEqual(a.counts, [1, 2, 2]);
+  assert.equal(b.counts.at(-1), 2);
+
+  b.close();
+  await settle();
+  assert.equal(a.counts.at(-1), 1);
+  a.close();
+  aAgain.close();
+  await settle();
+  const { viewerCount } = await import("../lib/presence");
+  assert.equal(viewerCount(reelId), 0);
+});
