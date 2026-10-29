@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, Plus } from "lucide-react";
+import { ChevronLeft, Plus, Sparkles } from "lucide-react";
 import { ItineraryPanel, useIsTraveler } from "../components/ItineraryRail";
+import TripComposerSheet from "../components/TripComposerSheet";
 import { useTrips } from "../lib/useTrips";
 import { createTrip, setCurrentTripId } from "../lib/trips";
 import { notifySavesChanged } from "../lib/savesChanged";
@@ -56,6 +57,7 @@ function TripList() {
   const trips = useTrips();
   const [params] = useSearchParams();
   const [creating, setCreating] = useState(params.get("new") === "1");
+  const [composing, setComposing] = useState(params.get("compose") === "1");
   const [name, setName] = useState("");
   const [date, setDate] = useState("");
   const [busy, setBusy] = useState(false);
@@ -80,8 +82,23 @@ function TripList() {
       <h1 className="text-xl font-extrabold text-jz-ink">{t("trips.heading")}</h1>
       <p className="mt-1 text-xs leading-relaxed text-gray-500">{t("trips.subtitle")}</p>
 
+      <button
+        type="button"
+        onClick={() => setComposing(true)}
+        className="ai-card mt-5 flex items-center gap-3 rounded-3xl p-4 text-left text-white transition active:scale-[0.99]"
+      >
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/20">
+          <Sparkles className="h-5 w-5" />
+        </span>
+        <span className="min-w-0">
+          <span className="block text-[15px] font-extrabold">{t("composer.entry")}</span>
+          <span className="mt-0.5 block text-xs text-white/85">{t("composer.entrySub")}</span>
+        </span>
+      </button>
+      {composing && <TripComposerSheet onClose={() => setComposing(false)} />}
+
       {creating ? (
-        <form onSubmit={create} className="animate-page-in mt-5 rounded-3xl border border-gray-200 bg-white p-4">
+        <form onSubmit={create} className="animate-page-in mt-3 rounded-3xl border border-gray-200 bg-white p-4">
           <label className="block text-xs font-semibold text-gray-500" htmlFor="trip-name">
             {t("tripPicker.nameLabel")}
           </label>
@@ -117,7 +134,7 @@ function TripList() {
         <button
           type="button"
           onClick={() => setCreating(true)}
-          className="mt-5 flex items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-jz-red/40 py-4 text-sm font-bold text-jz-red transition hover:bg-jz-tint active:scale-[0.99]"
+          className="mt-3 flex items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-jz-red/40 py-4 text-sm font-bold text-jz-red transition hover:bg-jz-tint active:scale-[0.99]"
         >
           <Plus className="h-5 w-5" /> {t("tripPicker.newTrip")}
         </button>

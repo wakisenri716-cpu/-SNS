@@ -992,5 +992,29 @@
     "inviteInvalid": "This invite link can't be used",
     "inviteInvalidBody": "The invite may have been turned off, or the link may be wrong.",
     "travelersOnly": "Planning trips together is for traveler accounts."
+  },
+  "composer": {
+    "title": "Build a trip with AI",
+    "entry": "Build a trip with AI",
+    "entrySub": "Just write something like \"3 days in Nagano, onsen and castles\"",
+    "intro": "Describe the trip you want and Jaziba builds a trip plan from its posts: where to go, in what order and for how long. You can review and adjust it before creating it.",
+    "label": "What kind of trip?",
+    "placeholder": "e.g. 3 days in Nagano, onsen and castles",
+    "example1": "2 nights in Nagano, onsen and castles",
+    "example2": "A day trip with great views and local food",
+    "example3": "2 days of nature with the family",
+    "build": "Build my trip",
+    "building": "Building your trip from Jaziba posts…",
+    "byAi": "Built by AI, based on each post's own information",
+    "byKeyword": "AI isn't set up, so this was built from keyword matches and distance (no AI was used)",
+    "keywordNote": "AI isn't available right now, so posts matching your words (place names, \"onsen\", \"soba\"...) are linked in order of distance.",
+    "fewerDays": "You asked for {{requested}} days, but there aren't enough places to stay nearby, so the plan covers {{count}} day(s). Adding a place to stay later splits the days.",
+    "noMatch": "No matching posts found. Try adding a place name or words like \"onsen\", \"soba\" or \"view\".",
+    "redo": "Start over",
+    "create": "Create this trip ({{count}} places)",
+    "created": "Trip created",
+    "removeStop": "Remove {{place}}",
+    "afterNote": "After creating it you can still reorder, add or remove places and change stay times in the trip plan.",
+    "error": "Couldn't build the trip. Please try again in a moment"
   }
 }

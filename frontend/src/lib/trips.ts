@@ -23,8 +23,9 @@ export async function listTrips(reelId?: string) {
   return data.items;
 }
 
-export async function createTrip(name: string, startDate?: string | null) {
-  const { data } = await api.post<TripSummary>("/me/trips", { name, ...(startDate ? { startDate } : {}) });
+// `items` fills it right away, in order (used by "AIで旅をつくる").
+export async function createTrip(name: string, startDate?: string | null, items?: { reelId: string; stayMinutes: number }[]) {
+  const { data } = await api.post<TripSummary>("/me/trips", { name, ...(startDate ? { startDate } : {}), ...(items ? { items } : {}) });
   return data;
 }
 

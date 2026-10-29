@@ -582,6 +582,29 @@ test("live reactions reach everyone watching the reel, tagged with the sender", 
   await reading;
 });
 
+test("AIで旅をつくる: proposed by keyword without an API key, then created filled in one go", async () => {
+  const proposal = await call("POST", "/api/me/trips/compose", { message: "1泊2日で松本、お城と自然", lang: "ja" }, traveler);
+  assert.equal(proposal.status, 200);
+  assert.equal(proposal.json.mode, "keyword");
+  assert.ok(proposal.json.stops.length > 0);
+  assert.ok(proposal.json.stops.every((s: any) => s.reel.id === s.id && s.day >= 1));
+  assert.equal((await call("POST", "/api/me/trips/compose", { message: "" }, traveler)).status, 400);
+
+  const items = [...proposal.json.stops.map((s: any) => ({ reelId: s.id, stayMinutes: s.stayMinutes })), { reelId: "no-such-post" }];
+  const created = await call("POST", "/api/me/trips", { name: proposal.json.name, items }, traveler);
+  assert.equal(created.status, 201);
+  assert.equal(created.json.count, proposal.json.stops.length);
+  const itinerary = (await call("GET", `/api/me/trips/${created.json.id}/itinerary`, undefined, traveler)).json;
+  assert.deepEqual(
+    itinerary.stops.map((s: any) => [s.id, s.stayMinutes]),
+    proposal.json.stops.map((s: any) => [s.id, s.stayMinutes])
+  );
+  // Its posts now count as bookmarked.
+  const saved = (await call("GET", "/api/reels/saved", undefined, traveler)).json;
+  assert.ok(proposal.json.stops.every((s: any) => saved.items.some((r: any) => r.id === s.id)));
+  await call("DELETE", `/api/me/trips/${created.json.id}`, undefined, traveler);
+});
+
 test("共同編集: invite, join, edit together with live updates, and leave", async () => {
   const owner = (await call("POST", "/api/auth/register", { email: "collab-owner@example.com", password: "password123", name: "幹事" })).json.token;
   const friend = (await call("POST", "/api/auth/register", { email: "collab-friend@example.com", password: "password123", name: "友人" })).json.token;

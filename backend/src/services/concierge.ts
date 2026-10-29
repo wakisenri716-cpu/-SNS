@@ -95,7 +95,7 @@ function wantsOthers(message: string) {
   return MORE_WORDS.some((w) => message.includes(w)) || MORE_WORDS_LATIN.test(message);
 }
 
-function keywordScore(message: string, candidates: ConciergeCandidate[]) {
+export function keywordScore(message: string, candidates: ConciergeCandidate[]) {
   const text = message.toLowerCase();
   const wantedCategories = REEL_CATEGORIES.filter((c) => CATEGORY_WORDS[c].some((w) => text.includes(w.toLowerCase())));
   const wantedTags = TRAVELER_TAGS.filter((t) => TAG_WORDS[t].some((w) => text.includes(w.toLowerCase())));

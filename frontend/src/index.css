@@ -188,7 +188,7 @@ body {
 }
 /* Anything drawn over a video or on red keeps the light-mode palette, so
    white text and icons there stay white. */
-.dark :where(.on-media, .bg-jz-red, .glass-dark, .ai-orb, [class*="from-black"]) {
+.dark :where(.on-media, .bg-jz-red, .glass-dark, .ai-orb, .ai-card, [class*="from-black"]) {
   --color-white: #fff;
   --color-gray-100: oklch(96.7% 0.003 264.542);
   --color-gray-200: oklch(92.8% 0.006 264.531);
@@ -232,6 +232,19 @@ body {
   background: conic-gradient(from var(--ai-angle), #d7202e, #ff7a4d, #ff4f8b, #d7202e);
   animation: ai-spin 3s linear infinite;
   box-shadow: 0 4px 16px -4px rgba(215, 32, 46, 0.6);
+}
+/* The same colours for a wide card: a slowly drifting gradient (a conic one
+   bunches up in the middle of a long box). */
+.ai-card {
+  background: linear-gradient(115deg, #d7202e, #ff7a4d, #ff4f8b, #d7202e) 0 50% / 300% 100%;
+  animation: ai-drift 8s ease-in-out infinite alternate;
+  box-shadow: 0 10px 28px -10px rgba(215, 32, 46, 0.65);
+}
+@keyframes ai-drift {
+  to { background-position: 100% 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-card { animation: none; }
 }
 
 /* ---- Map ---------------------------------------------------------------- */

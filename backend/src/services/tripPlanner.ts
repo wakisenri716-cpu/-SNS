@@ -29,21 +29,23 @@ export interface PlanResult {
 
 type Located = PlanStopInput & { lat: number; lng: number };
 
-const dist = (a: Located, b: Located) => haversineMeters(a, b);
+type Point = { lat: number; lng: number };
+const dist = (a: Point, b: Point) => haversineMeters(a, b);
 
 // Greedy nearest-next-stop path through `stops`, starting from `start`
 // (which is not itself part of the returned path).
-function nearestPath(start: Located, stops: Located[]): Located[] {
-  const path: Located[] = [];
+export function nearestPath<T extends Point>(start: Point, stops: T[]): T[] {
+  const path: T[] = [];
   const remaining = [...stops];
-  let current = start;
+  let current: Point = start;
   while (remaining.length > 0) {
     let best = 0;
     remaining.forEach((s, i) => {
       if (dist(current, s) < dist(current, remaining[best])) best = i;
     });
-    current = remaining.splice(best, 1)[0];
-    path.push(current);
+    const next = remaining.splice(best, 1)[0];
+    path.push(next);
+    current = next;
   }
   return path;
 }

@@ -8,6 +8,8 @@ import { buildItinerary } from "../lib/itinerary";
 import { accessibleTrip, addToTrip, syncSavedForTrip, syncSavedForUsers, tripParticipants, tripsOf } from "../lib/trips";
 import { issueTicket, tripChanged } from "../lib/tripLive";
 import { planTrip } from "../services/tripPlanner";
+import { composeTrip } from "../services/tripComposer";
+import { parseBestMonths, parseTravelerTags } from "../types";
 
 // 旅 (trips) of the signed-in traveler: made first, then filled by choosing
 // them when bookmarking a post; each is its own しおり (see the Trip model).
@@ -79,7 +81,15 @@ router.get("/", async (req, res) => {
   });
 });
 
-const createSchema = z.object({ name: nameField, startDate: dateField.optional() });
+// `items` fills the new trip in one go (used by "AIで旅をつくる").
+const createSchema = z.object({
+  name: nameField,
+  startDate: dateField.optional(),
+  items: z
+    .array(z.object({ reelId: z.string().max(40), stayMinutes: z.coerce.number().int().min(0).max(24 * 60).default(60) }))
+    .max(30)
+    .default([]),
+});
 
 router.post("/", async (req, res) => {
   const parsed = createSchema.safeParse(req.body);
@@ -87,15 +97,28 @@ router.post("/", async (req, res) => {
   if ((await prisma.trip.count({ where: { userId: req.auth!.userId } })) >= MAX_TRIPS) {
     return res.status(400).json({ error: `旅は${MAX_TRIPS}個まで作れます` });
   }
+  // Unknown or repeated posts are skipped rather than failing the whole trip.
+  const existing = new Set(
+    (await prisma.reel.findMany({ where: { id: { in: parsed.data.items.map((i) => i.reelId) } }, select: { id: true } })).map((r) => r.id)
+  );
+  const seen = new Set<string>();
+  const items = parsed.data.items.filter((i) => existing.has(i.reelId) && !seen.has(i.reelId) && seen.add(i.reelId));
   const trip = await prisma.trip.create({
-    data: { userId: req.auth!.userId, name: parsed.data.name, startDate: parsed.data.startDate ?? null },
+    data: {
+      userId: req.auth!.userId,
+      name: parsed.data.name,
+      startDate: parsed.data.startDate ?? null,
+      items: { create: items.map((i, position) => ({ reelId: i.reelId, stayMinutes: i.stayMinutes, position })) },
+    },
   });
+  await syncSavedForTrip(trip.id, items.map((i) => i.reelId));
+  const cover = items[0] ? await prisma.reel.findUnique({ where: { id: items[0].reelId }, select: { videoUrl: true } }) : null;
   res.status(201).json({
     id: trip.id,
     name: trip.name,
     startDate: trip.startDate,
-    count: 0,
-    coverVideoUrl: null,
+    count: items.length,
+    coverVideoUrl: cover?.videoUrl ?? null,
     updatedAt: trip.updatedAt,
     isOwner: true,
     ownerName: (await actor(req.auth!.userId)).name,
@@ -322,6 +345,59 @@ router.post("/:id/plan", conciergeLimiter, async (req, res) => {
     parsed.data.lang
   );
   res.json(plan);
+});
+
+// "AIで旅をつくる": a whole trip proposed from a description ("2泊3日で長野、
+// 温泉とお城"), built from posts that have a location (see
+// services/tripComposer). Only proposes — POST / with `items` creates it.
+const COMPOSE_POOL = 80;
+const composeSchema = z.object({
+  message: z.string().trim().min(1).max(300),
+  lang: z.enum(["ja", "en", "zh", "ko"]).default("ja"),
+});
+
+router.post("/compose", conciergeLimiter, async (req, res) => {
+  const parsed = composeSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "どんな旅にしたいか入力してください（300文字まで）" });
+  const reels = await prisma.reel.findMany({
+    where: { locationLat: { not: null }, locationLng: { not: null } },
+    take: COMPOSE_POOL,
+    orderBy: { createdAt: "desc" },
+    include: { municipality: { select: { name: true, prefecture: true } }, company: { select: { name: true } } },
+  });
+  const result = await composeTrip(
+    parsed.data.message,
+    parsed.data.lang,
+    reels.map((r) => ({
+      id: r.id,
+      caption: r.caption,
+      category: r.category,
+      travelerTags: parseTravelerTags(r.travelerTags),
+      locationName: r.locationName,
+      municipalityName: r.company?.name ?? r.municipality.name,
+      prefecture: r.municipality.prefecture,
+      bestMonths: parseBestMonths(r.bestMonths),
+      lat: r.locationLat!,
+      lng: r.locationLng!,
+    }))
+  );
+  const byId = new Map(reels.map((r) => [r.id, r]));
+  res.json({
+    ...result,
+    stops: result.stops.map((s) => {
+      const r = byId.get(s.id)!;
+      return {
+        ...s,
+        reel: {
+          id: r.id,
+          videoUrl: r.videoUrl,
+          category: r.category,
+          locationName: r.locationName,
+          municipality: { name: r.municipality.name, prefecture: r.municipality.prefecture },
+        },
+      };
+    }),
+  });
 });
 
 export default router;
