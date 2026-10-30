@@ -13,7 +13,8 @@ const PREFECTURE = "長野県";
 //
 // A municipality that hasn't joined gets a `listing` page: its account has
 // an unguessable random password and a reserved .invalid address, so no one
-// can sign in as it, it has no posts, and its profile says it hasn't joined.
+// can sign in as it, its only posts are Jaziba's labelled introductions
+// (below), and its profile says it hasn't joined.
 // One that already exists (joined, or made earlier) only gets the public
 // fields it lacks — its own text and spots are never overwritten. Jaziba's
 // own demo accounts (demo-*@example.com) also get the missing sights.
