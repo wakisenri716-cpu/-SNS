@@ -4,13 +4,13 @@
 // the API and uploaded videos go to the network — except the signed-in
 // traveler's trips and each trip's しおり, whose last copies are kept so they
 // can be opened offline (cleared on logout, see src/lib/offlineItinerary.ts).
-const CACHE = "jaziba-v4";
+const CACHE = "jaziba-v5";
 const ITINERARY_CACHE = "jaziba-itinerary";
 // What another app shared to Jaziba (manifest share_target), picked up by /share.
 const SHARE_CACHE = "jaziba-share";
 // GET /api/me/trips and GET /api/me/trips/:id/itinerary
 const OFFLINE_API = /^\/api\/me\/trips(\/[^/]+\/itinerary)?$/;
-const SHELL = ["/", "/manifest.webmanifest", "/brand/jaziba-logo.png", "/icons/icon-192.png"];
+const SHELL = ["/", "/manifest.webmanifest", "/brand/jaziba-logo-light.svg", "/brand/jaziba-logo-dark.svg", "/icons/icon-192.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));

@@ -239,7 +239,7 @@ export default function FeedPage() {
 
   return (
     <div className="mx-auto w-full max-w-[560px] md:px-4">
-      {/* Pull-to-refresh indicator: the logo's red dot grows as you pull and pulses while loading. */}
+      {/* Pull-to-refresh indicator: a red dot grows as you pull and pulses while loading. */}
       <div
         className="flex items-end justify-center overflow-hidden md:hidden"
         style={{ height: refreshing ? 48 : pull, transition: pull ? "none" : "height 0.3s ease" }}

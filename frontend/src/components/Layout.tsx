@@ -71,7 +71,7 @@ function SideNavItem({ to, label, icon: IconC, badge = 0, className = "" }: Omit
         <>
           <span className="relative">
             <IconC className="h-6 w-6 shrink-0 transition-transform group-hover:scale-105" strokeWidth={isActive ? 2.6 : 1.8} />
-            {/* The logo's red dot marks where you are. */}
+            {/* A red dot marks where you are. */}
             {isActive && <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-jz-red ring-2 ring-white" />}
           </span>
           <span className="flex-1">{label}</span>

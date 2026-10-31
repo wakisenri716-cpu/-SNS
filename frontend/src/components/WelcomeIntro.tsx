@@ -35,7 +35,7 @@ export default function WelcomeIntro() {
 
   return (
     <div className="relative mx-3 mt-4 overflow-hidden rounded-[26px] bg-jz-ink p-6 pr-12 text-white md:mx-0 md:mt-8">
-      {/* The logo's red dot, rising like a sun behind the copy. */}
+      {/* A red sun rising behind the copy. */}
       <span
         className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-jz-red opacity-90 blur-[2px]"
         style={{ boxShadow: "0 0 90px 30px rgba(215,32,46,0.45)" }}

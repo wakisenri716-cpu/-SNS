@@ -2,9 +2,17 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Jaziba look: white surfaces, the logo's ink for text and its red dot as
-   the one accent (primary actions, likes, the active-tab dot, story rings). */
+/* Jaziba look: white surfaces, ink for text and red as the one accent
+   (primary actions, likes, the active-tab dot, story rings). */
 @theme {
+  /* The logo kit's colors (public/brand/): the mark's four tiles and the
+     wordmark's ink; jz-brand-blue-light is the blue tile on dark surfaces. */
+  --color-jz-brand-teal: #14a3a3;
+  --color-jz-brand-orange: #f26b38;
+  --color-jz-brand-yellow: #f6c343;
+  --color-jz-brand-blue: #3a6ea5;
+  --color-jz-brand-blue-light: #6e9bd1;
+  --color-jz-brand-ink: #1f2a30;
   --color-jz-red: #d7202e;
   --color-jz-red-dark: #b3141f;
   --color-jz-tint: #fef2f3;
@@ -207,11 +215,6 @@ body {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 10px 40px -10px rgba(0, 0, 0, 0.6);
-}
-/* The logo PNG is ink-on-transparent: invert the ink to white while the
-   hue rotation brings the red dot back to red. */
-.dark .logo-adaptive {
-  filter: invert(1) hue-rotate(180deg) brightness(1.05);
 }
 
 /* ---- AI concierge ----------------------------------------------------- */

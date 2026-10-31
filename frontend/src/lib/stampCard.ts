@@ -126,7 +126,7 @@ export async function renderStampCard(stamps: { place: string; date: string }[],
     ctx.fillText(text.more(stamps.length - MAX_STAMPS), W / 2, 1620);
   }
 
-  // Footer: the logo's red dot, then the line.
+  // Footer: a red dot, then the line.
   ctx.fillStyle = RED;
   ctx.beginPath();
   ctx.arc(W / 2, H - 230, 14, 0, Math.PI * 2);
