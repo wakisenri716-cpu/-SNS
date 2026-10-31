@@ -301,6 +301,24 @@ router.post("/:id/transports", async (req, res) => {
   res.status(201).json(serializeTransport(created, { forMembers: true }));
 });
 
+// Several at once: a route read from 乗換案内 with transfers (one per ride).
+const batchSchema = z.object({ items: z.array(transportSchema).min(1).max(10) });
+router.post("/:id/transports/batch", async (req, res) => {
+  const parsed = batchSchema.safeParse(req.body);
+  if (!parsed.success) {
+    const arrival = parsed.error.issues.some((i) => i.message === "arrival");
+    return res.status(400).json({ error: arrival ? "到着は出発より後（3日以内）にしてください" : "便名・出発地・到着地・時刻を入力してください" });
+  }
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  if ((await prisma.tripTransport.count({ where: { tripId: access.trip.id } })) + parsed.data.items.length > MAX_TRANSPORTS) {
+    return res.status(400).json({ error: `乗る便は${MAX_TRANSPORTS}件まで登録できます` });
+  }
+  const created = await prisma.$transaction(parsed.data.items.map((item) => prisma.tripTransport.create({ data: { tripId: access.trip.id, ...item } })));
+  await changed(access.trip.id, req.auth!.userId);
+  res.status(201).json({ items: created.map((t) => serializeTransport(t, { forMembers: true })) });
+});
+
 router.put("/:id/transports/:transportId", async (req, res) => {
   const parsed = transportSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });

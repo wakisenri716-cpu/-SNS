@@ -1172,7 +1172,16 @@
     "nearPhoto": "Posts near where the photo was taken",
     "nearPoint": "Posts near the shared place",
     "noneNear": "No posts within {{km}} km",
-    "search": "Search instead"
+    "search": "Search instead",
+    "routeTitle": "Route from a transit app",
+    "routeNoDate": "No date in the text, so the trip's date is used",
+    "routeLogin": "Log in to save it to a trip",
+    "routeNoTrips": "You have no trip to save it to yet.",
+    "routeMakeTrip": "Make a trip",
+    "routeTrip": "Save to trip",
+    "routeIncomplete": "A station name couldn't be read for some rides. Paste it under \"Rides\" in the trip plan to check it",
+    "routeNote": "Read from the shared text. Times can change, so check the service status before you board.",
+    "routeToday": "No date in the text, so today is used"
   },
   "listing": {
     "badge": "Not joined",
@@ -1244,7 +1253,25 @@
     "pushEnable": "Turn on notifications here",
     "pushOn": "This device will get them",
     "pushInstall": "On iPhone, add Jaziba to your Home Screen first",
-    "pushDenied": "Notifications are blocked"
+    "pushDenied": "Notifications are blocked",
+    "paste": {
+      "title": "Fill in from a route planner",
+      "hint": "Copy or share the route you chose in a transit app or site (e.g. Yahoo! Norikae Annai) and paste it here. Stations, times, line and platform are read from it.",
+      "placeholder": "e.g. Tokyo 08:52 dep → Nagano 10:24 arr Kagayaki 505",
+      "fromClipboard": "Paste what you copied",
+      "read": "Read",
+      "clipboardDenied": "Couldn't paste. Long-press the box and paste there",
+      "failed": "Couldn't find the times. Fill in the fields below instead",
+      "readOk_one": "Read {{count}} ride. Please check it",
+      "readOk_other": "Read {{count}} rides. Please check them",
+      "saveAll_one": "Save {{count}} ride",
+      "saveAll_other": "Save all {{count}} rides",
+      "savedAll_one": "Saved {{count}} ride",
+      "savedAll_other": "Saved {{count}} rides",
+      "incomplete": "A station name couldn't be read for some rides. Check and save them one by one",
+      "firstFilled": "The first ride is filled in below",
+      "noDate": "No date in the text, so {{date}} is used"
+    }
   },
   "transit": {
     "timetable": "Timetables:",
@@ -1260,7 +1287,9 @@
     "alarmBody": "Arriving at {{place}} in about {{minutes}} minutes. Get ready to get off",
     "previous": "Previous",
     "next": "Next",
-    "timesNote": "These are the scheduled times you entered. Check live status for delays. The screen stays on while this is open."
+    "timesNote": "These are the scheduled times you entered. Check live status for delays. The screen stays on while this is open.",
+    "saveRide": "Save this ride",
+    "savedRide": "Saved: {{depart}} → {{arrive}} {{name}}"
   },
   "album": {
     "heading": "Trip album",

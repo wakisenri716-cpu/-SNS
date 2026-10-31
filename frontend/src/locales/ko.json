@@ -1147,7 +1147,16 @@
     "nearPhoto": "사진을 찍은 장소 근처 게시물",
     "nearPoint": "공유된 지점 근처 게시물",
     "noneNear": "{{km}}km 안에 게시물이 없어요",
-    "search": "검색으로 찾기"
+    "search": "검색으로 찾기",
+    "routeTitle": "환승 안내 경로",
+    "routeNoDate": "날짜가 없어 여행 날짜로 했습니다",
+    "routeLogin": "로그인하고 여행에 저장",
+    "routeNoTrips": "저장할 여행이 아직 없습니다.",
+    "routeMakeTrip": "여행 만들기",
+    "routeTrip": "저장할 여행",
+    "routeIncomplete": "역 이름을 읽지 못한 구간이 있습니다. 일정의 \"탈 편\"에서 붙여 넣어 확인하세요",
+    "routeNote": "공유된 글에서 읽은 내용입니다. 시각이 바뀔 수 있으니 타기 전에 운행 정보를 확인하세요.",
+    "routeToday": "날짜가 없어 오늘로 했습니다"
   },
   "listing": {
     "badge": "미참여",
@@ -1219,7 +1228,22 @@
     "pushEnable": "이 기기에서 알림 켜기",
     "pushOn": "이 기기로 받아요",
     "pushInstall": "iPhone은 홈 화면에 추가하면 받을 수 있어요",
-    "pushDenied": "알림이 차단되어 있어요"
+    "pushDenied": "알림이 차단되어 있어요",
+    "paste": {
+      "title": "환승 안내 결과로 입력",
+      "hint": "환승 안내 앱이나 사이트(Yahoo!乗換案内 등)에서 정한 경로를 \"복사\"나 \"공유\"해 여기에 붙여 넣으세요. 역・시각・노선・승강장을 읽어 옵니다.",
+      "placeholder": "예: 도쿄 08:52 출발 → 나가노 10:24 도착 かがやき505号",
+      "fromClipboard": "복사한 내용 붙여넣기",
+      "read": "읽기",
+      "clipboardDenied": "붙여 넣지 못했습니다. 입력란을 길게 눌러 붙여 넣으세요",
+      "failed": "시각을 읽지 못했습니다. 아래 칸에 직접 입력하세요",
+      "readOk": "{{count}}개 구간을 읽었습니다. 내용을 확인하세요",
+      "saveAll": "{{count}}개 한꺼번에 저장",
+      "savedAll": "{{count}}개 편을 저장했습니다",
+      "incomplete": "역 이름을 읽지 못한 구간이 있습니다. 하나씩 확인해 저장하세요",
+      "firstFilled": "아래 칸에는 첫 번째 구간을 넣었습니다",
+      "noDate": "날짜가 없어 {{date}}(으)로 했습니다"
+    }
   },
   "transit": {
     "timetable": "환승 안내:",
@@ -1235,7 +1259,9 @@
     "alarmBody": "약 {{minutes}}분 후 {{place}}에 도착해요. 내릴 준비를 하세요",
     "previous": "이전 편",
     "next": "다음 편",
-    "timesNote": "시간은 등록한 예정 시간이에요. 지연・운휴는 「운행 상황」에서 확인하세요. 이 화면을 여는 동안 화면이 꺼지지 않아요."
+    "timesNote": "시간은 등록한 예정 시간이에요. 지연・운휴는 「운행 상황」에서 확인하세요. 이 화면을 여는 동안 화면이 꺼지지 않아요.",
+    "saveRide": "이 편 저장",
+    "savedRide": "저장됨 {{depart}} 출발→{{arrive}} 도착 {{name}}"
   },
   "album": {
     "heading": "여행 앨범",

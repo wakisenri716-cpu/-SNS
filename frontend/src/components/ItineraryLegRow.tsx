@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next";
-import { ExternalLink } from "lucide-react";
+import { BookmarkPlus, Check, ExternalLink } from "lucide-react";
 import { TRANSIT_MODE_LABEL_KEY } from "../lib/transitModeLabels";
 import { googleTransitUrl, yahooTransitUrl } from "../lib/transitLinks";
-import type { TransitSuggestion } from "../types";
+import { clock } from "../lib/transportDisplay";
+import type { TransitSuggestion, TripTransport } from "../types";
 import ModeIcon from "./ModeIcon";
 
 // A leg can be several sub-legs (e.g. walk 10分 + train 83分); label it by
@@ -18,19 +19,25 @@ type Place = { name: string; lat?: number | null; lng?: number | null };
 
 // The travel between two しおり stops: main mode and total time, and — for
 // anything longer than a walk — links to the real timetables (Google Maps by
-// public transport, Yahoo!乗換案内) with both places filled in.
+// public transport, Yahoo!乗換案内) with both places filled in. With
+// `onSave`, the train/bus the traveller picked there can be kept as a 乗る便;
+// the ones already kept for this leg (`saved`) show under it.
 export default function ItineraryLegRow({
   leg,
   from,
   to,
   className = "my-1.5 ml-9",
+  onSave,
+  saved = [],
 }: {
   leg: TransitSuggestion;
   from?: Place;
   to?: Place;
   className?: string;
+  onSave?: () => void;
+  saved?: TripTransport[];
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const mode = mainMode(leg);
   const origin = from ?? { name: leg.originLabel };
   const destination = to ?? { name: leg.destinationLabel };
@@ -74,8 +81,25 @@ export default function ItineraryLegRow({
           >
             {t("transit.yahoo")} <ExternalLink className="h-3 w-3" />
           </a>
+          {onSave && (
+            <button
+              type="button"
+              onClick={onSave}
+              className="inline-flex items-center gap-0.5 rounded-full bg-jz-red px-2 py-0.5 font-bold text-white active:scale-95"
+            >
+              <BookmarkPlus className="h-3 w-3" /> {t("transit.saveRide")}
+            </button>
+          )}
         </p>
       )}
+      {saved.map((tr) => (
+        <p key={tr.id} className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-emerald-700">
+          <Check className="h-3 w-3 shrink-0" />
+          <span className="truncate tabular-nums">
+            {t("transit.savedRide", { depart: clock(tr.departAt, i18n.language), arrive: clock(tr.arriveAt, i18n.language), name: tr.name })}
+          </span>
+        </p>
+      ))}
     </div>
   );
 }

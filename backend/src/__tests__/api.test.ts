@@ -769,6 +769,16 @@ test("乗る便: members add flights and trains to the しおり; a shared link 
   assert.equal((await call("DELETE", `/api/me/trips/${trip.id}/transports/${created.json.id}`, undefined, me)).status, 204);
   assert.equal((await call("DELETE", `/api/me/trips/${trip.id}/transports/${created.json.id}`, undefined, me)).status, 404);
   assert.equal((await call("GET", `/api/me/trips/${trip.id}/itinerary`, undefined, me)).json.transports.length, 1);
+
+  // A route with a transfer, saved in one go — all or nothing.
+  const leg1 = { kind: "train", name: "はくたか553号", fromName: "東京", toName: "軽井沢", departAt: "2026-11-04T08:00:00+09:00", arriveAt: "2026-11-04T09:05:00+09:00" };
+  const leg2 = { kind: "train", name: "しなの鉄道線", fromName: "軽井沢", toName: "長野", departAt: "2026-11-04T09:20:00+09:00", arriveAt: "2026-11-04T10:24:00+09:00" };
+  assert.equal((await call("POST", `/api/me/trips/${trip.id}/transports/batch`, { items: [leg1, { ...leg2, toName: "" }] }, me)).status, 400);
+  assert.equal((await call("POST", `/api/me/trips/${trip.id}/transports/batch`, { items: [leg1] }, other)).status, 404);
+  const batch = await call("POST", `/api/me/trips/${trip.id}/transports/batch`, { items: [leg1, leg2] }, me);
+  assert.equal(batch.status, 201);
+  assert.equal(batch.json.items.length, 2);
+  assert.deepEqual((await call("GET", `/api/me/trips/${trip.id}/itinerary`, undefined, me)).json.transports.map((t: any) => t.toName), ["松本", "軽井沢", "長野"]);
 });
 
 test("乗る便のお知らせ: a push to everyone on the trip before departure and before arrival, each once", async () => {

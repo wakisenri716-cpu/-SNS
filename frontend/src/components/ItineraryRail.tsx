@@ -6,7 +6,7 @@ import { useAuth } from "../auth/AuthContext";
 import SchematicRouteMap from "./SchematicRouteMap";
 import { projectLatLngToUnitSquare } from "../lib/schematicMap";
 import { notifySavesChanged, onSavesChanged } from "../lib/savesChanged";
-import type { Itinerary } from "../types";
+import type { Itinerary, TransitSuggestion } from "../types";
 import { CalendarPlus, ChevronDown, ChevronUp, Flag, GripVertical, House, Link2Off, Pencil, Play, Plus, Share2, Sparkles, Trash2, WifiOff, X } from "lucide-react";
 import { downloadItineraryIcs } from "../lib/ics";
 import { computeTimeline, formatClock, overnightStops } from "../lib/itineraryTimeline";
@@ -19,7 +19,9 @@ import { useDragReorder } from "../lib/useDragReorder";
 import { useTripLive } from "../lib/useTripLive";
 import TripCollab from "./TripCollab";
 import TripWeather from "./TripWeather";
-import TripTransports from "./TripTransports";
+import TripTransports, { type TransportDraft } from "./TripTransports";
+import { localAt, transportsForLegs } from "../lib/transitPaste";
+import { todayLocal } from "../lib/saveRoute";
 import TripAlbum from "./TripAlbum";
 import OriginFoundNote from "./OriginFoundNote";
 import { getCurrentTripId, setCurrentTripId } from "../lib/trips";
@@ -66,6 +68,7 @@ export function ItineraryPanel({
   const [originDraft, setOriginDraft] = useState("");
   const [startDraft, setStartDraft] = useState("09:00");
   const [planOpen, setPlanOpen] = useState(false);
+  const [transportDraft, setTransportDraft] = useState<TransportDraft | null>(null);
   const [flyoverOpen, setFlyoverOpen] = useState(false);
   const [liveTrip, setLiveTrip] = useState(loadLiveTrip);
   const [live, setLive] = useState<LiveStatus | null>(null);
@@ -227,6 +230,38 @@ export function ItineraryPanel({
     : { departAt: 0, times: [] };
   const multiDay = times.length > 0 && times[times.length - 1].day > 0;
 
+  // この便を保存: each leg (from the origin, then between stops) with its
+  // planned clock times, to start a 乗る便 from and to show the ones saved.
+  const tripDate = itinerary?.trip.startDate ?? todayLocal();
+  const stopName = (i: number) => itinerary!.stops[i].locationName || itinerary!.stops[i].municipality.name;
+  const legPlans = itinerary
+    ? [
+        ...(itinerary.originLeg && itinerary.originLabel && itinerary.stops.length > 0
+          ? [{ key: "origin", leg: itinerary.originLeg, fromName: itinerary.originLabel, toName: stopName(0), leaveMin: departAt, arriveMin: times[0]?.arrive ?? departAt }]
+          : []),
+        ...itinerary.stops.flatMap((_, i) =>
+          itinerary.legs[i] && itinerary.stops[i + 1]
+            ? [{ key: `leg-${i}`, leg: itinerary.legs[i], fromName: stopName(i), toName: stopName(i + 1), leaveMin: times[i].leave, arriveMin: times[i + 1].arrive }]
+            : []
+        ),
+      ]
+    : [];
+  const savedByLeg = new Map(
+    transportsForLegs(legPlans, itinerary?.transports ?? [], tripDate).map((list, i) => [legPlans[i].key, list])
+  );
+  const saveLegProps = (key: string) => {
+    const plan = legPlans.find((p) => p.key === key);
+    if (!plan || offline) return { saved: savedByLeg.get(key) ?? [] };
+    const draft = (leg: TransitSuggestion): TransportDraft => ({
+      kind: leg.legs.some((l) => l.mode === "bus") && !leg.legs.some((l) => l.mode === "train") ? "bus" : "train",
+      fromName: plan.fromName.slice(0, 60),
+      toName: plan.toName.slice(0, 60),
+      departAt: localAt(tripDate, plan.leaveMin),
+      arriveAt: localAt(tripDate, plan.leaveMin + leg.totalDurationMin),
+    });
+    return { saved: savedByLeg.get(key) ?? [], onSave: () => setTransportDraft(draft(plan.leg)) };
+  };
+
   return (
     <>
       {itinerary && (
@@ -382,6 +417,8 @@ export function ItineraryPanel({
             transports={itinerary.transports ?? []}
             readOnly={offline}
             onChanged={() => void load().catch(() => {})}
+            draft={transportDraft}
+            onDraftClosed={() => setTransportDraft(null)}
           />
 
           {!offline && (
@@ -456,7 +493,7 @@ export function ItineraryPanel({
                 <span className="truncate font-normal text-gray-500">{itinerary.originLabel || t("itinerary.noOrigin")}</span>
               </p>
               {itinerary.originLabel && itinerary.originFound && <OriginFoundNote found={itinerary.originFound} className="ml-9 mt-1" />}
-              {itinerary.originLeg && <LegRow leg={itinerary.originLeg} />}
+              {itinerary.originLeg && <LegRow leg={itinerary.originLeg} {...saveLegProps("origin")} />}
               {itinerary.originLabel && !itinerary.originLocated && (
                 <p className="my-1.5 ml-9 text-[11px] leading-relaxed text-amber-700">{t("itinerary.originNotLocated")}</p>
               )}
@@ -567,6 +604,7 @@ export function ItineraryPanel({
                           lat: itinerary.stops[i + 1].locationLat,
                           lng: itinerary.stops[i + 1].locationLng,
                         }}
+                        {...saveLegProps(`leg-${i}`)}
                       />
                     )}
                   </div>

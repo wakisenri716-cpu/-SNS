@@ -1147,7 +1147,16 @@
     "nearPhoto": "拍摄地点附近的帖子",
     "nearPoint": "分享地点附近的帖子",
     "noneNear": "{{km}}公里内没有帖子",
-    "search": "用搜索寻找"
+    "search": "用搜索寻找",
+    "routeTitle": "换乘查询的路线",
+    "routeNoDate": "文中没有日期，已使用旅程日期",
+    "routeLogin": "登录后保存到旅程",
+    "routeNoTrips": "还没有可保存的旅程。",
+    "routeMakeTrip": "创建旅程",
+    "routeTrip": "保存到的旅程",
+    "routeIncomplete": "部分乘车未能读取站名。请在行程的“乘坐班次”中粘贴并确认",
+    "routeNote": "内容读取自分享的文字。时刻可能变动，乘车前请确认运行信息。",
+    "routeToday": "文中没有日期，已设为今天"
   },
   "listing": {
     "badge": "未加入",
@@ -1219,7 +1228,22 @@
     "pushEnable": "在此设备开启通知",
     "pushOn": "此设备会收到",
     "pushInstall": "iPhone需先添加到主屏幕",
-    "pushDenied": "通知已被阻止"
+    "pushDenied": "通知已被阻止",
+    "paste": {
+      "title": "从换乘查询结果填写",
+      "hint": "在换乘查询应用或网站（如 Yahoo!乗換案内）中“复制”或“分享”选好的路线，粘贴到这里。将读取车站、时刻、线路和站台。",
+      "placeholder": "例：东京 08:52发 → 长野 10:24到 かがやき505号",
+      "fromClipboard": "粘贴已复制的内容",
+      "read": "读取",
+      "clipboardDenied": "无法粘贴。请长按输入框进行粘贴",
+      "failed": "未能读取时刻。请直接在下方填写",
+      "readOk": "已读取 {{count}} 段乘车。请确认内容",
+      "saveAll": "一次保存 {{count}} 段",
+      "savedAll": "已保存 {{count}} 段乘车",
+      "incomplete": "部分乘车未能读取站名。请逐一确认后保存",
+      "firstFilled": "下方已填入第1段",
+      "noDate": "文中没有日期，已设为 {{date}}"
+    }
   },
   "transit": {
     "timetable": "换乘查询：",
@@ -1235,7 +1259,9 @@
     "alarmBody": "约{{minutes}}分钟后到达{{place}}，请准备下车",
     "previous": "上一班",
     "next": "下一班",
-    "timesNote": "时间为你登记的计划时间。延误或停运请在“运行状况”中确认。打开此页面期间屏幕保持常亮。"
+    "timesNote": "时间为你登记的计划时间。延误或停运请在“运行状况”中确认。打开此页面期间屏幕保持常亮。",
+    "saveRide": "保存这班车",
+    "savedRide": "已保存 {{depart}}出发→{{arrive}}到达 {{name}}"
   },
   "album": {
     "heading": "旅行相册",
