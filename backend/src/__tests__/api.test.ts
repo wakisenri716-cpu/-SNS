@@ -824,6 +824,55 @@ test("乗る便のお知らせ: a push to everyone on the trip before departure 
   }
 });
 
+test("旅のアルバム: members add photos placed at the nearest stop; only the adder or owner removes one", async () => {
+  const owner = (await call("POST", "/api/auth/register", { email: "album-owner@example.com", password: "password123", name: "幹事" })).json.token;
+  const friend = (await call("POST", "/api/auth/register", { email: "album-friend@example.com", password: "password123", name: "友人" })).json.token;
+  const outsider = (await call("POST", "/api/auth/register", { email: "album-outsider@example.com", password: "password123", name: "他人" })).json.token;
+  const { json: map } = await call("GET", "/api/reels/map");
+  const castle = map.items.find((r: any) => r.locationName === "松本城");
+  const bridge = map.items.find((r: any) => r.locationName === "上高地 河童橋");
+  const trip = (await call("POST", "/api/me/trips", { name: "写真の旅", items: [{ reelId: castle.id }, { reelId: bridge.id }] }, owner)).json;
+  const invite = (await call("POST", `/api/me/trips/${trip.id}/invite`, undefined, owner)).json.token;
+  await call("POST", `/api/me/trips/join/${invite}`, undefined, friend);
+
+  async function upload(token: string, fields: Record<string, string>, type = "image/jpeg") {
+    const form = new FormData();
+    form.append("photo", new Blob([Buffer.from([0xff, 0xd8, 0xff, 0xd9])], { type }), "photo.jpg");
+    for (const [k, v] of Object.entries(fields)) form.append(k, v);
+    const res = await fetch(`${base}/api/me/trips/${trip.id}/photos`, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: form });
+    return { status: res.status, json: await res.json().catch(() => null) };
+  }
+
+  // Taken 100 m from the castle: placed there. No location: in the album, no stop.
+  const nearCastle = await upload(friend, { width: "1600", height: "1200", lat: String(castle.locationLat + 0.0009), lng: String(castle.locationLng), takenAt: "2026-11-03T10:15:30+09:00" });
+  assert.equal(nearCastle.status, 201);
+  assert.equal(nearCastle.json.stopReelId, castle.id);
+  assert.equal(nearCastle.json.by.name, "友人");
+  assert.match(nearCastle.json.url, /^\/uploads\/[0-9a-f-]+\.jpg$/);
+  const noPlace = await upload(owner, { width: "1200", height: "1600" });
+  assert.equal(noPlace.json.stopReelId, null);
+  assert.equal(noPlace.json.hasLocation, false);
+  // Far from every stop: no stop.
+  assert.equal((await upload(owner, { width: "10", height: "10", lat: "35.68", lng: "139.76" })).json.stopReelId, null);
+  assert.equal((await upload(outsider, { width: "10", height: "10" })).status, 404);
+  assert.equal((await upload(owner, { width: "10", height: "10" }, "video/webm")).status, 400);
+  assert.equal((await upload(owner, {})).status, 400);
+
+  // In the しおり, oldest-taken first, for every member.
+  const asFriend = (await call("GET", `/api/me/trips/${trip.id}/itinerary`, undefined, friend)).json;
+  assert.equal(asFriend.photos.length, 3);
+  assert.equal(asFriend.photos.find((p: any) => p.id === nearCastle.json.id).isMine, true);
+  assert.equal(asFriend.photos.find((p: any) => p.id === noPlace.json.id).isMine, false);
+  // The file is served while it's in the album, and removed with it.
+  assert.equal((await fetch(`${base}${nearCastle.json.url}`)).status, 200);
+
+  assert.equal((await call("DELETE", `/api/me/trips/${trip.id}/photos/${noPlace.json.id}`, undefined, friend)).status, 403);
+  assert.equal((await call("DELETE", `/api/me/trips/${trip.id}/photos/${nearCastle.json.id}`, undefined, owner)).status, 204);
+  await new Promise((r) => setTimeout(r, 50));
+  assert.equal((await fetch(`${base}${nearCastle.json.url}`)).status, 404);
+  assert.equal((await call("DELETE", `/api/me/trips/${trip.id}/photos/${noPlace.json.id}`, undefined, owner)).status, 204);
+});
+
 // A software passkey authenticator: an ES256 key pair making the same
 // attestation ("none") and assertions a phone or laptop would.
 async function softAuthenticator(origin: string) {

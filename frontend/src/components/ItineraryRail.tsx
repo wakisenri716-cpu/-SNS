@@ -20,6 +20,7 @@ import { useTripLive } from "../lib/useTripLive";
 import TripCollab from "./TripCollab";
 import TripWeather from "./TripWeather";
 import TripTransports from "./TripTransports";
+import TripAlbum from "./TripAlbum";
 import { getCurrentTripId, setCurrentTripId } from "../lib/trips";
 import { useTrips } from "../lib/useTrips";
 
@@ -656,6 +657,14 @@ export function ItineraryPanel({
               </>
             )}
           </div>
+          <TripAlbum
+            tripId={tripId}
+            stops={itinerary.stops}
+            photos={itinerary.photos ?? []}
+            isOwner={itinerary.isOwner}
+            readOnly={offline}
+            onChanged={() => void load().catch(() => {})}
+          />
           {!offline && <TripCollab itinerary={itinerary} here={here} locations={locations} onChange={() => void load()} onLeft={onDeleted} />}
           <p className="mt-3 text-[11px] leading-relaxed text-gray-500">{t("itinerary.disclaimer")}</p>
         </div>

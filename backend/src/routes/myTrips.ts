@@ -1,9 +1,13 @@
 import { randomBytes } from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma";
 import { requireAuth } from "../middleware/auth";
-import { conciergeLimiter } from "../middleware/rateLimit";
+import { conciergeLimiter, photoUploadLimiter } from "../middleware/rateLimit";
+import { UPLOAD_DIR, uploadImage } from "../middleware/upload";
+import { haversineMeters } from "../services/googleMaps";
 import { buildItinerary } from "../lib/itinerary";
 import { accessibleTrip, addToTrip, syncSavedForTrip, syncSavedForUsers, tripParticipants, tripsOf } from "../lib/trips";
 import { issueTicket, shareLocation, stopSharingLocation, tripChanged } from "../lib/tripLive";
@@ -228,7 +232,14 @@ router.get("/:id/itinerary", async (req, res) => {
     select: { user: { select: { id: true, name: true } }, members: { orderBy: { createdAt: "asc" }, select: { user: { select: { id: true, name: true } } } } },
   });
   const transports = await prisma.tripTransport.findMany({ where: { tripId: trip.id }, orderBy: { departAt: "asc" } });
+  const photos = await prisma.tripPhoto.findMany({
+    where: { tripId: trip.id },
+    orderBy: [{ takenAt: "asc" }, { createdAt: "asc" }],
+    take: MAX_PHOTOS,
+    include: { user: { select: { name: true } } },
+  });
   res.json({
+    photos: photos.map((p) => serializePhoto(p, req.auth!.userId)),
     ...(await buildItinerary(trip.id, { withOrigin: true })),
     transports: transports.map((t) => serializeTransport(t, { forMembers: true })),
     isOwner,
@@ -315,6 +326,93 @@ router.delete("/:id/transports/:transportId", async (req, res) => {
   await changed(access.trip.id, req.auth!.userId);
   res.status(204).end();
 });
+
+// 旅のアルバム (see the TripPhoto model): members add photos, each placed at
+// the trip's nearest stop when it was taken within 2 km of one.
+const MAX_PHOTOS = 500;
+const PHOTO_NEAR_METERS = 2000;
+const photoSchema = z.object({
+  width: z.coerce.number().int().min(1).max(10_000),
+  height: z.coerce.number().int().min(1).max(10_000),
+  lat: z.coerce.number().min(-90).max(90).optional(),
+  lng: z.coerce.number().min(-180).max(180).optional(),
+  takenAt: z.coerce.date().optional(),
+});
+
+function removeUpload(file?: Express.Multer.File) {
+  if (file) fs.rm(file.path, { force: true }, () => {});
+}
+
+router.post("/:id/photos", photoUploadLimiter, uploadImage.single("photo"), async (req, res) => {
+  const parsed = photoSchema.safeParse(req.body);
+  if (!req.file || !parsed.success) {
+    removeUpload(req.file);
+    return res.status(400).json({ error: "写真（JPEG・PNG・WebP）を選んでください" });
+  }
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) {
+    removeUpload(req.file);
+    return res.status(404).json({ error: "旅が見つかりません" });
+  }
+  if ((await prisma.tripPhoto.count({ where: { tripId: access.trip.id } })) >= MAX_PHOTOS) {
+    removeUpload(req.file);
+    return res.status(400).json({ error: `アルバムの写真は${MAX_PHOTOS}枚までです` });
+  }
+  const { lat, lng, ...rest } = parsed.data;
+  const at = lat != null && lng != null ? { lat, lng } : null;
+  let stopReelId: string | null = null;
+  if (at) {
+    const stops = await prisma.tripItem.findMany({
+      where: { tripId: access.trip.id, reel: { locationLat: { not: null }, locationLng: { not: null } } },
+      select: { reel: { select: { id: true, locationLat: true, locationLng: true } } },
+    });
+    let best = PHOTO_NEAR_METERS;
+    for (const { reel } of stops) {
+      const meters = haversineMeters(at, { lat: reel.locationLat!, lng: reel.locationLng! });
+      if (meters <= best) {
+        best = meters;
+        stopReelId = reel.id;
+      }
+    }
+  }
+  const photo = await prisma.tripPhoto.create({
+    data: { tripId: access.trip.id, userId: req.auth!.userId, url: `/uploads/${req.file.filename}`, ...rest, lat: at?.lat, lng: at?.lng, stopReelId },
+    include: { user: { select: { name: true } } },
+  });
+  await changed(access.trip.id, req.auth!.userId);
+  res.status(201).json(serializePhoto(photo, req.auth!.userId));
+});
+
+// The one who added it, or the trip's owner, can remove a photo.
+router.delete("/:id/photos/:photoId", async (req, res) => {
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  const photo = await prisma.tripPhoto.findFirst({ where: { id: req.params.photoId, tripId: access.trip.id } });
+  if (!photo) return res.status(404).json({ error: "写真が見つかりません" });
+  if (photo.userId !== req.auth!.userId && !access.isOwner) return res.status(403).json({ error: "削除できるのは追加した人と旅を作った人だけです" });
+  await prisma.tripPhoto.delete({ where: { id: photo.id } });
+  fs.rm(path.join(UPLOAD_DIR, path.basename(photo.url)), { force: true }, () => {});
+  await changed(access.trip.id, req.auth!.userId);
+  res.status(204).end();
+});
+
+function serializePhoto(
+  p: { id: string; url: string; width: number; height: number; takenAt: Date | null; lat: number | null; lng: number | null; stopReelId: string | null; createdAt: Date; userId: string; user: { name: string } },
+  viewerId: string
+) {
+  return {
+    id: p.id,
+    url: p.url,
+    width: p.width,
+    height: p.height,
+    takenAt: p.takenAt,
+    stopReelId: p.stopReelId,
+    hasLocation: p.lat != null,
+    by: { id: p.userId, name: p.user.name },
+    isMine: p.userId === viewerId,
+    createdAt: p.createdAt,
+  };
+}
 
 // みんなの現在地: share my position with the others on this trip while I
 // have it switched on (see lib/tripLive.ts; memory only, gone after 10 min).

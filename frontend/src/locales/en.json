@@ -1261,5 +1261,21 @@
     "previous": "Previous",
     "next": "Next",
     "timesNote": "These are the scheduled times you entered. Check live status for delays. The screen stays on while this is open."
+  },
+  "album": {
+    "heading": "Trip album",
+    "count": "{{count}} photos",
+    "add": "Add photos",
+    "uploading": "Adding {{done}}/{{total}}",
+    "empty": "Add your trip photos and they're sorted by the place they were taken, for everyone on the trip to see.",
+    "other": "Other photos",
+    "added": "Added {{count}} photos",
+    "someFailed": "Couldn't add {{count}} photos",
+    "open": "Open {{name}}'s photo",
+    "delete": "Delete photo",
+    "deleteConfirm": "Delete this photo?",
+    "previous": "Previous photo",
+    "next": "Next photo",
+    "privacy": "Only this trip's members can see these photos. Where and when each was taken is read on your device, and photos are shrunk there before sending, which removes location and other metadata."
   }
 }

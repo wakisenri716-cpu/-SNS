@@ -287,3 +287,26 @@ test("移動中モード: phases, progress and which trip to show", () => {
   assert.deepEqual(splitDuration(-5), { h: 0, m: 0, s: 0 });
   assert.equal(isoToLocalInput(localInputToIso("2026-11-03T08:05")), "2026-11-03T08:05");
 });
+
+import { readExifTakenAt } from "../src/lib/exifGps.ts";
+
+// A minimal JPEG with only an Exif IFD holding DateTimeOriginal.
+function jpegTakenAt(when: string) {
+  const tiff: number[] = [];
+  const u16 = (v: number) => tiff.push(v >> 8, v & 255);
+  const u32 = (v: number) => tiff.push((v >>> 24) & 255, (v >>> 16) & 255, (v >>> 8) & 255, v & 255);
+  tiff.push(0x4d, 0x4d); u16(42); u32(8);
+  u16(1); u16(0x8769); u16(4); u32(1); u32(26); u32(0);
+  // Exif IFD at 26: one entry, the ASCII date at 44.
+  u16(1); u16(0x9003); u16(2); u32(20); u32(44); u32(0);
+  for (const ch of when) tiff.push(ch.charCodeAt(0));
+  tiff.push(0);
+  const exif = [0x45, 0x78, 0x69, 0x66, 0, 0, ...tiff];
+  const size = exif.length + 2;
+  return new Uint8Array([0xff, 0xd8, 0xff, 0xe1, size >> 8, size & 255, ...exif, 0xff, 0xda, 0, 2]).buffer;
+}
+
+test("photo time: EXIF DateTimeOriginal is read as Japan time, absence gives null", () => {
+  assert.equal(readExifTakenAt(jpegTakenAt("2026:11:03 10:15:30")), "2026-11-03T10:15:30+09:00");
+  assert.equal(readExifTakenAt(new Uint8Array([0xff, 0xd8, 0xff, 0xda, 0, 2]).buffer), null);
+});

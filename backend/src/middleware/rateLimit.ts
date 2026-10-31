@@ -41,3 +41,5 @@ export const reactionLimiter = limiter(1, 40, "リアクションが多すぎま
 export const passkeyOptionsLimiter = limiter(10, 60, "ログインの回数が多すぎます。しばらく時間をおいてから再度お試しください");
 // Weather is cached per area, but each new area costs a forecast request.
 export const weatherLimiter = limiter(10, 120, "天気の表示が多すぎます。少し時間をおいてから再度お試しください");
+// 旅のアルバム: a day's worth of photos can go up at once.
+export const photoUploadLimiter = limiter(10, 150, "写真の追加が多すぎます。少し時間をおいてから再度お試しください");

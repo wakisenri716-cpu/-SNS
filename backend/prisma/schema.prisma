@@ -62,6 +62,7 @@ model User {
   trips         Trip[]
   tripMemberships TripMember[]
   passkeys      Passkey[]
+  tripPhotos    TripPhoto[]
 }
 
 model Municipality {
@@ -463,6 +464,7 @@ model Trip {
   items       TripItem[]
   members     TripMember[]
   transports  TripTransport[]
+  photos      TripPhoto[]
 
   @@index([userId])
 }
@@ -525,4 +527,26 @@ model TripTransport {
   createdAt    DateTime @default(now())
 
   @@index([tripId, departAt])
+}
+
+// 旅のアルバム: photos the trip's members took, seen only by them. Shrunk on
+// the device before upload (which also drops the file's metadata); where and
+// when it was taken come from the original's EXIF, read on the device, and
+// place it at the trip's nearest stop (stopReelId) when within 2 km.
+model TripPhoto {
+  id         String    @id @default(cuid())
+  tripId     String
+  trip       Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  url        String
+  width      Int
+  height     Int
+  takenAt    DateTime?
+  lat        Float?
+  lng        Float?
+  stopReelId String?
+  createdAt  DateTime  @default(now())
+
+  @@index([tripId, createdAt])
 }

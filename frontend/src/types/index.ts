@@ -228,6 +228,21 @@ export interface TripTransport {
   note: string;
 }
 
+// 旅のアルバム: a photo a member added (members only).
+export interface TripPhoto {
+  id: string;
+  url: string;
+  width: number;
+  height: number;
+  takenAt: string | null;
+  /** The trip stop it was taken near (within 2 km), if any. */
+  stopReelId: string | null;
+  hasLocation: boolean;
+  by: { id: string; name: string };
+  isMine: boolean;
+  createdAt: string;
+}
+
 export interface Itinerary {
   // The 旅 this しおり belongs to (GET /me/trips/:id/itinerary).
   trip: { id: string; name: string; startDate: string | null };
@@ -245,6 +260,7 @@ export interface Itinerary {
   // legs.length === stops.length - 1.
   legs: TransitSuggestion[];
   transports?: TripTransport[];
+  photos?: TripPhoto[];
   // Set while a read-only link (/trip/:token) to this しおり is shared
   // (owner only; null for members).
   shareToken: string | null;
