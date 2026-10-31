@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { MapPinCheck } from "lucide-react";
+import { MapPinCheck, Nfc } from "lucide-react";
 import { isAxiosError } from "axios";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
@@ -11,7 +11,7 @@ import { formatStampDate } from "../lib/stampDate";
 
 // スタンプラリー on a spot's access page: when you're actually there (within
 // 1km), press to get its stamp (+20pt). Travelers only.
-export default function VisitStampCard({ reelId, place }: { reelId: string; place: string }) {
+export default function VisitStampCard({ reelId, place, hasTag = false }: { reelId: string; place: string; hasTag?: boolean }) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [visitedAt, setVisitedAt] = useState<string | null>(null);
@@ -73,7 +73,12 @@ export default function VisitStampCard({ reelId, place }: { reelId: string; plac
             {busy ? t("stamps.checking") : t("stamps.checkIn")}
           </button>
         )}
-        {message && <p className="mt-2 text-xs text-jz-accent">{message}</p>}
+        {message && <p className="mt-2 text-xs text-jz-warm-text">{message}</p>}
+        {!visitedAt && hasTag && (
+          <p className="mt-2 flex items-start gap-1 text-[11px] leading-relaxed text-gray-600">
+            <Nfc className="mt-0.5 h-3.5 w-3.5 shrink-0 text-jz-accent" /> {t("stamps.hasTag")}
+          </p>
+        )}
       </div>
     </div>
   );

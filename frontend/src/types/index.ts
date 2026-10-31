@@ -143,6 +143,8 @@ export type TravelerTag = (typeof TRAVELER_TAGS)[number];
 
 export interface Reel {
   id: string;
+  /** The spot has an NFC / QR stamp tag (現地スタンプのタグ). */
+  hasCheckinTag?: boolean;
   videoUrl: string;
   thumbnailUrl: string | null;
   caption: string;

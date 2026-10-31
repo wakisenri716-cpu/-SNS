@@ -734,7 +734,8 @@
     "cardMore": "+{{count}} more",
     "cardFooter": "Find and record your trips on Jaziba",
     "cardSaved": "Image saved",
-    "cardError": "Couldn't create the image"
+    "cardError": "Couldn't create the image",
+    "hasTag": "This place has an on-site stamp tag (NFC / QR). You can also just tap your phone on it."
   },
   "events": {
     "upcoming": "Upcoming events",
@@ -1288,7 +1289,8 @@
     "previous": "Previous",
     "next": "Next",
     "timesNote": "These are the scheduled times you entered. Check live status for delays. The screen stays on while this is open.",
-    "savedRide": "Saved: {{depart}} → {{arrive}} {{name}}"
+    "savedRide": "Saved: {{depart}} → {{arrive}} {{name}}",
+    "pip": "Small window"
   },
   "album": {
     "heading": "Trip album",
@@ -1416,5 +1418,16 @@
     "remove": "Remove the tag",
     "removeConfirm": "Remove this tag? The current NFC tags and QR codes stop working.",
     "note": "Anyone with the URL can open it, so if a photo of the QR gets around, \"Make a new one\" turns the old one off."
+  },
+  "commentSummary": {
+    "button": "Summarize what people say",
+    "sub": "Your device's AI sums up the comments (nothing sent, free)",
+    "working": "Summarizing…",
+    "downloading": "Getting the on-device AI ready… {{percent}}%",
+    "failed": "This device couldn't summarize them",
+    "heading_one": "What people say (from {{count}} comment)",
+    "heading_other": "What people say (from {{count}} comments)",
+    "note": "Summarized by the AI on your device. Check the comments themselves too.",
+    "context": "Comments travelers wrote on a post about a tourist spot. Sum up the good points, cautions and tips briefly."
   }
 }

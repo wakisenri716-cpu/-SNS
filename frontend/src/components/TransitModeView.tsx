@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { Bell, BellOff, ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react";
+import { Bell, BellOff, ChevronLeft, ChevronRight, ExternalLink, PictureInPicture2, X } from "lucide-react";
 import { statusUrl } from "../lib/transitLinks";
 import { splitDuration, transportPhase } from "../lib/transportTiming";
 import { KIND_ICON, clock } from "../lib/transportDisplay";
@@ -10,13 +10,37 @@ import type { TripTransport } from "../types";
 const ALARM_BEFORE_MIN = 5;
 
 type WakeLockSentinelLike = { release: () => Promise<void> };
+type DocumentPip = { requestWindow: (opts: { width: number; height: number }) => Promise<Window> };
+const documentPip = () => (window as unknown as { documentPictureInPicture?: DocumentPip }).documentPictureInPicture;
+
+// The page's styles, copied into the floating window so it looks the same.
+function copyStyles(to: Window) {
+  for (const sheet of [...document.styleSheets]) {
+    try {
+      const style = to.document.createElement("style");
+      style.textContent = [...sheet.cssRules].map((r) => r.cssText).join("\n");
+      to.document.head.appendChild(style);
+    } catch {
+      if (sheet.href) {
+        const link = to.document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = sheet.href;
+        to.document.head.appendChild(link);
+      }
+    }
+  }
+  to.document.documentElement.className = document.documentElement.className;
+  to.document.documentElement.lang = document.documentElement.lang;
+}
 
 // 移動中モード: one booked trip, big enough to read on a moving bus — how
 // long until departure (and from which platform/gate), then how far along
 // the ride is and how long until arrival. Optionally alerts 5 minutes before
 // arrival (vibration + notification) so you don't miss your stop, and keeps
 // the screen awake. Times are the ones the traveller entered; there's no
-// live delay data, so the status link is one tap away.
+// live delay data, so the status link is one tap away. Where the browser
+// can (Document Picture-in-Picture, desktop Chrome), 小窓で表示 keeps the
+// countdown in a small window on top of other apps.
 export default function TransitModeView({ transports, startId, onClose }: { transports: TripTransport[]; startId: string; onClose: () => void }) {
   const { t, i18n } = useTranslation();
   const sorted = [...transports].sort((a, b) => new Date(a.departAt).getTime() - new Date(b.departAt).getTime());
@@ -26,7 +50,24 @@ export default function TransitModeView({ transports, startId, onClose }: { tran
   // Minutes left when the alert went off (null until then).
   const [alarmFired, setAlarmFired] = useState<number | null>(null);
   const firedFor = useRef<string | null>(null);
+  const [pipWindow, setPipWindow] = useState<Window | null>(null);
   const tr = sorted[index];
+
+  async function openPip() {
+    const pip = documentPip();
+    if (!pip) return;
+    try {
+      const w = await pip.requestWindow({ width: 320, height: 190 });
+      copyStyles(w);
+      w.document.title = t("transport.rideMode");
+      w.addEventListener("pagehide", () => setPipWindow(null));
+      setPipWindow(w);
+    } catch {
+      setPipWindow(null);
+    }
+  }
+  // Closing 移動中モード closes the small window too.
+  useEffect(() => () => pipWindow?.close(), [pipWindow]);
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
@@ -160,6 +201,18 @@ export default function TransitModeView({ transports, startId, onClose }: { tran
             {alarmOn ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
             {alarmOn ? t("transit.alarmOn", { minutes: ALARM_BEFORE_MIN }) : t("transit.alarm", { minutes: ALARM_BEFORE_MIN })}
           </button>
+          {documentPip() && (
+            <button
+              type="button"
+              onClick={() => (pipWindow ? pipWindow.close() : void openPip())}
+              aria-pressed={!!pipWindow}
+              aria-label={t("transit.pip")}
+              title={t("transit.pip")}
+              className={`flex items-center justify-center rounded-full px-4 ${pipWindow ? "bg-white text-slate-900" : "bg-white/10"}`}
+            >
+              <PictureInPicture2 className="h-4 w-4" />
+            </button>
+          )}
           <a href={statusUrl(tr.kind, tr.name, tr.operator)} target="_blank" rel="noreferrer" className="flex items-center gap-1 rounded-full bg-white/10 px-4 text-sm font-semibold">
             {t("transport.status")} <ExternalLink className="h-3.5 w-3.5" />
           </a>
@@ -179,6 +232,26 @@ export default function TransitModeView({ transports, startId, onClose }: { tran
         )}
         <p className="text-center text-[10px] text-white/50">{t("transit.timesNote")}</p>
       </div>
+      {pipWindow &&
+        createPortal(
+          <div className="flex h-screen flex-col justify-center gap-1.5 bg-slate-900 px-4 text-white">
+            <p className="flex items-center gap-1.5 truncate text-xs font-semibold text-white/75">
+              <Icon className="h-4 w-4 shrink-0" /> {tr.name}
+            </p>
+            <p className="text-[11px] text-white/70">
+              {phase === "arrived" ? t("transit.arrived") : phase === "enroute" ? t("transit.untilArrival", { place: tr.toName }) : t("transit.untilDeparture")}
+            </p>
+            {phase !== "arrived" && <p className="text-4xl font-black tabular-nums">{big(phase === "enroute" ? arr : dep)}</p>}
+            <div className="h-1.5 overflow-hidden rounded-full bg-white/15">
+              <div className="h-full rounded-full bg-jz-accent" style={{ width: `${progress * 100}%` }} />
+            </div>
+            <p className="truncate text-[11px] tabular-nums text-white/70">
+              {clock(tr.departAt, i18n.language)} {tr.fromName}
+              {tr.departPlatform && ` (${tr.departPlatform})`} → {clock(tr.arriveAt, i18n.language)} {tr.toName}
+            </p>
+          </div>,
+          pipWindow.document.body
+        )}
     </div>,
     document.body
   );

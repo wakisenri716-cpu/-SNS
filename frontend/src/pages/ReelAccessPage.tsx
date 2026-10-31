@@ -379,7 +379,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
         <>
           <SpotVisitStats reelId={reel.id} />
           <WalkCompass lat={reel.locationLat} lng={reel.locationLng} place={reel.locationName || reel.municipality.name} />
-          <VisitStampCard reelId={reel.id} place={reel.locationName || reel.municipality.name} />
+          <VisitStampCard reelId={reel.id} place={reel.locationName || reel.municipality.name} hasTag={reel.hasCheckinTag} />
         </>
       )}
 

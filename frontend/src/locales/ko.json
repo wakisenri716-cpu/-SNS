@@ -723,7 +723,8 @@
     "cardMore": "외 {{count}}개",
     "cardFooter": "Jaziba에서 여행을 찾고 기록하세요",
     "cardSaved": "이미지를 저장했습니다",
-    "cardError": "이미지를 만들지 못했습니다"
+    "cardError": "이미지를 만들지 못했습니다",
+    "hasTag": "이곳에는 현장 스탬프 태그(NFC・QR)가 있습니다. 스마트폰을 대기만 해도 찍을 수 있습니다."
   },
   "events": {
     "upcoming": "다가오는 이벤트",
@@ -1260,7 +1261,8 @@
     "previous": "이전 편",
     "next": "다음 편",
     "timesNote": "시간은 등록한 예정 시간이에요. 지연・운휴는 「운행 상황」에서 확인하세요. 이 화면을 여는 동안 화면이 꺼지지 않아요.",
-    "savedRide": "저장됨 {{depart}} 출발→{{arrive}} 도착 {{name}}"
+    "savedRide": "저장됨 {{depart}} 출발→{{arrive}} 도착 {{name}}",
+    "pip": "작은 창으로 보기"
   },
   "album": {
     "heading": "여행 앨범",
@@ -1387,5 +1389,15 @@
     "remove": "태그 없애기",
     "removeConfirm": "이 태그를 없앨까요? 지금의 NFC 태그・QR 코드는 쓸 수 없게 됩니다.",
     "note": "URL을 알면 누구나 열 수 있으므로, QR 사진이 퍼지면 \"새로 만들기\"로 언제든 무효로 할 수 있습니다."
+  },
+  "commentSummary": {
+    "button": "모두의 의견 요약",
+    "sub": "기기의 AI가 댓글을 짧게 요약합니다 (전송 없음・무료)",
+    "working": "요약하는 중…",
+    "downloading": "기기의 AI 준비 중… {{percent}}%",
+    "failed": "이 기기에서는 요약할 수 없습니다",
+    "heading": "모두의 의견 ({{count}}개 댓글에서)",
+    "note": "기기의 AI가 요약한 내용입니다. 원래 댓글도 확인하세요.",
+    "context": "관광 스폿 게시물에 여행자가 쓴 댓글입니다. 좋은 점・주의점・추천을 짧게 요약해 주세요."
   }
 }

@@ -54,6 +54,7 @@ export async function serializeReel(
     locationLng: number | null;
     viewCount: number;
     editorial?: boolean;
+    checkinToken?: string | null;
     createdAt: Date;
     municipality: {
       id: string;
@@ -89,6 +90,8 @@ export async function serializeReel(
     viewCount: reel.viewCount,
     // Jaziba's own introduction, not the municipality's post (see Reel.editorial).
     editorial: reel.editorial ?? false,
+    // Whether the spot has a 現地スタンプのタグ (never the token itself).
+    hasCheckinTag: !!reel.checkinToken,
     createdAt: reel.createdAt,
     municipality: { ...municipality, isFollowing: viewer.followedMunicipalityIds.has(municipality.id) },
     postedByCompany: reel.company

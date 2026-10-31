@@ -723,7 +723,8 @@
     "cardMore": "另有 {{count}}个",
     "cardFooter": "在Jaziba发现并记录旅行",
     "cardSaved": "已保存图片",
-    "cardError": "无法生成图片"
+    "cardError": "无法生成图片",
+    "hasTag": "此地有现场印章标签（NFC・二维码）。用手机触碰即可盖章。"
   },
   "events": {
     "upcoming": "近期活动",
@@ -1260,7 +1261,8 @@
     "previous": "上一班",
     "next": "下一班",
     "timesNote": "时间为你登记的计划时间。延误或停运请在“运行状况”中确认。打开此页面期间屏幕保持常亮。",
-    "savedRide": "已保存 {{depart}}出发→{{arrive}}到达 {{name}}"
+    "savedRide": "已保存 {{depart}}出发→{{arrive}}到达 {{name}}",
+    "pip": "小窗显示"
   },
   "album": {
     "heading": "旅行相册",
@@ -1387,5 +1389,15 @@
     "remove": "移除标签",
     "removeConfirm": "移除此标签吗？当前的NFC标签和二维码将无法使用。",
     "note": "知道链接的人都能打开，如果二维码照片流传出去，可随时“重新生成”使其失效。"
+  },
+  "commentSummary": {
+    "button": "总结大家的评论",
+    "sub": "由设备上的AI简短总结评论（不发送・免费）",
+    "working": "正在总结…",
+    "downloading": "正在准备设备上的AI… {{percent}}%",
+    "failed": "此设备无法总结",
+    "heading": "大家的评价（来自{{count}}条评论）",
+    "note": "由设备上的AI总结。请同时查看原评论。",
+    "context": "旅行者在旅游景点帖子下写的评论。请简短总结优点、注意事项和推荐。"
   }
 }

@@ -791,7 +791,9 @@ test("現地スタンプのタグ: the post's manager makes a tag link; opening 
   assert.equal((await call("GET", `/api/reels/${spot.id}/checkin-tag`, undefined, muni)).json.token, null);
   const { token } = (await call("POST", `/api/reels/${spot.id}/checkin-tag`, undefined, muni)).json;
   assert.match(token, /^[A-Za-z0-9_-]{24}$/);
-  assert.equal((await call("GET", `/api/reels/${spot.id}`)).json.checkinToken, undefined, "never in the public post");
+  const publicPost = (await call("GET", `/api/reels/${spot.id}`)).json;
+  assert.equal(publicPost.checkinToken, undefined, "never in the public post");
+  assert.equal(publicPost.hasCheckinTag, true);
 
   // Anyone can see which spot it's for; travelers get the stamp, once.
   const info = await call("GET", `/api/checkin/${token}`);
@@ -812,6 +814,7 @@ test("現地スタンプのタグ: the post's manager makes a tag link; opening 
   assert.equal((await call("GET", `/api/checkin/${token}`)).status, 404);
   assert.equal((await call("DELETE", `/api/reels/${spot.id}/checkin-tag`, undefined, muni)).status, 204);
   assert.equal((await call("GET", `/api/checkin/${next}`)).status, 404);
+  assert.equal((await call("GET", `/api/reels/${spot.id}`)).json.hasCheckinTag, false);
   assert.equal((await call("GET", "/api/checkin/short")).status, 404);
 });
 

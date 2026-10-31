@@ -7,6 +7,7 @@ import type { Comment } from "../types";
 import { Flag, X } from "lucide-react";
 import { showToast } from "../lib/toast";
 import TranslatableComment from "./TranslatableComment";
+import CommentSummary from "./CommentSummary";
 
 type CommentRow = Comment & { canDelete: boolean; reportedByMe?: boolean; hidden?: boolean };
 
@@ -115,6 +116,8 @@ export default function CommentsSheet({
           ) : items.length === 0 ? (
             <p className="py-6 text-center text-xs text-gray-500">{t("comments.empty")}</p>
           ) : (
+            <>
+            <CommentSummary bodies={items.filter((c) => !c.hidden).map((c) => c.body)} />
             <ul className="flex flex-col gap-3">
               {items.map((c) => (
                 <li key={c.id} className="text-sm">
@@ -162,6 +165,7 @@ export default function CommentsSheet({
                 </li>
               ))}
             </ul>
+            </>
           )}
         </div>
 
