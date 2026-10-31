@@ -12,6 +12,8 @@ import { chooseTrips } from "../lib/trips";
 import { showToast } from "../lib/toast";
 import type { SharedTrip } from "../types";
 import TripTransports from "../components/TripTransports";
+import LegOptions from "../components/LegOptions";
+import { chosenFor, legMinutesWithChoices, optionsFor } from "../lib/legOptions";
 
 const TripFlyover = lazy(() => import("../components/TripFlyover"));
 
@@ -96,13 +98,9 @@ export default function TripPage() {
   }
 
   const overnight = overnightStops(trip.stops);
-  const { times } = computeTimeline(
-    trip.startTime,
-    null,
-    trip.stops.map((s) => s.stayMinutes),
-    trip.legs.map((l) => l.totalDurationMin),
-    overnight
-  );
+  // A leg with a chosen way (区間の行き方) takes its time.
+  const { legMinutes } = legMinutesWithChoices(trip.stops.map((s) => s.id), trip.legs.map((l) => l.totalDurationMin), null, trip.legOptions);
+  const { times } = computeTimeline(trip.startTime, null, trip.stops.map((s) => s.stayMinutes), legMinutes, overnight);
   const multiDay = times.length > 0 && times[times.length - 1].day > 0;
   const unsaved = trip.stops.filter((s) => !saved.has(s.id)).map((s) => s.id);
   const canCopy = !trip.isMine && (isTraveler || !authToken);
@@ -213,6 +211,23 @@ export default function TripPage() {
                       lng: trip.stops[i + 1].locationLng,
                     }}
                     className="my-2 ml-10"
+                    chosen={trip.stops[i + 1] ? chosenFor(trip.legOptions, stop.id, trip.stops[i + 1].id) : null}
+                  />
+                )}
+                {trip.legs[i] && trip.stops[i + 1] && (
+                  <LegOptions
+                    tripId=""
+                    readOnly
+                    className="mb-2 ml-10"
+                    leg={{
+                      fromId: stop.id,
+                      toId: trip.stops[i + 1].id,
+                      fromName: stop.locationName || stop.municipality.name,
+                      toName: trip.stops[i + 1].locationName || trip.stops[i + 1].municipality.name,
+                      departLocal: "",
+                      estimateMin: trip.legs[i].totalDurationMin,
+                    }}
+                    options={optionsFor(trip.legOptions, stop.id, trip.stops[i + 1].id)}
                   />
                 )}
               </li>

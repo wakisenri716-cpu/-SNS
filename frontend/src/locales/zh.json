@@ -1260,7 +1260,6 @@
     "previous": "上一班",
     "next": "下一班",
     "timesNote": "时间为你登记的计划时间。延误或停运请在“运行状况”中确认。打开此页面期间屏幕保持常亮。",
-    "saveRide": "保存这班车",
     "savedRide": "已保存 {{depart}}出发→{{arrive}}到达 {{name}}"
   },
   "album": {
@@ -1295,5 +1294,62 @@
       "municipality": "政府办公楼位置：code4fukui/localgovjp",
       "prefecture": "政府办公楼位置：code4fukui/localgovjp"
     }
+  },
+  "legOption": {
+    "heading": "{{from}}→{{to}}的交通方式",
+    "minutes": "{{minutes}}分钟",
+    "fare": "{{yen}}日元",
+    "noDetails": "未填写时间和费用",
+    "edit": "编辑交通方式",
+    "remove": "删除交通方式",
+    "removeConfirm": "删除这个交通方式吗？（其中的班次也会删除）",
+    "chosen": "就这样走（已决定）",
+    "choose": "就这样走",
+    "addFirst": "填写交通方式",
+    "addAnother": "再添加一种方式",
+    "addTitle": "添加交通方式",
+    "editTitle": "编辑交通方式",
+    "modeLabel": "交通工具",
+    "mode": {
+      "train": "电车",
+      "bus": "巴士",
+      "car": "汽车",
+      "taxi": "出租车",
+      "walk": "步行",
+      "bike": "自行车",
+      "plane": "飞机",
+      "ferry": "船",
+      "other": "其他"
+    },
+    "titleLabel": "名称（可选）",
+    "titlePlaceholder": {
+      "train": "例：特急しなの＋巴士",
+      "bus": "例：高速巴士",
+      "car": "例：租车（经中央道）",
+      "taxi": "例：从车站打车",
+      "walk": "例：沿河散步",
+      "bike": "例：租自行车",
+      "plane": "例：FDA航班",
+      "ferry": "例：高速船",
+      "other": "例：缆车"
+    },
+    "minutesLabel": "所需时间（分钟）",
+    "estimatePlaceholder": "约 {{duration}}",
+    "fareLabel": "费用（日元・可选）",
+    "minutesFromRides": "留空则按乘车时刻计为 {{duration}}",
+    "ridesLabel": "乘坐班次（可选）",
+    "rideN": "第{{n}}段",
+    "removeRide": "删除这段乘车",
+    "addRide": "添加乘车",
+    "ridesNote": "选为“就这样走”的方式中的班次，会用于班次列表、移动模式和出发/到达通知。",
+    "notePlaceholder": "例：不拥挤／有停车场／换乘方便",
+    "chooseThis": "就这样走",
+    "chooseNote": "选为“就这样走”后，此区间的时间会反映到行程时刻中（每个区间一个）。",
+    "saved": "已保存交通方式",
+    "chosenSummary": "{{mode}} {{duration}}（已决定）",
+    "chosenNoTime": "乘{{mode}}（时间约 {{duration}}）",
+    "fareTotal": "交通费（已决定的方式・{{count}}个区间）合计 {{yen}}日元",
+    "tooEarly": "{{time}}出发的班次比行程计划早{{minutes}}分钟。缩短停留时间即可赶上",
+    "waitBefore": "距{{time}}出发的班次有{{minutes}}分钟等待时间"
   }
 }

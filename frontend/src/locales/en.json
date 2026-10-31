@@ -1288,7 +1288,6 @@
     "previous": "Previous",
     "next": "Next",
     "timesNote": "These are the scheduled times you entered. Check live status for delays. The screen stays on while this is open.",
-    "saveRide": "Save this ride",
     "savedRide": "Saved: {{depart}} → {{arrive}} {{name}}"
   },
   "album": {
@@ -1323,5 +1322,63 @@
       "municipality": "Office positions: code4fukui/localgovjp",
       "prefecture": "Office positions: code4fukui/localgovjp"
     }
+  },
+  "legOption": {
+    "heading": "Ways from {{from}} to {{to}}",
+    "minutes": "{{minutes}} min",
+    "fare": "¥{{yen}}",
+    "noDetails": "No time or fare yet",
+    "edit": "Edit this way",
+    "remove": "Delete this way",
+    "removeConfirm": "Delete this way? (Its rides are deleted too.)",
+    "chosen": "Going this way",
+    "choose": "Go this way",
+    "addFirst": "Add a way to go",
+    "addAnother": "Add another way",
+    "addTitle": "Add a way to go",
+    "editTitle": "Edit the way",
+    "modeLabel": "Getting there by",
+    "mode": {
+      "train": "Train",
+      "bus": "Bus",
+      "car": "Car",
+      "taxi": "Taxi",
+      "walk": "Walk",
+      "bike": "Bike",
+      "plane": "Plane",
+      "ferry": "Boat",
+      "other": "Other"
+    },
+    "titleLabel": "Name (optional)",
+    "titlePlaceholder": {
+      "train": "e.g. Limited Express Shinano + bus",
+      "bus": "e.g. Highway bus",
+      "car": "e.g. Rental car via Chuo Expwy",
+      "taxi": "e.g. Taxi from the station",
+      "walk": "e.g. Along the river",
+      "bike": "e.g. Rental bike",
+      "plane": "e.g. FDA flight",
+      "ferry": "e.g. High-speed boat",
+      "other": "e.g. Ropeway"
+    },
+    "minutesLabel": "Time (minutes)",
+    "estimatePlaceholder": "About {{duration}}",
+    "fareLabel": "Fare (yen, optional)",
+    "minutesFromRides": "Left empty, {{duration}} from the rides is used",
+    "ridesLabel": "Rides (optional)",
+    "rideN": "Ride {{n}}",
+    "removeRide": "Remove this ride",
+    "addRide": "Add a ride",
+    "ridesNote": "Rides of the way you go are used for the ride list, ride mode and departure/arrival alerts.",
+    "notePlaceholder": "e.g. Less crowded / parking / easy transfer",
+    "chooseThis": "Go this way",
+    "chooseNote": "The way you go sets this leg's time in the trip plan (one per leg).",
+    "saved": "Saved the way to go",
+    "chosenSummary": "{{mode}}, {{duration}} (decided)",
+    "chosenNoTime": "Going by {{mode}} (time: about {{duration}})",
+    "fareTotal_one": "Fares of the ways you chose ({{count}} leg): ¥{{yen}}",
+    "fareTotal_other": "Fares of the ways you chose ({{count}} legs): ¥{{yen}}",
+    "tooEarly": "The {{time}} ride leaves {{minutes}} min before you plan to leave. Shorten the stay to make it",
+    "waitBefore": "{{minutes}} min to wait for the {{time}} ride"
   }
 }

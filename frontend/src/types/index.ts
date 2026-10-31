@@ -216,6 +216,8 @@ export interface ItineraryStop {
 // (GET /me/trips/:id/itinerary). seat/confirmation/note are "" on a shared link.
 export interface TripTransport {
   id: string;
+  /** Set when it's a ride of a leg's way (行き方の候補). */
+  optionId?: string | null;
   kind: "plane" | "train" | "bus" | "ferry" | "other";
   name: string;
   operator: string;
@@ -228,6 +230,23 @@ export interface TripTransport {
   seat: string;
   confirmation: string;
   note: string;
+}
+
+export type LegMode = "train" | "bus" | "car" | "taxi" | "walk" | "bike" | "plane" | "ferry" | "other";
+
+// 区間の行き方: one way the travellers wrote down for a leg — from "origin"
+// (the 出発地点) or a stop's id, to a stop's id. One per leg can be chosen.
+export interface LegOption {
+  id: string;
+  fromId: string;
+  toId: string;
+  mode: LegMode;
+  title: string;
+  durationMin: number | null;
+  fareYen: number | null;
+  note: string;
+  chosen: boolean;
+  rides: TripTransport[];
 }
 
 // 旅のアルバム: a photo a member added (members only).
@@ -263,6 +282,7 @@ export interface Itinerary {
   // legs.length === stops.length - 1.
   legs: TransitSuggestion[];
   transports?: TripTransport[];
+  legOptions?: LegOption[];
   photos?: TripPhoto[];
   // Set while a read-only link (/trip/:token) to this しおり is shared
   // (owner only; null for members).
@@ -287,6 +307,8 @@ export interface SharedTrip {
   // Which of these stops the signed-in viewer has already saved.
   savedIds: string[];
   transports?: TripTransport[];
+  // The way chosen for each leg (without notes or seats).
+  legOptions?: LegOption[];
 }
 
 // イベント情報 (GET /events). Dates are calendar days, "YYYY-MM-DD".

@@ -1260,7 +1260,6 @@
     "previous": "前の便",
     "next": "次の便",
     "timesNote": "時刻は登録した予定の時刻です。遅れや運休は「運行状況」で確認してください。この画面を開いている間、画面は消えません。",
-    "saveRide": "この便を保存",
     "savedRide": "保存済み {{depart}}発→{{arrive}}着 {{name}}"
   },
   "album": {
@@ -1295,5 +1294,62 @@
       "municipality": "役所・役場の位置：code4fukui/localgovjp",
       "prefecture": "役所・役場の位置：code4fukui/localgovjp"
     }
+  },
+  "legOption": {
+    "heading": "{{from}}→{{to}}の行き方",
+    "minutes": "{{minutes}}分",
+    "fare": "{{yen}}円",
+    "noDetails": "時間・料金は未記入",
+    "edit": "行き方を編集",
+    "remove": "行き方を消す",
+    "removeConfirm": "この行き方を消しますか？（入れた乗る便も消えます）",
+    "chosen": "これで行く（決定）",
+    "choose": "これで行く",
+    "addFirst": "行き方を書く",
+    "addAnother": "ほかの行き方も書く",
+    "addTitle": "行き方を追加",
+    "editTitle": "行き方を編集",
+    "modeLabel": "移動手段",
+    "mode": {
+      "train": "電車",
+      "bus": "バス",
+      "car": "車",
+      "taxi": "タクシー",
+      "walk": "徒歩",
+      "bike": "自転車",
+      "plane": "飛行機",
+      "ferry": "船",
+      "other": "その他"
+    },
+    "titleLabel": "名前（任意）",
+    "titlePlaceholder": {
+      "train": "例：特急しなの＋バス",
+      "bus": "例：高速バス",
+      "car": "例：レンタカー（中央道経由）",
+      "taxi": "例：駅からタクシー",
+      "walk": "例：川沿いの道を散歩",
+      "bike": "例：レンタサイクル",
+      "plane": "例：FDA便",
+      "ferry": "例：高速船",
+      "other": "例：ロープウェイ"
+    },
+    "minutesLabel": "所要時間（分）",
+    "estimatePlaceholder": "目安 {{duration}}",
+    "fareLabel": "料金（円・任意）",
+    "minutesFromRides": "空欄なら乗車の時刻から {{duration}} にします",
+    "ridesLabel": "乗る便（任意）",
+    "rideN": "{{n}}本目",
+    "removeRide": "この乗車を消す",
+    "addRide": "乗車を追加",
+    "ridesNote": "「これで行く」にした行き方の便は、乗る便の一覧・移動中モード・出発/到着の通知に使われます。",
+    "notePlaceholder": "例：混みにくい／駐車場あり／乗換が楽",
+    "chooseThis": "これで行く",
+    "chooseNote": "「これで行く」にすると、この区間の時間がしおりの時刻に反映されます（1区間に1つ）。",
+    "saved": "行き方を保存しました",
+    "chosenSummary": "{{mode}}で{{duration}}（決定）",
+    "chosenNoTime": "{{mode}}で行く（時間は目安 {{duration}}）",
+    "fareTotal": "交通費（決めた行き方・{{count}}区間）合計 {{yen}}円",
+    "tooEarly": "{{time}}発の便は、しおりの出発予定より{{minutes}}分早いです。滞在を短くすると間に合います",
+    "waitBefore": "{{time}}発の便まで{{minutes}}分の待ち時間があります"
   }
 }

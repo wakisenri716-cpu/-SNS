@@ -6,7 +6,7 @@ import { useAuth } from "../auth/AuthContext";
 import SchematicRouteMap from "./SchematicRouteMap";
 import { projectLatLngToUnitSquare } from "../lib/schematicMap";
 import { notifySavesChanged, onSavesChanged } from "../lib/savesChanged";
-import type { Itinerary, TransitSuggestion } from "../types";
+import type { Itinerary } from "../types";
 import { CalendarPlus, ChevronDown, ChevronUp, Flag, GripVertical, House, Link2Off, Pencil, Play, Plus, Share2, Sparkles, Trash2, WifiOff, X } from "lucide-react";
 import { downloadItineraryIcs } from "../lib/ics";
 import { computeTimeline, formatClock, overnightStops } from "../lib/itineraryTimeline";
@@ -19,8 +19,11 @@ import { useDragReorder } from "../lib/useDragReorder";
 import { useTripLive } from "../lib/useTripLive";
 import TripCollab from "./TripCollab";
 import TripWeather from "./TripWeather";
-import TripTransports, { type TransportDraft } from "./TripTransports";
+import TripTransports from "./TripTransports";
+import LegOptions from "./LegOptions";
 import { localAt, transportsForLegs } from "../lib/transitPaste";
+import { chosenFareTotal, chosenFor, legMinutesWithChoices, optionsFor } from "../lib/legOptions";
+import { clock } from "../lib/transportDisplay";
 import { todayLocal } from "../lib/saveRoute";
 import TripAlbum from "./TripAlbum";
 import OriginFoundNote from "./OriginFoundNote";
@@ -56,7 +59,7 @@ export function ItineraryPanel({
   headingLevel?: 1 | 2;
   onDeleted?: () => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const base = `/me/trips/${tripId}`;
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState("");
@@ -68,7 +71,6 @@ export function ItineraryPanel({
   const [originDraft, setOriginDraft] = useState("");
   const [startDraft, setStartDraft] = useState("09:00");
   const [planOpen, setPlanOpen] = useState(false);
-  const [transportDraft, setTransportDraft] = useState<TransportDraft | null>(null);
   const [flyoverOpen, setFlyoverOpen] = useState(false);
   const [liveTrip, setLiveTrip] = useState(loadLiveTrip);
   const [live, setLive] = useState<LiveStatus | null>(null);
@@ -217,49 +219,72 @@ export function ItineraryPanel({
   const othersHere = here.filter((p) => p.id !== user?.id);
 
   // Timeline: clock time at each arrival/departure, accumulated from the start;
-  // a place to stay before the last stop means a night there.
+  // a place to stay before the last stop means a night there. A leg whose
+  // way was chosen (区間の行き方) takes that way's time instead of the estimate.
   const overnight = itinerary ? overnightStops(itinerary.stops) : [];
+  const stopIds = itinerary?.stops.map((s) => s.id) ?? [];
+  const withChoices = itinerary
+    ? legMinutesWithChoices(stopIds, itinerary.legs.map((l) => l.totalDurationMin), itinerary.originLeg?.totalDurationMin ?? null, itinerary.legOptions)
+    : null;
   const { departAt, times } = itinerary
-    ? computeTimeline(
-        itinerary.startTime,
-        itinerary.originLeg?.totalDurationMin ?? null,
-        itinerary.stops.map((s) => s.stayMinutes),
-        itinerary.legs.map((l) => l.totalDurationMin),
-        overnight
-      )
+    ? computeTimeline(itinerary.startTime, withChoices!.originMin, itinerary.stops.map((s) => s.stayMinutes), withChoices!.legMinutes, overnight)
     : { departAt: 0, times: [] };
   const multiDay = times.length > 0 && times[times.length - 1].day > 0;
 
-  // この便を保存: each leg (from the origin, then between stops) with its
-  // planned clock times, to start a 乗る便 from and to show the ones saved.
+  // Each leg (from the origin, then between stops) with its planned clock
+  // times: for writing down ways to travel it, and to show the 乗る便
+  // entered on their own that belong to it.
   const tripDate = itinerary?.trip.startDate ?? todayLocal();
   const stopName = (i: number) => itinerary!.stops[i].locationName || itinerary!.stops[i].municipality.name;
   const legPlans = itinerary
     ? [
         ...(itinerary.originLeg && itinerary.originLabel && itinerary.stops.length > 0
-          ? [{ key: "origin", leg: itinerary.originLeg, fromName: itinerary.originLabel, toName: stopName(0), leaveMin: departAt, arriveMin: times[0]?.arrive ?? departAt }]
+          ? [{ key: "origin", fromId: "origin", toId: stopIds[0], leg: itinerary.originLeg, fromName: itinerary.originLabel, toName: stopName(0), leaveMin: departAt, arriveMin: times[0]?.arrive ?? departAt }]
           : []),
         ...itinerary.stops.flatMap((_, i) =>
           itinerary.legs[i] && itinerary.stops[i + 1]
-            ? [{ key: `leg-${i}`, leg: itinerary.legs[i], fromName: stopName(i), toName: stopName(i + 1), leaveMin: times[i].leave, arriveMin: times[i + 1].arrive }]
+            ? [{ key: `leg-${i}`, fromId: stopIds[i], toId: stopIds[i + 1], leg: itinerary.legs[i], fromName: stopName(i), toName: stopName(i + 1), leaveMin: times[i].leave, arriveMin: times[i + 1].arrive }]
             : []
         ),
       ]
     : [];
-  const savedByLeg = new Map(
-    transportsForLegs(legPlans, itinerary?.transports ?? [], tripDate).map((list, i) => [legPlans[i].key, list])
-  );
-  const saveLegProps = (key: string) => {
+  const standalone = (itinerary?.transports ?? []).filter((tr) => !tr.optionId);
+  const savedByLeg = new Map(transportsForLegs(legPlans, standalone, tripDate).map((list, i) => [legPlans[i].key, list]));
+  const fares = chosenFareTotal(legPlans, itinerary?.legOptions);
+  // The chosen way's first ride vs. when the しおり plans to leave.
+  const rideHint = (leaveMin: number, chosen: { rides: { departAt: string }[] } | null) => {
+    if (!chosen || chosen.rides.length === 0) return null;
+    const first = Math.min(...chosen.rides.map((r) => new Date(r.departAt).getTime()));
+    const diff = Math.round((first - new Date(localAt(tripDate, leaveMin)).getTime()) / 60_000);
+    const time = clock(new Date(first).toISOString(), i18n.language);
+    if (diff < 0) return { early: true, text: t("legOption.tooEarly", { time, minutes: -diff }) };
+    if (diff > 0 && diff < 24 * 60) return { early: false, text: t("legOption.waitBefore", { time, minutes: diff }) };
+    return null;
+  };
+  const legExtras = (key: string) => {
     const plan = legPlans.find((p) => p.key === key);
-    if (!plan || offline) return { saved: savedByLeg.get(key) ?? [] };
-    const draft = (leg: TransitSuggestion): TransportDraft => ({
-      kind: leg.legs.some((l) => l.mode === "bus") && !leg.legs.some((l) => l.mode === "train") ? "bus" : "train",
-      fromName: plan.fromName.slice(0, 60),
-      toName: plan.toName.slice(0, 60),
-      departAt: localAt(tripDate, plan.leaveMin),
-      arriveAt: localAt(tripDate, plan.leaveMin + leg.totalDurationMin),
-    });
-    return { saved: savedByLeg.get(key) ?? [], onSave: () => setTransportDraft(draft(plan.leg)) };
+    if (!plan || !itinerary) return { row: { saved: [] }, options: null };
+    const chosen = chosenFor(itinerary.legOptions, plan.fromId, plan.toId);
+    return {
+      row: { saved: savedByLeg.get(key) ?? [], chosen, hint: rideHint(plan.leaveMin, chosen) },
+      options: (
+        <LegOptions
+          tripId={tripId}
+          leg={{
+            fromId: plan.fromId,
+            toId: plan.toId,
+            fromName: plan.fromName,
+            toName: plan.toName,
+            departLocal: localAt(tripDate, plan.leaveMin),
+            estimateMin: plan.leg.totalDurationMin,
+          }}
+          options={optionsFor(itinerary.legOptions, plan.fromId, plan.toId)}
+          readOnly={offline}
+          onChanged={() => void load().catch(() => {})}
+          className="mb-2 ml-9"
+        />
+      ),
+    };
   };
 
   return (
@@ -417,8 +442,6 @@ export function ItineraryPanel({
             transports={itinerary.transports ?? []}
             readOnly={offline}
             onChanged={() => void load().catch(() => {})}
-            draft={transportDraft}
-            onDraftClosed={() => setTransportDraft(null)}
           />
 
           {!offline && (
@@ -493,7 +516,12 @@ export function ItineraryPanel({
                 <span className="truncate font-normal text-gray-500">{itinerary.originLabel || t("itinerary.noOrigin")}</span>
               </p>
               {itinerary.originLabel && itinerary.originFound && <OriginFoundNote found={itinerary.originFound} className="ml-9 mt-1" />}
-              {itinerary.originLeg && <LegRow leg={itinerary.originLeg} {...saveLegProps("origin")} />}
+              {itinerary.originLeg && (
+                <>
+                  <LegRow leg={itinerary.originLeg} {...legExtras("origin").row} />
+                  {legExtras("origin").options}
+                </>
+              )}
               {itinerary.originLabel && !itinerary.originLocated && (
                 <p className="my-1.5 ml-9 text-[11px] leading-relaxed text-amber-700">{t("itinerary.originNotLocated")}</p>
               )}
@@ -604,9 +632,10 @@ export function ItineraryPanel({
                           lat: itinerary.stops[i + 1].locationLat,
                           lng: itinerary.stops[i + 1].locationLng,
                         }}
-                        {...saveLegProps(`leg-${i}`)}
+                        {...legExtras(`leg-${i}`).row}
                       />
                     )}
+                    {leg && !dragger.drag && legExtras(`leg-${i}`).options}
                   </div>
                 );
               })}
@@ -621,6 +650,11 @@ export function ItineraryPanel({
                   })}
                 </span>
               </p>
+              {fares.count > 0 && (
+                <p className="ml-9 mt-2 text-xs text-gray-600">
+                  {t("legOption.fareTotal", { yen: fares.total.toLocaleString(i18n.language), count: fares.count })}
+                </p>
+              )}
             </div>
           )}
           <div className="mt-4 flex flex-wrap items-center gap-2">

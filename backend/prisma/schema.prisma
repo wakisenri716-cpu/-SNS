@@ -464,6 +464,7 @@ model Trip {
   items       TripItem[]
   members     TripMember[]
   transports  TripTransport[]
+  legOptions  TripLegOption[]
   photos      TripPhoto[]
 
   @@index([userId])
@@ -524,9 +525,39 @@ model TripTransport {
   // goes once; cleared when the times are edited.
   departNotifiedAt DateTime?
   arriveNotifiedAt DateTime?
+  // Set when this ride is part of a way to travel one しおり leg (行き方の候補).
+  // Only the rides of the chosen way (or of none) count as the trip's 乗る便:
+  // listed, sent お知らせ, shown on a shared link.
+  optionId     String?
+  option       TripLegOption? @relation(fields: [optionId], references: [id], onDelete: Cascade)
   createdAt    DateTime @default(now())
 
   @@index([tripId, departAt])
+  @@index([optionId])
+}
+
+// 区間の行き方: the ways the travellers wrote down for getting along one leg
+// of the しおり (train, bus, car, taxi, walk, …), each with its own details.
+// One per leg can be chosen ("これで行く"): its time replaces the estimate.
+model TripLegOption {
+  id          String   @id @default(cuid())
+  tripId      String
+  trip        Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  // The leg: from "origin" (the trip's 出発地点) or a stop's reel id, to a stop's reel id.
+  fromId      String
+  toId        String
+  // "train" | "bus" | "car" | "taxi" | "walk" | "bike" | "plane" | "ferry" | "other"
+  mode        String
+  title       String   @default("")
+  // Door-to-door minutes, when written (else worked out from the rides).
+  durationMin Int?
+  fareYen     Int?
+  note        String   @default("")
+  chosen      Boolean  @default(false)
+  rides       TripTransport[]
+  createdAt   DateTime @default(now())
+
+  @@index([tripId])
 }
 
 // 旅のアルバム: photos the trip's members took, seen only by them. Shrunk on

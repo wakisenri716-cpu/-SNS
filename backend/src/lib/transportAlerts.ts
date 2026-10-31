@@ -1,6 +1,7 @@
 import { prisma } from "../prisma";
 import { sendPush } from "./push";
 import { tripParticipants } from "./trips";
+import { ACTIVE_RIDE } from "./tripTransports";
 
 // 乗る便のお知らせ: a push to everyone on the trip about 30 minutes before a
 // booked flight/train/bus departs and about 5 minutes before it arrives —
@@ -23,7 +24,7 @@ const minutesUntil = (date: Date, now: number) => Math.max(1, Math.round((date.g
 
 export async function runTransportAlerts(now = Date.now()) {
   const departing = await prisma.tripTransport.findMany({
-    where: { departNotifiedAt: null, departAt: { gt: new Date(now - STALE_MS), lte: new Date(now + DEPART_ALERT_MIN * 60_000) } },
+    where: { ...ACTIVE_RIDE, departNotifiedAt: null, departAt: { gt: new Date(now - STALE_MS), lte: new Date(now + DEPART_ALERT_MIN * 60_000) } },
   });
   for (const t of departing) {
     // Claim it first, so two overlapping checks can't both send.
@@ -37,7 +38,7 @@ export async function runTransportAlerts(now = Date.now()) {
   }
 
   const arriving = await prisma.tripTransport.findMany({
-    where: { arriveNotifiedAt: null, arriveAt: { gt: new Date(now), lte: new Date(now + ARRIVE_ALERT_MIN * 60_000) }, departAt: { lt: new Date(now) } },
+    where: { ...ACTIVE_RIDE, arriveNotifiedAt: null, arriveAt: { gt: new Date(now), lte: new Date(now + ARRIVE_ALERT_MIN * 60_000) }, departAt: { lt: new Date(now) } },
   });
   for (const t of arriving) {
     const { count } = await prisma.tripTransport.updateMany({ where: { id: t.id, arriveNotifiedAt: null }, data: { arriveNotifiedAt: new Date(now) } });

@@ -12,7 +12,7 @@ import { buildItinerary } from "../lib/itinerary";
 import { accessibleTrip, addToTrip, syncSavedForTrip, syncSavedForUsers, tripParticipants, tripsOf } from "../lib/trips";
 import { issueTicket, shareLocation, stopSharingLocation, tripChanged } from "../lib/tripLive";
 import { planTrip } from "../services/tripPlanner";
-import { serializeTransport } from "../lib/tripTransports";
+import { ACTIVE_RIDE, serializeLegOption, serializeTransport } from "../lib/tripTransports";
 import { composeTrip } from "../services/tripComposer";
 import { parseBestMonths, parseTravelerTags } from "../types";
 import { REEL_ORDER } from "../lib/reelSerializer";
@@ -181,6 +181,8 @@ router.delete("/:id/items/:reelId", async (req, res) => {
   const access = await accessibleTrip(req.auth!.userId, req.params.id);
   if (!access) return res.status(404).json({ error: "旅が見つかりません" });
   await prisma.tripItem.deleteMany({ where: { tripId: access.trip.id, reelId: req.params.reelId } });
+  // The ways written down for legs to or from it go with it.
+  await prisma.tripLegOption.deleteMany({ where: { tripId: access.trip.id, OR: [{ fromId: req.params.reelId }, { toId: req.params.reelId }] } });
   await prisma.trip.update({ where: { id: access.trip.id }, data: { updatedAt: new Date() } });
   await syncSavedForTrip(access.trip.id, [req.params.reelId]);
   await changed(access.trip.id, req.auth!.userId);
@@ -231,7 +233,8 @@ router.get("/:id/itinerary", async (req, res) => {
     where: { id: trip.id },
     select: { user: { select: { id: true, name: true } }, members: { orderBy: { createdAt: "asc" }, select: { user: { select: { id: true, name: true } } } } },
   });
-  const transports = await prisma.tripTransport.findMany({ where: { tripId: trip.id }, orderBy: { departAt: "asc" } });
+  const transports = await prisma.tripTransport.findMany({ where: { tripId: trip.id, ...ACTIVE_RIDE }, orderBy: { departAt: "asc" } });
+  const legOptions = await prisma.tripLegOption.findMany({ where: { tripId: trip.id }, orderBy: { createdAt: "asc" }, include: { rides: true } });
   const photos = await prisma.tripPhoto.findMany({
     where: { tripId: trip.id },
     orderBy: [{ takenAt: "asc" }, { createdAt: "asc" }],
@@ -242,6 +245,7 @@ router.get("/:id/itinerary", async (req, res) => {
     photos: photos.map((p) => serializePhoto(p, req.auth!.userId)),
     ...(await buildItinerary(trip.id, { withOrigin: true })),
     transports: transports.map((t) => serializeTransport(t, { forMembers: true })),
+    legOptions: legOptions.map((o) => serializeLegOption(o, { forMembers: true })),
     isOwner,
     owner: people.user,
     members: people.members.map((m) => m.user),
@@ -266,8 +270,7 @@ const text = (max: number) =>
     .string()
     .transform((v) => v.trim().replace(/\s+/g, " "))
     .pipe(z.string().max(max));
-const transportSchema = z
-  .object({
+const transportFields = z.object({
     kind: z.enum(["plane", "train", "bus", "ferry", "other"]),
     name: text(60).pipe(z.string().min(1)),
     operator: text(60).default(""),
@@ -280,10 +283,138 @@ const transportSchema = z
     seat: text(30).default(""),
     confirmation: text(40).default(""),
     note: text(300).default(""),
-  })
-  .refine((t) => t.arriveAt.getTime() >= t.departAt.getTime() && t.arriveAt.getTime() - t.departAt.getTime() <= 3 * 24 * 3600_000, {
-    message: "arrival",
   });
+const arrivalAfterDeparture = (t: { departAt: Date; arriveAt: Date }) =>
+  t.arriveAt.getTime() >= t.departAt.getTime() && t.arriveAt.getTime() - t.departAt.getTime() <= 3 * 24 * 3600_000;
+const transportSchema = transportFields.refine(arrivalAfterDeparture, { message: "arrival" });
+
+// 区間の行き方 (see the TripLegOption model): ways to travel one leg, each
+// with its details and, for trains/buses/flights, its rides (乗る便).
+const LEG_MODES = ["train", "bus", "car", "taxi", "walk", "bike", "plane", "ferry", "other"] as const;
+const MAX_OPTIONS_PER_LEG = 10;
+const MAX_OPTIONS = 300;
+const legOptionSchema = z.object({
+  fromId: z.string().min(1).max(60),
+  toId: z.string().min(1).max(60),
+  mode: z.enum(LEG_MODES),
+  title: text(60).default(""),
+  durationMin: z.coerce.number().int().min(0).max(3 * 24 * 60).nullable().default(null),
+  fareYen: z.coerce.number().int().min(0).max(10_000_000).nullable().default(null),
+  note: text(300).default(""),
+  chosen: z.boolean().optional(),
+  rides: z.array(transportFields.extend({ id: z.string().optional() }).refine(arrivalAfterDeparture, { message: "arrival" })).max(10).default([]),
+});
+
+function legOptionError(error: z.ZodError) {
+  if (error.issues.some((i) => i.message === "arrival")) return "到着は出発より後（3日以内）にしてください";
+  if (error.issues.some((i) => i.path[0] === "rides")) return "乗車ごとに便名・出発地・到着地・時刻を入力してください";
+  return "入力内容を確認してください";
+}
+
+// The leg must be between two of this trip's places ("origin" = its 出発地点).
+async function legInTrip(tripId: string, fromId: string, toId: string) {
+  if (fromId === toId) return false;
+  const ids = [toId, ...(fromId === "origin" ? [] : [fromId])];
+  return (await prisma.tripItem.count({ where: { tripId, reelId: { in: ids } } })) === ids.length;
+}
+
+const optionData = (d: z.infer<typeof legOptionSchema>) => ({
+  mode: d.mode,
+  title: d.title,
+  durationMin: d.durationMin,
+  fareYen: d.fareYen,
+  note: d.note,
+});
+const rideData = ({ id: _id, ...ride }: z.infer<typeof legOptionSchema>["rides"][number]) => ride;
+
+router.post("/:id/leg-options", async (req, res) => {
+  const parsed = legOptionSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: legOptionError(parsed.error) });
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  const tripId = access.trip.id;
+  const { fromId, toId, chosen, rides } = parsed.data;
+  if (!(await legInTrip(tripId, fromId, toId))) return res.status(400).json({ error: "この旅の区間ではありません" });
+  if ((await prisma.tripLegOption.count({ where: { tripId, fromId, toId } })) >= MAX_OPTIONS_PER_LEG) {
+    return res.status(400).json({ error: `1つの区間に書ける行き方は${MAX_OPTIONS_PER_LEG}件までです` });
+  }
+  if ((await prisma.tripLegOption.count({ where: { tripId } })) >= MAX_OPTIONS) return res.status(400).json({ error: `行き方は${MAX_OPTIONS}件まで登録できます` });
+  const created = await prisma.$transaction(async (tx) => {
+    if (chosen) await tx.tripLegOption.updateMany({ where: { tripId, fromId, toId }, data: { chosen: false } });
+    return tx.tripLegOption.create({
+      data: { tripId, fromId, toId, chosen: !!chosen, ...optionData(parsed.data), rides: { create: rides.map((r) => ({ tripId, ...rideData(r) })) } },
+      include: { rides: true },
+    });
+  });
+  await changed(tripId, req.auth!.userId);
+  res.status(201).json(serializeLegOption(created, { forMembers: true }));
+});
+
+// Edit a way: its rides are matched by id — kept rides keep their お知らせ
+// state unless their times change; new ones are added, missing ones removed.
+router.put("/:id/leg-options/:optionId", async (req, res) => {
+  const parsed = legOptionSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: legOptionError(parsed.error) });
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  const tripId = access.trip.id;
+  const option = await prisma.tripLegOption.findFirst({ where: { id: req.params.optionId, tripId }, include: { rides: true } });
+  if (!option) return res.status(404).json({ error: "行き方が見つかりません" });
+  const { rides, chosen } = parsed.data;
+  const before = new Map(option.rides.map((r) => [r.id, r]));
+  const updated = await prisma.$transaction(async (tx) => {
+    if (chosen) await tx.tripLegOption.updateMany({ where: { tripId, fromId: option.fromId, toId: option.toId, id: { not: option.id } }, data: { chosen: false } });
+    const keep = rides.filter((r) => r.id && before.has(r.id));
+    await tx.tripTransport.deleteMany({ where: { optionId: option.id, id: { notIn: keep.map((r) => r.id!) } } });
+    for (const r of keep) {
+      const old = before.get(r.id!)!;
+      await tx.tripTransport.update({
+        where: { id: r.id },
+        data: {
+          ...rideData(r),
+          ...(old.departAt.getTime() !== r.departAt.getTime() ? { departNotifiedAt: null } : {}),
+          ...(old.arriveAt.getTime() !== r.arriveAt.getTime() ? { arriveNotifiedAt: null } : {}),
+        },
+      });
+    }
+    const added = rides.filter((r) => !(r.id && before.has(r.id)));
+    if (added.length) await tx.tripTransport.createMany({ data: added.map((r) => ({ tripId, optionId: option.id, ...rideData(r) })) });
+    return tx.tripLegOption.update({
+      where: { id: option.id },
+      data: { ...optionData(parsed.data), ...(chosen === undefined ? {} : { chosen }) },
+      include: { rides: true },
+    });
+  });
+  await changed(tripId, req.auth!.userId);
+  res.json(serializeLegOption(updated, { forMembers: true }));
+});
+
+// これで行く: the one way for its leg (or none, with chosen: false).
+router.put("/:id/leg-options/:optionId/chosen", async (req, res) => {
+  const parsed = z.object({ chosen: z.boolean() }).safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  const option = await prisma.tripLegOption.findFirst({ where: { id: req.params.optionId, tripId: access.trip.id } });
+  if (!option) return res.status(404).json({ error: "行き方が見つかりません" });
+  await prisma.$transaction([
+    ...(parsed.data.chosen
+      ? [prisma.tripLegOption.updateMany({ where: { tripId: option.tripId, fromId: option.fromId, toId: option.toId }, data: { chosen: false } })]
+      : []),
+    prisma.tripLegOption.update({ where: { id: option.id }, data: { chosen: parsed.data.chosen } }),
+  ]);
+  await changed(access.trip.id, req.auth!.userId);
+  res.status(204).end();
+});
+
+router.delete("/:id/leg-options/:optionId", async (req, res) => {
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  const { count } = await prisma.tripLegOption.deleteMany({ where: { id: req.params.optionId, tripId: access.trip.id } });
+  if (count === 0) return res.status(404).json({ error: "行き方が見つかりません" });
+  await changed(access.trip.id, req.auth!.userId);
+  res.status(204).end();
+});
 
 router.post("/:id/transports", async (req, res) => {
   const parsed = transportSchema.safeParse(req.body);

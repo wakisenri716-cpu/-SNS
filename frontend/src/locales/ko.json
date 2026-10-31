@@ -1260,7 +1260,6 @@
     "previous": "이전 편",
     "next": "다음 편",
     "timesNote": "시간은 등록한 예정 시간이에요. 지연・운휴는 「운행 상황」에서 확인하세요. 이 화면을 여는 동안 화면이 꺼지지 않아요.",
-    "saveRide": "이 편 저장",
     "savedRide": "저장됨 {{depart}} 출발→{{arrive}} 도착 {{name}}"
   },
   "album": {
@@ -1295,5 +1294,62 @@
       "municipality": "관공서 위치: code4fukui/localgovjp",
       "prefecture": "관공서 위치: code4fukui/localgovjp"
     }
+  },
+  "legOption": {
+    "heading": "{{from}}→{{to}} 가는 방법",
+    "minutes": "{{minutes}}분",
+    "fare": "{{yen}}엔",
+    "noDetails": "시간・요금 미입력",
+    "edit": "가는 방법 편집",
+    "remove": "가는 방법 삭제",
+    "removeConfirm": "이 가는 방법을 삭제할까요? (넣은 탈 편도 삭제됩니다)",
+    "chosen": "이걸로 가기 (결정)",
+    "choose": "이걸로 가기",
+    "addFirst": "가는 방법 쓰기",
+    "addAnother": "다른 방법도 쓰기",
+    "addTitle": "가는 방법 추가",
+    "editTitle": "가는 방법 편집",
+    "modeLabel": "이동 수단",
+    "mode": {
+      "train": "전철",
+      "bus": "버스",
+      "car": "자동차",
+      "taxi": "택시",
+      "walk": "도보",
+      "bike": "자전거",
+      "plane": "비행기",
+      "ferry": "배",
+      "other": "기타"
+    },
+    "titleLabel": "이름 (선택)",
+    "titlePlaceholder": {
+      "train": "예: 특급 시나노＋버스",
+      "bus": "예: 고속버스",
+      "car": "예: 렌터카 (주오 고속도로)",
+      "taxi": "예: 역에서 택시",
+      "walk": "예: 강변 산책길",
+      "bike": "예: 대여 자전거",
+      "plane": "예: FDA편",
+      "ferry": "예: 고속선",
+      "other": "예: 로프웨이"
+    },
+    "minutesLabel": "소요 시간 (분)",
+    "estimatePlaceholder": "약 {{duration}}",
+    "fareLabel": "요금 (엔・선택)",
+    "minutesFromRides": "비워 두면 승차 시각으로 {{duration}}(으)로 합니다",
+    "ridesLabel": "탈 편 (선택)",
+    "rideN": "{{n}}번째",
+    "removeRide": "이 승차 삭제",
+    "addRide": "승차 추가",
+    "ridesNote": "\"이걸로 가기\"로 정한 방법의 편은 탈 편 목록・이동 중 모드・출발/도착 알림에 쓰입니다.",
+    "notePlaceholder": "예: 덜 붐빔 / 주차장 있음 / 환승 편함",
+    "chooseThis": "이걸로 가기",
+    "chooseNote": "\"이걸로 가기\"로 하면 이 구간의 시간이 일정 시각에 반영됩니다 (구간당 하나).",
+    "saved": "가는 방법을 저장했습니다",
+    "chosenSummary": "{{mode}}(으)로 {{duration}} (결정)",
+    "chosenNoTime": "{{mode}}(으)로 가기 (시간은 약 {{duration}})",
+    "fareTotal": "교통비 (정한 방법・{{count}}개 구간) 합계 {{yen}}엔",
+    "tooEarly": "{{time}} 출발 편은 일정의 출발 예정보다 {{minutes}}분 이릅니다. 체류를 줄이면 탈 수 있습니다",
+    "waitBefore": "{{time}} 출발 편까지 {{minutes}}분 대기 시간이 있습니다"
   }
 }

@@ -781,6 +781,64 @@ test("乗る便: members add flights and trains to the しおり; a shared link 
   assert.deepEqual((await call("GET", `/api/me/trips/${trip.id}/itinerary`, undefined, me)).json.transports.map((t: any) => t.toName), ["松本", "軽井沢", "長野"]);
 });
 
+test("区間の行き方: several ways per leg, one chosen; only the chosen way's rides are the trip's 乗る便", async () => {
+  const me = (await call("POST", "/api/auth/register", { email: "legways@example.com", password: "password123", name: "行き方派" })).json.token;
+  const other = (await call("POST", "/api/auth/register", { email: "legways-other@example.com", password: "password123", name: "他人" })).json.token;
+  const { json: map } = await call("GET", "/api/reels/map");
+  const [a, b, c] = map.items;
+  const trip = (await call("POST", "/api/me/trips", { name: "区間の旅", startDate: "2026-11-05" }, me)).json;
+  for (const r of [a, b]) await call("PUT", `/api/me/trips/${trip.id}/items/${r.id}`, undefined, me);
+  const base = `/api/me/trips/${trip.id}/leg-options`;
+
+  // Only legs of this trip; rides need times in order.
+  assert.equal((await call("POST", base, { fromId: a.id, toId: c.id, mode: "car" }, me)).status, 400);
+  assert.equal((await call("POST", base, { fromId: a.id, toId: b.id, mode: "car" }, other)).status, 404);
+  const badRide = { kind: "train", name: "しなの", fromName: "長野", toName: "松本", departAt: "2026-11-05T10:00:00+09:00", arriveAt: "2026-11-05T09:00:00+09:00" };
+  assert.equal((await call("POST", base, { fromId: a.id, toId: b.id, mode: "train", rides: [badRide] }, me)).status, 400);
+
+  const ride = { ...badRide, arriveAt: "2026-11-05T10:50:00+09:00", departPlatform: "3番線" };
+  const train = await call("POST", base, { fromId: a.id, toId: b.id, mode: "train", title: "特急しなの", fareYen: 2500, note: "指定席", rides: [ride] }, me);
+  assert.equal(train.status, 201);
+  const car = await call("POST", base, { fromId: a.id, toId: b.id, mode: "car", durationMin: 70, fareYen: 1200, chosen: true }, me);
+  assert.equal(car.status, 201);
+  const fromOrigin = await call("POST", base, { fromId: "origin", toId: a.id, mode: "walk", durationMin: 15 }, me);
+  assert.equal(fromOrigin.status, 201);
+
+  let it = (await call("GET", `/api/me/trips/${trip.id}/itinerary`, undefined, me)).json;
+  assert.deepEqual(it.legOptions.map((o: any) => [o.mode, o.chosen]), [["train", false], ["car", true], ["walk", false]]);
+  assert.equal(it.legOptions[0].rides[0].departPlatform, "3番線");
+  assert.equal(it.transports.length, 0, "the train isn't chosen, so it isn't a 乗る便");
+
+  // これで行く on the train: the car is no longer chosen, the ride is a 乗る便.
+  assert.equal((await call("PUT", `${base}/${train.json.id}/chosen`, { chosen: true }, me)).status, 204);
+  it = (await call("GET", `/api/me/trips/${trip.id}/itinerary`, undefined, me)).json;
+  assert.deepEqual(it.legOptions.map((o: any) => o.chosen), [true, false, false]);
+  assert.deepEqual(it.transports.map((t: any) => [t.name, t.optionId]), [["しなの", train.json.id]]);
+
+  // Edit: the kept ride keeps its id; a second ride is added.
+  const rideId = it.legOptions[0].rides[0].id;
+  const edited = await call("PUT", `${base}/${train.json.id}`, {
+    fromId: a.id, toId: b.id, mode: "train", title: "特急しなの＋バス", fareYen: 3000,
+    rides: [{ ...ride, id: rideId, seat: "3号車 5A" }, { kind: "bus", name: "アルピコ交通", fromName: "松本", toName: "松本城", departAt: "2026-11-05T11:00:00+09:00", arriveAt: "2026-11-05T11:10:00+09:00" }],
+  }, me);
+  assert.equal(edited.status, 200);
+  assert.equal(edited.json.chosen, true, "chosen stays when not sent");
+  assert.deepEqual(edited.json.rides.map((r: any) => r.id === rideId), [true, false]);
+
+  // A shared link: the chosen way only, without notes or seats.
+  const token = (await call("POST", `/api/me/trips/${trip.id}/share`, undefined, me)).json.token;
+  const shared = (await call("GET", `/api/trips/${token}`)).json;
+  assert.deepEqual(shared.legOptions.map((o: any) => [o.title, o.note, o.rides[0].seat]), [["特急しなの＋バス", "", ""]]);
+  assert.equal(shared.transports.length, 2);
+
+  // Taking a stop out drops the ways for its legs.
+  assert.equal((await call("DELETE", `${base}/${car.json.id}`, undefined, me)).status, 204);
+  await call("DELETE", `/api/me/trips/${trip.id}/items/${b.id}`, undefined, me);
+  it = (await call("GET", `/api/me/trips/${trip.id}/itinerary`, undefined, me)).json;
+  assert.deepEqual(it.legOptions.map((o: any) => o.mode), ["walk"]);
+  assert.equal(it.transports.length, 0);
+});
+
 test("乗る便のお知らせ: a push to everyone on the trip before departure and before arrival, each once", async () => {
   const webpush = (await import("web-push")).default;
   const sent: { endpoint: string; payload: any }[] = [];
