@@ -659,7 +659,11 @@
     "showOriginal": "원문 보기",
     "loading": "번역 중…",
     "failed": "번역하지 못했어요 (다시 누르기)",
-    "byClaude": "Claude(AI) 번역"
+    "byClaude": "Claude(AI) 번역",
+    "byDevice": "기기 내 AI로 번역(글은 전송하지 않았어요)",
+    "downloading": "번역 모델 준비 중… {{percent}}%",
+    "sameLanguage": "표시 중인 언어와 같아요",
+    "unsupported": "이 기기에서는 번역할 수 없어요"
   },
   "map": {
     "locate": "현재 위치",
@@ -969,7 +973,14 @@
     "joinError": "참여하지 못했습니다. 다시 시도해 주세요",
     "inviteInvalid": "이 초대 링크는 사용할 수 없습니다",
     "inviteInvalidBody": "초대가 중지되었거나 링크가 잘못되었을 수 있습니다.",
-    "travelersOnly": "여행 공동 편집은 여행자 계정에서 사용할 수 있습니다."
+    "travelersOnly": "여행 공동 편집은 여행자 계정에서 사용할 수 있습니다.",
+    "shareLocation": "여행 중 내 위치를 모두와 공유",
+    "stopSharingLocation": "위치 공유 그만두기",
+    "shareNote": "켜면 이 일정표의 멤버에게만 내 위치가 전해져요. 이 페이지를 열어 둔 동안만 공유하고 저장하지 않아요(10분 후 사라져요). 공유 중에는 화면이 꺼지지 않아요.",
+    "sharingNote": "공유 중이에요. 이 페이지를 닫거나 그만두기를 누르면 멈춰요.",
+    "locationShared": "위치 공유 중",
+    "nearStop": "{{place}} 근처(약 {{distance}})",
+    "fromStop": "{{place}}에서 {{distance}}"
   },
   "composer": {
     "title": "AI로 여행 만들기",

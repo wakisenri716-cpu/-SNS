@@ -659,7 +659,11 @@
     "showOriginal": "原文を見る",
     "loading": "翻訳中…",
     "failed": "翻訳できませんでした（もう一度押す）",
-    "byClaude": "Claude（AI）による翻訳"
+    "byClaude": "Claude（AI）による翻訳",
+    "byDevice": "端末内のAIで翻訳（文章は送信していません）",
+    "downloading": "翻訳モデルを準備中… {{percent}}%",
+    "sameLanguage": "表示中の言語と同じです",
+    "unsupported": "この端末では翻訳できません"
   },
   "map": {
     "locate": "現在地",
@@ -969,7 +973,14 @@
     "joinError": "参加できませんでした。もう一度お試しください",
     "inviteInvalid": "この招待リンクは使えません",
     "inviteInvalidBody": "招待が止められたか、リンクが間違っている可能性があります。",
-    "travelersOnly": "旅の共同編集は旅行者アカウントで使えます。"
+    "travelersOnly": "旅の共同編集は旅行者アカウントで使えます。",
+    "shareLocation": "旅行中、現在地をみんなに共有",
+    "stopSharingLocation": "現在地の共有をやめる",
+    "shareNote": "オンにすると、このしおりのメンバーだけに、あなたの現在地が届きます。このページを開いている間だけ共有し、保存はしません（10分で消えます）。共有中は画面が消えないようにします。",
+    "sharingNote": "共有中です。このページを閉じるか「やめる」を押すと止まります。",
+    "locationShared": "現在地を共有中",
+    "nearStop": "{{place}}の近く（約{{distance}}）",
+    "fromStop": "{{place}}から{{distance}}"
   },
   "composer": {
     "title": "AIで旅をつくる",

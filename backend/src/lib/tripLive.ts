@@ -2,8 +2,9 @@ import { randomBytes } from "node:crypto";
 import type { Response } from "express";
 
 // 共同編集のライブ: everyone with a trip's しおり open hears, over Server-Sent
-// Events, when someone else changes it ("changed" — they reload) and who is
-// looking at it right now ("presence"). EventSource can't send the auth
+// Events, when someone else changes it ("changed" — they reload), who is
+// looking at it right now ("presence"), and where the companions who chose
+// to share their position are ("locations"). EventSource can't send the auth
 // header, so the app first gets a one-time ticket (60 s) with its normal
 // session and opens the stream with that.
 
@@ -53,6 +54,7 @@ export function joinTripLive(tripId: string, userId: string, name: string, res: 
   if (!set) viewers.set(tripId, (set = new Set()));
   set.add(viewer);
   broadcastPresence(tripId);
+  send(res, "locations", { people: sharedLocations(tripId) });
   const heartbeat = setInterval(() => res.write(": keep-alive\n\n"), 25_000);
   onClose(() => {
     clearInterval(heartbeat);
@@ -67,4 +69,53 @@ export function joinTripLive(tripId: string, userId: string, name: string, res: 
 // Someone changed the trip: tell everyone else looking at it.
 export function tripChanged(tripId: string, by: { id: string; name: string }) {
   for (const v of viewers.get(tripId) ?? []) send(v.res, "changed", { by });
+}
+
+// ---- みんなの現在地 ------------------------------------------------------------
+//
+// While travelling, a member can share their position with the others on the
+// trip — only while they have it switched on, only to this trip's members,
+// and only in memory: a position is dropped after 10 minutes without an
+// update and never stored.
+
+export interface SharedLocation {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  accuracy: number;
+  at: number;
+}
+
+const LOCATION_TTL_MS = 10 * 60 * 1000;
+// Phones report often; a few seconds apart is plenty for "where is everyone".
+const MIN_INTERVAL_MS = 5_000;
+const locations = new Map<string, Map<string, SharedLocation>>();
+
+function sharedLocations(tripId: string, now = Date.now()) {
+  const map = locations.get(tripId);
+  if (!map) return [];
+  for (const [id, loc] of map) if (now - loc.at > LOCATION_TTL_MS) map.delete(id);
+  if (map.size === 0) locations.delete(tripId);
+  return [...map.values()];
+}
+
+function broadcastLocations(tripId: string) {
+  const people = sharedLocations(tripId);
+  for (const v of viewers.get(tripId) ?? []) send(v.res, "locations", { people });
+}
+
+// false when it came too soon after the last one (ignored).
+export function shareLocation(tripId: string, person: { id: string; name: string }, pos: { lat: number; lng: number; accuracy: number }, now = Date.now()) {
+  let map = locations.get(tripId);
+  if (!map) locations.set(tripId, (map = new Map()));
+  const last = map.get(person.id);
+  if (last && now - last.at < MIN_INTERVAL_MS) return false;
+  map.set(person.id, { id: person.id, name: person.name, ...pos, at: now });
+  broadcastLocations(tripId);
+  return true;
+}
+
+export function stopSharingLocation(tripId: string, userId: string) {
+  if (locations.get(tripId)?.delete(userId)) broadcastLocations(tripId);
 }

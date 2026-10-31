@@ -659,7 +659,11 @@
     "showOriginal": "查看原文",
     "loading": "翻译中…",
     "failed": "翻译失败（点击重试）",
-    "byClaude": "由Claude（AI）翻译"
+    "byClaude": "由Claude（AI）翻译",
+    "byDevice": "由设备内AI翻译（文字未被发送）",
+    "downloading": "正在准备翻译模型… {{percent}}%",
+    "sameLanguage": "与当前语言相同",
+    "unsupported": "此设备无法翻译"
   },
   "map": {
     "locate": "当前位置",
@@ -969,7 +973,14 @@
     "joinError": "无法加入，请重试",
     "inviteInvalid": "此邀请链接无法使用",
     "inviteInvalidBody": "邀请可能已停用，或链接有误。",
-    "travelersOnly": "旅程共同编辑仅限旅行者账号。"
+    "travelersOnly": "旅程共同编辑仅限旅行者账号。",
+    "shareLocation": "旅行中与大家共享位置",
+    "stopSharingLocation": "停止共享位置",
+    "shareNote": "开启后，只有本手册的成员能看到你的位置。仅在打开本页面时共享，不会保存（10分钟后消失）。共享期间屏幕保持常亮。",
+    "sharingNote": "正在共享。关闭本页面或点击停止即可结束。",
+    "locationShared": "正在共享位置",
+    "nearStop": "在{{place}}附近（约{{distance}}）",
+    "fromStop": "距{{place}}{{distance}}"
   },
   "composer": {
     "title": "用AI规划旅行",

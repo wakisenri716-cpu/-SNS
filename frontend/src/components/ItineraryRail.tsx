@@ -199,7 +199,7 @@ export function ItineraryPanel({
 
   // 共同編集: others' edits reload this しおり; who else has it open now.
   const { user } = useAuth();
-  const here = useTripLive(
+  const { people: here, locations } = useTripLive(
     tripId,
     (by) => {
       if (by.id === user?.id) return;
@@ -299,7 +299,7 @@ export function ItineraryPanel({
             {t("itinerary.emptyCta")}
           </Link>
         </div>
-        {!offline && <TripCollab itinerary={itinerary} here={here} onChange={() => void load()} onLeft={onDeleted} />}
+        {!offline && <TripCollab itinerary={itinerary} here={here} locations={locations} onChange={() => void load()} onLeft={onDeleted} />}
         </>
       ) : (
         <div className="mt-5 flex flex-col">
@@ -636,7 +636,7 @@ export function ItineraryPanel({
               </>
             )}
           </div>
-          {!offline && <TripCollab itinerary={itinerary} here={here} onChange={() => void load()} onLeft={onDeleted} />}
+          {!offline && <TripCollab itinerary={itinerary} here={here} locations={locations} onChange={() => void load()} onLeft={onDeleted} />}
           <p className="mt-3 text-[11px] leading-relaxed text-gray-500">{t("itinerary.disclaimer")}</p>
         </div>
       )}

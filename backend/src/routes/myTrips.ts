@@ -6,7 +6,7 @@ import { requireAuth } from "../middleware/auth";
 import { conciergeLimiter } from "../middleware/rateLimit";
 import { buildItinerary } from "../lib/itinerary";
 import { accessibleTrip, addToTrip, syncSavedForTrip, syncSavedForUsers, tripParticipants, tripsOf } from "../lib/trips";
-import { issueTicket, tripChanged } from "../lib/tripLive";
+import { issueTicket, shareLocation, stopSharingLocation, tripChanged } from "../lib/tripLive";
 import { planTrip } from "../services/tripPlanner";
 import { composeTrip } from "../services/tripComposer";
 import { parseBestMonths, parseTravelerTags } from "../types";
@@ -244,6 +244,30 @@ router.post("/:id/live-ticket", async (req, res) => {
   res.json({ ticket: issueTicket(access.trip.id, me.id, me.name) });
 });
 
+// みんなの現在地: share my position with the others on this trip while I
+// have it switched on (see lib/tripLive.ts; memory only, gone after 10 min).
+const locationSchema = z.object({
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+  accuracy: z.number().min(0).max(100_000).default(0),
+});
+
+router.post("/:id/location", async (req, res) => {
+  const parsed = locationSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "位置を確認してください" });
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  const accepted = shareLocation(access.trip.id, await actor(req.auth!.userId), parsed.data);
+  res.status(accepted ? 204 : 202).end();
+});
+
+router.delete("/:id/location", async (req, res) => {
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  stopSharingLocation(access.trip.id, req.auth!.userId);
+  res.status(204).end();
+});
+
 // 一緒に計画する: an invite link (/join/:token) to join and edit this trip.
 // Reused while it exists; turning it off stops new joins (members stay).
 router.post("/:id/invite", async (req, res) => {
@@ -284,6 +308,7 @@ router.delete("/:id/members/:userId", async (req, res) => {
   if (!access) return res.status(404).json({ error: "旅が見つかりません" });
   if (!access.isOwner && req.params.userId !== req.auth!.userId) return res.status(403).json({ error: "メンバーを外せるのは旅を作った人だけです" });
   await prisma.tripMember.deleteMany({ where: { tripId: access.trip.id, userId: req.params.userId } });
+  stopSharingLocation(access.trip.id, req.params.userId);
   const reelIds = (await prisma.tripItem.findMany({ where: { tripId: access.trip.id }, select: { reelId: true } })).map((i) => i.reelId);
   await syncSavedForUsers([req.params.userId], reelIds);
   await changed(access.trip.id, req.auth!.userId);

@@ -888,6 +888,27 @@ test("共同編集: invite, join, edit together with live updates, and leave", a
     assert.ok(ids.includes(a.id) && ids.includes(b.id));
   }
 
+  // みんなの現在地: the friend shares where they are; the owner's open しおり hears it.
+  const stranger = (await call("POST", "/api/auth/register", { email: "collab-stranger@example.com", password: "password123", name: "部外者" })).json.token;
+  assert.equal((await call("POST", `/api/me/trips/${trip.id}/location`, { lat: 36.25, lng: 137.64 }, stranger)).status, 404);
+  assert.equal((await call("POST", `/api/me/trips/${trip.id}/location`, { lat: 999, lng: 137.64 }, friend)).status, 400);
+  assert.equal((await call("POST", `/api/me/trips/${trip.id}/location`, { lat: 36.251, lng: 137.6389, accuracy: 12 }, friend)).status, 204);
+  // A second update a moment later is ignored (202), not an error.
+  assert.equal((await call("POST", `/api/me/trips/${trip.id}/location`, { lat: 36.252, lng: 137.6389 }, friend)).status, 202);
+  const lastLocations = () => events.filter((e) => e.event === "locations").at(-1)?.data.people ?? [];
+  for (let i = 0; i < 20 && lastLocations().length === 0; i++) await new Promise((r) => setTimeout(r, 25));
+  assert.deepEqual(
+    lastLocations().map((p: any) => [p.name, p.lat, p.lng, p.accuracy]),
+    [["友人", 36.251, 137.6389, 12]]
+  );
+  // Switching it off removes it for everyone.
+  assert.equal((await call("DELETE", `/api/me/trips/${trip.id}/location`, undefined, friend)).status, 204);
+  for (let i = 0; i < 20 && lastLocations().length > 0; i++) await new Promise((r) => setTimeout(r, 25));
+  assert.deepEqual(lastLocations(), []);
+  // Leaving the trip also stops it.
+  assert.equal((await call("POST", `/api/me/trips/${trip.id}/location`, { lat: 36.25, lng: 137.64 }, friend)).status, 204);
+  for (let i = 0; i < 20 && lastLocations().length === 0; i++) await new Promise((r) => setTimeout(r, 25));
+
   // Members can't delete the trip or remove others; they can leave.
   assert.equal((await call("DELETE", `/api/me/trips/${trip.id}`, undefined, friend)).status, 404);
   const friendId = asFriend.members[0].id;
@@ -896,6 +917,8 @@ test("共同編集: invite, join, edit together with live updates, and leave", a
   assert.equal((await call("DELETE", `/api/me/trips/${trip.id}/members/${friendId}`, undefined, friend)).status, 204);
   assert.equal((await call("GET", `/api/me/trips/${trip.id}/itinerary`, undefined, friend)).status, 404);
   assert.deepEqual((await call("GET", "/api/reels/saved", undefined, friend)).json.items, []);
+  for (let i = 0; i < 20 && lastLocations().length > 0; i++) await new Promise((r) => setTimeout(r, 25));
+  assert.deepEqual(lastLocations(), []);
 
   // Turning the invite off stops new joins.
   assert.equal((await call("DELETE", `/api/me/trips/${trip.id}/invite`, undefined, owner)).status, 204);

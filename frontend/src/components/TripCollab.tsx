@@ -1,30 +1,49 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LogOut, UserPlus, X } from "lucide-react";
+import { LogOut, MapPin, Navigation, UserPlus, X } from "lucide-react";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import Avatar from "./Avatar";
 import { shareLink } from "../lib/shareLink";
 import { showToast } from "../lib/toast";
 import { notifySavesChanged } from "../lib/savesChanged";
-import type { TripPerson } from "../lib/useTripLive";
+import type { TripLocation, TripPerson } from "../lib/useTripLive";
+import { useShareLocation } from "../lib/useShareLocation";
+import { distanceKm, formatDistance } from "../lib/geo";
+import { relativeTime } from "../lib/relativeTime";
 import type { Itinerary } from "../types";
 
 // 一緒に計画する: the people planning this trip, with the invite link
 // (/join/:token) for the owner and "抜ける" for members. `here` is who has
-// the しおり open right now (live).
+// the しおり open right now (live); `locations` where those sharing their
+// position are (みんなの現在地), shown against the trip's stops.
 export default function TripCollab({
   itinerary,
   here,
+  locations = [],
   onChange,
   onLeft,
 }: {
   itinerary: Itinerary;
   here: TripPerson[];
+  locations?: TripLocation[];
   onChange: () => void;
   onLeft?: () => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const share = useShareLocation(itinerary.trip.id);
+  const located = new Map(locations.map((l) => [l.id, l]));
+
+  // "松本城の近く（約120m）" — or how far from the nearest stop.
+  function whereIs(loc: TripLocation) {
+    let best: { name: string; km: number } | null = null;
+    for (const s of itinerary.stops) {
+      const km = distanceKm(loc, { lat: s.locationLat, lng: s.locationLng });
+      if (!best || km < best.km) best = { name: s.locationName || s.municipality.name, km };
+    }
+    if (!best) return t("collab.locationShared");
+    return best.km <= 1 ? t("collab.nearStop", { place: best.name, distance: formatDistance(best.km) }) : t("collab.fromStop", { place: best.name, distance: formatDistance(best.km) });
+  }
   const { user } = useAuth();
   const [busy, setBusy] = useState(false);
   const base = `/me/trips/${itinerary.trip.id}`;
@@ -76,9 +95,17 @@ export default function TripCollab({
                 <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500" aria-hidden />
               )}
             </span>
-            <span className="min-w-0 flex-1 truncate text-sm text-jz-ink">
-              {person.name}
-              {person.id === user?.id && <span className="ml-1 text-[11px] text-gray-500">{t("collab.you")}</span>}
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm text-jz-ink">
+                {person.name}
+                {person.id === user?.id && <span className="ml-1 text-[11px] text-gray-500">{t("collab.you")}</span>}
+              </span>
+              {located.has(person.id) && (
+                <span className="flex items-center gap-1 truncate text-[11px] font-semibold text-emerald-700">
+                  <MapPin className="h-3 w-3 shrink-0" />
+                  {whereIs(located.get(person.id)!)}・{relativeTime(new Date(located.get(person.id)!.at).toISOString(), i18n.language)}
+                </span>
+              )}
             </span>
             <span className="text-[11px] text-gray-500">{i === 0 ? t("collab.owner") : online.has(person.id) ? t("collab.online") : ""}</span>
             {i > 0 && (itinerary.isOwner || person.id === user?.id) && (
@@ -94,6 +121,23 @@ export default function TripCollab({
           </li>
         ))}
       </ul>
+      {everyone.length > 1 && (
+        <div className="mt-3 rounded-xl bg-gray-50 p-2.5">
+          <button
+            type="button"
+            onClick={() => (share.sharing ? share.stop() : share.start())}
+            aria-pressed={share.sharing}
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${
+              share.sharing ? "bg-emerald-600 text-white" : "bg-white text-jz-ink ring-1 ring-gray-200"
+            }`}
+          >
+            <Navigation className="h-3.5 w-3.5" /> {share.sharing ? t("collab.stopSharingLocation") : t("collab.shareLocation")}
+          </button>
+          <p className="mt-1.5 text-[11px] leading-relaxed text-gray-500">
+            {share.error ? t("compass.noLocation") : share.sharing ? t("collab.sharingNote") : t("collab.shareNote")}
+          </p>
+        </div>
+      )}
       {itinerary.isOwner ? (
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <button

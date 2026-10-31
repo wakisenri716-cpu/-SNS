@@ -665,7 +665,11 @@
     "showOriginal": "See original",
     "loading": "Translating…",
     "failed": "Couldn't translate (tap to retry)",
-    "byClaude": "Translated by Claude (AI)"
+    "byClaude": "Translated by Claude (AI)",
+    "byDevice": "Translated by on-device AI (the text wasn't sent anywhere)",
+    "downloading": "Preparing the translation model… {{percent}}%",
+    "sameLanguage": "Already in your language",
+    "unsupported": "Translation isn't available on this device"
   },
   "map": {
     "locate": "My location",
@@ -994,7 +998,14 @@
     "joinError": "Couldn't join. Please try again.",
     "inviteInvalid": "This invite link can't be used",
     "inviteInvalidBody": "The invite may have been turned off, or the link may be wrong.",
-    "travelersOnly": "Planning trips together is for traveler accounts."
+    "travelersOnly": "Planning trips together is for traveler accounts.",
+    "shareLocation": "Share my location with everyone while travelling",
+    "stopSharingLocation": "Stop sharing my location",
+    "shareNote": "When on, only this trip's members see where you are. It's shared only while this page is open and never stored (gone after 10 minutes). The screen stays on while sharing.",
+    "sharingNote": "Sharing. It stops when you close this page or tap stop.",
+    "locationShared": "Sharing location",
+    "nearStop": "Near {{place}} (about {{distance}})",
+    "fromStop": "{{distance}} from {{place}}"
   },
   "composer": {
     "title": "Build a trip with AI",

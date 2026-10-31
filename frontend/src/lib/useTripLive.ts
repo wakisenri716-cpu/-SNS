@@ -6,13 +6,23 @@ export interface TripPerson {
   name: string;
 }
 
-// 共同編集のライブ for one trip's しおり: who has it open right now, and a
-// callback when someone changes it (GET /api/trips/live/:ticket, after a
+/** A companion's shared position (みんなの現在地), `at` in ms. */
+export interface TripLocation extends TripPerson {
+  lat: number;
+  lng: number;
+  accuracy: number;
+  at: number;
+}
+
+// 共同編集のライブ for one trip's しおり: who has it open right now, where
+// the companions sharing their position are, and a callback when someone
+// changes it (GET /api/trips/live/:ticket, after a
 // one-time ticket from POST /me/trips/:id/live-ticket — EventSource can't
 // send the session header). Reconnects with a fresh ticket after errors;
 // disconnects while the tab is hidden.
 export function useTripLive(tripId: string, onChanged: (by: TripPerson) => void, enabled = true) {
   const [people, setPeople] = useState<TripPerson[]>([]);
+  const [locations, setLocations] = useState<TripLocation[]>([]);
   const onChangedRef = useRef(onChanged);
   onChangedRef.current = onChanged;
 
@@ -35,6 +45,7 @@ export function useTripLive(tripId: string, onChanged: (by: TripPerson) => void,
         const es = new EventSource(`/api/trips/live/${data.ticket}`);
         source = es;
         es.addEventListener("presence", (e) => setPeople((JSON.parse((e as MessageEvent).data) as { people: TripPerson[] }).people));
+        es.addEventListener("locations", (e) => setLocations((JSON.parse((e as MessageEvent).data) as { people: TripLocation[] }).people));
         es.addEventListener("changed", (e) => onChangedRef.current((JSON.parse((e as MessageEvent).data) as { by: TripPerson }).by));
         // The ticket is single-use, so a dropped stream needs a new one.
         es.onerror = () => {
@@ -54,8 +65,9 @@ export function useTripLive(tripId: string, onChanged: (by: TripPerson) => void,
       document.removeEventListener("visibilitychange", onVisibility);
       disconnect();
       setPeople([]);
+      setLocations([]);
     };
   }, [tripId, enabled]);
 
-  return people;
+  return { people, locations };
 }
