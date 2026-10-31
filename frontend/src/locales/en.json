@@ -1380,5 +1380,41 @@
     "fareTotal_other": "Fares of the ways you chose ({{count}} legs): ¥{{yen}}",
     "tooEarly": "The {{time}} ride leaves {{minutes}} min before you plan to leave. Shorten the stay to make it",
     "waitBefore": "{{minutes}} min to wait for the {{time}} ride"
+  },
+  "checkin": {
+    "eyebrow": "On-site stamp",
+    "missing": "This tag doesn't work. It may have been replaced.",
+    "error": "Couldn't load. Open it again where the signal is good.",
+    "got": "Stamp collected!",
+    "already": "You already have this stamp",
+    "when": "{{date}}",
+    "points": "{{points}} points in total",
+    "loginToGet": "Log in and this place's stamp is yours.",
+    "login": "Log in to get the stamp",
+    "register": "New here? Sign up (free)",
+    "travelersOnly": "Stamps are for traveler accounts.",
+    "openSpot": "See this spot",
+    "stampBook": "Open the stamp book"
+  },
+  "checkinTag": {
+    "heading": "On-site stamp tag (NFC / QR)",
+    "intro": "Make an NFC tag or QR code to put at this place. Travelers who tap it (or scan the QR) get the stamp without location.",
+    "make": "Make a tag",
+    "qrAlt": "QR code for the {{name}} stamp",
+    "write": "Write to an NFC tag",
+    "downloadQr": "Save QR",
+    "copy": "Copy URL",
+    "copied": "URL copied",
+    "writing": {
+      "waiting": "Hold an NFC tag to the back of the phone…",
+      "done": "Written to the NFC tag",
+      "failed": "Couldn't write. Hold the tag again (locked tags can't be written)"
+    },
+    "noWebNfc": "This browser can't write NFC tags. Open this in Chrome on Android, or write the URL with any NFC app (iPhone and Android can both read it).",
+    "remake": "Make a new one",
+    "remakeConfirm": "A new one stops the current NFC tags and QR codes working. Make a new one?",
+    "remove": "Remove the tag",
+    "removeConfirm": "Remove this tag? The current NFC tags and QR codes stop working.",
+    "note": "Anyone with the URL can open it, so if a photo of the QR gets around, \"Make a new one\" turns the old one off."
   }
 }

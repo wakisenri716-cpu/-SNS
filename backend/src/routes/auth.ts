@@ -297,6 +297,7 @@ router.get("/me/stamps", requireAuth, async (req, res) => {
   res.json({
     items: visits.map((v) => ({
       visitedAt: v.createdAt,
+      method: v.method,
       reel: { ...v.reel, caption: undefined, locationName: v.reel.locationName || v.reel.caption.slice(0, 30) },
     })),
   });

@@ -1351,5 +1351,41 @@
     "fareTotal": "교통비 (정한 방법・{{count}}개 구간) 합계 {{yen}}엔",
     "tooEarly": "{{time}} 출발 편은 일정의 출발 예정보다 {{minutes}}분 이릅니다. 체류를 줄이면 탈 수 있습니다",
     "waitBefore": "{{time}} 출발 편까지 {{minutes}}분 대기 시간이 있습니다"
+  },
+  "checkin": {
+    "eyebrow": "현장 스탬프",
+    "missing": "이 태그는 사용할 수 없습니다. 새로 만들어졌을 수 있습니다.",
+    "error": "불러오지 못했습니다. 신호가 좋은 곳에서 다시 열어 주세요.",
+    "got": "스탬프를 찍었습니다!",
+    "already": "이미 가지고 있는 스탬프입니다",
+    "when": "{{date}}",
+    "points": "합계 {{points}} 포인트",
+    "loginToGet": "로그인하면 이곳의 스탬프가 찍힙니다.",
+    "login": "로그인하고 스탬프 찍기",
+    "register": "처음이신가요? 무료 가입",
+    "travelersOnly": "스탬프는 여행자 계정으로 찍을 수 있습니다.",
+    "openSpot": "이 스폿 보기",
+    "stampBook": "스탬프북 보기"
+  },
+  "checkinTag": {
+    "heading": "현장 스탬프 태그 (NFC・QR)",
+    "intro": "이곳에 둘 NFC 태그나 QR 코드를 만들 수 있습니다. 여행자가 스마트폰을 대면(QR을 읽으면) 위치 정보 없이 이곳의 스탬프가 찍힙니다.",
+    "make": "태그 만들기",
+    "qrAlt": "{{name}} 스탬프용 QR 코드",
+    "write": "NFC 태그에 쓰기",
+    "downloadQr": "QR 저장",
+    "copy": "URL 복사",
+    "copied": "URL을 복사했습니다",
+    "writing": {
+      "waiting": "스마트폰 뒷면에 NFC 태그를 대 주세요…",
+      "done": "NFC 태그에 썼습니다",
+      "failed": "쓰지 못했습니다. 태그를 다시 대 주세요 (잠긴 태그에는 쓸 수 없습니다)"
+    },
+    "noWebNfc": "이 브라우저에서는 NFC 태그에 쓸 수 없습니다. Android의 Chrome으로 열거나 NFC 앱으로 이 URL을 써 주세요 (읽기는 iPhone・Android 모두 가능).",
+    "remake": "새로 만들기",
+    "remakeConfirm": "새로 만들면 지금의 NFC 태그・QR 코드는 쓸 수 없게 됩니다. 새로 만들까요?",
+    "remove": "태그 없애기",
+    "removeConfirm": "이 태그를 없앨까요? 지금의 NFC 태그・QR 코드는 쓸 수 없게 됩니다.",
+    "note": "URL을 알면 누구나 열 수 있으므로, QR 사진이 퍼지면 \"새로 만들기\"로 언제든 무효로 할 수 있습니다."
   }
 }

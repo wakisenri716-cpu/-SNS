@@ -781,6 +781,40 @@ test("乗る便: members add flights and trains to the しおり; a shared link 
   assert.deepEqual((await call("GET", `/api/me/trips/${trip.id}/itinerary`, undefined, me)).json.transports.map((t: any) => t.toName), ["松本", "軽井沢", "長野"]);
 });
 
+test("現地スタンプのタグ: the post's manager makes a tag link; opening it gives the stamp without GPS", async () => {
+  const muni = await login("demo-matsumoto@example.com");
+  const [spot] = (await call("GET", "/api/reels/mine", undefined, muni)).json.items;
+  const me = (await call("POST", "/api/auth/register", { email: "tagstamp@example.com", password: "password123", name: "タグ派" })).json.token;
+
+  // Only the post's manager.
+  assert.equal((await call("POST", `/api/reels/${spot.id}/checkin-tag`, undefined, me)).status, 403);
+  assert.equal((await call("GET", `/api/reels/${spot.id}/checkin-tag`, undefined, muni)).json.token, null);
+  const { token } = (await call("POST", `/api/reels/${spot.id}/checkin-tag`, undefined, muni)).json;
+  assert.match(token, /^[A-Za-z0-9_-]{24}$/);
+  assert.equal((await call("GET", `/api/reels/${spot.id}`)).json.checkinToken, undefined, "never in the public post");
+
+  // Anyone can see which spot it's for; travelers get the stamp, once.
+  const info = await call("GET", `/api/checkin/${token}`);
+  assert.equal(info.json.spot.id, spot.id);
+  assert.equal(info.json.visitedAt, null);
+  assert.equal((await call("POST", `/api/checkin/${token}`)).status, 401);
+  assert.equal((await call("POST", `/api/checkin/${token}`, undefined, muni)).status, 403);
+  const first = await call("POST", `/api/checkin/${token}`, undefined, me);
+  assert.equal(first.status, 200);
+  assert.equal(first.json.alreadyVisited, false);
+  assert.equal((await call("POST", `/api/checkin/${token}`, undefined, me)).json.alreadyVisited, true);
+  const stamps = (await call("GET", "/api/auth/me/stamps", undefined, me)).json.items;
+  assert.deepEqual(stamps.map((x: any) => [x.reel.id, x.method]), [[spot.id, "tag"]]);
+
+  // Made again: the old tag stops working. Removed: none works.
+  const { token: next } = (await call("POST", `/api/reels/${spot.id}/checkin-tag`, undefined, muni)).json;
+  assert.notEqual(next, token);
+  assert.equal((await call("GET", `/api/checkin/${token}`)).status, 404);
+  assert.equal((await call("DELETE", `/api/reels/${spot.id}/checkin-tag`, undefined, muni)).status, 204);
+  assert.equal((await call("GET", `/api/checkin/${next}`)).status, 404);
+  assert.equal((await call("GET", "/api/checkin/short")).status, 404);
+});
+
 test("区間の行き方: several ways per leg, one chosen; only the chosen way's rides are the trip's 乗る便", async () => {
   const me = (await call("POST", "/api/auth/register", { email: "legways@example.com", password: "password123", name: "行き方派" })).json.token;
   const other = (await call("POST", "/api/auth/register", { email: "legways-other@example.com", password: "password123", name: "他人" })).json.token;

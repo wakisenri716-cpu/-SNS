@@ -1351,5 +1351,41 @@
     "fareTotal": "交通费（已决定的方式・{{count}}个区间）合计 {{yen}}日元",
     "tooEarly": "{{time}}出发的班次比行程计划早{{minutes}}分钟。缩短停留时间即可赶上",
     "waitBefore": "距{{time}}出发的班次有{{minutes}}分钟等待时间"
+  },
+  "checkin": {
+    "eyebrow": "现场印章",
+    "missing": "此标签无法使用，可能已被重新生成。",
+    "error": "无法加载。请在信号好的地方重新打开。",
+    "got": "已盖上印章！",
+    "already": "你已经有这个印章了",
+    "when": "{{date}}",
+    "points": "共 {{points}} 积分",
+    "loginToGet": "登录后即可获得此地的印章。",
+    "login": "登录并盖章",
+    "register": "首次使用？免费注册",
+    "travelersOnly": "印章仅限旅行者账号。",
+    "openSpot": "查看此景点",
+    "stampBook": "查看印章册"
+  },
+  "checkinTag": {
+    "heading": "现场印章标签（NFC・二维码）",
+    "intro": "可制作放在此地的NFC标签或二维码。旅行者用手机触碰（或扫码）即可在不使用定位的情况下获得此地印章。",
+    "make": "制作标签",
+    "qrAlt": "{{name}}印章二维码",
+    "write": "写入NFC标签",
+    "downloadQr": "保存二维码",
+    "copy": "复制链接",
+    "copied": "已复制链接",
+    "writing": {
+      "waiting": "请将NFC标签贴近手机背面…",
+      "done": "已写入NFC标签",
+      "failed": "写入失败。请再次贴近标签（已锁定的标签无法写入）"
+    },
+    "noWebNfc": "此浏览器无法写入NFC标签。请用安卓版Chrome打开，或用NFC应用写入此链接（iPhone和安卓都能读取）。",
+    "remake": "重新生成",
+    "remakeConfirm": "重新生成后，当前的NFC标签和二维码将无法使用。确定重新生成吗？",
+    "remove": "移除标签",
+    "removeConfirm": "移除此标签吗？当前的NFC标签和二维码将无法使用。",
+    "note": "知道链接的人都能打开，如果二维码照片流传出去，可随时“重新生成”使其失效。"
   }
 }

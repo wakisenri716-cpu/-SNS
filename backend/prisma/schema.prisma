@@ -153,6 +153,10 @@ model Reel {
   company        Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
   videoUrl       String
   thumbnailUrl   String?
+  // 現地スタンプのタグ: the secret in the URL an NFC tag or printed QR at the
+  // spot opens (/c/:token). Touching it gives the stamp without GPS. Made
+  // again (the old tags stop working) or removed by whoever manages the post.
+  checkinToken   String?  @unique
   caption        String   @default("")
   locationName   String?
   locationLat    Float?
@@ -192,6 +196,9 @@ model Visit {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   reelId    String
   reel      Reel     @relation(fields: [reelId], references: [id], onDelete: Cascade)
+  // How it was checked: "gps" (within 1 km by the browser's location) or
+  // "tag" (the spot's NFC tag / QR, see Reel.checkinToken).
+  method    String   @default("gps")
   createdAt DateTime @default(now())
 
   @@unique([userId, reelId])

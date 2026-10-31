@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { locatePlace } from "../services/placeLookup";
 import { Request, Response, Router } from "express";
 import { z } from "zod";
@@ -1077,6 +1078,42 @@ router.get("/:id/visits", async (req, res) => {
     prisma.visit.count({ where: { reelId: reel.id } }),
   ]);
   res.json({ today, total });
+});
+
+// 現地スタンプのタグ (NFC / QR): whoever manages the post makes a secret
+// link for it (/c/:token) to put on an NFC tag or print as a QR code at the
+// spot. Opening it gives the stamp without GPS (routes/checkins.ts). Making
+// it again stops the old tags working; DELETE removes it.
+async function managedReel(req: Request, res: Response) {
+  const poster = await resolvePosterContext(req, res);
+  if (!poster) return null;
+  const reel = await prisma.reel.findUnique({ where: { id: req.params.id }, select: { id: true, municipalityId: true, companyId: true, checkinToken: true } });
+  if (!reel || !canManage(reel, poster)) {
+    res.status(404).json({ error: "投稿が見つかりません" });
+    return null;
+  }
+  return reel;
+}
+
+router.get("/:id/checkin-tag", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (req, res) => {
+  const reel = await managedReel(req, res);
+  if (!reel) return;
+  res.json({ token: reel.checkinToken });
+});
+
+router.post("/:id/checkin-tag", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (req, res) => {
+  const reel = await managedReel(req, res);
+  if (!reel) return;
+  const token = randomBytes(18).toString("base64url");
+  await prisma.reel.update({ where: { id: reel.id }, data: { checkinToken: token } });
+  res.json({ token });
+});
+
+router.delete("/:id/checkin-tag", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (req, res) => {
+  const reel = await managedReel(req, res);
+  if (!reel) return;
+  await prisma.reel.update({ where: { id: reel.id }, data: { checkinToken: null } });
+  res.status(204).end();
 });
 
 router.post("/:id/visit", requireAuth, requireRole("USER"), writeLimiter, async (req, res) => {

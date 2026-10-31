@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { TravelerTagPicker } from "./TravelerTagChips";
 import { BestMonthsPicker } from "./BestMonths";
+import CheckinTagSection from "./CheckinTagSection";
 import { REEL_CATEGORIES, type Reel, type ReelCategory, type TravelerTag } from "../types";
 
 const inputClass =
@@ -109,6 +110,7 @@ export default function ReelEditor({
             <BestMonthsPicker value={bestMonths} onChange={setBestMonths} />
           </div>
         </div>
+        {reel.locationLat != null && <CheckinTagSection reelId={reel.id} placeName={reel.locationName || reel.caption.slice(0, 30)} />}
         {error && <p className="text-xs text-jz-red">{error}</p>}
         <div className="flex justify-end gap-2">
           <button type="button" onClick={onClose} className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100">
