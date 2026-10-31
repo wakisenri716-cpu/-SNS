@@ -1252,5 +1252,22 @@
     "previous": "前の写真",
     "next": "次の写真",
     "privacy": "写真はこの旅のメンバーだけが見られます。撮影場所と日時は端末で読み取り、送る写真は端末で小さくして位置情報などを消しています。"
+  },
+  "origin": {
+    "foundAs": "出発地点を「{{label}}」（{{where}}）として計算しています",
+    "notFound": "出発地点の場所が見つからなかったため、地名から推定した仮の結果です。駅名・市区町村名・住所で入力すると正確になります",
+    "kind": {
+      "google": "Googleマップで特定した位置",
+      "station": "駅の位置",
+      "town": "町・丁目の位置",
+      "municipality": "役所・役場の位置",
+      "prefecture": "県庁所在地の位置"
+    },
+    "credit": {
+      "station": "駅の位置：国土数値情報（鉄道データ）（国土交通省）を加工して作成",
+      "town": "住所の位置：Geolonia 住所データ（CC BY 4.0）",
+      "municipality": "役所・役場の位置：code4fukui/localgovjp",
+      "prefecture": "役所・役場の位置：code4fukui/localgovjp"
+    }
   }
 }

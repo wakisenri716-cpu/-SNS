@@ -1,3 +1,4 @@
+import { locatePlace } from "../services/placeLookup";
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma";
@@ -7,7 +8,7 @@ import { parseOtaLinks, serializeOtaLinks } from "../lib/otaLinks";
 import { suggestDefaultOtaLinks } from "../services/otaProvider";
 import { reelInclude, serializeReel } from "../lib/reelSerializer";
 import { getFollowedIds } from "../lib/followState";
-import { geocode, isGoogleMapsConfigured } from "../services/googleMaps";
+import { isGoogleMapsConfigured } from "../services/googleMaps";
 import { getTransitSuggestion } from "../services/maasProvider";
 import { parseDepartureTime } from "../lib/parseDepartureTime";
 import { locateTourismSpot } from "../lib/locateTourismSpot";
@@ -175,15 +176,9 @@ router.get("/:id/access-plan", async (req, res) => {
       : null;
   if (!point) return res.status(400).json({ error: "この自治体はまだ起点駅が設定されていません" });
 
-  let originCoords: { lat: number; lng: number } | null = null;
-  if (isGoogleMapsConfigured()) {
-    try {
-      const geocoded = await geocode(origin);
-      if (geocoded) originCoords = { lat: geocoded.lat, lng: geocoded.lng };
-    } catch (err) {
-      console.error("[municipalities] Geocoding access-plan origin failed:", err);
-    }
-  }
+  // Any station, town or address in Japan (services/placeLookup.ts).
+  const place = await locatePlace(origin).catch(() => null);
+  const originCoords = place ? { lat: place.lat, lng: place.lng } : null;
 
   const suggestion = await getTransitSuggestion(
     point.name,
@@ -192,7 +187,7 @@ router.get("/:id/access-plan", async (req, res) => {
     { label: origin, ...originCoords },
     parseDepartureTime(req.query.datetime)
   );
-  res.json(suggestion);
+  res.json({ ...suggestion, originFound: place && { label: place.label, kind: place.kind } });
 });
 
 // Get own profile (municipality-only)
@@ -233,13 +228,12 @@ router.put("/me/profile", requireAuth, requireRole("MUNICIPALITY"), async (req, 
   if (nearestStationName !== undefined && nearestStationName !== existing.nearestStationName) {
     if (nearestStationName.trim() === "") {
       stationCoords = { nearestStationLat: null, nearestStationLng: null };
-    } else if (isGoogleMapsConfigured()) {
-      let result: Awaited<ReturnType<typeof geocode>> = null;
-      try {
-        result = await geocode(nearestStationName);
-      } catch (err) {
-        console.error("[municipalities] Geocoding failed:", err);
-      }
+    } else {
+      // Any station in Japan works without a Maps key (services/placeLookup.ts);
+      // within this municipality's prefecture first, so "府中駅" is the right one.
+      const result =
+        (await locatePlace(`${existing.prefecture}${nearestStationName}`).catch(() => null)) ??
+        (await locatePlace(nearestStationName).catch(() => null));
       if (!result) {
         return res.status(400).json({ error: "起点駅の場所を特定できませんでした。表記を見直してください。" });
       }

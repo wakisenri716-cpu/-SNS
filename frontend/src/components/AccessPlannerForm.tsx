@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+import OriginFoundNote from "./OriginFoundNote";
 import { api } from "../api/client";
 import { TRANSIT_MODE_LABEL_KEY } from "../lib/transitModeLabels";
 import { formatDateTime, localDateTimeToIso, nowAsDatetimeLocalValue } from "../lib/departureTime";
@@ -84,6 +85,7 @@ export default function AccessPlannerForm({ endpoint }: { endpoint: string }) {
               {t("municipalityProfile.realData")}
             </span>
           )}
+          <OriginFoundNote found={result.originFound} className="w-full" />
           <span className="w-full text-xs text-gray-500">{t("accessPlanner.fareDisclaimer")}</span>
           <span className="w-full text-xs text-gray-500">{t("accessPlanner.noTimetableDisclaimer")}</span>
         </div>

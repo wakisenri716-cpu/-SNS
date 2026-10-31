@@ -1,3 +1,4 @@
+import { locatePlace } from "../services/placeLookup";
 import { Request, Response, Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma";
@@ -788,15 +789,9 @@ router.get("/:id/access-plan", async (req, res) => {
     return res.status(400).json({ error: "この投稿には位置情報が設定されていません" });
   }
 
-  let originCoords: { lat: number; lng: number } | null = null;
-  if (isGoogleMapsConfigured()) {
-    try {
-      const geocoded = await geocode(origin);
-      if (geocoded) originCoords = { lat: geocoded.lat, lng: geocoded.lng };
-    } catch (err) {
-      console.error("[reels] Geocoding access-plan origin failed:", err);
-    }
-  }
+  // Any station, town or address in Japan (services/placeLookup.ts).
+  const place = await locatePlace(origin).catch(() => null);
+  const originCoords = place ? { lat: place.lat, lng: place.lng } : null;
 
   const suggestion = await getTransitSuggestion(
     reel.locationName || "目的地",
@@ -805,7 +800,7 @@ router.get("/:id/access-plan", async (req, res) => {
     { label: origin, ...originCoords },
     parseDepartureTime(req.query.datetime)
   );
-  res.json(suggestion);
+  res.json({ ...suggestion, originFound: place && { label: place.label, kind: place.kind } });
 });
 
 // Small route-preview image for the access-plan detail panel — same

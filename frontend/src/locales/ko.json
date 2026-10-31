@@ -1252,5 +1252,22 @@
     "previous": "이전 사진",
     "next": "다음 사진",
     "privacy": "사진은 이 여행의 멤버만 볼 수 있어요. 촬영 장소와 시간은 기기에서 읽고, 보내는 사진은 기기에서 작게 줄여 위치 정보 등을 지웠어요."
+  },
+  "origin": {
+    "foundAs": "출발지를 「{{label}}」({{where}})로 계산하고 있어요",
+    "notFound": "출발지를 찾지 못해 지명으로 추정한 임시 결과예요. 역 이름・시구정촌 이름・주소로 입력하면 정확해져요",
+    "kind": {
+      "google": "Google 지도로 찾은 위치",
+      "station": "역 위치",
+      "town": "동네・번지 위치",
+      "municipality": "관공서 위치",
+      "prefecture": "현청 소재지 위치"
+    },
+    "credit": {
+      "station": "역 위치: 국토교통성 국토수치정보(철도 데이터)를 가공",
+      "town": "주소 위치: Geolonia 주소 데이터(CC BY 4.0)",
+      "municipality": "관공서 위치: code4fukui/localgovjp",
+      "prefecture": "관공서 위치: code4fukui/localgovjp"
+    }
   }
 }

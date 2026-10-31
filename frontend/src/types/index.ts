@@ -132,6 +132,8 @@ export interface TransitSuggestion {
   departureAt: string;
   arrivalAt: string;
   isMock: boolean;
+  /** What the typed origin was taken as (access plans only); null when it wasn't found. */
+  originFound?: { label: string; kind: "google" | "station" | "town" | "municipality" | "prefecture" } | null;
 }
 
 // Who/what a posted spot suits, set by the posting municipality/company.
@@ -255,6 +257,7 @@ export interface Itinerary {
   // originLocated is false and the timeline starts at the first stop).
   originLeg: TransitSuggestion | null;
   originLocated: boolean;
+  originFound?: { label: string; kind: "google" | "station" | "town" | "municipality" | "prefecture" } | null;
   stops: ItineraryStop[];
   // legs[i] is the travel estimate from stops[i] to stops[i+1] — always
   // legs.length === stops.length - 1.

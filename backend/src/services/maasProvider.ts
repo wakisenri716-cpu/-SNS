@@ -55,12 +55,25 @@ function estimateFareYen(distanceMeters: number, mode: "walk" | "drive"): number
 }
 
 // Mock assumptions for when both ends have coordinates: actual routes run
-// roughly 1.4x the straight-line distance, walking ~4.5km/h, and a typical
-// regional train/bus trip averages ~30km/h door to door.
+// roughly 1.4x the straight-line distance and walking is ~4.5km/h. Public
+// transport gets faster with distance — local trains and buses for short
+// trips, rapid/limited express for regional ones, shinkansen and limited
+// express for long ones — so the average speed (including waits and
+// changes) steps up: ~30km/h up to 40 km of route, ~55km/h up to 150 km,
+// ~110km/h beyond. Still an estimate, always labelled 仮データ.
 const ROUTE_DETOUR_FACTOR = 1.4;
 const MOCK_WALK_KMH = 4.5;
-const MOCK_TRANSIT_KMH = 30;
 const MOCK_WALK_ONLY_KM = 2;
+const MOCK_SPEED_STEPS: [maxRouteKm: number, kmh: number][] = [
+  [40, 30],
+  [150, 55],
+  [Infinity, 110],
+];
+
+function mockTransitMinutes(routeKm: number) {
+  const kmh = MOCK_SPEED_STEPS.find(([max]) => routeKm <= max)![1];
+  return Math.round((routeKm / kmh) * 60);
+}
 
 function getMockTransitSuggestion(
   originLabel: string,
@@ -90,7 +103,7 @@ function getMockTransitSuggestion(
             {
               mode: "train",
               description: `${destinationLabel}方面へ電車・バス`,
-              durationMin: Math.round((routeKm / MOCK_TRANSIT_KMH) * 60),
+              durationMin: mockTransitMinutes(routeKm),
             },
           ];
     const totalDurationMin = legs.reduce((sum, l) => sum + l.durationMin, 0);

@@ -1252,5 +1252,22 @@
     "previous": "上一张",
     "next": "下一张",
     "privacy": "只有本次旅行的成员能看到这些照片。拍摄地点和时间在设备上读取，照片在设备上缩小后发送，并去除位置等信息。"
+  },
+  "origin": {
+    "foundAs": "出发地点按“{{label}}”（{{where}}）计算",
+    "notFound": "未能找到出发地点，以下为根据地名推测的参考结果。输入车站名、市区町村名或地址会更准确",
+    "kind": {
+      "google": "由Google地图确定的位置",
+      "station": "车站的位置",
+      "town": "町・丁目的位置",
+      "municipality": "政府办公楼的位置",
+      "prefecture": "县政府所在地的位置"
+    },
+    "credit": {
+      "station": "车站位置：根据国土交通省国土数值信息（铁路数据）编辑",
+      "town": "地址位置：Geolonia 地址数据（CC BY 4.0）",
+      "municipality": "政府办公楼位置：code4fukui/localgovjp",
+      "prefecture": "政府办公楼位置：code4fukui/localgovjp"
+    }
   }
 }

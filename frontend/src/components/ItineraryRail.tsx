@@ -21,6 +21,7 @@ import TripCollab from "./TripCollab";
 import TripWeather from "./TripWeather";
 import TripTransports from "./TripTransports";
 import TripAlbum from "./TripAlbum";
+import OriginFoundNote from "./OriginFoundNote";
 import { getCurrentTripId, setCurrentTripId } from "../lib/trips";
 import { useTrips } from "../lib/useTrips";
 
@@ -454,6 +455,7 @@ export function ItineraryPanel({
                 )}
                 <span className="truncate font-normal text-gray-500">{itinerary.originLabel || t("itinerary.noOrigin")}</span>
               </p>
+              {itinerary.originLabel && itinerary.originFound && <OriginFoundNote found={itinerary.originFound} className="ml-9 mt-1" />}
               {itinerary.originLeg && <LegRow leg={itinerary.originLeg} />}
               {itinerary.originLabel && !itinerary.originLocated && (
                 <p className="my-1.5 ml-9 text-[11px] leading-relaxed text-amber-700">{t("itinerary.originNotLocated")}</p>

@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import OriginFoundNote, { type OriginFound } from "../components/OriginFoundNote";
 import EditorialBadge from "../components/EditorialBadge";
 import { api } from "../api/client";
 import AutoplayVideo from "../components/AutoplayVideo";
@@ -267,6 +268,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [estimates, setEstimates] = useState<ModeEstimate[] | null>(null);
+  const [originFound, setOriginFound] = useState<OriginFound>(undefined);
   const [departureAt, setDepartureAt] = useState<Date | null>(null);
   const [searchedOrigin, setSearchedOrigin] = useState("");
   const [travelReports, setTravelReports] = useState<TravelReports | null>(null);
@@ -309,6 +311,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
         params: { origin: origin.trim(), datetime: localDateTimeToIso(departureLocal) },
       });
       setEstimates(deriveModeEstimates(origin.trim(), reel.locationName || reel.municipality.name, data));
+      setOriginFound(data.originFound ?? null);
       setDepartureAt(new Date(data.departureAt));
       setSearchedOrigin(normalizeOrigin(origin));
     } catch (err: any) {
@@ -434,6 +437,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
 
       {error && <p className="mb-4 text-xs text-jz-red">{error}</p>}
 
+      {orderedEstimates && departureAt && <OriginFoundNote found={originFound} className="mb-2" />}
       {orderedEstimates && departureAt && (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {orderedEstimates.map((estimate) => (

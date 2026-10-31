@@ -1,11 +1,7 @@
 import { prisma } from "../prisma";
-import { geocode, isGoogleMapsConfigured } from "../services/googleMaps";
+import { locatePlace } from "../services/placeLookup";
 import { getTransitSuggestion } from "../services/maasProvider";
-import { ttlCache } from "./ttlCache";
 
-// The しおり reloads on every save/reorder, and the typed origin rarely
-// changes, so its geocode is kept for a few hours.
-const originGeocodes = ttlCache<Awaited<ReturnType<typeof geocode>>>(6 * 60 * 60 * 1000, 2000);
 
 // しおり (itinerary) of one trip: chains the trip's posts into a route — in
 // the order the traveler arranged — with a real-or-mock travel estimate
@@ -39,15 +35,18 @@ export async function buildItinerary(tripId: string, { withOrigin }: { withOrigi
 
   const originLabel = withOrigin ? trip.originLabel : "";
   let originLeg = null;
+  // What the typed origin was taken as ("松本駅（長野県）"), see services/placeLookup.ts.
+  let originFound: { label: string; kind: string } | null = null;
   if (originLabel && stops.length > 0) {
     let originCoords: { lat: number; lng: number } | null = null;
-    if (isGoogleMapsConfigured()) {
-      try {
-        const geocoded = await originGeocodes.get(originLabel, () => geocode(originLabel));
-        if (geocoded) originCoords = { lat: geocoded.lat, lng: geocoded.lng };
-      } catch (err) {
-        console.error("[reels] Geocoding itinerary origin failed:", err);
+    try {
+      const place = await locatePlace(originLabel);
+      if (place) {
+        originCoords = { lat: place.lat, lng: place.lng };
+        originFound = { label: place.label, kind: place.kind };
       }
+    } catch (err) {
+      console.error("[itinerary] Locating the origin failed:", err);
     }
     // Without coordinates for the typed origin, the only fallback would be the
     // name-hash mock, which can be hours off — and on a timeline that error
@@ -84,6 +83,7 @@ export async function buildItinerary(tripId: string, { withOrigin }: { withOrigi
     startTime: trip.startTime,
     originLeg,
     originLocated: originLeg != null,
+    originFound,
     stops: ordered.map(({ reel: r, stayMinutes }) => ({
       id: r.id,
       caption: r.caption,

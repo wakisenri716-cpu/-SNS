@@ -706,6 +706,8 @@ test("長野県の全市町村: listing pages from public data, no one can sign 
   const plan = await call("GET", `/api/municipalities/${nagano_city.id}/access-plan?origin=${encodeURIComponent("東京駅")}`);
   assert.equal(plan.status, 200);
   assert.equal(plan.json.destinationLabel, "長野市役所");
+  // The typed origin is found without a Maps key, and the answer says as what.
+  assert.deepEqual(plan.json.originFound, { label: "東京駅（東京都）", kind: "station" });
   const sakae = nagano.find((m: any) => m.name === "栄村");
   assert.equal(sakae.officeName, "栄村役場");
 

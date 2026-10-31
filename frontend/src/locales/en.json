@@ -1277,5 +1277,22 @@
     "previous": "Previous photo",
     "next": "Next photo",
     "privacy": "Only this trip's members can see these photos. Where and when each was taken is read on your device, and photos are shrunk there before sending, which removes location and other metadata."
+  },
+  "origin": {
+    "foundAs": "Starting point taken as \"{{label}}\" ({{where}})",
+    "notFound": "The starting point couldn't be found, so this is a rough guess from the name. A station, city or address gives an accurate result",
+    "kind": {
+      "google": "located by Google Maps",
+      "station": "the station",
+      "town": "the town/block",
+      "municipality": "the municipal office",
+      "prefecture": "the prefectural capital"
+    },
+    "credit": {
+      "station": "Station positions: edited from MLIT National Land Numerical Information (railway data)",
+      "town": "Address positions: Geolonia address data (CC BY 4.0)",
+      "municipality": "Office positions: code4fukui/localgovjp",
+      "prefecture": "Office positions: code4fukui/localgovjp"
+    }
   }
 }
