@@ -19,6 +19,7 @@ import { useDragReorder } from "../lib/useDragReorder";
 import { useTripLive } from "../lib/useTripLive";
 import TripCollab from "./TripCollab";
 import TripWeather from "./TripWeather";
+import TripTransports from "./TripTransports";
 import { getCurrentTripId, setCurrentTripId } from "../lib/trips";
 import { useTrips } from "../lib/useTrips";
 
@@ -372,6 +373,15 @@ export function ItineraryPanel({
             onStatus={setLive}
           />
 
+          {/* Works offline too (read-only): no signal on the plane. */}
+          <TripTransports
+            tripId={tripId}
+            startDate={itinerary.trip.startDate}
+            transports={itinerary.transports ?? []}
+            readOnly={offline}
+            onChanged={() => void load().catch(() => {})}
+          />
+
           {!offline && (
             <TripWeather
               startDate={itinerary.trip.startDate}
@@ -545,7 +555,17 @@ export function ItineraryPanel({
                         )}
                       </div>
                     </div>
-                    {leg && !dragger.drag && <LegRow leg={leg} />}
+                    {leg && !dragger.drag && (
+                      <LegRow
+                        leg={leg}
+                        from={{ name: stop.locationName || stop.municipality.name, lat: stop.locationLat, lng: stop.locationLng }}
+                        to={itinerary.stops[i + 1] && {
+                          name: itinerary.stops[i + 1].locationName || itinerary.stops[i + 1].municipality.name,
+                          lat: itinerary.stops[i + 1].locationLat,
+                          lng: itinerary.stops[i + 1].locationLng,
+                        }}
+                      />
+                    )}
                   </div>
                 );
               })}

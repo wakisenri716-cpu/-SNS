@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { prisma } from "../prisma";
+import { serializeTransport } from "../lib/tripTransports";
 import { optionalAuth } from "../middleware/auth";
 import { tripViewLimiter } from "../middleware/rateLimit";
 import { buildItinerary } from "../lib/itinerary";
@@ -77,6 +78,10 @@ router.get("/:token", tripViewLimiter, optionalAuth, async (req, res) => {
     startTime: itinerary.startTime,
     stops: itinerary.stops,
     legs: itinerary.legs,
+    // The trip's 乗る便, without seats, booking numbers or notes.
+    transports: (await prisma.tripTransport.findMany({ where: { tripId: trip.id }, orderBy: { departAt: "asc" } })).map((t) =>
+      serializeTransport(t, { forMembers: false })
+    ),
     savedIds,
   });
 });

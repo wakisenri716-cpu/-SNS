@@ -462,6 +462,7 @@ model Trip {
   updatedAt   DateTime   @updatedAt
   items       TripItem[]
   members     TripMember[]
+  transports  TripTransport[]
 
   @@index([userId])
 }
@@ -491,4 +492,33 @@ model TripItem {
   createdAt   DateTime @default(now())
 
   @@unique([tripId, reelId])
+}
+
+// 乗る便: a flight, train, bus or ferry the travellers booked or plan to take
+// on this trip, entered by them (Jaziba has no timetable or flight data), so
+// the しおり and 移動中モード can show it with a countdown. Shared with the
+// trip's members like the rest of the しおり.
+model TripTransport {
+  id           String   @id @default(cuid())
+  tripId       String
+  trip         Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  // "plane" | "train" | "bus" | "ferry" | "other"
+  kind         String
+  // 便名・列車名 ("JL123", "あずさ5号", "アルピコ交通 上高地線").
+  name         String
+  operator     String   @default("")
+  fromName     String
+  toName       String
+  departAt     DateTime
+  arriveAt     DateTime
+  // のりば: platform, gate, terminal or bus stop number.
+  departPlatform String @default("")
+  arrivePlatform String @default("")
+  seat         String   @default("")
+  // 予約番号 — visible to the trip's members only.
+  confirmation String   @default("")
+  note         String   @default("")
+  createdAt    DateTime @default(now())
+
+  @@index([tripId, departAt])
 }

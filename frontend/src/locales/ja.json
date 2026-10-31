@@ -1162,5 +1162,74 @@
   "editorial": {
     "badge": "ジャジバ編集部の紹介・映像はイメージ",
     "byline": "ジャジバ編集部の紹介（自治体の投稿ではありません）・映像はイメージです"
+  },
+  "transport": {
+    "heading": "乗る便（飛行機・電車・バスなど）",
+    "add": "便を追加",
+    "empty": "予約した飛行機・特急・高速バスなどを登録すると、時刻・のりば・座席をここで確認でき、移動中モードで出発までのカウントダウンや到着前のお知らせが使えます。",
+    "addTitle": "乗る便を追加",
+    "editTitle": "乗る便を編集",
+    "kindLabel": "乗り物",
+    "kind": {
+      "plane": "飛行機",
+      "train": "電車",
+      "bus": "バス",
+      "ferry": "船",
+      "other": "その他"
+    },
+    "nameLabel": "便名・列車名",
+    "operatorLabel": "会社名（任意）",
+    "fromLabel": "出発地（駅・空港・バス停）",
+    "toLabel": "到着地",
+    "departLabel": "出発日時",
+    "arriveLabel": "到着日時",
+    "departPlatformLabel": {
+      "plane": "出発ターミナル・ゲート",
+      "train": "発車番線",
+      "bus": "のりば",
+      "ferry": "のりば",
+      "other": "のりば"
+    },
+    "arrivePlatformLabel": {
+      "plane": "到着ターミナル",
+      "train": "到着番線",
+      "bus": "降り場",
+      "ferry": "降り場",
+      "other": "降り場"
+    },
+    "seatLabel": "座席",
+    "confirmationLabel": "予約番号（メンバーだけに表示）",
+    "noteLabel": "メモ",
+    "formNote": "時刻・のりばは、予約内容やきっぷに書かれたものを入れてください。ジャジバは時刻表や運航状況を自動で取得しません。座席・予約番号・メモは、共有リンクでは表示されません。",
+    "save": "保存する",
+    "saved": "乗る便を保存しました",
+    "error": "保存できませんでした",
+    "trainExample": "あずさ5号",
+    "busExample": "上高地線",
+    "seatValue": "座席 {{seat}}",
+    "confirmationValue": "予約番号 {{code}}",
+    "departsIn": "あと{{minutes}}分で出発",
+    "enroute": "移動中",
+    "rideMode": "移動中モード",
+    "status": "運行状況",
+    "edit": "{{name}}を編集",
+    "remove": "{{name}}を削除",
+    "removeConfirm": "「{{name}}」を削除しますか？"
+  },
+  "transit": {
+    "timetable": "乗換案内：",
+    "googleMaps": "Googleマップ",
+    "yahoo": "Yahoo!乗換案内",
+    "untilDeparture": "出発まで",
+    "untilArrival": "{{place}}到着まで",
+    "arrived": "到着しました",
+    "hm": "{{h}}時間{{m}}分",
+    "alarm": "到着{{minutes}}分前に知らせる",
+    "alarmOn": "到着{{minutes}}分前にお知らせします",
+    "alarmTitle": "まもなく到着",
+    "alarmBody": "まもなく{{place}}に到着します（約{{minutes}}分）。降りる準備をしましょう",
+    "previous": "前の便",
+    "next": "次の便",
+    "timesNote": "時刻は登録した予定の時刻です。遅れや運休は「運行状況」で確認してください。この画面を開いている間、画面は消えません。"
   }
 }

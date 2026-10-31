@@ -1162,5 +1162,74 @@
   "editorial": {
     "badge": "Jaziba编辑部介绍・影像为示意",
     "byline": "Jaziba编辑部的介绍（并非地方政府的帖子）・影像为示意图"
+  },
+  "transport": {
+    "heading": "乘坐的班次（飞机・电车・巴士等）",
+    "add": "添加班次",
+    "empty": "登记预订的飞机、特快或高速巴士后，可在此查看时间、站台和座位，并在乘车模式中使用出发倒计时和到达前提醒。",
+    "addTitle": "添加班次",
+    "editTitle": "编辑班次",
+    "kindLabel": "交通工具",
+    "kind": {
+      "plane": "飞机",
+      "train": "电车",
+      "bus": "巴士",
+      "ferry": "船",
+      "other": "其他"
+    },
+    "nameLabel": "航班号・车次",
+    "operatorLabel": "公司名（可选）",
+    "fromLabel": "出发地（车站・机场・巴士站）",
+    "toLabel": "到达地",
+    "departLabel": "出发时间",
+    "arriveLabel": "到达时间",
+    "departPlatformLabel": {
+      "plane": "出发航站楼・登机口",
+      "train": "发车站台",
+      "bus": "乘车处",
+      "ferry": "乘船处",
+      "other": "乘车处"
+    },
+    "arrivePlatformLabel": {
+      "plane": "到达航站楼",
+      "train": "到达站台",
+      "bus": "下车处",
+      "ferry": "下船处",
+      "other": "下车处"
+    },
+    "seatLabel": "座位",
+    "confirmationLabel": "预订号（仅成员可见）",
+    "noteLabel": "备注",
+    "formNote": "请填写预订内容或车票上的时间和站台。Jaziba不会自动获取时刻表或运行状况。座位、预订号和备注不会显示在共享链接中。",
+    "save": "保存",
+    "saved": "已保存班次",
+    "error": "无法保存",
+    "trainExample": "梓5号",
+    "busExample": "上高地线",
+    "seatValue": "座位 {{seat}}",
+    "confirmationValue": "预订号 {{code}}",
+    "departsIn": "{{minutes}}分钟后出发",
+    "enroute": "移动中",
+    "rideMode": "乘车模式",
+    "status": "运行状况",
+    "edit": "编辑{{name}}",
+    "remove": "删除{{name}}",
+    "removeConfirm": "要删除“{{name}}”吗？"
+  },
+  "transit": {
+    "timetable": "换乘查询：",
+    "googleMaps": "Google地图",
+    "yahoo": "Yahoo!换乘",
+    "untilDeparture": "距离出发",
+    "untilArrival": "距离到达{{place}}",
+    "arrived": "已到达",
+    "hm": "{{h}}小时{{m}}分",
+    "alarm": "到达前{{minutes}}分钟提醒我",
+    "alarmOn": "将在到达前{{minutes}}分钟提醒",
+    "alarmTitle": "即将到达",
+    "alarmBody": "约{{minutes}}分钟后到达{{place}}，请准备下车",
+    "previous": "上一班",
+    "next": "下一班",
+    "timesNote": "时间为你登记的计划时间。延误或停运请在“运行状况”中确认。打开此页面期间屏幕保持常亮。"
   }
 }

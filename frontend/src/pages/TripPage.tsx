@@ -11,6 +11,7 @@ import { computeTimeline, formatClock, overnightStops } from "../lib/itineraryTi
 import { chooseTrips } from "../lib/trips";
 import { showToast } from "../lib/toast";
 import type { SharedTrip } from "../types";
+import TripTransports from "../components/TripTransports";
 
 const TripFlyover = lazy(() => import("../components/TripFlyover"));
 
@@ -125,6 +126,11 @@ export default function TripPage() {
           <Play className="h-3.5 w-3.5 fill-white" /> {t("flyover.button")}
         </button>
       )}
+      {(trip.transports?.length ?? 0) > 0 && (
+        <div className="mt-5">
+          <TripTransports tripId="" startDate={trip.startDate} transports={trip.transports!} readOnly />
+        </div>
+      )}
       {flyoverOpen && (
         <Suspense fallback={null}>
           <TripFlyover
@@ -197,7 +203,18 @@ export default function TripPage() {
                     )}
                   </div>
                 </div>
-                {trip.legs[i] && <LegRow leg={trip.legs[i]} className="my-2 ml-10" />}
+                {trip.legs[i] && (
+                  <LegRow
+                    leg={trip.legs[i]}
+                    from={{ name: stop.locationName || stop.municipality.name, lat: stop.locationLat, lng: stop.locationLng }}
+                    to={trip.stops[i + 1] && {
+                      name: trip.stops[i + 1].locationName || trip.stops[i + 1].municipality.name,
+                      lat: trip.stops[i + 1].locationLat,
+                      lng: trip.stops[i + 1].locationLng,
+                    }}
+                    className="my-2 ml-10"
+                  />
+                )}
               </li>
             );
           })}

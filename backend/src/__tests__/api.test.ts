@@ -724,6 +724,51 @@ test("長野県の全市町村: listing pages from public data, no one can sign 
   assert.equal((await call("GET", "/api/reels/map")).json.items.length, mapBefore);
 });
 
+test("乗る便: members add flights and trains to the しおり; a shared link hides seats and booking numbers", async () => {
+  const me = (await call("POST", "/api/auth/register", { email: "transport@example.com", password: "password123", name: "移動派" })).json.token;
+  const trip = (await call("POST", "/api/me/trips", { name: "長野へ" }, me)).json;
+  const flight = {
+    kind: "plane",
+    name: "JL123",
+    operator: "日本航空",
+    fromName: "羽田空港",
+    toName: "松本空港",
+    departAt: "2026-11-03T08:00:00+09:00",
+    arriveAt: "2026-11-03T09:00:00+09:00",
+    departPlatform: "第1ターミナル 8番ゲート",
+    seat: "23A",
+    confirmation: "ABC123",
+  };
+  assert.equal((await call("POST", `/api/me/trips/${trip.id}/transports`, { ...flight, arriveAt: "2026-11-03T07:00:00+09:00" }, me)).status, 400);
+  assert.equal((await call("POST", `/api/me/trips/${trip.id}/transports`, { ...flight, name: "" }, me)).status, 400);
+  const other = (await call("POST", "/api/auth/register", { email: "transport-other@example.com", password: "password123", name: "他人" })).json.token;
+  assert.equal((await call("POST", `/api/me/trips/${trip.id}/transports`, flight, other)).status, 404);
+
+  const created = await call("POST", `/api/me/trips/${trip.id}/transports`, flight, me);
+  assert.equal(created.status, 201);
+  const train = { kind: "train", name: "あずさ5号", fromName: "新宿", toName: "松本", departAt: "2026-11-03T07:30:00+09:00", arriveAt: "2026-11-03T10:10:00+09:00", seat: "5号車 7D" };
+  assert.equal((await call("POST", `/api/me/trips/${trip.id}/transports`, train, me)).status, 201);
+
+  // In the しおり, in departure order, with everything for the members.
+  const itinerary = (await call("GET", `/api/me/trips/${trip.id}/itinerary`, undefined, me)).json;
+  assert.deepEqual(itinerary.transports.map((t: any) => [t.name, t.seat]), [["あずさ5号", "5号車 7D"], ["JL123", "23A"]]);
+  assert.equal(itinerary.transports[1].confirmation, "ABC123");
+  assert.equal(new Date(itinerary.transports[1].departAt).toISOString(), "2026-11-02T23:00:00.000Z");
+
+  // Edit, then the read-only shared link: times and places, no seat or booking number.
+  assert.equal((await call("PUT", `/api/me/trips/${trip.id}/transports/${created.json.id}`, { ...flight, departPlatform: "第1ターミナル 10番ゲート" }, me)).status, 204);
+  const token = (await call("POST", `/api/me/trips/${trip.id}/share`, undefined, me)).json.token;
+  const shared = (await call("GET", `/api/trips/${token}`)).json;
+  const sharedFlight = shared.transports.find((t: any) => t.name === "JL123");
+  assert.equal(sharedFlight.departPlatform, "第1ターミナル 10番ゲート");
+  assert.equal(sharedFlight.seat, "");
+  assert.equal(sharedFlight.confirmation, "");
+
+  assert.equal((await call("DELETE", `/api/me/trips/${trip.id}/transports/${created.json.id}`, undefined, me)).status, 204);
+  assert.equal((await call("DELETE", `/api/me/trips/${trip.id}/transports/${created.json.id}`, undefined, me)).status, 404);
+  assert.equal((await call("GET", `/api/me/trips/${trip.id}/itinerary`, undefined, me)).json.transports.length, 1);
+});
+
 // A software passkey authenticator: an ES256 key pair making the same
 // attestation ("none") and assertions a phone or laptop would.
 async function softAuthenticator(origin: string) {

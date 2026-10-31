@@ -210,6 +210,24 @@ export interface ItineraryStop {
   stayMinutes: number;
 }
 
+// 乗る便: a flight/train/bus the travellers booked, entered by them
+// (GET /me/trips/:id/itinerary). seat/confirmation/note are "" on a shared link.
+export interface TripTransport {
+  id: string;
+  kind: "plane" | "train" | "bus" | "ferry" | "other";
+  name: string;
+  operator: string;
+  fromName: string;
+  toName: string;
+  departAt: string;
+  arriveAt: string;
+  departPlatform: string;
+  arrivePlatform: string;
+  seat: string;
+  confirmation: string;
+  note: string;
+}
+
 export interface Itinerary {
   // The 旅 this しおり belongs to (GET /me/trips/:id/itinerary).
   trip: { id: string; name: string; startDate: string | null };
@@ -226,6 +244,7 @@ export interface Itinerary {
   // legs[i] is the travel estimate from stops[i] to stops[i+1] — always
   // legs.length === stops.length - 1.
   legs: TransitSuggestion[];
+  transports?: TripTransport[];
   // Set while a read-only link (/trip/:token) to this しおり is shared
   // (owner only; null for members).
   shareToken: string | null;
@@ -248,6 +267,7 @@ export interface SharedTrip {
   legs: TransitSuggestion[];
   // Which of these stops the signed-in viewer has already saved.
   savedIds: string[];
+  transports?: TripTransport[];
 }
 
 // イベント情報 (GET /events). Dates are calendar days, "YYYY-MM-DD".

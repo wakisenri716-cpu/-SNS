@@ -1162,5 +1162,74 @@
   "editorial": {
     "badge": "Jaziba 편집부 소개・영상은 이미지",
     "byline": "Jaziba 편집부 소개(지자체 게시물이 아니에요)・영상은 이미지예요"
+  },
+  "transport": {
+    "heading": "탈 편(비행기・전철・버스 등)",
+    "add": "편 추가",
+    "empty": "예약한 비행기・특급・고속버스를 등록하면 시간・승강장・좌석을 여기서 확인하고, 이동 모드에서 출발 카운트다운과 도착 전 알림을 쓸 수 있어요.",
+    "addTitle": "탈 편 추가",
+    "editTitle": "탈 편 편집",
+    "kindLabel": "교통수단",
+    "kind": {
+      "plane": "비행기",
+      "train": "전철",
+      "bus": "버스",
+      "ferry": "배",
+      "other": "기타"
+    },
+    "nameLabel": "편명・열차명",
+    "operatorLabel": "회사명(선택)",
+    "fromLabel": "출발지(역・공항・정류장)",
+    "toLabel": "도착지",
+    "departLabel": "출발 일시",
+    "arriveLabel": "도착 일시",
+    "departPlatformLabel": {
+      "plane": "출발 터미널・게이트",
+      "train": "출발 승강장",
+      "bus": "타는 곳",
+      "ferry": "타는 곳",
+      "other": "타는 곳"
+    },
+    "arrivePlatformLabel": {
+      "plane": "도착 터미널",
+      "train": "도착 승강장",
+      "bus": "내리는 곳",
+      "ferry": "내리는 곳",
+      "other": "내리는 곳"
+    },
+    "seatLabel": "좌석",
+    "confirmationLabel": "예약 번호(멤버에게만 표시)",
+    "noteLabel": "메모",
+    "formNote": "예약 내용이나 승차권에 적힌 시간・승강장을 입력하세요. Jaziba는 시간표나 운행 상황을 자동으로 가져오지 않아요. 좌석・예약 번호・메모는 공유 링크에 표시되지 않아요.",
+    "save": "저장",
+    "saved": "저장했어요",
+    "error": "저장하지 못했어요",
+    "trainExample": "아즈사 5호",
+    "busExample": "가미코치선",
+    "seatValue": "좌석 {{seat}}",
+    "confirmationValue": "예약 번호 {{code}}",
+    "departsIn": "{{minutes}}분 후 출발",
+    "enroute": "이동 중",
+    "rideMode": "이동 모드",
+    "status": "운행 상황",
+    "edit": "{{name}} 편집",
+    "remove": "{{name}} 삭제",
+    "removeConfirm": "\"{{name}}\"을(를) 삭제할까요?"
+  },
+  "transit": {
+    "timetable": "환승 안내:",
+    "googleMaps": "Google 지도",
+    "yahoo": "Yahoo! 환승",
+    "untilDeparture": "출발까지",
+    "untilArrival": "{{place}} 도착까지",
+    "arrived": "도착했어요",
+    "hm": "{{h}}시간 {{m}}분",
+    "alarm": "도착 {{minutes}}분 전에 알려 주기",
+    "alarmOn": "도착 {{minutes}}분 전에 알려 드려요",
+    "alarmTitle": "곧 도착",
+    "alarmBody": "약 {{minutes}}분 후 {{place}}에 도착해요. 내릴 준비를 하세요",
+    "previous": "이전 편",
+    "next": "다음 편",
+    "timesNote": "시간은 등록한 예정 시간이에요. 지연・운휴는 「운행 상황」에서 확인하세요. 이 화면을 여는 동안 화면이 꺼지지 않아요."
   }
 }

@@ -1187,5 +1187,74 @@
   "editorial": {
     "badge": "Introduced by Jaziba · illustration",
     "byline": "Introduced by Jaziba's editors (not the town's own post) · the video is an illustration"
+  },
+  "transport": {
+    "heading": "Booked trips (flights, trains, buses…)",
+    "add": "Add",
+    "empty": "Add the flights, express trains or highway buses you booked to see their times, platforms and seats here, and use ride mode for a countdown to departure and an alert before you arrive.",
+    "addTitle": "Add a booked trip",
+    "editTitle": "Edit booked trip",
+    "kindLabel": "Type",
+    "kind": {
+      "plane": "Flight",
+      "train": "Train",
+      "bus": "Bus",
+      "ferry": "Ferry",
+      "other": "Other"
+    },
+    "nameLabel": "Flight / train / route",
+    "operatorLabel": "Company (optional)",
+    "fromLabel": "From (station, airport, stop)",
+    "toLabel": "To",
+    "departLabel": "Departs",
+    "arriveLabel": "Arrives",
+    "departPlatformLabel": {
+      "plane": "Terminal / gate",
+      "train": "Platform",
+      "bus": "Bay",
+      "ferry": "Pier",
+      "other": "Boarding point"
+    },
+    "arrivePlatformLabel": {
+      "plane": "Arrival terminal",
+      "train": "Arrival platform",
+      "bus": "Drop-off",
+      "ferry": "Pier",
+      "other": "Drop-off"
+    },
+    "seatLabel": "Seat",
+    "confirmationLabel": "Booking number (members only)",
+    "noteLabel": "Notes",
+    "formNote": "Enter the times and platforms from your booking or ticket. Jaziba doesn't fetch timetables or live status. Seats, booking numbers and notes aren't shown on the shared link.",
+    "save": "Save",
+    "saved": "Saved",
+    "error": "Couldn't save",
+    "trainExample": "Azusa 5",
+    "busExample": "Kamikochi Line",
+    "seatValue": "Seat {{seat}}",
+    "confirmationValue": "Booking {{code}}",
+    "departsIn": "Departs in {{minutes}} min",
+    "enroute": "On the way",
+    "rideMode": "Ride mode",
+    "status": "Live status",
+    "edit": "Edit {{name}}",
+    "remove": "Delete {{name}}",
+    "removeConfirm": "Delete \"{{name}}\"?"
+  },
+  "transit": {
+    "timetable": "Timetables:",
+    "googleMaps": "Google Maps",
+    "yahoo": "Yahoo! Transit",
+    "untilDeparture": "Until departure",
+    "untilArrival": "Until arriving at {{place}}",
+    "arrived": "Arrived",
+    "hm": "{{h}} h {{m}} min",
+    "alarm": "Alert me {{minutes}} min before arrival",
+    "alarmOn": "Alert set: {{minutes}} min before arrival",
+    "alarmTitle": "Arriving soon",
+    "alarmBody": "Arriving at {{place}} in about {{minutes}} minutes. Get ready to get off",
+    "previous": "Previous",
+    "next": "Next",
+    "timesNote": "These are the scheduled times you entered. Check live status for delays. The screen stays on while this is open."
   }
 }

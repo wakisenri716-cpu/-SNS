@@ -246,3 +246,44 @@ test("shared map links: coordinates are found in the usual URL forms", () => {
   assert.equal(coordsInText("https://maps.app.goo.gl/abc123"), null);
   assert.equal(coordsInText("松本城に行きたい"), null);
 });
+
+import { googleTransitUrl, statusUrl, yahooTransitUrl } from "../src/lib/transitLinks.ts";
+
+test("transit links: Google Maps by public transport, Yahoo!乗換案内, and status pages", () => {
+  const g = new URL(googleTransitUrl({ name: "松本駅", lat: 36.2305, lng: 137.9639 }, { name: "上高地 河童橋", lat: 36.251, lng: 137.6389 }));
+  assert.equal(g.origin + g.pathname, "https://www.google.com/maps/dir/");
+  assert.equal(g.searchParams.get("origin"), "36.2305,137.9639");
+  assert.equal(g.searchParams.get("destination"), "36.251,137.6389");
+  assert.equal(g.searchParams.get("travelmode"), "transit");
+  assert.equal(new URL(googleTransitUrl({ name: "新宿" }, { name: "松本" })).searchParams.get("origin"), "新宿");
+  const y = new URL(yahooTransitUrl("新宿", "松本"));
+  assert.equal(y.searchParams.get("from"), "新宿");
+  assert.equal(y.searchParams.get("to"), "松本");
+  assert.equal(statusUrl("train", "あずさ5号", "JR東日本"), "https://transit.yahoo.co.jp/diainfo");
+  assert.equal(new URL(statusUrl("plane", "JL123", "日本航空")).searchParams.get("q"), "JL123 運航状況");
+  assert.equal(new URL(statusUrl("bus", "上高地線", "アルピコ交通")).searchParams.get("q"), "アルピコ交通 上高地線 運行情報");
+});
+
+import { currentTransport, isoToLocalInput, localInputToIso, splitDuration, transportPhase } from "../src/lib/transportTiming.ts";
+
+test("移動中モード: phases, progress and which trip to show", () => {
+  const flight = { departAt: "2026-11-03T08:00:00+09:00", arriveAt: "2026-11-03T09:00:00+09:00" };
+  const t = (iso: string) => new Date(iso).getTime();
+  assert.equal(transportPhase(flight, t("2026-11-03T05:00:00+09:00")).phase, "later");
+  assert.equal(transportPhase(flight, t("2026-11-03T07:30:00+09:00")).phase, "soon");
+  const mid = transportPhase(flight, t("2026-11-03T08:30:00+09:00"));
+  assert.equal(mid.phase, "enroute");
+  assert.equal(mid.progress, 0.5);
+  assert.equal(mid.toArriveMs, 30 * 60_000);
+  assert.equal(transportPhase(flight, t("2026-11-03T09:00:01+09:00")).phase, "arrived");
+
+  const train = { departAt: "2026-11-03T10:30:00+09:00", arriveAt: "2026-11-03T12:00:00+09:00" };
+  assert.equal(currentTransport([train, flight], t("2026-11-03T08:10:00+09:00")), flight);
+  assert.equal(currentTransport([train, flight], t("2026-11-03T09:30:00+09:00")), train);
+  assert.equal(currentTransport([train, flight], t("2026-11-04T00:00:00+09:00")), train);
+  assert.equal(currentTransport([], Date.now()), null);
+
+  assert.deepEqual(splitDuration((2 * 3600 + 5 * 60 + 9) * 1000), { h: 2, m: 5, s: 9 });
+  assert.deepEqual(splitDuration(-5), { h: 0, m: 0, s: 0 });
+  assert.equal(isoToLocalInput(localInputToIso("2026-11-03T08:05")), "2026-11-03T08:05");
+});
