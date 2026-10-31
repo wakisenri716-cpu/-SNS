@@ -93,7 +93,7 @@ export default function ArPage() {
         <button
           type="button"
           onClick={() => void sensors.start()}
-          className="mt-8 inline-flex items-center gap-2 rounded-full bg-jz-red px-7 py-3.5 text-[15px] font-bold text-white shadow-lg active:scale-95"
+          className="mt-8 inline-flex items-center gap-2 rounded-full bg-jz-accent px-7 py-3.5 text-[15px] font-bold text-white shadow-lg active:scale-95"
         >
           <Camera className="h-5 w-5" /> {t("ar.start")}
         </button>
@@ -207,9 +207,9 @@ function SpotLabel({ p, onSelect, selected }: { p: Projected<Spot>; onSelect: ()
       style={{ left: `${p.x * 100}%`, top: `${p.y * 100}%`, transform: `translate(-50%, -100%) scale(${p.scale})`, transformOrigin: "bottom center" }}
     >
       <span
-        className={`glass-dark flex items-center gap-2 rounded-full py-1 pl-1 pr-3 shadow-lg ${selected ? "ring-2 ring-jz-red" : ""}`}
+        className={`glass-dark flex items-center gap-2 rounded-full py-1 pl-1 pr-3 shadow-lg ${selected ? "ring-2 ring-jz-accent" : ""}`}
       >
-        <span className="h-9 w-9 shrink-0 overflow-hidden rounded-full border-2 border-jz-red bg-gray-700">
+        <span className="h-9 w-9 shrink-0 overflow-hidden rounded-full border-2 border-jz-accent bg-gray-700">
           {p.spot.thumbnailUrl ? (
             <img src={p.spot.thumbnailUrl} alt="" className="h-full w-full object-cover" />
           ) : (
@@ -222,7 +222,7 @@ function SpotLabel({ p, onSelect, selected }: { p: Projected<Spot>; onSelect: ()
         </span>
       </span>
       <span className="h-5 w-px bg-white/70" aria-hidden />
-      <span className="h-2 w-2 rounded-full bg-jz-red ring-2 ring-white" aria-hidden />
+      <span className="h-2 w-2 rounded-full bg-jz-accent ring-2 ring-white" aria-hidden />
     </button>
   );
 }
@@ -297,7 +297,7 @@ function SpotCard({ spot, p, onClose }: { spot: Spot; p: Projected<Spot> | null;
         <div className="mt-auto flex gap-2 pt-2">
           <Link
             to={`/reels/${spot.id}/access`}
-            className="inline-flex flex-1 items-center justify-center gap-1 rounded-full bg-jz-red py-2 text-xs font-bold text-white"
+            className="inline-flex flex-1 items-center justify-center gap-1 rounded-full bg-jz-accent py-2 text-xs font-bold text-white"
           >
             <Navigation className="h-3.5 w-3.5" /> {t("ar.directions")}
           </Link>

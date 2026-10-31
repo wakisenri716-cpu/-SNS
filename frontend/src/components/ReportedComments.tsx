@@ -39,7 +39,7 @@ export default function ReportedComments() {
 
   return (
     <section className="border-b border-gray-200 bg-jz-tint/40 p-4 lg:p-6">
-      <h3 className="flex items-center gap-1.5 text-sm font-semibold text-jz-red">
+      <h3 className="flex items-center gap-1.5 text-sm font-semibold text-jz-accent">
         <Flag className="h-4 w-4" /> {t("moderation.heading", { count: items.length })}
       </h3>
       <p className="mt-1 text-xs text-gray-500">{t("moderation.note", { count: threshold })}</p>
@@ -56,10 +56,10 @@ export default function ReportedComments() {
               {Object.entries(c.reasons)
                 .map(([reason, n]) => `${t(`comments.reason.${reason}`)} ${n}`)
                 .join("・")}
-              ）{c.reportCount >= threshold && <span className="ml-1 font-semibold text-jz-red">{t("comments.hiddenBadge")}</span>}
+              ）{c.reportCount >= threshold && <span className="ml-1 font-semibold text-jz-accent">{t("comments.hiddenBadge")}</span>}
             </p>
             <div className="mt-2 flex gap-2">
-              <button type="button" onClick={() => void act(c, "delete")} className="rounded-full bg-jz-red px-3 py-1.5 text-xs font-bold text-white">
+              <button type="button" onClick={() => void act(c, "delete")} className="rounded-full bg-jz-accent px-3 py-1.5 text-xs font-bold text-white">
                 {t("moderation.delete")}
               </button>
               <button type="button" onClick={() => void act(c, "keep")} className="rounded-full bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-700">

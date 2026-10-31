@@ -50,7 +50,7 @@ function Badge({ count, className = "" }: { count: number; className?: string })
   if (count <= 0) return null;
   return (
     <span
-      className={`min-w-5 rounded-full bg-jz-red px-1.5 text-center text-[11px] font-bold leading-5 text-white ${className}`}
+      className={`min-w-5 rounded-full bg-jz-accent px-1.5 text-center text-[11px] font-bold leading-5 text-white ${className}`}
     >
       {count > 99 ? "99+" : count}
     </span>
@@ -72,7 +72,7 @@ function SideNavItem({ to, label, icon: IconC, badge = 0, className = "" }: Omit
           <span className="relative">
             <IconC className="h-6 w-6 shrink-0 transition-transform group-hover:scale-105" strokeWidth={isActive ? 2.6 : 1.8} />
             {/* A red dot marks where you are. */}
-            {isActive && <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-jz-red ring-2 ring-white" />}
+            {isActive && <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-jz-warm ring-2 ring-white" />}
           </span>
           <span className="flex-1">{label}</span>
           <Badge count={badge} />
@@ -165,7 +165,7 @@ function InstallButton() {
     <button
       type="button"
       onClick={() => void promptInstall()}
-      className="flex items-center gap-4 rounded-lg p-3 text-[15px] font-semibold text-jz-red hover:bg-gray-100"
+      className="flex items-center gap-4 rounded-lg p-3 text-[15px] font-semibold text-jz-accent hover:bg-gray-100"
     >
       <MonitorDown className="h-6 w-6" strokeWidth={1.8} />
       {t("nav.installApp")}
@@ -180,7 +180,7 @@ function AccountChip() {
     return (
       <NavLink
         to="/login"
-        className="block rounded-lg bg-jz-red px-4 py-2 text-center text-sm font-semibold text-white hover:bg-jz-red-dark"
+        className="block rounded-lg bg-jz-accent px-4 py-2 text-center text-sm font-semibold text-white hover:bg-jz-accent-dark"
       >
         {t("nav.login")}
       </NavLink>
@@ -274,7 +274,7 @@ export default function Layout() {
             className="relative flex h-10 w-10 items-center justify-center text-gray-900"
           >
             <Bell className="h-6 w-6" strokeWidth={1.8} />
-            {unreadCount > 0 && <span className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-jz-red ring-2 ring-white" />}
+            {unreadCount > 0 && <span className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-jz-warm ring-2 ring-white" />}
           </NavLink>
         )}
         <NavLink to="/search" aria-label={t("nav.search")} className="flex h-10 w-10 items-center justify-center text-gray-900">
@@ -341,7 +341,7 @@ export default function Layout() {
         <Suspense
           fallback={
             <div className="flex justify-center p-16" role="status" aria-label={t("feed.loading")}>
-              <span className="h-3 w-3 animate-ping rounded-full bg-jz-red" />
+              <span className="h-3 w-3 animate-ping rounded-full bg-jz-accent" />
             </div>
           }
         >
@@ -379,7 +379,7 @@ export default function Layout() {
               <>
                 <IconC className="h-[25px] w-[25px]" strokeWidth={isActive ? 2.4 : 1.7} />
                 <span
-                  className={`mt-1 h-1.5 w-1.5 rounded-full bg-jz-red transition-all duration-300 ${isActive ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
+                  className={`mt-1 h-1.5 w-1.5 rounded-full bg-jz-warm transition-all duration-300 ${isActive ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
                   aria-hidden
                 />
                 {badge > 0 && <Badge count={badge} className="absolute left-1/2 top-1 ml-1.5" />}

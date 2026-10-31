@@ -103,7 +103,7 @@ export default function SharePage() {
       {!shared ? (
         <p className="mt-3 text-sm leading-relaxed text-gray-600">
           {t("shareIn.nothing")}{" "}
-          <Link to="/" className="font-semibold text-jz-red">
+          <Link to="/" className="font-semibold text-jz-accent">
             {t("shareIn.home")}
           </Link>
         </p>
@@ -168,7 +168,7 @@ export default function SharePage() {
           {route && <SharedRoute route={route} />}
 
           {!shared.photo && !where && !route && (
-            <Link to="/search" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-jz-red">
+            <Link to="/search" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-jz-accent">
               <Search className="h-4 w-4" /> {t("shareIn.search")}
             </Link>
           )}
@@ -220,7 +220,7 @@ function SharedRoute({ route }: { route: ParsedRoute }) {
   return (
     <section className="mt-4 rounded-3xl border border-gray-200 p-4">
       <h2 className="flex items-center gap-1.5 text-sm font-bold text-jz-ink">
-        <TrainFront className="h-4 w-4 text-jz-red" /> {t("shareIn.routeTitle")}
+        <TrainFront className="h-4 w-4 text-jz-accent" /> {t("shareIn.routeTitle")}
       </h2>
       <p className="mt-1 text-[11px] text-gray-500">
         {new Date(`${date}T00:00`).toLocaleDateString(i18n.language, { month: "numeric", day: "numeric", weekday: "short" })}
@@ -237,7 +237,7 @@ function SharedRoute({ route }: { route: ParsedRoute }) {
         ))}
       </ol>
       {!user ? (
-        <Link to="/login" className="mt-3 inline-block text-sm font-semibold text-jz-red">
+        <Link to="/login" className="mt-3 inline-block text-sm font-semibold text-jz-accent">
           {t("shareIn.routeLogin")}
         </Link>
       ) : trips == null ? (
@@ -245,7 +245,7 @@ function SharedRoute({ route }: { route: ParsedRoute }) {
       ) : trips.length === 0 ? (
         <p className="mt-3 text-xs text-gray-500">
           {t("shareIn.routeNoTrips")}{" "}
-          <Link to="/itinerary" className="font-semibold text-jz-red">
+          <Link to="/itinerary" className="font-semibold text-jz-accent">
             {t("shareIn.routeMakeTrip")}
           </Link>
         </p>
@@ -262,7 +262,7 @@ function SharedRoute({ route }: { route: ParsedRoute }) {
             </select>
           </label>
           {complete ? (
-            <button type="button" disabled={saving || !tripId} onClick={() => void save()} className="mt-3 w-full rounded-full bg-jz-red py-3 text-sm font-bold text-white disabled:opacity-60">
+            <button type="button" disabled={saving || !tripId} onClick={() => void save()} className="mt-3 w-full rounded-full bg-jz-accent py-3 text-sm font-bold text-white disabled:opacity-60">
               {t("transport.paste.saveAll", { count: route.rides.length })}
             </button>
           ) : (

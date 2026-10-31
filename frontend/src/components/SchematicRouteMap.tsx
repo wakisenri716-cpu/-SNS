@@ -38,7 +38,7 @@ export default function SchematicRouteMap({
         <polyline points={path} fill="none" stroke="#0d9488" strokeWidth="1.4" strokeDasharray="2.5 2.2" strokeLinecap="round" strokeLinejoin="round" />
         {points.map((p, i) => (
           <g key={i}>
-            <circle cx={p.x} cy={p.y} r={i === 0 ? 3 : i === points.length - 1 ? 3.4 : 2.6} fill={i === points.length - 1 ? "#d6293c" : "#0f766e"} />
+            <circle cx={p.x} cy={p.y} r={i === 0 ? 3 : i === points.length - 1 ? 3.4 : 2.6} fill={i === points.length - 1 ? "#f26b38" : "#0f766e"} />
             <text
               x={p.x}
               y={p.y - 4.5}

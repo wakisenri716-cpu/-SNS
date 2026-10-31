@@ -60,7 +60,7 @@ export default function SearchPage() {
         to="/areas"
         className="mb-4 flex items-center gap-3 rounded-2xl bg-gray-50 px-4 py-3 text-sm font-semibold text-jz-ink transition hover:bg-gray-100"
       >
-        <MapPinned className="h-5 w-5 text-jz-red" />
+        <MapPinned className="h-5 w-5 text-jz-accent" />
         <span className="flex-1">{t("areas.heading")}</span>
         <ChevronRight className="h-4 w-4 text-gray-500" />
       </Link>
@@ -70,7 +70,7 @@ export default function SearchPage() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder={speech.listening ? t("concierge.listening") : t("search.placeholder")}
-          className="w-full rounded-full bg-gray-100 py-3 pl-10 pr-12 text-sm text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-jz-red/30"
+          className="w-full rounded-full bg-gray-100 py-3 pl-10 pr-12 text-sm text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-jz-accent/30"
         />
         {speech.supported && (
           <button
@@ -79,10 +79,10 @@ export default function SearchPage() {
             aria-label={speech.listening ? t("concierge.stopVoice") : t("concierge.voice")}
             aria-pressed={speech.listening}
             className={`absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full transition ${
-              speech.listening ? "bg-jz-red text-white" : "text-gray-500 hover:bg-gray-200"
+              speech.listening ? "bg-jz-accent text-white" : "text-gray-500 hover:bg-gray-200"
             }`}
           >
-            {speech.listening && <span className="absolute inset-0 animate-ping rounded-full bg-jz-red/40" />}
+            {speech.listening && <span className="absolute inset-0 animate-ping rounded-full bg-jz-accent/40" />}
             <Mic className="relative h-4 w-4" />
           </button>
         )}

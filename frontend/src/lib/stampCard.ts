@@ -4,8 +4,8 @@
 
 const W = 1080;
 const H = 1920;
-const RED = "#d7202e";
-const INK = "#11151d";
+const RED = "#c2481c";
+const INK = "#1f2a30";
 const MAX_STAMPS = 9;
 
 export interface StampCardText {

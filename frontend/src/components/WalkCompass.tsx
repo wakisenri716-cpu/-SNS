@@ -37,7 +37,7 @@ export default function WalkCompass({ lat, lng, place }: { lat: number; lng: num
             <span className="block text-[11px] text-gray-500">{t("compass.startHint")}</span>
           </span>
         </button>
-        {compass.error && <p className="mt-2 text-xs text-jz-red">{t("compass.noLocation")}</p>}
+        {compass.error && <p className="mt-2 text-xs text-jz-warm-text">{t("compass.noLocation")}</p>}
       </div>
     );
   }
@@ -77,7 +77,7 @@ export default function WalkCompass({ lat, lng, place }: { lat: number; lng: num
             style={{ transform: `rotate(${rotation}deg)` }}
             aria-hidden
           >
-            <Navigation2 className={`h-14 w-14 ${arrived ? "text-emerald-400" : "text-jz-red"}`} fill="currentColor" strokeWidth={1} />
+            <Navigation2 className={`h-14 w-14 ${arrived ? "text-emerald-400" : "text-jz-accent"}`} fill="currentColor" strokeWidth={1} />
           </span>
         </div>
         <div className="min-w-0" aria-live="polite">

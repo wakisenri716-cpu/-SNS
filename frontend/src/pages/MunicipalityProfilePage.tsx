@@ -195,7 +195,7 @@ export default function MunicipalityProfilePage() {
               {municipality.listing ? (
                 <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">{t("listing.badge")}</span>
               ) : (
-                <BadgeCheck className="h-5 w-5 fill-jz-red text-white" aria-label={t("municipalityProfile.officialBadge")} />
+                <BadgeCheck className="h-5 w-5 fill-jz-accent text-white" aria-label={t("municipalityProfile.officialBadge")} />
               )}
             </h1>
             {token && (
@@ -204,7 +204,7 @@ export default function MunicipalityProfilePage() {
                 className={`hidden rounded-lg px-5 py-1.5 text-sm font-semibold md:block ${
                   municipality.isFollowing
                     ? "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                    : "bg-jz-red text-white hover:bg-jz-red-dark"
+                    : "bg-jz-accent text-white hover:bg-jz-accent-dark"
                 }`}
               >
                 {municipality.isFollowing ? t("municipalityProfile.following") : t("municipalityProfile.follow")}
@@ -248,7 +248,7 @@ export default function MunicipalityProfilePage() {
                 </span>
               )}
               {municipality.websiteUrl && (
-                <a href={municipality.websiteUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-jz-red hover:underline">
+                <a href={municipality.websiteUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-jz-accent hover:underline">
                   <Globe className="h-3.5 w-3.5" /> {t("listing.website")}
                 </a>
               )}
@@ -259,7 +259,7 @@ export default function MunicipalityProfilePage() {
             <button
               onClick={toggleFollowMunicipality}
               className={`mt-4 w-full rounded-lg py-1.5 text-sm font-semibold md:hidden ${
-                municipality.isFollowing ? "bg-gray-100 text-gray-900" : "bg-jz-red text-white"
+                municipality.isFollowing ? "bg-gray-100 text-gray-900" : "bg-jz-accent text-white"
               }`}
             >
               {municipality.isFollowing ? t("municipalityProfile.following") : t("municipalityProfile.follow")}
@@ -273,7 +273,7 @@ export default function MunicipalityProfilePage() {
           <Info className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
           <p>
             {t("listing.notice", { name: municipality.name })}{" "}
-            <Link to="/contact" className="font-semibold text-jz-red hover:underline">
+            <Link to="/contact" className="font-semibold text-jz-accent hover:underline">
               {t("listing.forMunicipality")}
             </Link>
           </p>
@@ -288,7 +288,7 @@ export default function MunicipalityProfilePage() {
             onClick={() => setTab(key)}
             aria-pressed={tab === key}
             className={`-mt-px flex min-w-[4.25rem] flex-1 shrink-0 flex-col items-center gap-1 whitespace-nowrap border-t px-1.5 py-2.5 text-[11px] font-semibold md:flex-none md:flex-row md:gap-1.5 md:py-4 md:text-xs md:tracking-wider ${
-              tab === key ? "border-jz-red text-jz-ink" : "border-transparent text-gray-500 hover:text-gray-600"
+              tab === key ? "border-jz-accent text-jz-ink" : "border-transparent text-gray-500 hover:text-gray-600"
             }`}
           >
             <TabIcon className="h-5 w-5 md:h-3.5 md:w-3.5" strokeWidth={tab === key ? 2.4 : 1.8} />

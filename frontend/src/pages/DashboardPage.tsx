@@ -246,7 +246,7 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
                 <button onClick={() => startEdit(spot)} className="text-xs font-medium text-gray-900 hover:text-gray-900">
                   {t("dashboard.editSpot")}
                 </button>
-                <button onClick={() => deleteSpot(spot.id)} className="text-xs font-medium text-jz-red hover:text-jz-red">
+                <button onClick={() => deleteSpot(spot.id)} className="text-xs font-medium text-jz-accent hover:text-jz-accent">
                   {t("dashboard.deleteSpot")}
                 </button>
               </div>
@@ -301,7 +301,7 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
           ＋ {t("dashboard.addSpot")}
         </button>
       )}
-      {error && <p className="mt-2 text-xs text-jz-red">{error}</p>}
+      {error && <p className="mt-2 text-xs text-jz-warm-text">{error}</p>}
     </div>
   );
 }
@@ -361,7 +361,7 @@ function MaasStationEditor({
           {t("dashboard.save")}
         </button>
       </div>
-      {error && <p className="mt-1 text-xs text-jz-red">{error}</p>}
+      {error && <p className="mt-1 text-xs text-jz-warm-text">{error}</p>}
     </div>
   );
 }
@@ -585,7 +585,7 @@ export default function DashboardPage() {
           to="/poster"
           className="flex items-center gap-3 rounded-2xl border border-gray-200 p-3 transition hover:bg-gray-50"
         >
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-jz-tint text-jz-red">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-jz-tint text-jz-accent">
             <QrCode className="h-5 w-5" />
           </span>
           <span className="min-w-0">

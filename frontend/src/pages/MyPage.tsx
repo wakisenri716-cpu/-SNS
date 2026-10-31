@@ -168,7 +168,7 @@ export default function MyPage() {
             </div>
             <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-gray-100">
               <div
-                className="h-full rounded-full bg-jz-red transition-[width] duration-700"
+                className="h-full rounded-full bg-jz-accent transition-[width] duration-700"
                 style={{ width: `${(prefectures.length / PREFECTURES.length) * 100}%` }}
               />
             </div>
@@ -212,7 +212,7 @@ export default function MyPage() {
                 type="button"
                 onClick={() => void shareStampCard()}
                 disabled={makingCard}
-                className="inline-flex items-center gap-1.5 rounded-full bg-jz-tint px-3 py-1.5 text-xs font-bold text-jz-red transition active:scale-95 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-full bg-jz-tint px-3 py-1.5 text-xs font-bold text-jz-accent transition active:scale-95 disabled:opacity-50"
               >
                 <ImageDown className="h-3.5 w-3.5" /> {t("stamps.cardButton")}
               </button>

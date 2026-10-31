@@ -113,7 +113,7 @@ export default function RegisterUserPage() {
           className={inputClass}
         />
         {error && (
-          <p className="text-sm text-jz-red">
+          <p className="text-sm text-jz-accent">
             {typeof error === "string" ? error : t("registerUser.invalidInput")}
           </p>
         )}

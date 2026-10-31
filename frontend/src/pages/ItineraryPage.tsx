@@ -109,7 +109,7 @@ function TripList() {
             onChange={(e) => setName(e.target.value)}
             maxLength={40}
             placeholder={t("tripPicker.namePlaceholder")}
-            className="mt-1.5 w-full rounded-2xl bg-gray-100 px-4 py-3 text-sm text-jz-ink outline-none placeholder:text-gray-500 focus:ring-2 focus:ring-jz-red/30"
+            className="mt-1.5 w-full rounded-2xl bg-gray-100 px-4 py-3 text-sm text-jz-ink outline-none placeholder:text-gray-500 focus:ring-2 focus:ring-jz-accent/30"
           />
           <label className="mt-3 block text-xs font-semibold text-gray-500" htmlFor="trip-date">
             {t("trips.dateLabelOptional")}
@@ -119,13 +119,13 @@ function TripList() {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="mt-1.5 rounded-2xl bg-gray-100 px-4 py-2.5 text-sm text-jz-ink outline-none focus:ring-2 focus:ring-jz-red/30"
+            className="mt-1.5 rounded-2xl bg-gray-100 px-4 py-2.5 text-sm text-jz-ink outline-none focus:ring-2 focus:ring-jz-accent/30"
           />
           <div className="mt-4 flex gap-2">
             <button type="button" onClick={() => setCreating(false)} className="flex-1 rounded-full bg-gray-100 py-2.5 text-sm font-semibold text-jz-ink">
               {t("trips.cancel")}
             </button>
-            <button type="submit" disabled={!name.trim() || busy} className="flex-[2] rounded-full bg-jz-red py-2.5 text-sm font-bold text-white disabled:opacity-40">
+            <button type="submit" disabled={!name.trim() || busy} className="flex-[2] rounded-full bg-jz-accent py-2.5 text-sm font-bold text-white disabled:opacity-40">
               {t("trips.createAction")}
             </button>
           </div>
@@ -134,7 +134,7 @@ function TripList() {
         <button
           type="button"
           onClick={() => setCreating(true)}
-          className="mt-3 flex items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-jz-red/40 py-4 text-sm font-bold text-jz-red transition hover:bg-jz-tint active:scale-[0.99]"
+          className="mt-3 flex items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-jz-accent/40 py-4 text-sm font-bold text-jz-accent transition hover:bg-jz-tint active:scale-[0.99]"
         >
           <Plus className="h-5 w-5" /> {t("tripPicker.newTrip")}
         </button>

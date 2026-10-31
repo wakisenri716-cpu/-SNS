@@ -84,7 +84,7 @@ export default function AudioGuide({ reel }: { reel: Reel }) {
       aria-pressed={speaking}
       className="mb-4 flex w-full items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-left transition hover:bg-gray-50 active:scale-[0.99] disabled:opacity-60"
     >
-      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white ${speaking ? "bg-jz-red" : "bg-jz-ink"}`}>
+      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white ${speaking ? "bg-jz-accent" : "bg-jz-ink"}`}>
         {speaking ? <Square className="h-4 w-4 fill-white" /> : <Headphones className="h-5 w-5" />}
       </span>
       <span className="min-w-0 flex-1">
@@ -96,7 +96,7 @@ export default function AudioGuide({ reel }: { reel: Reel }) {
       {speaking && (
         <span className="flex h-5 items-end gap-0.5" aria-hidden>
           {[0, 1, 2, 3].map((i) => (
-            <span key={i} className="audio-bar w-1 rounded-full bg-jz-red" style={{ animationDelay: `${i * 0.12}s` }} />
+            <span key={i} className="audio-bar w-1 rounded-full bg-jz-accent" style={{ animationDelay: `${i * 0.12}s` }} />
           ))}
         </span>
       )}

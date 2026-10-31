@@ -72,8 +72,8 @@ export default function EventManager() {
         <input {...field("locationName")} maxLength={80} placeholder={t("events.placePlaceholder")} className={input} />
         <input {...field("url")} type="url" maxLength={500} placeholder={t("events.urlPlaceholder")} className={input} />
         <textarea {...field("description")} maxLength={1000} rows={3} placeholder={t("events.descriptionPlaceholder")} className={input} />
-        {error && <p className="text-xs text-jz-red">{error}</p>}
-        <button type="submit" disabled={saving} className="self-start rounded-full bg-jz-red px-5 py-2 text-sm font-bold text-white disabled:opacity-60">
+        {error && <p className="text-xs text-jz-warm-text">{error}</p>}
+        <button type="submit" disabled={saving} className="self-start rounded-full bg-jz-accent px-5 py-2 text-sm font-bold text-white disabled:opacity-60">
           {t("events.add")}
         </button>
       </form>
@@ -90,7 +90,7 @@ export default function EventManager() {
                 type="button"
                 onClick={() => void remove(e)}
                 aria-label={t("events.delete")}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-jz-red"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-jz-accent"
               >
                 <Trash2 className="h-4 w-4" />
               </button>

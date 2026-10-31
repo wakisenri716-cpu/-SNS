@@ -125,7 +125,7 @@ export default function LoginPage() {
           type="button"
           onClick={() => void acceptOffer()}
           disabled={creating}
-          className="mt-6 w-full rounded-full bg-jz-red py-3 text-sm font-bold text-white active:scale-[0.98] disabled:opacity-60"
+          className="mt-6 w-full rounded-full bg-jz-accent py-3 text-sm font-bold text-white active:scale-[0.98] disabled:opacity-60"
         >
           {t("passkey.offerAccept")}
         </button>
@@ -162,7 +162,7 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
           className={inputClass}
         />
-        {error && <p className="text-sm text-jz-red">{error}</p>}
+        {error && <p className="text-sm text-jz-warm-text">{error}</p>}
         <button
           type="submit"
           disabled={submitting}

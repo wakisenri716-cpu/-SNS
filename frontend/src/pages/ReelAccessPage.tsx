@@ -350,8 +350,8 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
         {liveViewers != null && liveViewers >= 2 && (
           <span className="glass-dark animate-fade-in absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold text-white" aria-live="polite">
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-jz-red opacity-75 motion-reduce:hidden" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-jz-red" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-jz-warm opacity-75 motion-reduce:hidden" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-jz-warm" />
             </span>
             {t("live.viewers", { count: liveViewers })}
           </span>
@@ -435,7 +435,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
         </div>
       </div>
 
-      {error && <p className="mb-4 text-xs text-jz-red">{error}</p>}
+      {error && <p className="mb-4 text-xs text-jz-warm-text">{error}</p>}
 
       {orderedEstimates && departureAt && <OriginFoundNote found={originFound} className="mb-2" />}
       {orderedEstimates && departureAt && (

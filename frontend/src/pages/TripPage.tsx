@@ -79,7 +79,7 @@ export default function TripPage() {
         <p className="text-4xl">🗺️</p>
         <h1 className="mt-4 text-lg font-bold text-jz-ink">{t("trip.missingTitle")}</h1>
         <p className="mt-2 text-sm leading-relaxed text-gray-500">{t("trip.missingBody")}</p>
-        <Link to="/" className="mt-6 inline-block rounded-full bg-jz-red px-5 py-2.5 text-sm font-bold text-white">
+        <Link to="/" className="mt-6 inline-block rounded-full bg-jz-accent px-5 py-2.5 text-sm font-bold text-white">
           {t("trip.explore")}
         </Link>
       </div>
@@ -108,7 +108,7 @@ export default function TripPage() {
 
   return (
     <div className="mx-auto flex max-w-lg flex-col p-4 pb-44 md:p-8 md:pb-28">
-      <p className="text-xs font-semibold tracking-wide text-jz-red">{t("trip.eyebrow")}</p>
+      <p className="text-xs font-semibold tracking-wide text-jz-accent">{t("trip.eyebrow")}</p>
       <h1 className="mt-1 text-2xl font-extrabold leading-snug tracking-tight text-jz-ink">
         {t("trip.titleNamed", { name: trip.ownerName, trip: trip.tripName })}
       </h1>
@@ -162,7 +162,7 @@ export default function TripPage() {
               <li key={stop.id} className="animate-page-in" style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}>
                 {multiDay && (i === 0 || day !== times[i - 1].day) && <DayDivider day={day} />}
                 <div className="flex gap-3">
-                  <span className="mt-3 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-jz-red text-xs font-bold text-white">
+                  <span className="mt-3 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-jz-accent text-xs font-bold text-white">
                     {i + 1}
                   </span>
                   <div className="min-w-0 flex-1 overflow-hidden rounded-3xl border border-gray-200 bg-white">
@@ -183,7 +183,7 @@ export default function TripPage() {
                             depart: formatClock(times[i].leave, t, day),
                           })}
                         </span>
-                        {overnight[i] && <span className="mt-1 block text-[11px] font-semibold text-jz-red">{t("itinerary.overnight")}</span>}
+                        {overnight[i] && <span className="mt-1 block text-[11px] font-semibold text-jz-accent">{t("itinerary.overnight")}</span>}
                       </span>
                     </Link>
                     {canCopy && (
@@ -253,7 +253,7 @@ export default function TripPage() {
             type="button"
             disabled={busy}
             onClick={() => void save(unsaved)}
-            className="flex w-full max-w-md items-center justify-center gap-2 rounded-full bg-jz-red py-3.5 text-sm font-bold text-white shadow-lg shadow-jz-red/30 active:scale-[0.98] disabled:opacity-60"
+            className="flex w-full max-w-md items-center justify-center gap-2 rounded-full bg-jz-accent py-3.5 text-sm font-bold text-white shadow-lg shadow-jz-accent/30 active:scale-[0.98] disabled:opacity-60"
           >
             <Bookmark className="h-4 w-4 fill-white" />
             {authToken ? t("trip.addAll", { count: unsaved.length }) : t("trip.loginToAdd")}

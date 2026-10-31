@@ -111,7 +111,7 @@ export default function ReelEditor({
           </div>
         </div>
         {reel.locationLat != null && <CheckinTagSection reelId={reel.id} placeName={reel.locationName || reel.caption.slice(0, 30)} />}
-        {error && <p className="text-xs text-jz-red">{error}</p>}
+        {error && <p className="text-xs text-jz-warm-text">{error}</p>}
         <div className="flex justify-end gap-2">
           <button type="button" onClick={onClose} className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100">
             {t("dashboard.cancel")}

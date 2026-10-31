@@ -41,7 +41,7 @@ function Typewriter({ text }: { text: string }) {
   return (
     <>
       {text.slice(0, shown)}
-      {shown < text.length && <span className="ml-0.5 inline-block h-3.5 w-1.5 animate-pulse rounded-full bg-jz-red align-middle" />}
+      {shown < text.length && <span className="ml-0.5 inline-block h-3.5 w-1.5 animate-pulse rounded-full bg-jz-accent align-middle" />}
     </>
   );
 }
@@ -76,7 +76,7 @@ function PickCard({ pick, onSave }: { pick: Pick; onSave: (reel: Reel) => void }
           <Link
             to={`/reels/${reel.id}/access`}
             state={{ reel }}
-            className="flex flex-1 items-center justify-center gap-1 rounded-full bg-jz-red py-2 text-xs font-bold text-white active:scale-95"
+            className="flex flex-1 items-center justify-center gap-1 rounded-full bg-jz-accent py-2 text-xs font-bold text-white active:scale-95"
           >
             <Navigation className="h-3 w-3 fill-white" /> {t("feed.directions")}
           </Link>
@@ -288,12 +288,12 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
               {turn.reply == null ? (
                 <div className="flex items-center gap-1.5 px-2 py-2" role="status" aria-label={t("concierge.thinking")}>
                   {[0, 1, 2].map((i) => (
-                    <span key={i} className="h-2 w-2 animate-bounce rounded-full bg-jz-red" style={{ animationDelay: `${i * 0.15}s` }} />
+                    <span key={i} className="h-2 w-2 animate-bounce rounded-full bg-jz-accent" style={{ animationDelay: `${i * 0.15}s` }} />
                   ))}
                 </div>
               ) : (
                 <>
-                  <p className={`max-w-[90%] px-1 text-sm leading-relaxed ${turn.error ? "text-jz-red" : "text-jz-ink"}`}>
+                  <p className={`max-w-[90%] px-1 text-sm leading-relaxed ${turn.error ? "text-jz-warm-text" : "text-jz-ink"}`}>
                     <Typewriter text={turn.reply} />
                   </p>
                   {turn.picks && turn.picks.length > 0 && (
@@ -319,11 +319,11 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
             onChange={(e) => setInput(e.target.value)}
             maxLength={300}
             placeholder={speech.listening ? t("concierge.listening") : t("concierge.placeholder")}
-            className="min-w-0 flex-1 rounded-full bg-gray-100 px-4 py-3 text-sm text-jz-ink outline-none placeholder:text-gray-500 focus:ring-2 focus:ring-jz-red/30"
+            className="min-w-0 flex-1 rounded-full bg-gray-100 px-4 py-3 text-sm text-jz-ink outline-none placeholder:text-gray-500 focus:ring-2 focus:ring-jz-accent/30"
           />
           {aiEnabled && (
             <label
-              className={`flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-gray-100 text-jz-ink transition focus-within:ring-2 focus-within:ring-jz-red/30 active:scale-90 ${
+              className={`flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full bg-gray-100 text-jz-ink transition focus-within:ring-2 focus-within:ring-jz-accent/30 active:scale-90 ${
                 busy ? "pointer-events-none opacity-40" : ""
               }`}
               title={t("concierge.photo")}
@@ -349,10 +349,10 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
               aria-label={speech.listening ? t("concierge.stopVoice") : t("concierge.voice")}
               aria-pressed={speech.listening}
               className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition active:scale-90 ${
-                speech.listening ? "bg-jz-red text-white" : "bg-gray-100 text-jz-ink"
+                speech.listening ? "bg-jz-accent text-white" : "bg-gray-100 text-jz-ink"
               }`}
             >
-              {speech.listening && <span className="absolute inset-0 animate-ping rounded-full bg-jz-red/40" />}
+              {speech.listening && <span className="absolute inset-0 animate-ping rounded-full bg-jz-accent/40" />}
               <Mic className="relative h-5 w-5" />
             </button>
           )}
@@ -360,7 +360,7 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
             type="submit"
             disabled={!input.trim() || busy}
             aria-label={t("concierge.send")}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-jz-red text-white transition active:scale-90 disabled:opacity-30"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-jz-accent text-white transition active:scale-90 disabled:opacity-30"
           >
             <ArrowUp className="h-5 w-5" strokeWidth={2.5} />
           </button>

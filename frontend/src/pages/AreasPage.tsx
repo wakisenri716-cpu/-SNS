@@ -34,13 +34,13 @@ export default function AreasPage() {
     <div className="mx-auto w-full max-w-2xl px-4 py-6 md:py-8">
       <h1 className="text-2xl font-extrabold tracking-tight text-jz-ink">
         {t("areas.heading")}
-        <span className="ml-1 inline-block h-2 w-2 rounded-full bg-jz-red align-baseline" aria-hidden />
+        <span className="ml-1 inline-block h-2 w-2 rounded-full bg-jz-warm align-baseline" aria-hidden />
       </h1>
       <p className="mt-1 text-sm text-gray-500">
         {t("areas.sub", { count: joined })}
         {listed > joined && <span className="ml-2 inline-block">{t("areas.listed", { count: listed })}</span>}
       </p>
-      <label className="mt-4 flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2.5 focus-within:ring-2 focus-within:ring-jz-red/30">
+      <label className="mt-4 flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2.5 focus-within:ring-2 focus-within:ring-jz-accent/30">
         <Search className="h-4 w-4 shrink-0 text-gray-500" />
         <input
           type="search"

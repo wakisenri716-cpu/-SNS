@@ -51,7 +51,7 @@ function ReelOverlayInfo({
           className="flex flex-col items-center gap-1"
         >
           <span className={railButton}>
-            <Heart key={String(reel.likedByMe)} className={`h-7 w-7 ${reel.likedByMe ? "animate-like-pop fill-jz-red text-jz-red" : ""}`} strokeWidth={1.8} />
+            <Heart key={String(reel.likedByMe)} className={`h-7 w-7 ${reel.likedByMe ? "animate-like-pop fill-jz-warm text-jz-warm" : ""}`} strokeWidth={1.8} />
           </span>
           <span className="text-xs font-semibold drop-shadow">{reel.likeCount}</span>
         </button>
@@ -139,7 +139,7 @@ function ReelOverlayInfo({
           <Link
             to={`/reels/${reel.id}/access`}
             state={{ reel }}
-            className="pointer-events-auto mt-3 inline-flex items-center gap-1.5 rounded-full bg-jz-red px-4 py-2.5 text-sm font-bold text-white shadow-[0_8px_24px_-6px_rgba(215,32,46,0.8)] transition hover:bg-jz-red-dark active:scale-95"
+            className="pointer-events-auto mt-3 inline-flex items-center gap-1.5 rounded-full bg-jz-accent px-4 py-2.5 text-sm font-bold text-white shadow-[0_8px_24px_-6px_rgba(14,127,127,0.8)] transition hover:bg-jz-accent-dark active:scale-95"
           >
             <Navigation className="h-4 w-4 fill-white" /> {t("reelViewer.accessButton")}
           </Link>

@@ -99,8 +99,8 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
         }}
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
-        className={`flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-dashed p-3 transition focus-within:ring-2 focus-within:ring-jz-red/30 ${
-          dragging ? "border-jz-red bg-jz-tint" : "border-gray-300 hover:border-gray-400"
+        className={`flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-dashed p-3 transition focus-within:ring-2 focus-within:ring-jz-accent/30 ${
+          dragging ? "border-jz-accent bg-jz-tint" : "border-gray-300 hover:border-gray-400"
         }`}
       >
         <input
@@ -185,7 +185,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
         />
       </div>
       <p className="text-xs text-gray-500">{t("reelUploader.maasNote")}</p>
-      {error && <p className="text-xs text-jz-red">{error}</p>}
+      {error && <p className="text-xs text-jz-warm-text">{error}</p>}
       {submitting && (
         <div className="flex flex-col gap-1">
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">

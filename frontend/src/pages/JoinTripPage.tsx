@@ -57,7 +57,7 @@ export default function JoinTripPage() {
       <div className="mx-auto max-w-lg px-6 py-20 text-center">
         <h1 className="text-lg font-bold text-jz-ink">{t("collab.inviteInvalid")}</h1>
         <p className="mt-2 text-sm leading-relaxed text-gray-500">{t("collab.inviteInvalidBody")}</p>
-        <Link to="/" className="mt-6 inline-block rounded-full bg-jz-red px-5 py-2.5 text-sm font-bold text-white">
+        <Link to="/" className="mt-6 inline-block rounded-full bg-jz-accent px-5 py-2.5 text-sm font-bold text-white">
           {t("trip.explore")}
         </Link>
       </div>
@@ -76,7 +76,7 @@ export default function JoinTripPage() {
           </span>
         )}
       </span>
-      <p className="mt-6 text-xs font-semibold tracking-wide text-jz-red">{t("collab.invitedBy", { name: invite.ownerName })}</p>
+      <p className="mt-6 text-xs font-semibold tracking-wide text-jz-accent">{t("collab.invitedBy", { name: invite.ownerName })}</p>
       <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-jz-ink">{invite.tripName}</h1>
       <p className="mt-1.5 flex items-center gap-1 text-sm text-gray-500">
         <Users className="h-4 w-4" />
@@ -92,7 +92,7 @@ export default function JoinTripPage() {
           type="button"
           onClick={() => void join()}
           disabled={joining}
-          className="mt-6 w-full rounded-full bg-jz-red py-3.5 text-sm font-bold text-white shadow-lg shadow-jz-red/30 active:scale-[0.98] disabled:opacity-60"
+          className="mt-6 w-full rounded-full bg-jz-accent py-3.5 text-sm font-bold text-white shadow-lg shadow-jz-accent/30 active:scale-[0.98] disabled:opacity-60"
         >
           {session ? t("collab.join") : t("collab.loginToJoin")}
         </button>

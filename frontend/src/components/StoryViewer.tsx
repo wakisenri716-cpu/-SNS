@@ -190,7 +190,7 @@ export default function StoryViewer({
               <Link
                 to={`/reels/${reel.id}/access`}
                 state={{ reel }}
-                className="pointer-events-auto flex items-center gap-1.5 rounded-full bg-jz-red px-4 py-2.5 text-sm font-bold text-white active:scale-95"
+                className="pointer-events-auto flex items-center gap-1.5 rounded-full bg-jz-accent px-4 py-2.5 text-sm font-bold text-white active:scale-95"
               >
                 <Navigation className="h-4 w-4 fill-white" /> {t("feed.directions")}
               </Link>

@@ -16,7 +16,7 @@ export function BestMonthsPicker({ value, onChange }: { value: number[]; onChang
             type="button"
             aria-pressed={on}
             onClick={() => onChange(on ? value.filter((v) => v !== m) : [...value, m].sort((a, b) => a - b))}
-            className={`rounded-full py-1 text-xs font-medium ${on ? "bg-jz-red text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+            className={`rounded-full py-1 text-xs font-medium ${on ? "bg-jz-accent text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
           >
             {name(m)}
           </button>
@@ -36,7 +36,7 @@ export function SeasonBadge({ months, dark = false }: { months: number[]; dark?:
     <span
       className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
         now
-          ? "bg-jz-red text-white"
+          ? "bg-jz-accent text-white"
           : dark
             ? "bg-white/15 text-white ring-1 ring-white/30"
             : "text-gray-700 ring-1 ring-gray-300"

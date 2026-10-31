@@ -113,7 +113,7 @@ export default function TripCollab({
                 type="button"
                 onClick={() => void remove(person)}
                 aria-label={person.id === user?.id ? t("collab.leave") : t("collab.remove", { name: person.name })}
-                className="rounded-full p-1 text-gray-400 hover:bg-jz-tint hover:text-jz-red"
+                className="rounded-full p-1 text-gray-400 hover:bg-jz-tint hover:text-jz-accent"
               >
                 {person.id === user?.id ? <LogOut className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
               </button>
@@ -144,7 +144,7 @@ export default function TripCollab({
             type="button"
             onClick={() => void invite()}
             disabled={busy}
-            className="inline-flex items-center gap-1.5 rounded-full bg-jz-red px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-full bg-jz-accent px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50"
           >
             <UserPlus className="h-3.5 w-3.5" /> {t("collab.invite")}
           </button>

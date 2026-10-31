@@ -22,7 +22,7 @@
 
 ## デザイン
 
-SNSとしての使い心地は今どきのアプリに合わせつつ、見た目はシンプルにしています。画面の色は墨色（`jz-ink` = `#11151D`）と赤（`jz-red` = `#D7202E`）の2色が基本で（`frontend/src/index.css` の `@theme`）、赤は「行き方」ボタン・いいね・フォローなど大事な所だけに使います。赤い丸は、いま開いているメニューの印、見出しの終わり、読み込み中の表示、ログイン前の案内カードの「日の出」に使っています。自治体アイコンの輪も赤〜朱色のグラデーション。絵文字は使わず、アイコンはすべて lucide-react の線画。フォントは Noto Sans JP（Google Fonts）。
+SNSとしての使い心地は今どきのアプリに合わせつつ、見た目は新しいロゴ（4つのタイルのモザイク）に揃えています（`frontend/src/index.css` の `@theme`）。ボタン・リンク・選択中の表示などのメインの色はロゴのティール（白い文字が読みやすいよう少し濃くした `jz-accent` = `#0E7F7F`）、文字はロゴの墨色（`jz-ink` = `#1F2A30`）。ロゴのオレンジの丸（`jz-warm` = `#F26B38`）をモチーフにして、いいね、未読・ライブの印、いま開いているメニューの印、見出しの終わりの点、ログイン前の案内カードの「日の出」、スタンプ（朱色寄りの `#C2481C`）に使っています。黄色と青は、AIのボタンやストーリーの輪のグラデーション、ホームの背景の光など飾りだけに使い、文字の背景にはしません。エラー表示は `jz-warm-text`（`#C2481C`）。絵文字は使わず、アイコンはすべて lucide-react の線画。フォントは英数字がロゴと同じ Outfit、日本語が Noto Sans JP（Google Fonts）。
 
 - **ロゴ**：提供されたロゴキット（形と色の違う4つのタイルを2×2に並べたマークと、Outfit ExtraBold の小文字「jaziba」）。ファイルは `frontend/public/brand/`（`jaziba-logo-light.svg`／`jaziba-logo-dark.svg`＝マーク＋文字、`jaziba-mark.svg`／`jaziba-mark-on-dark.svg`＝マーク単体、`jaziba-app-icon.svg`＝アプリアイコン）。文字はフォントに頼らないようアウトライン化（形はキットのSVGを Outfit 800 で表示したものと同じ）。ダークモードでは白文字・青タイルを明るくした版に切り替わります（`frontend/src/components/JazibaLogo.tsx`）。ファビコンは `frontend/public/favicon.svg`（16px向けに単純化した版）と `icons/favicon-16.png`／`favicon-32.png`、ホーム画面のアイコンは `icons/icon-192.png`／`icon-512.png`／`maskable-512.png`／`apple-touch-icon.png`、リンクのプレビュー画像は `og-image.png`、シェア画像用は `brand/jaziba-logo.png`。ロゴの色は `@theme` に `jz-brand-teal`（#14A3A3）・`jz-brand-orange`（#F26B38）・`jz-brand-yellow`（#F6C343）・`jz-brand-blue`（#3A6EA5）・`jz-brand-blue-light`（#6E9BD1）・`jz-brand-ink`（#1F2A30）として登録しています
 

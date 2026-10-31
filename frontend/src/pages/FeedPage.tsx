@@ -239,7 +239,7 @@ export default function FeedPage() {
 
   return (
     <div className="mx-auto w-full max-w-[560px] md:px-4">
-      {/* Pull-to-refresh indicator: a red dot grows as you pull and pulses while loading. */}
+      {/* Pull-to-refresh indicator: the logo's orange circle grows as you pull and pulses while loading. */}
       <div
         className="flex items-end justify-center overflow-hidden md:hidden"
         style={{ height: refreshing ? 48 : pull, transition: pull ? "none" : "height 0.3s ease" }}
@@ -247,9 +247,9 @@ export default function FeedPage() {
         role="status"
       >
         <span className="relative mb-3 flex h-4 w-4 items-center justify-center">
-          {refreshing && <span className="absolute h-4 w-4 animate-ping rounded-full bg-jz-red opacity-60" />}
+          {refreshing && <span className="absolute h-4 w-4 animate-ping rounded-full bg-jz-warm opacity-60" />}
           <span
-            className="h-3 w-3 rounded-full bg-jz-red"
+            className="h-3 w-3 rounded-full bg-jz-warm"
             style={{ transform: `scale(${refreshing ? 1 : 0.3 + progress * 0.9})`, opacity: refreshing ? 1 : 0.4 + progress * 0.6 }}
           />
         </span>
@@ -258,7 +258,7 @@ export default function FeedPage() {
         <button
           type="button"
           onClick={showNewPosts}
-          className="animate-sheet-in fixed left-1/2 top-[calc(var(--header-offset,53px)+3.75rem)] z-40 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-jz-red px-4 py-2 text-sm font-bold text-white shadow-[0_10px_30px_-8px_rgba(215,32,46,0.8)] active:scale-95 md:top-4"
+          className="animate-sheet-in fixed left-1/2 top-[calc(var(--header-offset,53px)+3.75rem)] z-40 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-jz-accent px-4 py-2 text-sm font-bold text-white shadow-[0_10px_30px_-8px_rgba(14,127,127,0.8)] active:scale-95 md:top-4"
         >
           <ArrowUp className="h-4 w-4" strokeWidth={2.5} /> {t("feed.newPosts", { count: unseenNew.length })}
         </button>
@@ -273,7 +273,7 @@ export default function FeedPage() {
         </div>
       <h1 className="px-4 pt-5 text-[26px] font-extrabold leading-tight tracking-tight text-jz-ink md:px-0 md:pt-8">
         {t("feed.heroTitle")}
-        <span className="ml-1 inline-block h-2.5 w-2.5 rounded-full bg-jz-red align-baseline" aria-hidden />
+        <span className="ml-1 inline-block h-2.5 w-2.5 rounded-full bg-jz-warm align-baseline" aria-hidden />
       </h1>
       <div className="px-3 pt-3 md:px-0">
         <ConciergeButton />
@@ -321,11 +321,11 @@ export default function FeedPage() {
           to="/settings#travel-style"
           className="mx-3 mt-3 flex items-center gap-3 rounded-2xl bg-jz-tint px-4 py-3 text-xs text-jz-ink transition active:scale-[0.99] md:mx-0"
         >
-          <Sparkles className="h-4 w-4 shrink-0 text-jz-red" />
+          <Sparkles className="h-4 w-4 shrink-0 text-jz-accent" />
           <span className="min-w-0 flex-1 leading-relaxed">
             {personalized ? t("feed.personalizedNote") : t("feed.personalizeCta")}
           </span>
-          <span className="flex shrink-0 items-center font-bold text-jz-red">
+          <span className="flex shrink-0 items-center font-bold text-jz-accent">
             {personalized ? t("feed.personalizedChange") : t("feed.personalizeSet")}
             <ChevronRight className="h-4 w-4" />
           </span>

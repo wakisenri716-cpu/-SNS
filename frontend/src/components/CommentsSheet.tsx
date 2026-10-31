@@ -121,12 +121,12 @@ export default function CommentsSheet({
                   <div className="flex items-baseline gap-2">
                     <span className="font-semibold text-gray-900">{c.user.name}</span>
                     <span className="text-[11px] text-gray-500">{new Date(c.createdAt).toLocaleDateString(i18n.language)}</span>
-                    {c.hidden && <span className="rounded-full bg-jz-tint px-2 py-0.5 text-[10px] font-semibold text-jz-red">{t("comments.hiddenBadge")}</span>}
+                    {c.hidden && <span className="rounded-full bg-jz-tint px-2 py-0.5 text-[10px] font-semibold text-jz-accent">{t("comments.hiddenBadge")}</span>}
                     {c.canDelete && (
                       <button
                         type="button"
                         onClick={() => remove(c.id)}
-                        className="ml-auto text-[11px] text-gray-500 hover:text-jz-red"
+                        className="ml-auto text-[11px] text-gray-500 hover:text-jz-accent"
                       >
                         {t("comments.delete")}
                       </button>
@@ -191,7 +191,7 @@ export default function CommentsSheet({
               </button>
             </form>
           )}
-          {error && <p className="mt-1 text-xs text-jz-red">{error}</p>}
+          {error && <p className="mt-1 text-xs text-jz-warm-text">{error}</p>}
         </div>
       </div>
     </div>

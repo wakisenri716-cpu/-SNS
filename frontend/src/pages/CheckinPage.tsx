@@ -62,7 +62,7 @@ export default function CheckinPage() {
       <div className="mx-auto max-w-sm p-6 text-center">
         <Nfc className="mx-auto h-10 w-10 text-gray-400" />
         <p className="mt-3 text-sm leading-relaxed text-gray-600">{t(state.kind === "missing" ? "checkin.missing" : "checkin.error")}</p>
-        <Link to="/" className="mt-4 inline-block text-sm font-semibold text-jz-red">
+        <Link to="/" className="mt-4 inline-block text-sm font-semibold text-jz-accent">
           {t("shareIn.home")}
         </Link>
       </div>
@@ -97,11 +97,11 @@ export default function CheckinPage() {
         ) : !authToken ? (
           <>
             <p className="text-sm leading-relaxed text-gray-600">{t("checkin.loginToGet")}</p>
-            <Link to="/login" state={{ from: location.pathname }} className="mt-3 inline-block rounded-full bg-jz-red px-6 py-3 text-sm font-bold text-white">
+            <Link to="/login" state={{ from: location.pathname }} className="mt-3 inline-block rounded-full bg-jz-accent px-6 py-3 text-sm font-bold text-white">
               {t("checkin.login")}
             </Link>
             <p className="mt-3 text-xs text-gray-500">
-              <Link to="/register" className="font-semibold text-jz-red">
+              <Link to="/register" className="font-semibold text-jz-accent">
                 {t("checkin.register")}
               </Link>
             </p>

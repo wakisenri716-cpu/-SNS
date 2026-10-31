@@ -336,7 +336,7 @@ export function ItineraryPanel({
                 <Pencil className="h-4 w-4" />
               </button>
               {itinerary.isOwner && (
-                <button type="button" onClick={() => void deleteTrip()} aria-label={t("trips.delete")} className="rounded-full p-1.5 text-gray-500 hover:bg-jz-tint hover:text-jz-red">
+                <button type="button" onClick={() => void deleteTrip()} aria-label={t("trips.delete")} className="rounded-full p-1.5 text-gray-500 hover:bg-jz-tint hover:text-jz-accent">
                   <Trash2 className="h-4 w-4" />
                 </button>
               )}
@@ -470,7 +470,7 @@ export function ItineraryPanel({
               <button
                 type="button"
                 onClick={() => setFlyoverOpen(true)}
-                className="ml-auto inline-flex items-center gap-1 rounded-full bg-jz-red px-3 py-1 text-xs font-bold text-white active:scale-95"
+                className="ml-auto inline-flex items-center gap-1 rounded-full bg-jz-accent px-3 py-1 text-xs font-bold text-white active:scale-95"
               >
                 <Play className="h-3 w-3 fill-white" /> {t("flyover.button")}
               </button>
@@ -533,7 +533,7 @@ export function ItineraryPanel({
                 const dragging = dragger.drag?.from === i;
                 return (
                   <div key={stop.id}>
-                    {dragger.insertAt === i && <div className="ml-9 h-1 rounded-full bg-jz-red" aria-hidden />}
+                    {dragger.insertAt === i && <div className="ml-9 h-1 rounded-full bg-jz-accent" aria-hidden />}
                     {multiDay && day !== (i === 0 ? 0 : times[i - 1].day) && <DayDivider day={day} />}
                     <div
                       data-drag-item
@@ -542,14 +542,14 @@ export function ItineraryPanel({
                     >
                       <span
                         className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white ${
-                          liveIndex === i ? "bg-jz-red" : "bg-gray-900"
+                          liveIndex === i ? "bg-jz-accent" : "bg-gray-900"
                         }`}
                       >
                         {i + 1}
                       </span>
                       <div
                         className={`min-w-0 flex-1 rounded-2xl border bg-white p-2 ${
-                          liveIndex === i ? "border-jz-red ring-2 ring-jz-red/20" : "border-gray-200/80"
+                          liveIndex === i ? "border-jz-accent ring-2 ring-jz-accent/20" : "border-gray-200/80"
                         }`}
                         aria-current={liveIndex === i ? "step" : undefined}
                       >
@@ -590,7 +590,7 @@ export function ItineraryPanel({
                             type="button"
                             onClick={() => remove(stop.id)}
                             aria-label={t("trips.removeFromTrip")}
-                            className="rounded px-1 text-xs text-gray-500 hover:bg-jz-tint hover:text-jz-red"
+                            className="rounded px-1 text-xs text-gray-500 hover:bg-jz-tint hover:text-jz-accent"
                           >
                             <X className="h-4 w-4" />
                           </button>
@@ -602,7 +602,7 @@ export function ItineraryPanel({
                           })}
                         </p>
                         {overnight[i] ? (
-                          <p className="mt-1 text-[11px] font-semibold text-jz-red">{t("itinerary.overnight")}</p>
+                          <p className="mt-1 text-[11px] font-semibold text-jz-accent">{t("itinerary.overnight")}</p>
                         ) : (
                           <label className="mt-1 flex items-center gap-1.5 text-[11px] text-gray-500">
                             {t("itinerary.stayLabel")}
@@ -639,7 +639,7 @@ export function ItineraryPanel({
                   </div>
                 );
               })}
-              {dragger.insertAt === itinerary.stops.length && <div className="ml-9 mt-1.5 h-1 rounded-full bg-jz-red" aria-hidden />}
+              {dragger.insertAt === itinerary.stops.length && <div className="ml-9 mt-1.5 h-1 rounded-full bg-jz-accent" aria-hidden />}
               </div>
 
               <p className="mt-3 flex items-center gap-2 text-xs font-semibold text-gray-700">
@@ -724,7 +724,7 @@ export function ItineraryPanel({
                     );
                     setCalendarDate(null);
                   }}
-                  className="rounded-full bg-jz-red px-3 py-1.5 text-xs font-bold text-white"
+                  className="rounded-full bg-jz-accent px-3 py-1.5 text-xs font-bold text-white"
                 >
                   {t("itinerary.downloadCalendar")}
                 </button>
@@ -787,7 +787,7 @@ export default function ItineraryRail() {
           onClick={() => navigate("/itinerary?new=1")}
           aria-label={t("tripPicker.newTrip")}
           title={t("tripPicker.newTrip")}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-jz-red text-white"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-jz-accent text-white"
         >
           <Plus className="h-4 w-4" />
         </button>

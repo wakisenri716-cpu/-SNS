@@ -66,9 +66,9 @@ export default function LegOptions({
           {shown.map((o) => {
             const min = optionMinutes(o);
             return (
-              <li key={o.id} className={`rounded-2xl border p-2.5 ${o.chosen ? "border-jz-red/50 bg-jz-tint" : "border-gray-200 bg-white"}`}>
+              <li key={o.id} className={`rounded-2xl border p-2.5 ${o.chosen ? "border-jz-accent/50 bg-jz-tint" : "border-gray-200 bg-white"}`}>
                 <div className="flex items-start gap-2">
-                  <span className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${o.chosen ? "bg-jz-red text-white" : "bg-gray-100 text-jz-ink"}`}>
+                  <span className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${o.chosen ? "bg-jz-accent text-white" : "bg-gray-100 text-jz-ink"}`}>
                     <ModeIcon mode={o.mode} className="h-3.5 w-3.5" />
                   </span>
                   <div className="min-w-0 flex-1">
@@ -93,7 +93,7 @@ export default function LegOptions({
                       <button type="button" onClick={() => setEditing(o)} aria-label={t("legOption.edit")} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-jz-ink">
                         <Pencil className="h-3.5 w-3.5" />
                       </button>
-                      <button type="button" onClick={() => void remove(o)} aria-label={t("legOption.remove")} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-jz-red">
+                      <button type="button" onClick={() => void remove(o)} aria-label={t("legOption.remove")} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-jz-accent">
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
@@ -105,7 +105,7 @@ export default function LegOptions({
                     onClick={() => void choose(o)}
                     aria-pressed={o.chosen}
                     className={`mt-2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-bold active:scale-95 ${
-                      o.chosen ? "bg-jz-red text-white" : "bg-white text-jz-ink ring-1 ring-gray-300"
+                      o.chosen ? "bg-jz-accent text-white" : "bg-white text-jz-ink ring-1 ring-gray-300"
                     }`}
                   >
                     {o.chosen && <Check className="h-3.5 w-3.5" />}
@@ -245,8 +245,8 @@ function LegOptionForm({
     }
   }
 
-  const field = "mt-1 w-full rounded-xl bg-gray-100 px-3 py-2 text-sm text-jz-ink outline-none focus:ring-2 focus:ring-jz-red/30";
-  const small = "mt-0.5 w-full rounded-lg bg-white px-2 py-1.5 text-xs text-jz-ink outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-jz-red/30";
+  const field = "mt-1 w-full rounded-xl bg-gray-100 px-3 py-2 text-sm text-jz-ink outline-none focus:ring-2 focus:ring-jz-accent/30";
+  const small = "mt-0.5 w-full rounded-lg bg-white px-2 py-1.5 text-xs text-jz-ink outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-jz-accent/30";
   const label = "block text-[11px] font-semibold text-gray-500";
   const heading = existing ? t("legOption.editTitle") : t("legOption.addTitle");
 
@@ -374,7 +374,7 @@ function LegOptionForm({
                       <input value={r.arrivePlatform} onChange={(e) => setRide(r.key, { arrivePlatform: e.target.value })} maxLength={30} className={small} />
                     </label>
                   </div>
-                  <button type="button" onClick={() => setRides((list) => list.filter((x) => x.key !== r.key))} className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-gray-500 hover:text-jz-red">
+                  <button type="button" onClick={() => setRides((list) => list.filter((x) => x.key !== r.key))} className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-gray-500 hover:text-jz-accent">
                     <Trash2 className="h-3 w-3" /> {t("legOption.removeRide")}
                   </button>
                 </fieldset>
@@ -396,14 +396,14 @@ function LegOptionForm({
             <textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={300} rows={2} placeholder={t("legOption.notePlaceholder")} className={`${field} resize-none`} />
           </label>
           <label className="flex items-center gap-2 rounded-2xl bg-gray-50 px-3 py-2.5 text-sm font-semibold text-jz-ink">
-            <input type="checkbox" checked={chosen} onChange={(e) => setChosen(e.target.checked)} className="h-4 w-4 accent-[var(--color-jz-red)]" />
+            <input type="checkbox" checked={chosen} onChange={(e) => setChosen(e.target.checked)} className="h-4 w-4 accent-[var(--color-jz-accent)]" />
             {t("legOption.chooseThis")}
           </label>
           <p className="text-[11px] leading-relaxed text-gray-500">{t("legOption.chooseNote")}</p>
-          {error && <p className="text-xs text-jz-red">{error}</p>}
+          {error && <p className="text-xs text-jz-warm-text">{error}</p>}
         </div>
         <div className="border-t border-gray-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <button type="submit" disabled={saving} className="w-full rounded-full bg-jz-red py-3 text-sm font-bold text-white disabled:opacity-60">
+          <button type="submit" disabled={saving} className="w-full rounded-full bg-jz-accent py-3 text-sm font-bold text-white disabled:opacity-60">
             {t("transport.save")}
           </button>
         </div>

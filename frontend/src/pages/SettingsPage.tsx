@@ -160,7 +160,7 @@ function ProfileSection() {
           {t("settings.save")}
         </button>
         {message && <p className="text-xs text-gray-900">{message}</p>}
-        {error && <p className="text-xs text-jz-red">{error}</p>}
+        {error && <p className="text-xs text-jz-warm-text">{error}</p>}
       </div>
     </section>
   );
@@ -561,7 +561,7 @@ function PasskeySection() {
         <ul className="mb-3 divide-y divide-gray-100 rounded-2xl border border-gray-200 lg:max-w-md">
           {items.map((p) => (
             <li key={p.id} className="flex items-center gap-3 px-3 py-2.5">
-              <Fingerprint className="h-5 w-5 shrink-0 text-jz-red" />
+              <Fingerprint className="h-5 w-5 shrink-0 text-jz-accent" />
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold text-jz-ink">
                   {p.name || t("passkey.unnamed")}
@@ -575,7 +575,7 @@ function PasskeySection() {
                 type="button"
                 onClick={() => void remove(p)}
                 aria-label={t("passkey.remove", { name: p.name || t("passkey.unnamed") })}
-                className="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-jz-red"
+                className="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-jz-accent"
               >
                 <Trash2 className="h-4 w-4" />
               </button>
@@ -664,7 +664,7 @@ function PasswordSection() {
           {t("settings.changePassword")}
         </button>
         {message && <p className="text-xs text-gray-900">{message}</p>}
-        {error && <p className="text-xs text-jz-red">{error}</p>}
+        {error && <p className="text-xs text-jz-warm-text">{error}</p>}
       </div>
     </section>
   );
@@ -693,12 +693,12 @@ function DeleteAccountSection() {
 
   return (
     <section className="p-4 lg:p-6">
-      <h2 className="mb-1 text-sm font-semibold text-jz-red">{t("settings.deleteHeading")}</h2>
+      <h2 className="mb-1 text-sm font-semibold text-jz-accent">{t("settings.deleteHeading")}</h2>
       <p className="mb-2 text-xs text-gray-500">{t("settings.deleteWarning")}</p>
       {!confirming ? (
         <button
           onClick={() => setConfirming(true)}
-          className="rounded-lg border border-jz-red/40 px-4 py-1.5 text-sm font-medium text-jz-red hover:bg-jz-tint"
+          className="rounded-lg border border-jz-accent/40 px-4 py-1.5 text-sm font-medium text-jz-accent hover:bg-jz-tint"
         >
           {t("settings.deleteButton")}
         </button>
@@ -710,14 +710,14 @@ function DeleteAccountSection() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-jz-red"
+              className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-jz-accent"
             />
           </label>
           <div className="flex gap-2">
             <button
               onClick={remove}
               disabled={deleting || !password}
-              className="rounded-lg bg-jz-red px-4 py-1.5 text-sm font-medium text-white hover:bg-jz-red-dark disabled:opacity-50"
+              className="rounded-lg bg-jz-accent px-4 py-1.5 text-sm font-medium text-white hover:bg-jz-accent-dark disabled:opacity-50"
             >
               {t("settings.deleteConfirmButton")}
             </button>
@@ -732,7 +732,7 @@ function DeleteAccountSection() {
               {t("settings.deleteCancelButton")}
             </button>
           </div>
-          {error && <p className="text-xs text-jz-red">{error}</p>}
+          {error && <p className="text-xs text-jz-warm-text">{error}</p>}
         </div>
       )}
     </section>

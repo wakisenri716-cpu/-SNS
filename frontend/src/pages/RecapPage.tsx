@@ -211,7 +211,7 @@ function buildSlides(r: Recap): Slide[] {
   const slides: Slide[] = [
     {
       key: "intro",
-      bg: "bg-gradient-to-br from-[#d7202e] via-[#ff7a4d] to-[#ff4f8b]",
+      bg: "bg-gradient-to-br from-[#0e7f7f] via-[#3a6ea5] to-[#c2481c]",
       body: (t) => (
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.3em] text-white/80">Jaziba</p>

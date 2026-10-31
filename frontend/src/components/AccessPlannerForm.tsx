@@ -60,7 +60,7 @@ export default function AccessPlannerForm({ endpoint }: { endpoint: string }) {
           {loading ? t("accessPlanner.searching") : t("accessPlanner.search")}
         </button>
       </form>
-      {error && <p className="mt-2 text-xs text-jz-red">{error}</p>}
+      {error && <p className="mt-2 text-xs text-jz-warm-text">{error}</p>}
       {result && (
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg bg-gray-50 p-3 text-sm text-gray-700">
           <span>{t("accessPlanner.departure", { time: formatDateTime(result.departureAt, i18n.language) })}</span>

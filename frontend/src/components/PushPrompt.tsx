@@ -46,9 +46,9 @@ export default function PushPrompt() {
 
   return (
     <div className="animate-page-in mt-4 flex items-center gap-3 rounded-2xl bg-jz-tint px-4 py-3">
-      <BellRing className="h-5 w-5 shrink-0 text-jz-red" />
+      <BellRing className="h-5 w-5 shrink-0 text-jz-accent" />
       <p className="min-w-0 flex-1 text-xs leading-relaxed text-jz-ink">{t("push.prompt")}</p>
-      <button type="button" onClick={() => void turnOn()} className="shrink-0 rounded-full bg-jz-red px-3 py-1.5 text-xs font-bold text-white active:scale-95">
+      <button type="button" onClick={() => void turnOn()} className="shrink-0 rounded-full bg-jz-accent px-3 py-1.5 text-xs font-bold text-white active:scale-95">
         {t("push.turnOn")}
       </button>
       <button type="button" onClick={dismiss} aria-label={t("push.dismiss")} className="shrink-0 rounded-full p-1 text-gray-500 hover:bg-white/60">

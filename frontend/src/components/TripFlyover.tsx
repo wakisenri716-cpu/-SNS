@@ -74,14 +74,14 @@ export default function TripFlyover({ stops, onClose }: { stops: FlyoverStop[]; 
         id: "trip-route-glow",
         type: "line",
         source: "trip-route",
-        paint: { "line-color": "#d7202e", "line-width": 12, "line-opacity": 0.18, "line-blur": 6 },
+        paint: { "line-color": "#14a3a3", "line-width": 12, "line-opacity": 0.18, "line-blur": 6 },
       });
       map.addLayer({
         id: "trip-route",
         type: "line",
         source: "trip-route",
         layout: { "line-cap": "round", "line-join": "round" },
-        paint: { "line-color": "#d7202e", "line-width": 4, "line-dasharray": [1.5, 1.2] },
+        paint: { "line-color": "#14a3a3", "line-width": 4, "line-dasharray": [1.5, 1.2] },
       });
     });
     // The tour doesn't wait for the map style: on a slow or failed tile load
@@ -219,7 +219,7 @@ export default function TripFlyover({ stops, onClose }: { stops: FlyoverStop[]; 
             type="button"
             onClick={() => (atEnd && !playing ? (setStep(-1), setPlaying(true)) : setPlaying((p) => !p))}
             aria-label={playing ? t("flyover.pause") : t("flyover.play")}
-            className="flex h-14 w-14 items-center justify-center rounded-full bg-jz-red text-white shadow-[0_8px_24px_-6px_rgba(215,32,46,0.8)] active:scale-95"
+            className="flex h-14 w-14 items-center justify-center rounded-full bg-jz-accent text-white shadow-[0_8px_24px_-6px_rgba(14,127,127,0.8)] active:scale-95"
           >
             {playing ? <Pause className="h-6 w-6 fill-white" /> : <Play className="ml-0.5 h-6 w-6 fill-white" />}
           </button>

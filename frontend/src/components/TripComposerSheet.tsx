@@ -150,7 +150,7 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
             <div aria-live="polite">
               <p className="flex items-center gap-2 text-sm font-semibold text-jz-ink">
                 {[0, 1, 2].map((k) => (
-                  <span key={k} className="h-1.5 w-1.5 animate-bounce rounded-full bg-jz-red" style={{ animationDelay: `${k * 0.15}s` }} />
+                  <span key={k} className="h-1.5 w-1.5 animate-bounce rounded-full bg-jz-accent" style={{ animationDelay: `${k * 0.15}s` }} />
                 ))}
                 <span className="ml-1">{t("composer.building")}</span>
               </p>
@@ -181,7 +181,7 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
                     maxLength={300}
                     rows={3}
                     placeholder={speech.listening ? t("concierge.listening") : t("composer.placeholder")}
-                    className="min-w-0 flex-1 resize-none rounded-2xl bg-gray-100 px-4 py-3 text-sm text-jz-ink outline-none placeholder:text-gray-500 focus:ring-2 focus:ring-jz-red/30"
+                    className="min-w-0 flex-1 resize-none rounded-2xl bg-gray-100 px-4 py-3 text-sm text-jz-ink outline-none placeholder:text-gray-500 focus:ring-2 focus:ring-jz-accent/30"
                   />
                   {speech.supported && (
                     <button
@@ -190,10 +190,10 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
                       aria-label={speech.listening ? t("concierge.stopVoice") : t("concierge.voice")}
                       aria-pressed={speech.listening}
                       className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition active:scale-90 ${
-                        speech.listening ? "bg-jz-red text-white" : "bg-gray-100 text-jz-ink"
+                        speech.listening ? "bg-jz-accent text-white" : "bg-gray-100 text-jz-ink"
                       }`}
                     >
-                      {speech.listening && <span className="absolute inset-0 animate-ping rounded-full bg-jz-red/40" />}
+                      {speech.listening && <span className="absolute inset-0 animate-ping rounded-full bg-jz-accent/40" />}
                       <Mic className="relative h-5 w-5" />
                     </button>
                   )}
@@ -226,7 +226,7 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 maxLength={40}
-                className="mt-1.5 w-full rounded-2xl bg-gray-100 px-4 py-2.5 text-sm font-bold text-jz-ink outline-none focus:ring-2 focus:ring-jz-red/30"
+                className="mt-1.5 w-full rounded-2xl bg-gray-100 px-4 py-2.5 text-sm font-bold text-jz-ink outline-none focus:ring-2 focus:ring-jz-accent/30"
               />
               {draft.summary && <p className="mt-3 text-sm leading-relaxed text-jz-ink">{draft.summary}</p>}
               {draft.requestedDays > shownDays && (
@@ -236,7 +236,7 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
               )}
               {days.map((day) => (
                 <section key={day} className="mt-5">
-                  {shownDays > 1 && <h3 className="mb-2 text-xs font-extrabold text-jz-red">{t("itinerary.dayLabel", { day })}</h3>}
+                  {shownDays > 1 && <h3 className="mb-2 text-xs font-extrabold text-jz-accent">{t("itinerary.dayLabel", { day })}</h3>}
                   <ol className="space-y-2.5">
                     {draft.stops
                       .filter((s) => s.day === day)
@@ -249,7 +249,7 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
               <p className="mt-4 text-[11px] leading-relaxed text-gray-500">{t("composer.afterNote")}</p>
             </>
           )}
-          {error && <p className="mt-4 text-xs text-jz-red">{error}</p>}
+          {error && <p className="mt-4 text-xs text-jz-warm-text">{error}</p>}
         </div>
 
         <div className="flex gap-2 border-t border-gray-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
@@ -258,7 +258,7 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
               type="button"
               onClick={() => void build()}
               disabled={!message.trim() || building}
-              className="flex flex-1 items-center justify-center gap-2 rounded-full bg-jz-red py-3 text-sm font-bold text-white active:scale-[0.98] disabled:opacity-40"
+              className="flex flex-1 items-center justify-center gap-2 rounded-full bg-jz-accent py-3 text-sm font-bold text-white active:scale-[0.98] disabled:opacity-40"
             >
               <Sparkles className="h-4 w-4" /> {t("composer.build")}
             </button>
@@ -276,7 +276,7 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
                   type="button"
                   onClick={() => void create()}
                   disabled={creating || !name.trim()}
-                  className="flex-[2] rounded-full bg-jz-red py-3 text-sm font-bold text-white active:scale-[0.98] disabled:opacity-60"
+                  className="flex-[2] rounded-full bg-jz-accent py-3 text-sm font-bold text-white active:scale-[0.98] disabled:opacity-60"
                 >
                   {t("composer.create", { count: draft.stops.length })}
                 </button>
@@ -325,7 +325,7 @@ function ComposedStopRow({ stop, index, onRemove }: { stop: ComposedStop; index:
         type="button"
         onClick={onRemove}
         aria-label={t("composer.removeStop", { place })}
-        className="self-start rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-jz-red"
+        className="self-start rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-jz-accent"
       >
         <X className="h-4 w-4" />
       </button>

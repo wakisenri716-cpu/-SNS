@@ -136,14 +136,14 @@ function TripPickerSheet({ request, onClose }: { request: TripPickerRequest; onC
                   {single ? (
                     <span
                       className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 transition ${
-                        trip.containsReel ? "border-jz-red bg-jz-red text-white" : "border-gray-300 text-transparent"
+                        trip.containsReel ? "border-jz-accent bg-jz-accent text-white" : "border-gray-300 text-transparent"
                       }`}
                       aria-hidden
                     >
                       <Check className="h-4 w-4" strokeWidth={3} />
                     </span>
                   ) : (
-                    <Plus className="h-5 w-5 shrink-0 text-jz-red" aria-hidden />
+                    <Plus className="h-5 w-5 shrink-0 text-jz-accent" aria-hidden />
                   )}
                 </button>
               </li>
@@ -159,9 +159,9 @@ function TripPickerSheet({ request, onClose }: { request: TripPickerRequest; onC
                 maxLength={40}
                 placeholder={t("tripPicker.namePlaceholder")}
                 aria-label={t("tripPicker.nameLabel")}
-                className="min-w-0 flex-1 rounded-full bg-gray-100 px-4 py-2.5 text-sm text-jz-ink outline-none placeholder:text-gray-500 focus:ring-2 focus:ring-jz-red/30"
+                className="min-w-0 flex-1 rounded-full bg-gray-100 px-4 py-2.5 text-sm text-jz-ink outline-none placeholder:text-gray-500 focus:ring-2 focus:ring-jz-accent/30"
               />
-              <button type="submit" disabled={!name.trim() || busy} className="shrink-0 rounded-full bg-jz-red px-4 text-sm font-bold text-white disabled:opacity-40">
+              <button type="submit" disabled={!name.trim() || busy} className="shrink-0 rounded-full bg-jz-accent px-4 text-sm font-bold text-white disabled:opacity-40">
                 {t("tripPicker.create")}
               </button>
             </form>
@@ -169,9 +169,9 @@ function TripPickerSheet({ request, onClose }: { request: TripPickerRequest; onC
             <button
               type="button"
               onClick={() => setCreating(true)}
-              className="mt-1 flex w-full items-center gap-3 rounded-2xl p-2 text-left text-sm font-bold text-jz-red hover:bg-jz-tint"
+              className="mt-1 flex w-full items-center gap-3 rounded-2xl p-2 text-left text-sm font-bold text-jz-accent hover:bg-jz-tint"
             >
-              <span className="flex h-14 w-14 items-center justify-center rounded-xl border-2 border-dashed border-jz-red/40">
+              <span className="flex h-14 w-14 items-center justify-center rounded-xl border-2 border-dashed border-jz-accent/40">
                 <Plus className="h-5 w-5" />
               </span>
               {t("tripPicker.newTrip")}

@@ -43,14 +43,14 @@ export default function TagPage() {
     <div className="mx-auto w-full max-w-[935px] md:px-5 md:py-8">
       <header className="px-4 pb-4 pt-6 md:px-0">
         <h1 className="text-3xl font-extrabold tracking-tight text-jz-ink">
-          <span className="text-jz-red">#</span>
+          <span className="text-jz-accent">#</span>
           {label.replace(/\s+/g, "") || "—"}
         </h1>
         {loaded && <p className="mt-1 text-sm text-gray-500">{t("tags.postCount", { count: reels.length })}</p>}
         <div className="scrollbar-none -mx-4 mt-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:px-0">
           {others.map((o) => (
             <Link key={o.to} to={o.to} className="shrink-0 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-200">
-              <span className="text-jz-red">#</span>
+              <span className="text-jz-accent">#</span>
               {o.label.replace(/\s+/g, "")}
             </Link>
           ))}

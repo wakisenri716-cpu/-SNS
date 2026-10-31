@@ -52,7 +52,7 @@ export default function ReelManageGrid({
             </button>
             <button
               onClick={() => removeReel(reel.id)}
-              className="rounded-full bg-jz-tint px-2 py-1 text-xs font-medium text-jz-red hover:bg-jz-tint"
+              className="rounded-full bg-jz-tint px-2 py-1 text-xs font-medium text-jz-accent hover:bg-jz-tint"
             >
               {t("reelManageGrid.delete")}
             </button>

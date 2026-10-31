@@ -29,7 +29,7 @@ export default function Avatar({
     <span className="relative inline-flex shrink-0 overflow-hidden rounded-full p-[2.5px]">
       <span
         className={`absolute -inset-1/4 ${spin && !seen ? "animate-ring-spin" : ""} ${seen ? "bg-gray-300" : ""}`}
-        style={seen ? undefined : { background: "conic-gradient(from 200deg, #d7202e, #ff5a4e, #ffa46b, #ff5a4e, #d7202e)" }}
+        style={seen ? undefined : { background: "conic-gradient(from 200deg, #14a3a3, #3a6ea5, #f26b38, #f6c343, #14a3a3)" }}
         aria-hidden
       />
       <span className="relative block rounded-full bg-white p-[2px]">{inner}</span>

@@ -112,7 +112,7 @@ export default function TripPlanSheet({
                 onChange={(e) => setWishes(e.target.value)}
                 maxLength={300}
                 placeholder={t("tripPlan.wishesPlaceholder")}
-                className="mt-1.5 w-full rounded-2xl bg-gray-100 px-4 py-3 text-sm text-jz-ink outline-none placeholder:text-gray-500 focus:ring-2 focus:ring-jz-red/30"
+                className="mt-1.5 w-full rounded-2xl bg-gray-100 px-4 py-3 text-sm text-jz-ink outline-none placeholder:text-gray-500 focus:ring-2 focus:ring-jz-accent/30"
               />
               <div className="mt-2.5 flex flex-wrap gap-2">
                 {WISHES.map((key) => (
@@ -136,7 +136,7 @@ export default function TripPlanSheet({
                   const stop = byId.get(s.id);
                   return (
                     <li key={s.id} className="animate-page-in flex gap-3" style={{ animationDelay: `${i * 70}ms`, animationFillMode: "both" }}>
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-jz-red text-xs font-bold text-white">{i + 1}</span>
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-jz-accent text-xs font-bold text-white">{i + 1}</span>
                       <div className="min-w-0 flex-1 rounded-2xl bg-gray-50 p-3">
                         <p className="truncate text-sm font-bold text-jz-ink">{stop?.locationName || stop?.municipality.name}</p>
                         <p className="mt-0.5 flex items-center gap-1 text-xs text-gray-500">
@@ -150,7 +150,7 @@ export default function TripPlanSheet({
               </ol>
             </>
           )}
-          {error && <p className="mt-4 text-xs text-jz-red">{error}</p>}
+          {error && <p className="mt-4 text-xs text-jz-warm-text">{error}</p>}
         </div>
 
         <div className="flex gap-2 border-t border-gray-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
@@ -159,7 +159,7 @@ export default function TripPlanSheet({
               type="button"
               onClick={() => void makePlan()}
               disabled={planning}
-              className="flex flex-1 items-center justify-center gap-2 rounded-full bg-jz-red py-3 text-sm font-bold text-white active:scale-[0.98] disabled:opacity-60"
+              className="flex flex-1 items-center justify-center gap-2 rounded-full bg-jz-accent py-3 text-sm font-bold text-white active:scale-[0.98] disabled:opacity-60"
             >
               {planning ? (
                 <>
@@ -185,7 +185,7 @@ export default function TripPlanSheet({
                 type="button"
                 onClick={() => void apply()}
                 disabled={applying}
-                className="flex-[2] rounded-full bg-jz-red py-3 text-sm font-bold text-white active:scale-[0.98] disabled:opacity-60"
+                className="flex-[2] rounded-full bg-jz-accent py-3 text-sm font-bold text-white active:scale-[0.98] disabled:opacity-60"
               >
                 {t("tripPlan.apply")}
               </button>

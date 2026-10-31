@@ -69,13 +69,13 @@ export default function TripTransports({
       </div>
       {!readOnly && transports.length > 0 && push && push !== "unsupported" && (
         <p className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-xl bg-gray-50 px-3 py-2 text-[11px] leading-relaxed text-gray-600">
-          <BellRing className="h-3.5 w-3.5 shrink-0 text-jz-red" />
+          <BellRing className="h-3.5 w-3.5 shrink-0 text-jz-accent" />
           <span className="min-w-0 flex-1">{t("transport.pushNote")}</span>
           {push === "off" && (
             <button
               type="button"
               onClick={() => void enablePush(i18n.language).then(setPush)}
-              className="rounded-full bg-jz-red px-2.5 py-1 font-bold text-white"
+              className="rounded-full bg-jz-accent px-2.5 py-1 font-bold text-white"
             >
               {t("transport.pushEnable")}
             </button>
@@ -94,7 +94,7 @@ export default function TripTransports({
             const { phase, toDepartMs } = transportPhase(tr, now);
             const left = splitDuration(toDepartMs);
             return (
-              <li key={tr.id} className={`rounded-2xl border p-3 ${phase === "enroute" || phase === "soon" ? "border-jz-red/40 bg-jz-tint" : "border-gray-200"}`}>
+              <li key={tr.id} className={`rounded-2xl border p-3 ${phase === "enroute" || phase === "soon" ? "border-jz-accent/40 bg-jz-tint" : "border-gray-200"}`}>
                 <div className="flex items-start gap-2.5">
                   <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-jz-ink text-white">
                     <Icon className="h-4 w-4" />
@@ -115,7 +115,7 @@ export default function TripTransports({
                       </p>
                     )}
                     {(phase === "soon" || phase === "enroute") && (
-                      <p className="mt-1 text-[11px] font-bold text-jz-red">
+                      <p className="mt-1 text-[11px] font-bold text-jz-accent">
                         {phase === "soon" ? t("transport.departsIn", { minutes: left.h * 60 + left.m }) : t("transport.enroute")}
                       </p>
                     )}
@@ -125,14 +125,14 @@ export default function TripTransports({
                       <button type="button" onClick={() => setEditing(tr)} aria-label={t("transport.edit", { name: tr.name })} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-jz-ink">
                         <Pencil className="h-3.5 w-3.5" />
                       </button>
-                      <button type="button" onClick={() => void remove(tr)} aria-label={t("transport.remove", { name: tr.name })} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-jz-red">
+                      <button type="button" onClick={() => void remove(tr)} aria-label={t("transport.remove", { name: tr.name })} className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-jz-accent">
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   )}
                 </div>
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                  <button type="button" onClick={() => setRiding(tr.id)} className="inline-flex items-center gap-1 rounded-full bg-jz-red px-3 py-1 text-[11px] font-bold text-white active:scale-95">
+                  <button type="button" onClick={() => setRiding(tr.id)} className="inline-flex items-center gap-1 rounded-full bg-jz-accent px-3 py-1 text-[11px] font-bold text-white active:scale-95">
                     <Radio className="h-3.5 w-3.5" /> {t("transport.rideMode")}
                   </button>
                   <a href={statusUrl(tr.kind, tr.name, tr.operator)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-[11px] font-semibold text-jz-ink hover:bg-gray-200">
@@ -220,7 +220,7 @@ function TransportForm({
     }
   }
 
-  const field = "mt-1 w-full rounded-xl bg-gray-100 px-3 py-2 text-sm text-jz-ink outline-none focus:ring-2 focus:ring-jz-red/30";
+  const field = "mt-1 w-full rounded-xl bg-gray-100 px-3 py-2 text-sm text-jz-ink outline-none focus:ring-2 focus:ring-jz-accent/30";
   const label = "block text-[11px] font-semibold text-gray-500";
   const placeholders = { plane: "JL123", train: t("transport.trainExample"), bus: t("transport.busExample"), ferry: "", other: "" };
 
@@ -330,10 +330,10 @@ function TransportForm({
             <textarea value={form.note} onChange={set("note")} maxLength={300} rows={2} className={`${field} resize-none`} />
           </label>
           <p className="text-[11px] leading-relaxed text-gray-500">{t("transport.formNote")}</p>
-          {error && <p className="text-xs text-jz-red">{error}</p>}
+          {error && <p className="text-xs text-jz-warm-text">{error}</p>}
         </div>
         <div className="border-t border-gray-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <button type="submit" disabled={saving} className="w-full rounded-full bg-jz-red py-3 text-sm font-bold text-white disabled:opacity-60">
+          <button type="submit" disabled={saving} className="w-full rounded-full bg-jz-accent py-3 text-sm font-bold text-white disabled:opacity-60">
             {t("transport.save")}
           </button>
         </div>

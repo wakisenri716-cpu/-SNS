@@ -61,9 +61,9 @@ export default function NotificationsPage() {
               >
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100">
                   {n.type === "like" ? (
-                    <Heart className="h-5 w-5 fill-jz-red text-jz-red" />
+                    <Heart className="h-5 w-5 fill-jz-warm text-jz-warm" />
                   ) : n.type === "newPost" ? (
-                    <Clapperboard className="h-5 w-5 text-jz-red" />
+                    <Clapperboard className="h-5 w-5 text-jz-accent" />
                   ) : (
                     <MessageCircle className="h-5 w-5 text-gray-900" />
                   )}
@@ -91,7 +91,7 @@ export default function NotificationsPage() {
                     preload="metadata"
                   />
                 )}
-                {!n.read && <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-jz-red" aria-hidden />}
+                {!n.read && <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-jz-warm" aria-hidden />}
               </Link>
             </li>
           ))}

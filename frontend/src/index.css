@@ -2,24 +2,31 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Jaziba look: white surfaces, ink for text and red as the one accent
-   (primary actions, likes, the active-tab dot, story rings). */
+/* Jaziba look, from the logo kit (public/brand/): white surfaces, the
+   wordmark's ink for text, teal (the mark's first tile, deepened so white
+   text on it passes WCAG AA) for actions and links, and the mark's orange
+   circle as the warm accent — likes, unread / live dots, the active tab,
+   the dot after headings, stamps. Yellow and blue join for decoration
+   (gradients, story rings) only, never behind text. */
 @theme {
-  /* The logo kit's colors (public/brand/): the mark's four tiles and the
-     wordmark's ink; jz-brand-blue-light is the blue tile on dark surfaces. */
   --color-jz-brand-teal: #14a3a3;
   --color-jz-brand-orange: #f26b38;
   --color-jz-brand-yellow: #f6c343;
   --color-jz-brand-blue: #3a6ea5;
   --color-jz-brand-blue-light: #6e9bd1;
   --color-jz-brand-ink: #1f2a30;
-  --color-jz-red: #d7202e;
-  --color-jz-red-dark: #b3141f;
-  --color-jz-tint: #fef2f3;
+  /* Main color: buttons, links, selected states (white text: 4.8:1). */
+  --color-jz-accent: #0e7f7f;
+  --color-jz-accent-dark: #0a6464;
+  --color-jz-tint: #e7f5f5;
+  /* The logo's orange circle. */
+  --color-jz-warm: #f26b38;
+  /* Orange text on white (4.6:1). */
+  --color-jz-warm-text: #c2481c;
   /* A touch darker than Tailwind's gray-500 so small secondary text stays
      at WCAG AA (4.5:1) on white and on gray-100 surfaces. */
   --color-gray-500: #646c7b;
-  --color-jz-ink: #11151d;
+  --color-jz-ink: #1f2a30;
   --animate-like-pop: like-pop 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.4);
   --animate-heart-burst: heart-burst 0.9s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards;
   --animate-toast-in: toast-in 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1);
@@ -28,7 +35,9 @@
   --animate-page-in: page-in 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
   --animate-viewer-in: viewer-in 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
   --animate-ring-spin: ring-spin 6s linear infinite;
-  --font-sans: "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", system-ui, "Segoe UI", Roboto, sans-serif;
+  /* Outfit (the wordmark's typeface) for Latin letters and numbers, Noto
+     Sans JP for Japanese. */
+  --font-sans: "Outfit", "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", system-ui, "Segoe UI", Roboto, sans-serif;
 }
 
 html,
@@ -184,19 +193,22 @@ body {
   --color-gray-900: #eff1f4;
   --color-gray-950: #f8f9fa;
   --color-jz-ink: #f3f4f6;
-  --color-jz-tint: #2b1417;
+  --color-jz-tint: #0f2a2b;
 }
-/* Red stays the logo red behind white text (buttons, badges: 5:1), but red
-   *text* on the dark page needs a lighter shade to stay readable. */
-.dark .text-jz-red {
-  color: #ff5c66;
+/* Teal stays deep behind white text (buttons, badges), but teal *text* on
+   the dark page needs a lighter shade to stay readable; the same for orange. */
+.dark .text-jz-accent {
+  color: #3cc7c7;
 }
-.dark :where(.on-media, .bg-jz-red) .text-jz-red {
-  color: #d7202e;
+.dark :where(.on-media, .bg-jz-accent) .text-jz-accent {
+  color: #0e7f7f;
+}
+.dark .text-jz-warm-text {
+  color: #ff9a6e;
 }
 /* Anything drawn over a video or on red keeps the light-mode palette, so
    white text and icons there stay white. */
-.dark :where(.on-media, .bg-jz-red, .glass-dark, .ai-orb, .ai-card, [class*="from-black"]) {
+.dark :where(.on-media, .bg-jz-accent, .glass-dark, .ai-orb, .ai-card, [class*="from-black"]) {
   --color-white: #fff;
   --color-gray-100: oklch(96.7% 0.003 264.542);
   --color-gray-200: oklch(92.8% 0.006 264.531);
@@ -207,7 +219,7 @@ body {
   --color-gray-700: oklch(37.3% 0.034 259.733);
   --color-gray-800: oklch(27.8% 0.033 256.848);
   --color-gray-900: oklch(21% 0.034 264.665);
-  --color-jz-ink: #11151d;
+  --color-jz-ink: #1f2a30;
 }
 .dark .glass {
   background: rgba(30, 33, 40, 0.72);
@@ -228,20 +240,20 @@ body {
   to { --ai-angle: 360deg; }
 }
 .ai-border {
-  background: conic-gradient(from var(--ai-angle), #d7202e, #ff7a4d, #ffb36b, #ff4f8b, #d7202e);
+  background: conic-gradient(from var(--ai-angle), #14a3a3, #3a6ea5, #f26b38, #f6c343, #14a3a3);
   animation: ai-spin 4s linear infinite;
 }
 .ai-orb {
-  background: conic-gradient(from var(--ai-angle), #d7202e, #ff7a4d, #ff4f8b, #d7202e);
+  background: conic-gradient(from var(--ai-angle), #14a3a3, #3a6ea5, #f26b38, #14a3a3);
   animation: ai-spin 3s linear infinite;
-  box-shadow: 0 4px 16px -4px rgba(215, 32, 46, 0.6);
+  box-shadow: 0 4px 16px -4px rgba(20, 163, 163, 0.6);
 }
 /* The same colours for a wide card: a slowly drifting gradient (a conic one
    bunches up in the middle of a long box). */
 .ai-card {
-  background: linear-gradient(115deg, #d7202e, #ff7a4d, #ff4f8b, #d7202e) 0 50% / 300% 100%;
+  background: linear-gradient(115deg, #0e7f7f, #3a6ea5, #c2481c, #0e7f7f) 0 50% / 300% 100%;
   animation: ai-drift 8s ease-in-out infinite alternate;
-  box-shadow: 0 10px 28px -10px rgba(215, 32, 46, 0.65);
+  box-shadow: 0 10px 28px -10px rgba(14, 127, 127, 0.6);
 }
 @keyframes ai-drift {
   to { background-position: 100% 50%; }
@@ -251,7 +263,7 @@ body {
 }
 
 /* ---- Map ---------------------------------------------------------------- */
-/* Post markers: round video stills with the Jaziba red rim and a pointer. */
+/* Post markers: round video stills with a teal rim and a pointer. */
 /* ライブリアクション: emoji drifting up and fading. */
 .live-float {
   animation: live-float 2.5s cubic-bezier(0.2, 0.6, 0.4, 1) forwards;
@@ -283,7 +295,7 @@ body {
 /* いま見られている場所: a glowing ring and the viewer count on map bubbles. */
 .map-bubble.is-live {
   z-index: 5;
-  box-shadow: 0 0 0 3px #d7202e, 0 0 24px 4px rgba(215, 32, 46, 0.55);
+  box-shadow: 0 0 0 3px #f26b38, 0 0 24px 4px rgba(242, 107, 56, 0.55);
 }
 /* ::before, since ::after is the bubble's pointer. */
 .map-bubble.is-live::before {
@@ -293,7 +305,7 @@ body {
   top: -10px;
   right: -12px;
   border-radius: 9999px;
-  background: #d7202e;
+  background: #c2481c;
   padding: 1px 6px;
   color: #fff;
   font-size: 10px;
@@ -303,7 +315,7 @@ body {
 @media (prefers-reduced-motion: no-preference) {
   .map-bubble.is-live { animation: live-glow 1.8s ease-in-out infinite; }
   @keyframes live-glow {
-    50% { box-shadow: 0 0 0 3px #d7202e, 0 0 36px 10px rgba(215, 32, 46, 0.35); }
+    50% { box-shadow: 0 0 0 3px #f26b38, 0 0 36px 10px rgba(242, 107, 56, 0.35); }
   }
 }
 
@@ -316,11 +328,11 @@ body {
   justify-content: center;
   border-radius: 9999px;
   border: 2px solid #fff;
-  background: #d7202e;
+  background: #0e7f7f;
   color: #fff;
   font-size: 13px;
   font-weight: 800;
-  box-shadow: 0 6px 18px -4px rgba(215, 32, 46, 0.7);
+  box-shadow: 0 6px 18px -4px rgba(14, 127, 127, 0.7);
   transition: transform 0.4s cubic-bezier(0.3, 1.4, 0.5, 1);
 }
 .flyover-pin.is-current {
@@ -328,8 +340,8 @@ body {
   animation: flyover-pulse 1.6s ease-out infinite;
 }
 @keyframes flyover-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(215, 32, 46, 0.6); }
-  100% { box-shadow: 0 0 0 18px rgba(215, 32, 46, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(14, 127, 127, 0.6); }
+  100% { box-shadow: 0 0 0 18px rgba(14, 127, 127, 0); }
 }
 @media (prefers-reduced-motion: reduce) {
   .flyover-pin.is-current { animation: none; }
@@ -340,8 +352,8 @@ body {
   height: 54px;
   padding: 3px;
   border-radius: 9999px;
-  background: #d7202e;
-  box-shadow: 0 8px 20px -6px rgba(215, 32, 46, 0.7);
+  background: #0e7f7f;
+  box-shadow: 0 8px 20px -6px rgba(14, 127, 127, 0.7);
   cursor: pointer;
   transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.3);
   transform-origin: bottom center;
@@ -353,7 +365,7 @@ body {
   bottom: -7px;
   width: 12px;
   height: 12px;
-  background: #d7202e;
+  background: #0e7f7f;
   transform: translateX(-50%) rotate(45deg);
   border-radius: 2px;
   z-index: -1;
@@ -427,7 +439,7 @@ body {
   to { translate: 0 5%; }
 }
 
-/* Aurora: slow drifting light behind the home headline. */
+/* Aurora: slow drifting light behind the home headline, in the logo's teal, yellow and blue. */
 .aurora {
   pointer-events: none;
   position: absolute;
@@ -453,17 +465,17 @@ body {
 }
 .aurora span:nth-child(1) {
   width: 220px; height: 220px; left: 5%; top: 10px;
-  background: #ff9a8a;
+  background: #8fdada;
   animation: aurora-a 14s ease-in-out infinite alternate;
 }
 .aurora span:nth-child(2) {
   width: 260px; height: 200px; right: 0; top: -20px;
-  background: #ffc48a;
+  background: #fbe1a0;
   animation: aurora-b 18s ease-in-out infinite alternate;
 }
 .aurora span:nth-child(3) {
   width: 200px; height: 200px; left: 40%; top: 80px;
-  background: #ff8fb8;
+  background: #a9c4e6;
   animation: aurora-c 16s ease-in-out infinite alternate;
 }
 @keyframes aurora-a { to { transform: translate(80px, 40px) scale(1.2); } }
@@ -475,9 +487,9 @@ body {
   display: inline-flex;
   flex-shrink: 0;
   border-radius: 9999px;
-  border: 0.32em solid #d7202e;
+  border: 0.32em solid #c2481c;
   padding: 0.25em;
-  color: #d7202e;
+  color: #c2481c;
   transform: rotate(-12deg);
   opacity: 0.92;
 }
@@ -488,7 +500,7 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  border: 0.12em solid #d7202e;
+  border: 0.12em solid #c2481c;
   text-align: center;
   line-height: 1.15;
   overflow: hidden;
@@ -524,8 +536,8 @@ body {
 }
 .dark .stamp,
 .dark .stamp-ring {
-  color: #ff5c66;
-  border-color: #ff5c66;
+  color: #ff9a6e;
+  border-color: #ff9a6e;
 }
 
 /* Status colors (仮データ notices, 実データ badges) in dark mode. */

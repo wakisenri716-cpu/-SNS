@@ -12,7 +12,7 @@ export function EventDateBadge({ date, lang, small = false }: { date: string; la
   const d = new Date(`${date}T00:00:00`);
   return (
     <span className={`flex shrink-0 flex-col items-center justify-center overflow-hidden rounded-2xl bg-white ring-1 ring-gray-200 ${small ? "h-12 w-12" : "h-14 w-14"}`}>
-      <span className="w-full bg-jz-red py-0.5 text-center text-[10px] font-bold text-white">
+      <span className="w-full bg-jz-accent py-0.5 text-center text-[10px] font-bold text-white">
         {d.toLocaleDateString(lang, { month: "short" })}
       </span>
       <span className={`font-extrabold tabular-nums text-jz-ink ${small ? "text-lg" : "text-xl"}`}>{d.getDate()}</span>
@@ -46,7 +46,7 @@ export default function EventSheet({ event, onClose }: { event: EventItem; onClo
           <EventDateBadge date={event.startDate} lang={i18n.language} />
           <div className="min-w-0 flex-1">
             <h2 className="text-lg font-bold leading-snug text-jz-ink">{event.title}</h2>
-            <p className="mt-0.5 text-xs font-semibold text-jz-red">{formatEventDates(event, i18n.language)}</p>
+            <p className="mt-0.5 text-xs font-semibold text-jz-accent">{formatEventDates(event, i18n.language)}</p>
           </div>
           <button
             type="button"
@@ -70,7 +70,7 @@ export default function EventSheet({ event, onClose }: { event: EventItem; onClo
           <button
             type="button"
             onClick={() => downloadIcs(buildEventIcs(event), `jaziba-event-${event.startDate}.ics`)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-jz-red px-4 py-2.5 text-sm font-bold text-white active:scale-95"
+            className="inline-flex items-center gap-1.5 rounded-full bg-jz-accent px-4 py-2.5 text-sm font-bold text-white active:scale-95"
           >
             <CalendarPlus className="h-4 w-4" /> {t("itinerary.addToCalendar")}
           </button>

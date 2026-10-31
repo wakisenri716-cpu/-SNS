@@ -193,7 +193,7 @@ export default function TravelReportSection({
                   : t("travelReport.updated", { total: result.points })}
               </p>
             )}
-            {error && <p className="text-xs text-jz-red">{error}</p>}
+            {error && <p className="text-xs text-jz-warm-text">{error}</p>}
           </form>
         )}
         <p className="mt-3 text-[11px] leading-relaxed text-gray-500">{t("travelReport.disclaimer")}</p>

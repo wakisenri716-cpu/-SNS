@@ -118,7 +118,7 @@ export default function TransitModeView({ transports, startId, onClose }: { tran
         </div>
 
         <div className="mt-8 h-2 overflow-hidden rounded-full bg-white/15">
-          <div className="h-full rounded-full bg-jz-red transition-[width] duration-1000" style={{ width: `${progress * 100}%` }} />
+          <div className="h-full rounded-full bg-jz-accent transition-[width] duration-1000" style={{ width: `${progress * 100}%` }} />
         </div>
 
         <div className="mt-6 text-center">
@@ -138,7 +138,7 @@ export default function TransitModeView({ transports, startId, onClose }: { tran
         </div>
 
         {alarmFired != null && firedFor.current === tr.id && phase !== "arrived" && (
-          <p className="mt-5 animate-pulse rounded-2xl bg-jz-red px-4 py-3 text-center text-base font-black">
+          <p className="mt-5 animate-pulse rounded-2xl bg-jz-accent px-4 py-3 text-center text-base font-black">
             {t("transit.alarmBody", { place: tr.toName, minutes: alarmFired })}
           </p>
         )}

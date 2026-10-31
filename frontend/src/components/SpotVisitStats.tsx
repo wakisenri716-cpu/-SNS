@@ -19,7 +19,7 @@ export default function SpotVisitStats({ reelId }: { reelId: string }) {
   if (!stats || stats.total === 0) return null;
   return (
     <p className="mb-3 flex items-center gap-1.5 text-xs font-semibold text-jz-ink">
-      <Footprints className="h-4 w-4 text-jz-red" />
+      <Footprints className="h-4 w-4 text-jz-accent" />
       {stats.today > 0 ? t("visitStats.today", { count: stats.today }) : t("visitStats.total", { count: stats.total })}
     </p>
   );

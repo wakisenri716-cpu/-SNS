@@ -105,10 +105,10 @@ export default function OnboardingPage() {
       </div>
       <div className="mt-8 flex gap-1.5" aria-hidden>
         {steps.map((_, i) => (
-          <span key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= step ? "bg-jz-red" : "bg-gray-200"}`} />
+          <span key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= step ? "bg-jz-accent" : "bg-gray-200"}`} />
         ))}
       </div>
-      <p className="mt-6 text-xs font-semibold text-jz-red">{t("onboarding.stepOf", { step: step + 1, total: steps.length })}</p>
+      <p className="mt-6 text-xs font-semibold text-jz-accent">{t("onboarding.stepOf", { step: step + 1, total: steps.length })}</p>
       <div key={step} className="animate-page-in">
         <h1 className="mt-1 text-2xl font-extrabold leading-snug tracking-tight text-jz-ink">{steps[step].title}</h1>
         <p className="mt-2 text-sm leading-relaxed text-gray-500">{t("onboarding.why")}</p>
@@ -124,7 +124,7 @@ export default function OnboardingPage() {
           type="button"
           disabled={saving}
           onClick={() => (last ? void finish() : setStep(step + 1))}
-          className="flex-[2] rounded-full bg-jz-red py-3.5 text-sm font-bold text-white active:scale-[0.98] disabled:opacity-60"
+          className="flex-[2] rounded-full bg-jz-accent py-3.5 text-sm font-bold text-white active:scale-[0.98] disabled:opacity-60"
         >
           {last ? t("onboarding.start") : t("onboarding.next")}
         </button>

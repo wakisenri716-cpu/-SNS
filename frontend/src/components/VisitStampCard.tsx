@@ -68,12 +68,12 @@ export default function VisitStampCard({ reelId, place }: { reelId: string; plac
             type="button"
             onClick={() => void checkIn()}
             disabled={busy}
-            className="mt-2.5 rounded-full bg-jz-red px-4 py-2 text-xs font-bold text-white active:scale-95 disabled:opacity-60"
+            className="mt-2.5 rounded-full bg-jz-accent px-4 py-2 text-xs font-bold text-white active:scale-95 disabled:opacity-60"
           >
             {busy ? t("stamps.checking") : t("stamps.checkIn")}
           </button>
         )}
-        {message && <p className="mt-2 text-xs text-jz-red">{message}</p>}
+        {message && <p className="mt-2 text-xs text-jz-accent">{message}</p>}
       </div>
     </div>
   );

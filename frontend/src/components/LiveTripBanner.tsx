@@ -58,7 +58,7 @@ export default function LiveTripBanner({
         onClick={() => set({ date: localDate(), delay: 0, tripId })}
         className="mb-4 flex w-full items-center gap-3 rounded-2xl border border-dashed border-gray-300 px-3 py-2.5 text-left transition hover:bg-gray-50"
       >
-        <Navigation className="h-4 w-4 shrink-0 text-jz-red" />
+        <Navigation className="h-4 w-4 shrink-0 text-jz-accent" />
         <span className="min-w-0">
           <span className="block text-sm font-bold text-jz-ink">{t("liveTrip.start")}</span>
           <span className="block text-[11px] text-gray-500">{t("liveTrip.startHint")}</span>
@@ -85,8 +85,8 @@ export default function LiveTripBanner({
     <section className="on-media mb-4 rounded-3xl bg-jz-ink p-4 text-white" aria-live="polite" aria-label={t("liveTrip.label")}>
       <p className="flex items-center gap-1.5 text-[11px] font-bold tracking-wide text-white/70">
         <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-jz-red opacity-75 motion-reduce:hidden" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-jz-red" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-jz-warm opacity-75 motion-reduce:hidden" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-jz-warm" />
         </span>
         {t("liveTrip.badge")}
         {state.delay > 0 && <span className="font-normal">・{t("liveTrip.delayed", { m: state.delay })}</span>}

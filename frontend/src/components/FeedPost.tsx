@@ -117,7 +117,7 @@ export default function FeedPost({
                 {reel.editorial && <EditorialBadge />}
                 {(liveCount ?? 0) > 0 && (
                   <span className="animate-fade-in inline-flex items-center gap-1 rounded-full bg-black/45 px-2.5 py-0.5 text-[11px] font-semibold text-white backdrop-blur">
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-jz-red" />
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-jz-warm" />
                     {t("live.viewers", { count: liveCount })}
                   </span>
                 )}
@@ -139,7 +139,7 @@ export default function FeedPost({
             <Link
               to={`/reels/${reel.id}/access`}
               state={{ reel }}
-              className="pointer-events-auto flex shrink-0 items-center gap-1.5 rounded-full bg-jz-red px-3.5 py-2 text-[13px] font-bold text-white shadow-[0_6px_20px_-6px_rgba(215,32,46,0.8)] transition hover:bg-jz-red-dark active:scale-95"
+              className="pointer-events-auto flex shrink-0 items-center gap-1.5 rounded-full bg-jz-accent px-3.5 py-2 text-[13px] font-bold text-white shadow-[0_6px_20px_-6px_rgba(14,127,127,0.8)] transition hover:bg-jz-accent-dark active:scale-95"
             >
               <Navigation className="h-3.5 w-3.5 fill-white" /> {t("feed.directions")}
             </Link>
@@ -169,7 +169,7 @@ export default function FeedPost({
         >
           <Heart
             key={String(reel.likedByMe)}
-            className={`h-6 w-6 ${reel.likedByMe ? "animate-like-pop fill-jz-red text-jz-red" : ""}`}
+            className={`h-6 w-6 ${reel.likedByMe ? "animate-like-pop fill-jz-warm text-jz-warm" : ""}`}
             strokeWidth={1.8}
           />
           {reel.likeCount > 0 && <span className="tabular-nums">{reel.likeCount}</span>}
@@ -220,7 +220,7 @@ export default function FeedPost({
               to={tag.to}
               className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700 transition hover:bg-gray-200 active:scale-95"
             >
-              <span className="text-jz-red">#</span>
+              <span className="text-jz-accent">#</span>
               {tag.label.replace(/\s+/g, "")}
             </Link>
           ))}

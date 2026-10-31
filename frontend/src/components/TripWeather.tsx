@@ -206,7 +206,7 @@ function WetDayOptions({
                       type="button"
                       onClick={() => onAdd(o.reel.id)}
                       aria-label={t("weather.add", { place: name })}
-                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-jz-red text-white active:scale-90"
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-jz-accent text-white active:scale-90"
                     >
                       <Plus className="h-4 w-4" />
                     </button>

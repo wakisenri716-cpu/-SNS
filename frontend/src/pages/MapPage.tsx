@@ -184,7 +184,7 @@ export default function MapPage() {
         aria-label={t("map.locate")}
         className="glass absolute bottom-4 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full text-jz-ink transition active:scale-90"
       >
-        <LocateFixed className={`h-5 w-5 ${locating ? "animate-pulse text-jz-red" : ""}`} />
+        <LocateFixed className={`h-5 w-5 ${locating ? "animate-pulse text-jz-accent" : ""}`} />
       </button>
 
       {visible.length === 0 && reels.length > 0 && (
@@ -224,7 +224,7 @@ export default function MapPage() {
               <Link
                 to={`/reels/${selected.id}/access`}
                 state={{ reel: selected }}
-                className="flex flex-1 items-center justify-center gap-1 rounded-full bg-jz-red py-2 text-xs font-bold text-white active:scale-95"
+                className="flex flex-1 items-center justify-center gap-1 rounded-full bg-jz-accent py-2 text-xs font-bold text-white active:scale-95"
               >
                 <Navigation className="h-3 w-3 fill-white" /> {t("feed.directions")}
               </Link>

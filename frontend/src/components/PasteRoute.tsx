@@ -65,7 +65,7 @@ export default function PasteRoute({
   return (
     <div className="rounded-2xl bg-jz-tint p-3">
       <p className="flex items-center gap-1.5 text-xs font-bold text-jz-ink">
-        <ScanText className="h-4 w-4 text-jz-red" /> {t("transport.paste.title")}
+        <ScanText className="h-4 w-4 text-jz-accent" /> {t("transport.paste.title")}
       </p>
       <p className="mt-1 text-[11px] leading-relaxed text-gray-600">{t("transport.paste.hint")}</p>
       <textarea
@@ -79,7 +79,7 @@ export default function PasteRoute({
         maxLength={4000}
         placeholder={t("transport.paste.placeholder")}
         aria-label={t("transport.paste.title")}
-        className="mt-2 w-full resize-none rounded-xl bg-white px-3 py-2 text-xs text-jz-ink outline-none focus:ring-2 focus:ring-jz-red/30"
+        className="mt-2 w-full resize-none rounded-xl bg-white px-3 py-2 text-xs text-jz-ink outline-none focus:ring-2 focus:ring-jz-accent/30"
       />
       <div className="mt-1.5 flex flex-wrap gap-1.5">
         {canReadClipboard && (
@@ -91,7 +91,7 @@ export default function PasteRoute({
           {t("transport.paste.read")}
         </button>
       </div>
-      {status === "failed" && <p className="mt-2 text-[11px] font-semibold text-jz-red">{t("transport.paste.failed")}</p>}
+      {status === "failed" && <p className="mt-2 text-[11px] font-semibold text-jz-warm-text">{t("transport.paste.failed")}</p>}
       {status === "read" && route && (
         <div className="mt-2 text-[11px] leading-relaxed text-gray-700" aria-live="polite">
           <p className="font-semibold text-emerald-700">{t("transport.paste.readOk", { count: route.rides.length })}</p>
@@ -106,7 +106,7 @@ export default function PasteRoute({
                 ))}
               </ol>
               {!onSaveAll ? null : routeComplete(route) ? (
-                <button type="button" disabled={saving} onClick={() => void saveAll()} className="mt-2 w-full rounded-full bg-jz-red py-2 text-xs font-bold text-white disabled:opacity-60">
+                <button type="button" disabled={saving} onClick={() => void saveAll()} className="mt-2 w-full rounded-full bg-jz-accent py-2 text-xs font-bold text-white disabled:opacity-60">
                   {t("transport.paste.saveAll", { count: route.rides.length })}
                 </button>
               ) : (

@@ -32,7 +32,7 @@ export default function CheckinTagSection({ reelId, placeName }: { reelId: strin
 
   useEffect(() => {
     if (!url) return setQr(null);
-    void QRCode.toDataURL(url, { width: 512, margin: 2, errorCorrectionLevel: "M", color: { dark: "#11151d", light: "#ffffff" } }).then(setQr);
+    void QRCode.toDataURL(url, { width: 512, margin: 2, errorCorrectionLevel: "M", color: { dark: "#1f2a30", light: "#ffffff" } }).then(setQr);
   }, [url]);
 
   async function make() {
@@ -90,7 +90,7 @@ export default function CheckinTagSection({ reelId, placeName }: { reelId: strin
   return (
     <section className="rounded-xl border border-gray-200 p-3 text-xs text-gray-600" aria-label={t("checkinTag.heading")}>
       <p className="flex items-center gap-1.5 font-bold text-gray-900">
-        <Nfc className="h-4 w-4 text-jz-red" /> {t("checkinTag.heading")}
+        <Nfc className="h-4 w-4 text-jz-accent" /> {t("checkinTag.heading")}
       </p>
       <p className="mt-1 text-[11px] leading-relaxed text-gray-500">{t("checkinTag.intro")}</p>
       {!token ? (
@@ -105,7 +105,7 @@ export default function CheckinTagSection({ reelId, placeName }: { reelId: strin
               <p className="break-all rounded-lg bg-gray-50 px-2 py-1 font-mono text-[10px] text-gray-700">{url}</p>
               <div className="flex flex-wrap gap-1.5">
                 {ndefSupported() && (
-                  <button type="button" onClick={() => void writeTag()} disabled={writing === "waiting"} className={`${button} bg-jz-red text-white hover:bg-jz-red-dark`}>
+                  <button type="button" onClick={() => void writeTag()} disabled={writing === "waiting"} className={`${button} bg-jz-accent text-white hover:bg-jz-accent-dark`}>
                     <Nfc className="h-3.5 w-3.5" /> {t("checkinTag.write")}
                   </button>
                 )}
@@ -121,7 +121,7 @@ export default function CheckinTagSection({ reelId, placeName }: { reelId: strin
             </div>
           </div>
           {writing !== "idle" && (
-            <p className={`mt-2 text-[11px] font-semibold ${writing === "failed" ? "text-jz-red" : writing === "done" ? "text-emerald-700" : "text-gray-700"}`} aria-live="polite">
+            <p className={`mt-2 text-[11px] font-semibold ${writing === "failed" ? "text-jz-warm-text" : writing === "done" ? "text-emerald-700" : "text-gray-700"}`} aria-live="polite">
               {t(`checkinTag.writing.${writing}`)}
             </p>
           )}

@@ -65,7 +65,7 @@ export default function ContactPage() {
             onChange={(e) => setMessage(e.target.value)}
             className={inputClass}
           />
-          {error && <p className="text-sm text-jz-red">{error}</p>}
+          {error && <p className="text-sm text-jz-warm-text">{error}</p>}
           <button
             type="submit"
             disabled={submitting}
