@@ -1214,7 +1214,12 @@
     "status": "운행 상황",
     "edit": "{{name}} 편집",
     "remove": "{{name}} 삭제",
-    "removeConfirm": "\"{{name}}\"을(를) 삭제할까요?"
+    "removeConfirm": "\"{{name}}\"을(를) 삭제할까요?",
+    "pushNote": "출발 약 30분 전과 도착 약 5분 전에, 알림을 켠 멤버 모두에게 알림이 가요(앱을 닫아 두어도).",
+    "pushEnable": "이 기기에서 알림 켜기",
+    "pushOn": "이 기기로 받아요",
+    "pushInstall": "iPhone은 홈 화면에 추가하면 받을 수 있어요",
+    "pushDenied": "알림이 차단되어 있어요"
   },
   "transit": {
     "timetable": "환승 안내:",

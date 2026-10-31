@@ -1,9 +1,10 @@
 import { lazy, Suspense, useEffect, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { ExternalLink, Pencil, Plus, Radio, Ticket, Trash2, X } from "lucide-react";
+import { BellRing, ExternalLink, Pencil, Plus, Radio, Ticket, Trash2, X } from "lucide-react";
 import { api } from "../api/client";
 import { showToast } from "../lib/toast";
+import { enablePush, getPushState, type PushState } from "../lib/push";
 import { statusUrl } from "../lib/transitLinks";
 import { KIND_ICON, clock } from "../lib/transportDisplay";
 import { isoToLocalInput, localInputToIso, splitDuration, transportPhase } from "../lib/transportTiming";
@@ -33,11 +34,16 @@ export default function TripTransports({
   const [editing, setEditing] = useState<TripTransport | "new" | null>(null);
   const [riding, setRiding] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [push, setPush] = useState<PushState | null>(null);
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 30_000);
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (!readOnly && transports.length > 0) void getPushState().then(setPush).catch(() => setPush("unsupported"));
+  }, [readOnly, transports.length]);
 
   async function remove(tr: TripTransport) {
     if (!window.confirm(t("transport.removeConfirm", { name: tr.name }))) return;
@@ -57,6 +63,24 @@ export default function TripTransports({
           </button>
         )}
       </div>
+      {!readOnly && transports.length > 0 && push && push !== "unsupported" && (
+        <p className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-xl bg-gray-50 px-3 py-2 text-[11px] leading-relaxed text-gray-600">
+          <BellRing className="h-3.5 w-3.5 shrink-0 text-jz-red" />
+          <span className="min-w-0 flex-1">{t("transport.pushNote")}</span>
+          {push === "off" && (
+            <button
+              type="button"
+              onClick={() => void enablePush(i18n.language).then(setPush)}
+              className="rounded-full bg-jz-red px-2.5 py-1 font-bold text-white"
+            >
+              {t("transport.pushEnable")}
+            </button>
+          )}
+          {push === "on" && <span className="font-semibold text-emerald-700">{t("transport.pushOn")}</span>}
+          {push === "needsInstall" && <span className="font-semibold">{t("transport.pushInstall")}</span>}
+          {push === "denied" && <span className="font-semibold">{t("transport.pushDenied")}</span>}
+        </p>
+      )}
       {transports.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-gray-200 p-3 text-[11px] leading-relaxed text-gray-500">{t("transport.empty")}</p>
       ) : (

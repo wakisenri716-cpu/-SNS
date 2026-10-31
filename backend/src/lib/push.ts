@@ -40,28 +40,39 @@ export async function rememberSiteOrigin(origin: string) {
 export type PushMessage =
   | { type: "newPost"; poster: string; place: string; reelId: string }
   | { type: "like"; actor: string; place: string; reelId: string }
-  | { type: "comment"; actor: string; body: string; reelId: string };
+  | { type: "comment"; actor: string; body: string; reelId: string }
+  // 乗る便 (lib/transportAlerts.ts): `time` is the local departure/arrival "HH:MM".
+  | { type: "departSoon"; name: string; from: string; platform: string; time: string; minutes: number; tripId: string; transportId: string }
+  | { type: "arriveSoon"; name: string; to: string; time: string; minutes: number; tripId: string; transportId: string };
 
 const TEXT: Record<string, Record<PushMessage["type"], (m: any) => { title: string; body: string }>> = {
   ja: {
     newPost: (m) => ({ title: `${m.poster}の新しい投稿`, body: m.place }),
     like: (m) => ({ title: `${m.actor}さんがいいねしました`, body: m.place }),
     comment: (m) => ({ title: `${m.actor}さんがコメントしました`, body: m.body }),
+    departSoon: (m) => ({ title: `${m.name} まもなく出発（約${m.minutes}分後）`, body: [`${m.from} ${m.time}発`, m.platform].filter(Boolean).join("・") }),
+    arriveSoon: (m) => ({ title: `まもなく${m.to}に到着（約${m.minutes}分）`, body: `${m.name}・${m.time}着予定。降りる準備をしましょう` }),
   },
   en: {
     newPost: (m) => ({ title: `New post from ${m.poster}`, body: m.place }),
     like: (m) => ({ title: `${m.actor} liked your post`, body: m.place }),
     comment: (m) => ({ title: `${m.actor} commented`, body: m.body }),
+    departSoon: (m) => ({ title: `${m.name} departs in about ${m.minutes} min`, body: [`${m.from} at ${m.time}`, m.platform].filter(Boolean).join(" · ") }),
+    arriveSoon: (m) => ({ title: `Arriving at ${m.to} in about ${m.minutes} min`, body: `${m.name}, due ${m.time}. Get ready to get off` }),
   },
   zh: {
     newPost: (m) => ({ title: `${m.poster}发布了新帖子`, body: m.place }),
     like: (m) => ({ title: `${m.actor}赞了你的帖子`, body: m.place }),
     comment: (m) => ({ title: `${m.actor}发表了评论`, body: m.body }),
+    departSoon: (m) => ({ title: `${m.name} 约${m.minutes}分钟后出发`, body: [`${m.from} ${m.time}出发`, m.platform].filter(Boolean).join("・") }),
+    arriveSoon: (m) => ({ title: `约${m.minutes}分钟后到达${m.to}`, body: `${m.name}・预计${m.time}到达，请准备下车` }),
   },
   ko: {
     newPost: (m) => ({ title: `${m.poster}의 새 게시물`, body: m.place }),
     like: (m) => ({ title: `${m.actor}님이 좋아요를 눌렀습니다`, body: m.place }),
     comment: (m) => ({ title: `${m.actor}님이 댓글을 남겼습니다`, body: m.body }),
+    departSoon: (m) => ({ title: `${m.name} 약 ${m.minutes}분 후 출발`, body: [`${m.from} ${m.time} 출발`, m.platform].filter(Boolean).join("・") }),
+    arriveSoon: (m) => ({ title: `약 ${m.minutes}분 후 ${m.to} 도착`, body: `${m.name}・${m.time} 도착 예정. 내릴 준비를 하세요` }),
   },
 };
 
@@ -72,14 +83,19 @@ export function pushPayload(message: PushMessage, lang: string) {
   return {
     title,
     body: body.length > 120 ? `${body.slice(0, 119)}…` : body,
-    url: message.type === "newPost" ? `/reels/${message.reelId}/access` : "/notifications",
-    tag: `${message.type}-${message.reelId}`,
+    url:
+      message.type === "newPost"
+        ? `/reels/${message.reelId}/access`
+        : message.type === "departSoon" || message.type === "arriveSoon"
+          ? `/itinerary/${message.tripId}`
+          : "/notifications",
+    tag: `${message.type}-${"transportId" in message ? message.transportId : message.reelId}`,
   };
 }
 
 // Sends to every device of these users. Never throws; gone subscriptions are
 // removed. Not awaited by callers, so a slow push service can't slow a request.
-export async function sendPush(userIds: string[], message: PushMessage) {
+export async function sendPush(userIds: string[], message: PushMessage, { ttlSeconds = 24 * 60 * 60 }: { ttlSeconds?: number } = {}) {
   try {
     if (userIds.length === 0) return;
     const subs = await prisma.pushSubscription.findMany({ where: { userId: { in: userIds } } });
@@ -92,7 +108,7 @@ export async function sendPush(userIds: string[], message: PushMessage) {
           await webpush.sendNotification(
             { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
             JSON.stringify(pushPayload(message, sub.lang)),
-            { TTL: 24 * 60 * 60, vapidDetails: { subject, publicKey: keys.publicKey, privateKey: keys.privateKey }, timeout: 10_000 }
+            { TTL: ttlSeconds, vapidDetails: { subject, publicKey: keys.publicKey, privateKey: keys.privateKey }, timeout: 10_000 }
           );
         } catch (err) {
           const status = (err as { statusCode?: number }).statusCode;

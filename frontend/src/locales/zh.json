@@ -1214,7 +1214,12 @@
     "status": "运行状况",
     "edit": "编辑{{name}}",
     "remove": "删除{{name}}",
-    "removeConfirm": "要删除“{{name}}”吗？"
+    "removeConfirm": "要删除“{{name}}”吗？",
+    "pushNote": "出发前约30分钟和到达前约5分钟，开启通知的所有成员都会收到提醒（即使关闭应用）。",
+    "pushEnable": "在此设备开启通知",
+    "pushOn": "此设备会收到",
+    "pushInstall": "iPhone需先添加到主屏幕",
+    "pushDenied": "通知已被阻止"
   },
   "transit": {
     "timetable": "换乘查询：",

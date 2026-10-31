@@ -769,6 +769,61 @@ test("乗る便: members add flights and trains to the しおり; a shared link 
   assert.equal((await call("GET", `/api/me/trips/${trip.id}/itinerary`, undefined, me)).json.transports.length, 1);
 });
 
+test("乗る便のお知らせ: a push to everyone on the trip before departure and before arrival, each once", async () => {
+  const webpush = (await import("web-push")).default;
+  const sent: { endpoint: string; payload: any }[] = [];
+  const send = mock.method(webpush, "sendNotification", async (sub: any, payload: string) => {
+    sent.push({ endpoint: sub.endpoint, payload: JSON.parse(payload) });
+    return { statusCode: 201, body: "", headers: {} };
+  });
+  try {
+    const { runTransportAlerts } = await import("../lib/transportAlerts");
+    const owner = (await call("POST", "/api/auth/register", { email: "alert-owner@example.com", password: "password123", name: "幹事" })).json.token;
+    const friend = (await call("POST", "/api/auth/register", { email: "alert-friend@example.com", password: "password123", name: "友人" })).json.token;
+    const keys = { p256dh: "BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTpQtUbVlUls0VJXg7A8u-Ts1XbjhazAkj7I99e8QcYP7DkM", auth: "tBHItJI5svbpez7KI4CCXg" };
+    await call("POST", "/api/push/subscribe", { endpoint: "https://fcm.googleapis.com/fcm/send/alert-owner", keys, lang: "ja" }, owner);
+    await call("POST", "/api/push/subscribe", { endpoint: "https://fcm.googleapis.com/fcm/send/alert-friend", keys, lang: "en" }, friend);
+    const trip = (await call("POST", "/api/me/trips", { name: "通知の旅" }, owner)).json;
+    const invite = (await call("POST", `/api/me/trips/${trip.id}/invite`, undefined, owner)).json.token;
+    await call("POST", `/api/me/trips/join/${invite}`, undefined, friend);
+
+    const now = Date.parse("2030-05-01T08:40:00+09:00");
+    const train = { kind: "train", name: "あずさ5号", fromName: "新宿", toName: "松本", departAt: "2030-05-01T09:00:00+09:00", arriveAt: "2030-05-01T11:40:00+09:00", departPlatform: "9番線" };
+    const created = (await call("POST", `/api/me/trips/${trip.id}/transports`, train, owner)).json;
+    const mine = () => sent.filter((s) => s.endpoint.includes("alert-"));
+
+    // 20 minutes before: the departure push, to both, in each device's language.
+    await runTransportAlerts(now);
+    await new Promise((r) => setTimeout(r, 50));
+    assert.deepEqual(
+      mine().map((s) => [s.endpoint.split("/").pop(), s.payload.title, s.payload.body]).sort(),
+      [
+        ["alert-friend", "あずさ5号 departs in about 20 min", "新宿 at 09:00 · 9番線"],
+        ["alert-owner", "あずさ5号 まもなく出発（約20分後）", "新宿 09:00発・9番線"],
+      ]
+    );
+    assert.equal(mine()[0].payload.url, `/itinerary/${trip.id}`);
+    // Not again.
+    await runTransportAlerts(now + 60_000);
+    await new Promise((r) => setTimeout(r, 50));
+    assert.equal(mine().length, 2);
+
+    // 4 minutes before arrival: the arrival push.
+    await runTransportAlerts(Date.parse("2030-05-01T11:36:00+09:00"));
+    await new Promise((r) => setTimeout(r, 50));
+    assert.equal(mine().length, 4);
+    assert.ok(mine().some((s) => s.payload.title === "まもなく松本に到着（約4分）"));
+
+    // Moving the departure later sends a fresh departure alert for the new time.
+    await call("PUT", `/api/me/trips/${trip.id}/transports/${created.id}`, { ...train, departAt: "2030-05-01T10:00:00+09:00", arriveAt: "2030-05-01T12:40:00+09:00" }, owner);
+    await runTransportAlerts(Date.parse("2030-05-01T09:45:00+09:00"));
+    await new Promise((r) => setTimeout(r, 50));
+    assert.equal(mine().filter((s) => /まもなく出発/.test(s.payload.title)).length, 2);
+  } finally {
+    send.mock.restore();
+  }
+});
+
 // A software passkey authenticator: an ES256 key pair making the same
 // attestation ("none") and assertions a phone or laptop would.
 async function softAuthenticator(origin: string) {

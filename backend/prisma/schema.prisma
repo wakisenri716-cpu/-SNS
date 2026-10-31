@@ -518,6 +518,10 @@ model TripTransport {
   // 予約番号 — visible to the trip's members only.
   confirmation String   @default("")
   note         String   @default("")
+  // When the 出発前 / 到着前 push went out (lib/transportAlerts.ts), so each
+  // goes once; cleared when the times are edited.
+  departNotifiedAt DateTime?
+  arriveNotifiedAt DateTime?
   createdAt    DateTime @default(now())
 
   @@index([tripId, departAt])

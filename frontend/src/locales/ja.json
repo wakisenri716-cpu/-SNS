@@ -1214,7 +1214,12 @@
     "status": "運行状況",
     "edit": "{{name}}を編集",
     "remove": "{{name}}を削除",
-    "removeConfirm": "「{{name}}」を削除しますか？"
+    "removeConfirm": "「{{name}}」を削除しますか？",
+    "pushNote": "出発の約30分前と到着の約5分前に、通知をオンにしているメンバー全員へお知らせが届きます（アプリを閉じていても）。",
+    "pushEnable": "この端末で通知をオンにする",
+    "pushOn": "この端末に届きます",
+    "pushInstall": "iPhoneはホーム画面に追加すると届きます",
+    "pushDenied": "通知がブロックされています"
   },
   "transit": {
     "timetable": "乗換案内：",

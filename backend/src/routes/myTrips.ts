@@ -295,7 +295,13 @@ router.put("/:id/transports/:transportId", async (req, res) => {
   if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
   const access = await accessibleTrip(req.auth!.userId, req.params.id);
   if (!access) return res.status(404).json({ error: "旅が見つかりません" });
-  const { count } = await prisma.tripTransport.updateMany({ where: { id: req.params.transportId, tripId: access.trip.id }, data: parsed.data });
+  // New times: the お知らせ should go out again for them.
+  const before = await prisma.tripTransport.findFirst({ where: { id: req.params.transportId, tripId: access.trip.id }, select: { departAt: true, arriveAt: true } });
+  const reset = {
+    ...(before && before.departAt.getTime() !== parsed.data.departAt.getTime() ? { departNotifiedAt: null } : {}),
+    ...(before && before.arriveAt.getTime() !== parsed.data.arriveAt.getTime() ? { arriveNotifiedAt: null } : {}),
+  };
+  const { count } = await prisma.tripTransport.updateMany({ where: { id: req.params.transportId, tripId: access.trip.id }, data: { ...parsed.data, ...reset } });
   if (count === 0) return res.status(404).json({ error: "便が見つかりません" });
   await changed(access.trip.id, req.auth!.userId);
   res.status(204).end();

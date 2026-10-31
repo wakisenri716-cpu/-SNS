@@ -1239,7 +1239,12 @@
     "status": "Live status",
     "edit": "Edit {{name}}",
     "remove": "Delete {{name}}",
-    "removeConfirm": "Delete \"{{name}}\"?"
+    "removeConfirm": "Delete \"{{name}}\"?",
+    "pushNote": "Everyone on the trip with notifications on gets an alert about 30 min before departure and 5 min before arrival, even with the app closed.",
+    "pushEnable": "Turn on notifications here",
+    "pushOn": "This device will get them",
+    "pushInstall": "On iPhone, add Jaziba to your Home Screen first",
+    "pushDenied": "Notifications are blocked"
   },
   "transit": {
     "timetable": "Timetables:",
