@@ -892,6 +892,93 @@ test("素材の提供: travelers offer photos/videos; the municipality approves 
   await call("DELETE", `/api/reels/${reel.id}`, undefined, muni);
 });
 
+test("ポイントで交換: coupons from a municipality, exchanged for points, shown and used once; AIチケット", async () => {
+  const muni = await login("demo-matsumoto@example.com");
+  const municipalityId = (await call("GET", "/api/auth/me", undefined, muni)).json.municipality.id;
+  const me = (await call("POST", "/api/auth/register", { email: "spender@example.com", password: "password123", name: "使う人" })).json.token;
+  // Earn 200 points: two approved photos.
+  const jpeg = Buffer.from("/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==", "base64");
+  for (let i = 0; i < 2; i++) {
+    const form = new FormData();
+    form.append("file", new Blob([jpeg], { type: "image/jpeg" }), "p.jpg");
+    form.append("municipalityId", municipalityId);
+    form.append("consent", "1");
+    const sub = await (await fetch(`${base}/api/submissions`, { method: "POST", headers: { Authorization: `Bearer ${me}` }, body: form })).json();
+    await call("POST", `/api/submissions/${sub.id}/approve`, undefined, muni);
+  }
+  assert.equal((await call("GET", "/api/points", undefined, me)).json.points, 200);
+
+  // The municipality issues coupons; travelers can't.
+  const coupon = { title: "そば大盛り無料", description: "松本駅前の店で", terms: "1会計1枚", pointsCost: 80, stock: 2, perUserLimit: 1 };
+  assert.equal((await call("POST", "/api/coupons", coupon, me)).status, 403);
+  assert.equal((await call("POST", "/api/coupons", { ...coupon, pointsCost: 5 }, muni)).status, 400);
+  const c = (await call("POST", "/api/coupons", coupon, muni)).json;
+  const pricey = (await call("POST", "/api/coupons", { ...coupon, title: "宿泊10%オフ", pointsCost: 500, stock: null }, muni)).json;
+  const listed = (await call("GET", `/api/coupons?municipalityId=${municipalityId}`, undefined, me)).json.items;
+  assert.deepEqual(listed.map((x: any) => [x.title, x.remaining, x.issuer.name]), [["そば大盛り無料", 2, "松本市"], ["宿泊10%オフ", null, "松本市"]]);
+
+  // Exchange: points go down; once per person; not without enough points.
+  const got = await call("POST", `/api/coupons/${c.id}/redeem`, undefined, me);
+  assert.equal(got.status, 201);
+  assert.match(got.json.code, /^[A-Z2-9]{4}-[A-Z2-9]{4}$/);
+  assert.equal(got.json.points, 120);
+  assert.equal((await call("POST", `/api/coupons/${c.id}/redeem`, undefined, me)).json.error, "このクーポンはお一人1枚までです");
+  assert.equal((await call("POST", `/api/coupons/${pricey.id}/redeem`, undefined, me)).json.code, "notEnoughPoints");
+  assert.equal((await call("GET", "/api/points", undefined, me)).json.points, 120, "failed exchanges cost nothing");
+
+  // At the counter: the shop looks the code up (any spacing/case) and marks it used, once.
+  const looked = await call("GET", `/api/coupons/verify/${got.json.code.replace("-", " ").toLowerCase()}`, undefined, muni);
+  assert.equal(looked.status, 200);
+  assert.equal(looked.json.holder, "使う人");
+  assert.equal(looked.json.usedAt, null);
+  assert.equal((await call("POST", `/api/coupons/verify/${got.json.code}/use`, undefined, muni)).status, 200);
+  assert.equal((await call("POST", `/api/coupons/verify/${got.json.code}/use`, undefined, muni)).status, 400);
+  const mine = (await call("GET", "/api/coupons/mine", undefined, me)).json.items;
+  assert.equal(mine[0].code, got.json.code);
+  assert.ok(mine[0].usedAt);
+  assert.equal((await call("POST", `/api/coupons/redemptions/${mine[0].id}/use`, undefined, me)).status, 400);
+  const issued = (await call("GET", "/api/coupons/issued", undefined, muni)).json.items.find((x: any) => x.id === c.id);
+  assert.deepEqual([issued.exchanged, issued.used, issued.remaining], [1, 1, 1]);
+
+  // Stopped coupons disappear from the list.
+  assert.equal((await call("PATCH", `/api/coupons/${pricey.id}`, { active: false }, muni)).status, 204);
+  assert.equal((await call("GET", `/api/coupons?municipalityId=${municipalityId}`)).json.items.some((x: any) => x.id === pricey.id), false);
+
+  // AIチケット: 10 uses for 50 points; with a key set, free uses come first, then tickets.
+  const bought = await call("POST", "/api/points/ai-tickets", { pack: "small" }, me);
+  assert.equal(bought.status, 201);
+  assert.equal(bought.json.points, 70);
+  assert.equal(bought.json.ai.credits, 10);
+  assert.equal(bought.json.ai.freeLeft, 5);
+  assert.equal((await call("POST", "/api/points/ai-tickets", { pack: "large" }, me)).json.code, "notEnoughPoints");
+
+  const { checkAiQuota, recordAiUse } = await import("../lib/aiQuota");
+  process.env.ANTHROPIC_API_KEY = "test-key";
+  try {
+    const meId = (await call("GET", "/api/auth/me", undefined, me)).json.user.id;
+    const req = { auth: { userId: meId, role: "USER" }, ip: "1.2.3.4" } as any;
+    let status = 0;
+    const res = { status: (s: number) => ((status = s), { json: () => {} }) } as any;
+    for (let i = 0; i < 5 + 10; i++) {
+      assert.equal(await checkAiQuota(req, res), true, `use ${i + 1}`);
+      await recordAiUse(req, "concierge");
+    }
+    assert.equal(await checkAiQuota(req, res), false);
+    assert.equal(status, 402);
+    const ai = (await call("GET", "/api/points", undefined, me)).json.ai;
+    assert.deepEqual([ai.freeLeft, ai.credits], [0, 0]);
+    // Visitors: 3 a day per address.
+    const anon = { ip: "5.6.7.8" } as any;
+    for (let i = 0; i < 3; i++) {
+      assert.equal(await checkAiQuota(anon, res), true);
+      await recordAiUse(anon, "concierge");
+    }
+    assert.equal(await checkAiQuota(anon, res), false);
+  } finally {
+    delete process.env.ANTHROPIC_API_KEY;
+  }
+});
+
 test("区間の行き方: several ways per leg, one chosen; only the chosen way's rides are the trip's 乗る便", async () => {
   const me = (await call("POST", "/api/auth/register", { email: "legways@example.com", password: "password123", name: "行き方派" })).json.token;
   const other = (await call("POST", "/api/auth/register", { email: "legways-other@example.com", password: "password123", name: "他人" })).json.token;

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "../prisma";
 import { optionalAuth } from "../middleware/auth";
 import { conciergeLimiter } from "../middleware/rateLimit";
+import { checkAiQuota, recordAiUse } from "../lib/aiQuota";
 import { getFollowedIds } from "../lib/followState";
 import { REEL_ORDER, reelInclude, serializeReel } from "../lib/reelSerializer";
 import { isAiConciergeConfigured, runConcierge, runPhotoConcierge } from "../services/concierge";
@@ -92,8 +93,10 @@ async function respond(
 router.post("/", conciergeLimiter, optionalAuth, async (req, res) => {
   const parsed = bodySchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "相談内容を入力してください（300文字まで）" });
+  if (!(await checkAiQuota(req, res))) return;
   const { reels, candidates } = await loadCandidates(req.auth?.userId);
   const result = await runConcierge(parsed.data.message, parsed.data.lang, candidates, parsed.data.history);
+  if (result.mode === "ai") await recordAiUse(req, "concierge");
   await respond(res, req.auth?.userId, reels, result);
 });
 
@@ -113,10 +116,12 @@ router.post("/photo", conciergeLimiter, optionalAuth, async (req, res) => {
   if (!isAiConciergeConfigured()) return res.status(503).json({ error: "写真で探す機能は現在利用できません" });
   const parsed = photoSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "画像（JPEG・PNG・WebP）を送ってください" });
+  if (!(await checkAiQuota(req, res))) return;
   const [, kind, data] = parsed.data.image.match(/^data:image\/(jpeg|png|webp);base64,(.+)$/)!;
   const { reels, candidates } = await loadCandidates(req.auth?.userId);
   try {
     const result = await runPhotoConcierge({ mediaType: `image/${kind}` as "image/jpeg", data }, parsed.data.lang, candidates);
+    if (result.mode === "ai") await recordAiUse(req, "photoConcierge");
     await respond(res, req.auth?.userId, reels, result);
   } catch (err) {
     logClaudeError("photo concierge", err);

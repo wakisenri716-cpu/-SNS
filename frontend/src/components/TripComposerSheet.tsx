@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Clock, Mic, Sparkles, X } from "lucide-react";
 import { api } from "../api/client";
+import { aiLimitOf } from "../lib/aiLimit";
+import AiLimitNotice from "./AiLimitNotice";
 import { useAiAvailable } from "../lib/aiStatus";
 import { useSpeechInput } from "../lib/useSpeechInput";
 import { createTrip, setCurrentTripId } from "../lib/trips";
@@ -50,6 +52,7 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
   const [building, setBuilding] = useState(false);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [limit, setLimit] = useState<{ signedIn: boolean } | null>(null);
   const speech = useSpeechInput(i18n.language, (text, final) => {
     setMessage(text);
     if (final) void build(text);
@@ -65,12 +68,14 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
     if (!text.trim() || building) return;
     setBuilding(true);
     setError(null);
+    setLimit(null);
     try {
       const { data } = await api.post<Composed>("/me/trips/compose", { message: text, lang: i18n.language });
       setDraft(data);
       setName(data.name);
-    } catch {
-      setError(t("composer.error"));
+    } catch (err) {
+      setLimit(aiLimitOf(err));
+      if (!aiLimitOf(err)) setError(t("composer.error"));
     } finally {
       setBuilding(false);
     }
@@ -250,6 +255,7 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
             </>
           )}
           {error && <p className="mt-4 text-xs text-jz-warm-text">{error}</p>}
+          {limit && <AiLimitNotice signedIn={limit.signedIn} className="mt-4" />}
         </div>
 
         <div className="flex gap-2 border-t border-gray-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">

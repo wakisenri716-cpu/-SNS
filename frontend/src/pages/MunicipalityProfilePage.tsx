@@ -11,6 +11,7 @@ import ReelThumb from "../components/ReelGrid";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import AccessPlannerForm from "../components/AccessPlannerForm";
 import SubmitMediaSheet from "../components/SubmitMediaSheet";
+import MunicipalityCoupons from "../components/MunicipalityCoupons";
 import type { Municipality, Reel } from "../types";
 import {
   ArrowUpRight,
@@ -293,6 +294,7 @@ export default function MunicipalityProfilePage() {
         </div>
       )}
       {submitOpen && <SubmitMediaSheet municipality={municipality} onClose={() => setSubmitOpen(false)} />}
+      {!municipality.listing && <MunicipalityCoupons municipalityId={municipality.id} />}
 
       {municipality.listing && (
         <div className="mx-4 mt-4 flex gap-2.5 rounded-2xl bg-gray-50 p-3 text-xs leading-relaxed text-gray-600 md:mx-12">

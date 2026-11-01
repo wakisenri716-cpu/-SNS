@@ -348,3 +348,47 @@ export interface Submission {
   municipality?: { id: string; name: string; prefecture: string };
   contributor?: { id: string; name: string };
 }
+
+// ポイントで交換 (GET /coupons, /coupons/mine, /coupons/issued).
+export interface Coupon {
+  id: string;
+  title: string;
+  description: string;
+  terms: string;
+  pointsCost: number;
+  stock: number | null;
+  remaining: number | null;
+  perUserLimit: number;
+  validUntil: string | null;
+  active: boolean;
+  open: boolean;
+  issuer: { kind: "municipality" | "company"; id: string; name: string };
+  municipality: { id: string; name: string; prefecture: string };
+  mineCount: number;
+  /** Issuer's list only. */
+  exchanged?: number;
+  used?: number;
+}
+
+export interface CouponRedemption {
+  id: string;
+  code: string;
+  pointsSpent: number;
+  usedAt: string | null;
+  createdAt: string;
+  coupon: Coupon;
+  /** When the issuer looks a code up. */
+  holder?: string;
+  expired?: boolean;
+}
+
+// GET /points: the balance (earned − spent) and today's AI allowance.
+export interface PointsSummary {
+  points: number;
+  earned: number;
+  spent: number;
+  reportCount: number;
+  visitCount: number;
+  submissionCount: number;
+  ai: { freePerDay: number; freeLeft: number; credits: number; packs: { id: string; credits: number; points: number }[] };
+}

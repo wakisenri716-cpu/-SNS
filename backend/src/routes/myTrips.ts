@@ -12,6 +12,7 @@ import { buildItinerary } from "../lib/itinerary";
 import { accessibleTrip, addToTrip, syncSavedForTrip, syncSavedForUsers, tripParticipants, tripsOf } from "../lib/trips";
 import { issueTicket, shareLocation, stopSharingLocation, tripChanged } from "../lib/tripLive";
 import { planTrip } from "../services/tripPlanner";
+import { checkAiQuota, recordAiUse } from "../lib/aiQuota";
 import { ACTIVE_RIDE, serializeLegOption, serializeTransport } from "../lib/tripTransports";
 import { composeTrip } from "../services/tripComposer";
 import { parseBestMonths, parseTravelerTags } from "../types";
@@ -673,6 +674,7 @@ router.post("/:id/plan", conciergeLimiter, async (req, res) => {
     orderBy: [{ position: "asc" }, { createdAt: "asc" }],
   });
   if (items.length < 2) return res.status(400).json({ error: "しおりに2か所以上入れると、プランを作れます" });
+  if (!(await checkAiQuota(req, res))) return;
 
   const plan = await planTrip(
     items.map((s) => ({
@@ -689,6 +691,7 @@ router.post("/:id/plan", conciergeLimiter, async (req, res) => {
     trip.startTime,
     parsed.data.lang
   );
+  if (plan.mode === "ai") await recordAiUse(req, "tripPlan");
   res.json(plan);
 });
 
@@ -704,6 +707,7 @@ const composeSchema = z.object({
 router.post("/compose", conciergeLimiter, async (req, res) => {
   const parsed = composeSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "どんな旅にしたいか入力してください（300文字まで）" });
+  if (!(await checkAiQuota(req, res))) return;
   const reels = await prisma.reel.findMany({
     where: { locationLat: { not: null }, locationLng: { not: null } },
     take: COMPOSE_POOL,
@@ -726,6 +730,7 @@ router.post("/compose", conciergeLimiter, async (req, res) => {
       lng: r.locationLng!,
     }))
   );
+  if (result.mode === "ai") await recordAiUse(req, "tripCompose");
   const byId = new Map(reels.map((r) => [r.id, r]));
   res.json({
     ...result,

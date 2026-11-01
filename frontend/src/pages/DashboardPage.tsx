@@ -6,6 +6,7 @@ import { useAuth } from "../auth/AuthContext";
 import ReelUploader from "../components/ReelUploader";
 import PosterLiveCard from "../components/PosterLiveCard";
 import SubmissionInbox from "../components/SubmissionInbox";
+import CouponManager from "../components/CouponManager";
 import ReelEditor from "../components/ReelEditor";
 import { TravelerTagChips } from "../components/TravelerTagChips";
 import AutoplayVideo from "../components/AutoplayVideo";
@@ -20,7 +21,7 @@ import { Pencil, QrCode } from "lucide-react";
 // below), and 投稿 (posts) is the reel management grid, not a Municipality
 // field at all — both get their own tab panel instead.
 const TEXT_TAB_KEYS = ["accessInfo", "lodgingInfo", "restaurantInfo"] as const;
-const TAB_KEYS = ["posts", "submissions", "tourismInfo", ...TEXT_TAB_KEYS] as const;
+const TAB_KEYS = ["posts", "submissions", "coupons", "tourismInfo", ...TEXT_TAB_KEYS] as const;
 type TabKey = (typeof TAB_KEYS)[number];
 
 function TextInfoEditor({
@@ -452,6 +453,7 @@ export default function DashboardPage() {
   const tabs: { key: TabKey; label: string }[] = [
     { key: "posts", label: t("dashboard.tabPosts") },
     { key: "submissions", label: pendingSubmissions > 0 ? t("dashboard.tabSubmissionsCount", { count: pendingSubmissions }) : t("dashboard.tabSubmissions") },
+    { key: "coupons", label: t("coupons.tab") },
     { key: "tourismInfo", label: t("dashboard.tabTourism") },
     { key: "accessInfo", label: t("dashboard.tabAccess") },
     { key: "lodgingInfo", label: t("dashboard.tabLodging") },
@@ -570,6 +572,7 @@ export default function DashboardPage() {
         />
       )}
       {tab === "submissions" && <SubmissionInbox onCountsChange={setPendingSubmissions} onPosted={(reel) => setReels((prev) => [reel, ...prev])} />}
+      {tab === "coupons" && <CouponManager />}
       {tab === "tourismInfo" && (
         <TourismSpotsEditor key={municipality.id} initialSpots={municipality.tourismSpots} />
       )}

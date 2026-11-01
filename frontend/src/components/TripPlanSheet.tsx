@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Clock, Sparkles, X } from "lucide-react";
 import { api } from "../api/client";
+import { aiLimitOf } from "../lib/aiLimit";
+import AiLimitNotice from "./AiLimitNotice";
 import { showToast } from "../lib/toast";
 import type { ItineraryStop } from "../types";
 
@@ -33,6 +35,7 @@ export default function TripPlanSheet({
   const [planning, setPlanning] = useState(false);
   const [applying, setApplying] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [limit, setLimit] = useState<{ signedIn: boolean } | null>(null);
   const byId = new Map(stops.map((s) => [s.id, s]));
 
   useEffect(() => {
@@ -44,11 +47,13 @@ export default function TripPlanSheet({
   async function makePlan() {
     setPlanning(true);
     setError(null);
+    setLimit(null);
     try {
       const { data } = await api.post<Plan>(`/me/trips/${tripId}/plan`, { wishes, lang: i18n.language });
       setPlan(data);
-    } catch {
-      setError(t("tripPlan.error"));
+    } catch (err) {
+      setLimit(aiLimitOf(err));
+      if (!aiLimitOf(err)) setError(t("tripPlan.error"));
     } finally {
       setPlanning(false);
     }
@@ -151,6 +156,7 @@ export default function TripPlanSheet({
             </>
           )}
           {error && <p className="mt-4 text-xs text-jz-warm-text">{error}</p>}
+          {limit && <AiLimitNotice signedIn={limit.signedIn} className="mt-4" />}
         </div>
 
         <div className="flex gap-2 border-t border-gray-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">

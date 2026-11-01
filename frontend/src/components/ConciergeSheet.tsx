@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ArrowUp, Bookmark, Camera, Mic, Navigation, RotateCcw, Sparkles, X } from "lucide-react";
 import { api } from "../api/client";
+import { aiLimitOf } from "../lib/aiLimit";
+import AiLimitNotice from "./AiLimitNotice";
 import { useAuth } from "../auth/AuthContext";
 import { showToast } from "../lib/toast";
 import { useSpeechInput } from "../lib/useSpeechInput";
@@ -26,6 +28,8 @@ interface Turn {
   reply?: string;
   picks?: Pick[];
   error?: boolean;
+  // Refused: today's free AI uses are gone (see AiLimitNotice).
+  limit?: { signedIn: boolean };
 }
 
 const SUGGESTIONS = ["suggestFamilySnow", "suggestCoupleFood", "suggestCastle", "suggestStay"] as const;
@@ -161,8 +165,9 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
         data.reply ??
         (data.picks.length > 0 ? t("concierge.keywordReply", { count: data.picks.length }) : t("concierge.noMatch"));
       setTurns((prev) => prev.map((turn) => (turn.id === id ? { ...turn, mode: data.mode, reply, picks: data.picks } : turn)));
-    } catch {
-      setTurns((prev) => prev.map((turn) => (turn.id === id ? { ...turn, error: true, reply: t("concierge.error") } : turn)));
+    } catch (err) {
+      const limit = aiLimitOf(err) ?? undefined;
+      setTurns((prev) => prev.map((turn) => (turn.id === id ? { ...turn, error: true, limit, reply: limit ? "" : t("concierge.error") } : turn)));
     } finally {
       setBusy(false);
     }
@@ -189,8 +194,9 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
       });
       const reply = data.reply ?? (data.picks.length > 0 ? t("concierge.keywordReply", { count: data.picks.length }) : t("concierge.noMatch"));
       setTurns((prev) => prev.map((turn) => (turn.id === id ? { ...turn, mode: data.mode, reply, picks: data.picks } : turn)));
-    } catch {
-      setTurns((prev) => prev.map((turn) => (turn.id === id ? { ...turn, error: true, reply: t("concierge.photoError") } : turn)));
+    } catch (err) {
+      const limit = aiLimitOf(err) ?? undefined;
+      setTurns((prev) => prev.map((turn) => (turn.id === id ? { ...turn, error: true, limit, reply: limit ? "" : t("concierge.photoError") } : turn)));
     } finally {
       setBusy(false);
     }
@@ -293,9 +299,13 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
                 </div>
               ) : (
                 <>
-                  <p className={`max-w-[90%] px-1 text-sm leading-relaxed ${turn.error ? "text-jz-warm-text" : "text-jz-ink"}`}>
-                    <Typewriter text={turn.reply} />
-                  </p>
+                  {turn.limit ? (
+                    <AiLimitNotice signedIn={turn.limit.signedIn} className="max-w-[90%]" />
+                  ) : (
+                    <p className={`max-w-[90%] px-1 text-sm leading-relaxed ${turn.error ? "text-jz-warm-text" : "text-jz-ink"}`}>
+                      <Typewriter text={turn.reply} />
+                    </p>
+                  )}
                   {turn.picks && turn.picks.length > 0 && (
                     <div className="scrollbar-none -mx-4 flex gap-3 overflow-x-auto px-4 pb-1">
                       {turn.picks.map((p) => (

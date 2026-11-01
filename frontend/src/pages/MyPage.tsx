@@ -189,7 +189,7 @@ export default function MyPage() {
         </Link>
 
         {points && (
-          <div className="mt-5 flex items-center gap-4 rounded-2xl bg-gray-100 px-4 py-3">
+          <Link to="/points" className="mt-5 flex items-center gap-4 rounded-2xl bg-gray-100 px-4 py-3 hover:bg-gray-200/70">
             <div>
               <p className="whitespace-nowrap text-xs font-semibold text-gray-500">{t("myPage.pointsLabel")}</p>
               <p className="text-2xl font-extrabold tabular-nums text-gray-900">{t("myPage.pointsValue", { points: points.points })}</p>
@@ -205,7 +205,11 @@ export default function MyPage() {
                 </>
               )}
             </p>
-          </div>
+            <span className="ml-auto inline-flex shrink-0 items-center gap-0.5 text-xs font-bold text-jz-accent">
+              {t("points.use")}
+              <ChevronRight className="h-4 w-4" />
+            </span>
+          </Link>
         )}
 
         <MySubmissions />

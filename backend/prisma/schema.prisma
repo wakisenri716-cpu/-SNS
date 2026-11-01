@@ -64,6 +64,9 @@ model User {
   tripMemberships TripMember[]
   passkeys      Passkey[]
   tripPhotos    TripPhoto[]
+  couponRedemptions CouponRedemption[]
+  aiCreditPurchases AiCreditPurchase[]
+  aiUsages      AiUsage[]
 }
 
 model Municipality {
@@ -105,6 +108,7 @@ model Municipality {
   tourismSpots TourismSpot[]
   events       Event[]
   submissions   Submission[]
+  coupons       Coupon[]
 }
 
 // One tourist attraction within a municipality's jurisdiction — the 観光情報
@@ -145,6 +149,7 @@ model Company {
   reels     Reel[]
   followers Follow[]
   events    Event[]
+  coupons       Coupon[]
 }
 
 model Reel {
@@ -624,5 +629,74 @@ model Submission {
   createdAt      DateTime     @default(now())
 
   @@index([municipalityId, status, createdAt])
+  @@index([userId, createdAt])
+}
+
+// ポイントで交換: coupons a municipality or a business under it (a company:
+// restaurant, inn, shop…) offers for points. A traveler exchanges points for
+// one (CouponRedemption) and shows its code at the counter.
+model Coupon {
+  id             String       @id @default(cuid())
+  municipalityId String
+  municipality   Municipality @relation(fields: [municipalityId], references: [id], onDelete: Cascade)
+  // Set when a company issued it; null when the municipality did.
+  companyId      String?
+  company        Company?     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  title          String
+  description    String       @default("")
+  // Shown at the counter: how to use it, conditions.
+  terms          String       @default("")
+  pointsCost     Int
+  // How many can be handed out in all (null = no limit).
+  stock          Int?
+  perUserLimit   Int          @default(1)
+  // Last day it can be exchanged and used ("YYYY-MM-DD", Japan time); null = no end.
+  validUntil     String?
+  active         Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  redemptions    CouponRedemption[]
+
+  @@index([municipalityId, active])
+}
+
+model CouponRedemption {
+  id          String    @id @default(cuid())
+  couponId    String
+  coupon      Coupon    @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Shown at the counter (and as a QR code); the shop can look it up.
+  code        String    @unique
+  pointsSpent Int
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([userId, createdAt])
+  @@index([couponId])
+}
+
+// AIチケット: extra AI uses (concierge, trip planning) bought with points,
+// beyond the free ones each day (lib/aiQuota.ts).
+model AiCreditPurchase {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credits     Int
+  pointsSpent Int
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+}
+
+// One AI request by a signed-in account; `paid` when it used a ticket.
+model AiUsage {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // "concierge" | "photoConcierge" | "tripPlan" | "tripCompose"
+  feature   String
+  paid      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
   @@index([userId, createdAt])
 }

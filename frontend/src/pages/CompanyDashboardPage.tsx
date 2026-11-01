@@ -6,6 +6,7 @@ import ReelUploader from "../components/ReelUploader";
 import PosterLiveCard from "../components/PosterLiveCard";
 import ReelManageGrid from "../components/ReelManageGrid";
 import EventManager from "../components/EventManager";
+import CouponManager from "../components/CouponManager";
 import ReportedComments from "../components/ReportedComments";
 import type { Reel } from "../types";
 
@@ -56,6 +57,11 @@ export default function CompanyDashboardPage() {
       <div className="-mx-4 rounded-2xl border border-gray-200 sm:mx-0">
         <EventManager />
       </div>
+
+      <section className="-mx-4 rounded-2xl border border-gray-200 sm:mx-0" aria-label={t("coupons.tab")}>
+        <h3 className="px-4 pt-4 text-sm font-semibold text-gray-600">{t("coupons.tab")}</h3>
+        <CouponManager />
+      </section>
     </div>
   );
 }
