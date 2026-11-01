@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+import CaptionAssist from "./CaptionAssist";
 import { api } from "../api/client";
 import { TravelerTagPicker } from "./TravelerTagChips";
 import { BestMonthsPicker } from "./BestMonths";
@@ -73,6 +74,7 @@ export default function ReelEditor({
           {t("reelEditor.captionLabel")}
           <textarea value={caption} onChange={(e) => setCaption(e.target.value)} rows={3} className={`mt-1 ${inputClass}`} />
         </label>
+        {caption.trim().length >= 10 && <CaptionAssist value={caption} onChange={setCaption} />}
         <label className="text-xs font-medium text-gray-500">
           {t("reelUploader.categoryLabel")}
           <select value={category} onChange={(e) => setCategory(e.target.value as ReelCategory)} className={`mt-1 ${inputClass}`}>

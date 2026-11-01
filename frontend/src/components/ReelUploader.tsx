@@ -1,5 +1,6 @@
 import { useEffect, useState, type DragEvent, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+import CaptionAssist from "./CaptionAssist";
 import { Film } from "lucide-react";
 import { api } from "../api/client";
 import { REEL_CATEGORIES, type Reel, type ReelCategory, type TravelerTag } from "../types";
@@ -133,6 +134,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
         rows={2}
         className={inputClass}
       />
+      {caption.trim().length >= 10 && <CaptionAssist value={caption} onChange={setCaption} />}
       <label className="text-xs font-medium text-gray-500">
         {t("reelUploader.categoryLabel")}
         <select

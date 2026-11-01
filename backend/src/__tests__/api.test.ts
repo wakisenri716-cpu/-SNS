@@ -979,6 +979,46 @@ test("ポイントで交換: coupons from a municipality, exchanged for points, 
   }
 });
 
+test("クーポンの期限のお知らせ: one daytime push for an unused coupon ending within 3 days", async () => {
+  const webpush = (await import("web-push")).default;
+  const sent: { endpoint: string; payload: any }[] = [];
+  const send = mock.method(webpush, "sendNotification", async (sub: any, payload: string) => {
+    sent.push({ endpoint: sub.endpoint, payload: JSON.parse(payload) });
+    return { statusCode: 201, body: "", headers: {} };
+  });
+  try {
+    const { runCouponReminders } = await import("../lib/couponReminders");
+    const { todayInJapan } = await import("../routes/events");
+    const muni = await login("demo-matsumoto@example.com");
+    const municipalityId = (await call("GET", "/api/auth/me", undefined, muni)).json.municipality.id;
+    const me = (await call("POST", "/api/auth/register", { email: "remind@example.com", password: "password123", name: "忘れがち" })).json.token;
+    const keys = { p256dh: "BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTpQtUbVlUls0VJXg7A8u-Ts1XbjhazAkj7I99e8QcYP7DkM", auth: "tBHItJI5svbpez7KI4CCXg" };
+    await call("POST", "/api/push/subscribe", { endpoint: "https://fcm.googleapis.com/fcm/send/coupon-remind", keys, lang: "ja" }, me);
+    const form = new FormData();
+    form.append("file", new Blob([Buffer.from("/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==", "base64")], { type: "image/jpeg" }), "p.jpg");
+    form.append("municipalityId", municipalityId);
+    form.append("consent", "1");
+    const sub = await (await fetch(`${base}/api/submissions`, { method: "POST", headers: { Authorization: `Bearer ${me}` }, body: form })).json();
+    await call("POST", `/api/submissions/${sub.id}/approve`, undefined, muni);
+    const today = todayInJapan();
+    const c = (await call("POST", "/api/coupons", { title: "温泉100円引き", pointsCost: 30, validUntil: today }, muni)).json;
+    await call("POST", `/api/coupons/${c.id}/redeem`, undefined, me);
+    const mine = () => sent.filter((x) => x.endpoint.endsWith("coupon-remind") && x.payload.url === "/points?tab=mine");
+
+    await runCouponReminders(new Date(`${today}T23:30:00+09:00`));
+    await new Promise((r) => setTimeout(r, 50));
+    assert.equal(mine().length, 0, "not at night");
+    await runCouponReminders(new Date(`${today}T10:00:00+09:00`));
+    await new Promise((r) => setTimeout(r, 50));
+    assert.deepEqual(mine().map((x) => [x.payload.title, x.payload.url]), [["クーポン「温泉100円引き」はもうすぐ期限です", "/points?tab=mine"]]);
+    await runCouponReminders(new Date(`${today}T11:00:00+09:00`));
+    await new Promise((r) => setTimeout(r, 50));
+    assert.equal(mine().length, 1, "only once");
+  } finally {
+    send.mock.restore();
+  }
+});
+
 test("区間の行き方: several ways per leg, one chosen; only the chosen way's rides are the trip's 乗る便", async () => {
   const me = (await call("POST", "/api/auth/register", { email: "legways@example.com", password: "password123", name: "行き方派" })).json.token;
   const other = (await call("POST", "/api/auth/register", { email: "legways-other@example.com", password: "password123", name: "他人" })).json.token;

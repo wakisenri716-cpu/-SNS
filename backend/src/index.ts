@@ -2,6 +2,7 @@ import "dotenv/config";
 import app from "./app";
 import { seedIfEmpty } from "./seed";
 import { startTransportAlerts } from "./lib/transportAlerts";
+import { startCouponReminders } from "./lib/couponReminders";
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
 
@@ -12,4 +13,5 @@ seedIfEmpty()
       console.log(`Tourism SNS backend listening on http://localhost:${PORT}`);
     });
     startTransportAlerts();
+    startCouponReminders();
   });

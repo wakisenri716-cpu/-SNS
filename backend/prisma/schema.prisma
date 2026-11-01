@@ -669,6 +669,8 @@ model CouponRedemption {
   code        String    @unique
   pointsSpent Int
   usedAt      DateTime?
+  // When the "expires soon" push went out (lib/couponReminders.ts), so it goes once.
+  remindedAt  DateTime?
   createdAt   DateTime  @default(now())
 
   @@index([userId, createdAt])

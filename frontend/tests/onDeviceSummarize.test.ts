@@ -9,3 +9,10 @@ test("commentsForSummary: one bullet per comment, whitespace folded, cut to fit"
   assert.equal(long.split("\n").length, 2);
   assert.ok(long.length <= 70);
 });
+
+test("outputLanguageOf: Japanese text stays Japanese", async () => {
+  const { outputLanguageOf } = await import("../src/lib/onDeviceRewrite.ts");
+  assert.equal(outputLanguageOf("松本城の朝"), "ja");
+  assert.equal(outputLanguageOf("カフェ open 9am"), "ja");
+  assert.equal(outputLanguageOf("Morning at the castle"), "en");
+});

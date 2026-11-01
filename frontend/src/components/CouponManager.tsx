@@ -1,9 +1,11 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, Plus, ScanLine, Ticket } from "lucide-react";
+import { Camera, CheckCircle2, Plus, ScanLine, Ticket } from "lucide-react";
 import { api } from "../api/client";
 import { showToast } from "../lib/toast";
 import type { Coupon, CouponRedemption } from "../types";
+import QrScanner from "./QrScanner";
+import { qrScanSupported } from "../lib/qrScan";
 
 const empty = { title: "", description: "", terms: "", pointsCost: "100", stock: "", perUserLimit: "1", validUntil: "" };
 
@@ -19,6 +21,7 @@ export default function CouponManager() {
   const [code, setCode] = useState("");
   const [found, setFound] = useState<CouponRedemption | null>(null);
   const [lookupError, setLookupError] = useState<string | null>(null);
+  const [scanning, setScanning] = useState(false);
 
   const load = () =>
     api
@@ -56,12 +59,12 @@ export default function CouponManager() {
     void load();
   }
 
-  async function lookup(e: FormEvent) {
-    e.preventDefault();
+  async function lookup(e: FormEvent | null, value = code) {
+    e?.preventDefault();
     setFound(null);
     setLookupError(null);
     try {
-      const { data } = await api.get<CouponRedemption>(`/coupons/verify/${encodeURIComponent(code.trim())}`);
+      const { data } = await api.get<CouponRedemption>(`/coupons/verify/${encodeURIComponent(value.trim())}`);
       setFound(data);
     } catch (err: any) {
       setLookupError(err?.response?.data?.error ?? t("points.error"));
@@ -97,6 +100,21 @@ export default function CouponManager() {
             {t("coupons.lookup")}
           </button>
         </div>
+        {qrScanSupported() && (
+          <button type="button" onClick={() => setScanning(true)} className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-jz-accent px-4 py-2 text-xs font-bold text-white active:scale-95">
+            <Camera className="h-4 w-4" /> {t("coupons.scan")}
+          </button>
+        )}
+        {scanning && (
+          <QrScanner
+            onClose={() => setScanning(false)}
+            onCode={(value) => {
+              setScanning(false);
+              setCode(value);
+              void lookup(null, value);
+            }}
+          />
+        )}
         {lookupError && <p className="mt-2 text-xs text-jz-warm-text">{lookupError}</p>}
         {found && (
           <div className="mt-3 rounded-xl bg-gray-50 p-3 text-xs" aria-live="polite">

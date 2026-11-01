@@ -1593,6 +1593,26 @@
     "stopped": "Stopped",
     "stop": "Stop handing out",
     "restart": "Restart",
-    "onProfile": "Coupons for points"
+    "onProfile": "Coupons for points",
+    "scan": "Scan the QR with the camera"
+  },
+  "captionAssist": {
+    "heading": "Polish the text with on-device AI",
+    "style": {
+      "appealing": "More appealing",
+      "shorter": "Shorter",
+      "polite": "More polite"
+    },
+    "working": "Thinking…",
+    "failed": "This device couldn't rewrite it",
+    "use": "Use this",
+    "discard": "Discard",
+    "note": "A suggestion from the AI on your device (nothing sent, free). Check it says nothing untrue.",
+    "context": "A tourism post by a municipality or a local business. Make people want to go there. Don't change the facts, and don't add anything that isn't written (prices, hours, numbers)."
+  },
+  "qrScan": {
+    "title": "Scan a coupon QR",
+    "hint": "Fit the traveler's coupon QR code inside the frame",
+    "noCamera": "Couldn't use the camera. Allow it in the browser settings, or type the code"
   }
 }
