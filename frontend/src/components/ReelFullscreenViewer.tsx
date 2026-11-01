@@ -97,9 +97,13 @@ function ReelOverlayInfo({
               <span className={`block text-xs text-white/75 drop-shadow ${reel.editorial ? "text-[11px] leading-snug" : "truncate"}`}>
                 {reel.editorial
                   ? t("editorial.byline")
-                  : reel.postedByCompany
-                    ? reel.municipality.name
-                    : reel.municipality.prefecture}
+                  : reel.contributedBy != null
+                    ? reel.contributedBy
+                      ? t("submissions.creditBadge", { name: reel.contributedBy })
+                      : t("submissions.creditAnonymous")
+                    : reel.postedByCompany
+                      ? reel.municipality.name
+                      : reel.municipality.prefecture}
               </span>
             </span>
           </Link>

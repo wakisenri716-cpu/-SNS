@@ -818,6 +818,80 @@ test("現地スタンプのタグ: the post's manager makes a tag link; opening 
   assert.equal((await call("GET", "/api/checkin/short")).status, 404);
 });
 
+test("素材の提供: travelers offer photos/videos; the municipality approves (points) or passes, then posts with credit", async () => {
+  const muni = await login("demo-matsumoto@example.com");
+  const me = (await call("GET", "/api/auth/me", undefined, muni)).json;
+  const municipalityId = me.municipality.id;
+  const giver = (await call("POST", "/api/auth/register", { email: "giver@example.com", password: "password123", name: "撮影好き" })).json.token;
+  const upload = (token: string, fields: Record<string, string>, file?: { bytes: Buffer; type: string; name: string }) => {
+    const form = new FormData();
+    if (file) form.append("file", new Blob([file.bytes], { type: file.type }), file.name);
+    for (const [k, v] of Object.entries(fields)) form.append(k, v);
+    return fetch(`${base}/api/submissions`, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: form });
+  };
+  const video = { bytes: fs.readFileSync(path.resolve(__dirname, "../../seed-assets/kamikochi.webm")), type: "video/webm", name: "clip.webm" };
+  const photo = { bytes: Buffer.from("/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==", "base64"), type: "image/jpeg", name: "p.jpg" };
+
+  // Consent is required; only travelers; a real municipality.
+  assert.equal((await upload(giver, { municipalityId, description: "河童橋の朝" }, video)).status, 400);
+  assert.equal((await upload(muni, { municipalityId, consent: "1" }, video)).status, 403);
+  assert.equal((await upload(giver, { municipalityId: "nope", consent: "1" }, video)).status, 404);
+  const v = await (await upload(giver, { municipalityId, consent: "1", description: "河童橋の朝", locationName: "河童橋", locationLat: "36.2497", locationLng: "137.6377" }, video)).json();
+  assert.equal(v.kind, "video");
+  assert.equal(v.status, "pending");
+  const p = await (await upload(giver, { municipalityId, consent: "1", credit: "0", description: "城と桜" }, photo)).json();
+  assert.equal(p.kind, "photo");
+  const extra = await (await upload(giver, { municipalityId, consent: "1" }, photo)).json();
+
+  // Withdraw while pending.
+  assert.equal((await call("DELETE", `/api/submissions/${extra.id}`, undefined, giver)).status, 204);
+
+  // The municipality's inbox: who sent it, never their email.
+  const inbox = (await call("GET", "/api/submissions/inbox", undefined, muni)).json;
+  assert.deepEqual(inbox.items.map((x: any) => x.id), [v.id, p.id]);
+  assert.equal(inbox.items[0].contributor.name, "撮影好き");
+  assert.equal(JSON.stringify(inbox).includes("giver@example.com"), false);
+  assert.equal(inbox.counts.pending, 2);
+  assert.equal((await call("GET", "/api/submissions/inbox", undefined, giver)).status, 403);
+
+  // Approve the video (+100), pass on the photo with a note; each only once.
+  const before = (await call("GET", "/api/auth/me/points", undefined, giver)).json.points;
+  assert.equal((await call("POST", `/api/submissions/${v.id}/approve`, undefined, muni)).status, 200);
+  assert.equal((await call("POST", `/api/submissions/${v.id}/approve`, undefined, muni)).status, 404);
+  assert.equal((await call("POST", `/api/submissions/${p.id}/reject`, { note: "人の顔が写っているため" }, muni)).status, 200);
+  const points = (await call("GET", "/api/auth/me/points", undefined, giver)).json;
+  assert.equal(points.points - before, 100);
+  assert.equal(points.submissionCount, 1);
+  const mine = (await call("GET", "/api/submissions/mine", undefined, giver)).json.items;
+  assert.deepEqual(mine.map((x: any) => [x.status, x.reviewNote, x.points]), [["rejected", "人の顔が写っているため", 0], ["approved", "", 100]]);
+  assert.equal((await call("DELETE", `/api/submissions/${v.id}`, undefined, giver)).status, 400);
+
+  // Post the approved video without uploading it again; the contributor is credited and told.
+  const form = new FormData();
+  form.append("submissionId", v.id);
+  form.append("caption", "朝の河童橋（提供：撮影好きさん）");
+  form.append("category", "nature");
+  form.append("locationName", "河童橋");
+  const posted = await fetch(`${base}/api/reels`, { method: "POST", headers: { Authorization: `Bearer ${muni}` }, body: form });
+  assert.equal(posted.status, 201);
+  const reel = await posted.json();
+  assert.equal(reel.videoUrl, v.fileUrl);
+  assert.equal(reel.contributedBy, "撮影好き");
+  const again = new FormData();
+  again.append("submissionId", v.id);
+  again.append("category", "nature");
+  assert.equal((await fetch(`${base}/api/reels`, { method: "POST", headers: { Authorization: `Bearer ${muni}` }, body: again })).status, 404);
+  // A rejected photo can't be posted.
+  const rejected = new FormData();
+  rejected.append("submissionId", p.id);
+  rejected.append("category", "nature");
+  assert.equal((await fetch(`${base}/api/reels`, { method: "POST", headers: { Authorization: `Bearer ${muni}` }, body: rejected })).status, 404);
+  const notices = (await call("GET", "/api/notifications", undefined, giver)).json.items;
+  assert.equal(notices.some((n: any) => n.type === "submissionPosted" && n.reel.id === reel.id), true);
+  assert.equal((await call("GET", "/api/submissions/inbox?status=posted", undefined, muni)).json.items[0].reelId, reel.id);
+  await call("DELETE", `/api/reels/${reel.id}`, undefined, muni);
+});
+
 test("区間の行き方: several ways per leg, one chosen; only the chosen way's rides are the trip's 乗る便", async () => {
   const me = (await call("POST", "/api/auth/register", { email: "legways@example.com", password: "password123", name: "行き方派" })).json.token;
   const other = (await call("POST", "/api/auth/register", { email: "legways-other@example.com", password: "password123", name: "他人" })).json.token;

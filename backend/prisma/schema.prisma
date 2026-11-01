@@ -57,6 +57,7 @@ model User {
   notifications       Notification[] @relation("NotificationRecipient")
   notificationsCaused Notification[] @relation("NotificationActor")
   visits        Visit[]
+  submissions   Submission[]
   commentReports CommentReport[]
   pushSubscriptions PushSubscription[]
   trips         Trip[]
@@ -103,6 +104,7 @@ model Municipality {
   followers    Follow[]
   tourismSpots TourismSpot[]
   events       Event[]
+  submissions   Submission[]
 }
 
 // One tourist attraction within a municipality's jurisdiction — the 観光情報
@@ -186,6 +188,8 @@ model Reel {
   translations  ReelTranslation[]
   tripItems     TripItem[]
   visits        Visit[]
+  // Set when the post was made from a traveler's 提供された素材.
+  submission    Submission?
 }
 
 // スタンプラリー: a traveler checked in at a post's spot (within
@@ -587,4 +591,38 @@ model TripPhoto {
   createdAt  DateTime  @default(now())
 
   @@index([tripId, createdAt])
+}
+
+// 素材の提供: a traveler's own photo or video, offered to a municipality for
+// its posts. The municipality approves it (the contributor earns points, see
+// lib/points.ts) or passes on it, and can then post it — a photo is turned
+// into a short video on the municipality's device. The contributor can be
+// credited by name on the post.
+model Submission {
+  id             String       @id @default(cuid())
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  municipalityId String
+  municipality   Municipality @relation(fields: [municipalityId], references: [id], onDelete: Cascade)
+  // "video" | "photo"
+  kind           String
+  fileUrl        String
+  description    String       @default("")
+  locationName   String       @default("")
+  locationLat    Float?
+  locationLng    Float?
+  takenAt        DateTime?
+  // Show the contributor's name on the post ("提供：◯◯さん").
+  credit         Boolean      @default(true)
+  // "pending" | "approved" | "rejected"
+  status         String       @default("pending")
+  // Shown to the contributor when the municipality passes on it.
+  reviewNote     String       @default("")
+  reviewedAt     DateTime?
+  reelId         String?      @unique
+  reel           Reel?        @relation(fields: [reelId], references: [id], onDelete: SetNull)
+  createdAt      DateTime     @default(now())
+
+  @@index([municipalityId, status, createdAt])
+  @@index([userId, createdAt])
 }

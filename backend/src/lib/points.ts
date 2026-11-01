@@ -6,15 +6,19 @@ import { prisma } from "../prisma";
 // doesn't exist, so the UI labels them as a prototype.
 export const POINTS_PER_TRAVEL_REPORT = 10;
 export const POINTS_PER_VISIT = 20;
+// A photo or video a municipality approved (素材の提供, see the Submission model).
+export const POINTS_PER_SUBMISSION = 100;
 
 export async function getUserPoints(userId: string) {
-  const [reportCount, visitCount] = await Promise.all([
+  const [reportCount, visitCount, submissionCount] = await Promise.all([
     prisma.travelTimeReport.count({ where: { userId } }),
     prisma.visit.count({ where: { userId } }),
+    prisma.submission.count({ where: { userId, status: "approved" } }),
   ]);
   return {
-    points: reportCount * POINTS_PER_TRAVEL_REPORT + visitCount * POINTS_PER_VISIT,
+    points: reportCount * POINTS_PER_TRAVEL_REPORT + visitCount * POINTS_PER_VISIT + submissionCount * POINTS_PER_SUBMISSION,
     reportCount,
     visitCount,
+    submissionCount,
   };
 }

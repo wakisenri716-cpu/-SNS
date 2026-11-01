@@ -216,7 +216,9 @@
     "spotCoordsNote": "Add latitude/longitude (optional) to show the spot in Nearby spots. Leave both empty to look it up from the spot and municipality names (no location if not found).",
     "spotHasLocation": "Has location",
     "spotNoLocation": "No location",
-    "deleteSpotConfirm": "Delete this sightseeing spot? This can't be undone."
+    "deleteSpotConfirm": "Delete this sightseeing spot? This can't be undone.",
+    "tabSubmissions": "Offered",
+    "tabSubmissionsCount": "Offered ({{count}})"
   },
   "companyDashboard": {
     "manageScreen": "{{name}} Admin",
@@ -615,7 +617,8 @@
     "commented": "{{name}} commented on “{{post}}”",
     "deletedUser": "A deleted user",
     "newPost": "{{name}} posted something new: {{post}}",
-    "subtitleTraveler": "New posts from the municipalities and businesses you follow"
+    "subtitleTraveler": "New posts from the municipalities and businesses you follow",
+    "submissionPosted": "Your photo/video is now {{name}}'s post \"{{post}}\""
   },
   "share": {
     "label": "Share",
@@ -1429,5 +1432,88 @@
     "heading_other": "What people say (from {{count}} comments)",
     "note": "Summarized by the AI on your device. Check the comments themselves too.",
     "context": "Comments travelers wrote on a post about a tourist spot. Sum up the good points, cautions and tips briefly."
+  },
+  "submit": {
+    "cta": "Offer your photos & videos",
+    "ctaSub": "{{name}} may use them in its posts. {{points}} points when approved",
+    "open": "Offer",
+    "loginToSend": "Log in to offer",
+    "title": "Offer photos/videos to {{name}}",
+    "intro": "Send photos or videos you took in {{name}}. When {{name}} approves one you get 100 points, and it may be featured as a {{name}} post.",
+    "pick": "Choose a photo or video (videos up to 200 MB)",
+    "tooBig": "The video is too large (200 MB max)",
+    "hasPlace": "Read where the photo was taken (only the place is sent)",
+    "noPlace": "No location in the photo. Add a place name if you like",
+    "videoPlace": "A place name helps",
+    "descriptionLabel": "A few words (optional)",
+    "descriptionPlaceholder": "e.g. Kappa Bridge at 7 a.m., as the mist cleared",
+    "placeLabel": "Where you took it (optional)",
+    "placePlaceholder": "e.g. Kappa Bridge, Kamikochi",
+    "credit": "Show my name as the contributor when it is posted",
+    "consent": "I took this myself and agree that {{name}} and Jaziba may use it in posts (anyone recognizable in it has agreed)",
+    "note": "Photos are shrunk on this device before sending, removing location and other attached data. You can withdraw one under review from My page.",
+    "send": "Send",
+    "sending": "Sending…",
+    "sent": "Sent to {{name}}. You will hear the result on My page and in notifications",
+    "viewMine": "See on My page",
+    "error": "Couldn't send. Please try again"
+  },
+  "submissions": {
+    "mineHeading": "Photos & videos you offered",
+    "earned": "{{points}} pt earned",
+    "status": {
+      "pending": "Under review",
+      "approved": "Approved +{{points}} pt",
+      "posted": "Posted",
+      "rejected": "Passed"
+    },
+    "reason": "From the municipality: {{note}}",
+    "viewPost": "See the post",
+    "withdraw": "Withdraw",
+    "withdrawConfirm": "Withdraw this?",
+    "pointsNote_one": "{{count}} approved contribution",
+    "pointsNote_other": "{{count}} approved contributions",
+    "creditBadge": "Photo/video by {{name}}",
+    "creditAnonymous": "By a traveler"
+  },
+  "inbox": {
+    "intro": "Photos and videos travelers offered. Approving one gives the contributor {{points}} points; then you can post it as your own post.",
+    "view": {
+      "pending": "To review",
+      "approved": "Approved (not posted)",
+      "posted": "Posted",
+      "rejected": "Passed"
+    },
+    "empty": {
+      "pending": "Nothing to review",
+      "approved": "Nothing waiting to be posted",
+      "posted": "Nothing posted yet",
+      "rejected": "Nothing passed on"
+    },
+    "video": "Video",
+    "photo": "Photo",
+    "photoAlt": "An offered photo",
+    "hasCoords": "Has location",
+    "sentAt": "Received {{date}}",
+    "takenAt": "Taken {{date}}",
+    "creditYes": "Name may be shown",
+    "creditNo": "Wants to stay anonymous",
+    "approve": "Approve (+{{points}} pt)",
+    "reject": "Pass",
+    "noteLabel": "Reason",
+    "notePlaceholder": "A reason for the contributor (optional), e.g. faces are clearly visible",
+    "rejectConfirm": "Pass",
+    "approved": "Approved. {{name}} got {{points}} points",
+    "post": "Post with this",
+    "postTitle": "Post an offered photo/video",
+    "postCredit": "The post will show \"Photo/video by {{name}}\".",
+    "postAnonymous": "The contributor asked to stay anonymous, so it will show \"By a traveler\".",
+    "photoNote": "The photo becomes a 6-second, slowly zooming vertical video on this device before posting (keep this screen open meanwhile).",
+    "making": "Making a video from the photo… {{percent}}%",
+    "uploading": "Uploading…",
+    "cantMake": "This browser can't make a video from a photo. Open this in a recent Chrome or Safari",
+    "postButton": "Post",
+    "posted": "Posted. The contributor has been told",
+    "postError": "Couldn't post"
   }
 }

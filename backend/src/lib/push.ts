@@ -43,7 +43,9 @@ export type PushMessage =
   | { type: "comment"; actor: string; body: string; reelId: string }
   // 乗る便 (lib/transportAlerts.ts): `time` is the local departure/arrival "HH:MM".
   | { type: "departSoon"; name: string; from: string; platform: string; time: string; minutes: number; tripId: string; transportId: string }
-  | { type: "arriveSoon"; name: string; to: string; time: string; minutes: number; tripId: string; transportId: string };
+  | { type: "arriveSoon"; name: string; to: string; time: string; minutes: number; tripId: string; transportId: string }
+  | { type: "submissionReviewed"; approved: boolean; municipality: string; points: number; submissionId: string }
+  | { type: "submissionPosted"; municipality: string; place: string; reelId: string };
 
 const TEXT: Record<string, Record<PushMessage["type"], (m: any) => { title: string; body: string }>> = {
   ja: {
@@ -52,6 +54,8 @@ const TEXT: Record<string, Record<PushMessage["type"], (m: any) => { title: stri
     comment: (m) => ({ title: `${m.actor}さんがコメントしました`, body: m.body }),
     departSoon: (m) => ({ title: `${m.name} まもなく出発（約${m.minutes}分後）`, body: [`${m.from} ${m.time}発`, m.platform].filter(Boolean).join("・") }),
     arriveSoon: (m) => ({ title: `まもなく${m.to}に到着（約${m.minutes}分）`, body: `${m.name}・${m.time}着予定。降りる準備をしましょう` }),
+    submissionReviewed: (m) => (m.approved ? { title: `${m.municipality}があなたの写真・動画を承認しました`, body: `+${m.points}ポイント` } : { title: `${m.municipality}が今回の写真・動画を見送りました`, body: "マイページで理由を確認できます" }),
+    submissionPosted: (m) => ({ title: `あなたの写真・動画が${m.municipality}の投稿になりました`, body: m.place }),
   },
   en: {
     newPost: (m) => ({ title: `New post from ${m.poster}`, body: m.place }),
@@ -59,6 +63,8 @@ const TEXT: Record<string, Record<PushMessage["type"], (m: any) => { title: stri
     comment: (m) => ({ title: `${m.actor} commented`, body: m.body }),
     departSoon: (m) => ({ title: `${m.name} departs in about ${m.minutes} min`, body: [`${m.from} at ${m.time}`, m.platform].filter(Boolean).join(" · ") }),
     arriveSoon: (m) => ({ title: `Arriving at ${m.to} in about ${m.minutes} min`, body: `${m.name}, due ${m.time}. Get ready to get off` }),
+    submissionReviewed: (m) => (m.approved ? { title: `${m.municipality} approved your photo/video`, body: `+${m.points} points` } : { title: `${m.municipality} passed on your photo/video this time`, body: "See why on My page" }),
+    submissionPosted: (m) => ({ title: `Your photo/video is now a post by ${m.municipality}`, body: m.place }),
   },
   zh: {
     newPost: (m) => ({ title: `${m.poster}发布了新帖子`, body: m.place }),
@@ -66,6 +72,8 @@ const TEXT: Record<string, Record<PushMessage["type"], (m: any) => { title: stri
     comment: (m) => ({ title: `${m.actor}发表了评论`, body: m.body }),
     departSoon: (m) => ({ title: `${m.name} 约${m.minutes}分钟后出发`, body: [`${m.from} ${m.time}出发`, m.platform].filter(Boolean).join("・") }),
     arriveSoon: (m) => ({ title: `约${m.minutes}分钟后到达${m.to}`, body: `${m.name}・预计${m.time}到达，请准备下车` }),
+    submissionReviewed: (m) => (m.approved ? { title: `${m.municipality}批准了你的照片・视频`, body: `+${m.points}积分` } : { title: `${m.municipality}这次没有采用你的照片・视频`, body: "可在我的页面查看原因" }),
+    submissionPosted: (m) => ({ title: `你的照片・视频已成为${m.municipality}的帖子`, body: m.place }),
   },
   ko: {
     newPost: (m) => ({ title: `${m.poster}의 새 게시물`, body: m.place }),
@@ -73,6 +81,8 @@ const TEXT: Record<string, Record<PushMessage["type"], (m: any) => { title: stri
     comment: (m) => ({ title: `${m.actor}님이 댓글을 남겼습니다`, body: m.body }),
     departSoon: (m) => ({ title: `${m.name} 약 ${m.minutes}분 후 출발`, body: [`${m.from} ${m.time} 출발`, m.platform].filter(Boolean).join("・") }),
     arriveSoon: (m) => ({ title: `약 ${m.minutes}분 후 ${m.to} 도착`, body: `${m.name}・${m.time} 도착 예정. 내릴 준비를 하세요` }),
+    submissionReviewed: (m) => (m.approved ? { title: `${m.municipality}이(가) 사진・동영상을 승인했습니다`, body: `+${m.points}포인트` } : { title: `${m.municipality}이(가) 이번 사진・동영상을 보류했습니다`, body: "마이페이지에서 이유를 확인할 수 있습니다" }),
+    submissionPosted: (m) => ({ title: `내 사진・동영상이 ${m.municipality}의 게시물이 되었습니다`, body: m.place }),
   },
 };
 
@@ -84,12 +94,14 @@ export function pushPayload(message: PushMessage, lang: string) {
     title,
     body: body.length > 120 ? `${body.slice(0, 119)}…` : body,
     url:
-      message.type === "newPost"
+      message.type === "newPost" || message.type === "submissionPosted"
         ? `/reels/${message.reelId}/access`
+        : message.type === "submissionReviewed"
+          ? "/mypage"
         : message.type === "departSoon" || message.type === "arriveSoon"
           ? `/itinerary/${message.tripId}`
           : "/notifications",
-    tag: `${message.type}-${"transportId" in message ? message.transportId : message.reelId}`,
+    tag: `${message.type}-${"transportId" in message ? message.transportId : "submissionId" in message ? message.submissionId : message.reelId}`,
   };
 }
 

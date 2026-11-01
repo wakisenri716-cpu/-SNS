@@ -213,7 +213,9 @@
     "spotCoordsNote": "緯度・経度（任意）を入れると「近くの観光スポット」に表示されます。両方空にすると、スポット名と自治体名から位置を自動で探します（見つからなければ位置なしになります）。",
     "spotHasLocation": "位置あり",
     "spotNoLocation": "位置なし",
-    "deleteSpotConfirm": "この観光スポットを削除しますか？元に戻せません。"
+    "deleteSpotConfirm": "この観光スポットを削除しますか？元に戻せません。",
+    "tabSubmissions": "提供素材",
+    "tabSubmissionsCount": "提供素材（{{count}}）"
   },
   "companyDashboard": {
     "manageScreen": "{{name}} 管理画面",
@@ -610,7 +612,8 @@
     "commented": "{{name}}さんが「{{post}}」にコメントしました",
     "deletedUser": "退会したユーザー",
     "newPost": "{{name}}が新しい投稿をしました：{{post}}",
-    "subtitleTraveler": "フォロー中の自治体・企業の新しい投稿です"
+    "subtitleTraveler": "フォロー中の自治体・企業の新しい投稿です",
+    "submissionPosted": "あなたが提供した写真・動画が{{name}}の投稿「{{post}}」になりました"
   },
   "share": {
     "label": "共有",
@@ -1399,5 +1402,87 @@
     "heading": "みんなの声（{{count}}件のコメントから）",
     "note": "端末のAIによる要約です。元のコメントも確認してください。",
     "context": "観光スポットの投稿に旅行者が書いたコメントです。良い点・注意点・おすすめを短くまとめてください。"
+  },
+  "submit": {
+    "cta": "写真・動画を提供する",
+    "ctaSub": "{{name}}の投稿に使ってもらえるかも。承認されると{{points}}ポイント",
+    "open": "提供する",
+    "loginToSend": "ログインして提供",
+    "title": "{{name}}に写真・動画を提供",
+    "intro": "あなたが撮った{{name}}の写真・動画を送れます。{{name}}が確認して承認すると100ポイントがもらえ、{{name}}の投稿として紹介されることがあります。",
+    "pick": "写真か動画を選ぶ（動画は200MBまで）",
+    "tooBig": "動画が大きすぎます（200MBまで）",
+    "hasPlace": "写真の撮影場所を読み取りました（場所の情報だけを送ります）",
+    "noPlace": "撮影場所の情報はありません。必要なら場所の名前を入れてください",
+    "videoPlace": "場所の名前を入れると伝わりやすくなります",
+    "descriptionLabel": "ひとこと（任意）",
+    "descriptionPlaceholder": "例：朝7時の河童橋。霧が晴れた瞬間です",
+    "placeLabel": "撮った場所（任意）",
+    "placePlaceholder": "例：上高地 河童橋",
+    "credit": "投稿されるときに、自分の名前を「提供」として載せる",
+    "consent": "自分で撮影したもので、{{name}}とジャジバが投稿・紹介に使うことに同意します（人が写っている場合は、その人の了解を得ています）",
+    "note": "写真は送る前にこの端末で縮小し、位置情報などの付属データを消します。審査中のものはマイページから取り下げられます。",
+    "send": "送る",
+    "sending": "送信中…",
+    "sent": "{{name}}に送りました。審査の結果はマイページと通知でお知らせします",
+    "viewMine": "マイページで見る",
+    "error": "送れませんでした。もう一度お試しください"
+  },
+  "submissions": {
+    "mineHeading": "提供した写真・動画",
+    "earned": "獲得 {{points}}pt",
+    "status": {
+      "pending": "審査中",
+      "approved": "承認 +{{points}}pt",
+      "posted": "投稿されました",
+      "rejected": "見送り"
+    },
+    "reason": "自治体からのひとこと：{{note}}",
+    "viewPost": "投稿を見る",
+    "withdraw": "取り下げる",
+    "withdrawConfirm": "この提供を取り下げますか？",
+    "pointsNote": "提供の承認 {{count}}件",
+    "creditBadge": "提供：{{name}}さん",
+    "creditAnonymous": "旅行者の提供"
+  },
+  "inbox": {
+    "intro": "旅行者が提供した写真・動画です。承認すると提供者に{{points}}ポイントが付き、そのあと自治体の投稿として出せます。",
+    "view": {
+      "pending": "審査待ち",
+      "approved": "承認済み（未投稿）",
+      "posted": "投稿済み",
+      "rejected": "見送り"
+    },
+    "empty": {
+      "pending": "審査待ちの提供はありません",
+      "approved": "投稿待ちの素材はありません",
+      "posted": "まだ投稿していません",
+      "rejected": "見送った提供はありません"
+    },
+    "video": "動画",
+    "photo": "写真",
+    "photoAlt": "提供された写真",
+    "hasCoords": "撮影場所あり",
+    "sentAt": "{{date}}受付",
+    "takenAt": "{{date}}撮影",
+    "creditYes": "名前の掲載OK",
+    "creditNo": "匿名希望",
+    "approve": "承認する（+{{points}}pt）",
+    "reject": "見送る",
+    "noteLabel": "見送る理由",
+    "notePlaceholder": "提供者に伝える理由（任意）。例：人の顔がはっきり写っているため",
+    "rejectConfirm": "見送る",
+    "approved": "承認しました。{{name}}さんに{{points}}ポイントが付きました",
+    "post": "この素材で投稿する",
+    "postTitle": "提供された素材で投稿",
+    "postCredit": "投稿には「提供：{{name}}さん」と表示されます。",
+    "postAnonymous": "提供者は匿名を希望しているため、「旅行者の提供」と表示されます。",
+    "photoNote": "写真は、この端末で6秒のゆっくりズームする縦長動画にしてから投稿します（変換中はこの画面を開いたままにしてください）。",
+    "making": "写真から動画を作っています… {{percent}}%",
+    "uploading": "アップロード中…",
+    "cantMake": "このブラウザでは写真から動画を作れません。最新のChromeかSafariで開いてください",
+    "postButton": "投稿する",
+    "posted": "投稿しました。提供者にもお知らせしました",
+    "postError": "投稿できませんでした"
   }
 }

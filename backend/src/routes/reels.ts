@@ -3,6 +3,7 @@ import { locatePlace } from "../services/placeLookup";
 import { Request, Response, Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma";
+import { sendPush } from "../lib/push";
 import { optionalAuth, requireAuth, requireRole } from "../middleware/auth";
 import { uploadVideo } from "../middleware/upload";
 import { anonymousViewerState, reelInclude, serializeReel, type ReelViewerState, REEL_ORDER } from "../lib/reelSerializer";
@@ -577,13 +578,24 @@ router.post(
   requireRole("MUNICIPALITY", "COMPANY"),
   uploadVideo.single("video"),
   async (req, res) => {
-    if (!req.file) return res.status(400).json({ error: "動画ファイルがありません" });
+    // 素材の提供: posting a traveler's approved photo/video. A video is used as
+    // sent (no upload needed); a photo comes as the video made from it on the
+    // municipality's device. Only the municipality it was offered to.
+    const submissionId = typeof req.body.submissionId === "string" && req.body.submissionId ? req.body.submissionId : null;
+    if (!req.file && !submissionId) return res.status(400).json({ error: "動画ファイルがありません" });
 
     const parsed = createSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
 
     const poster = await resolvePosterContext(req, res);
     if (!poster) return;
+
+    const submission = submissionId
+      ? await prisma.submission.findFirst({ where: { id: submissionId, municipalityId: poster.municipalityId, status: "approved", reelId: null } })
+      : null;
+    if (submissionId && (!submission || poster.companyId)) return res.status(404).json({ error: "投稿できる提供素材が見つかりません" });
+    if (submission && submission.kind === "photo" && !req.file) return res.status(400).json({ error: "写真から作った動画がありません" });
+    const videoUrl = req.file ? `/uploads/${req.file.filename}` : submission!.fileUrl;
 
     // If a location name was given but coordinates weren't, geocode it server-side
     // (coordinates are still an optional manual override in the uploader form). A
@@ -605,7 +617,8 @@ router.post(
       data: {
         municipalityId: poster.municipalityId,
         companyId: poster.companyId,
-        videoUrl: `/uploads/${req.file.filename}`,
+        videoUrl,
+        ...(submission ? { submission: { connect: { id: submission.id } } } : {}),
         caption: parsed.data.caption,
         category: parsed.data.category,
         travelerTags: parsed.data.travelerTags.join(","),
@@ -616,6 +629,16 @@ router.post(
       },
       include: reelInclude,
     });
+
+    if (submission) {
+      await prisma.notification.create({ data: { recipientId: submission.userId, type: "submissionPosted", reelId: reel.id } });
+      void sendPush([submission.userId], {
+        type: "submissionPosted",
+        municipality: reel.municipality.name,
+        place: reel.locationName || reel.caption.slice(0, 40),
+        reelId: reel.id,
+      });
+    }
 
     announceNewPost(reel.id);
     await notifyFollowersOfNewPost({

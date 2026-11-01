@@ -5,11 +5,11 @@ import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { notifyNotificationsRead } from "../lib/unreadNotifications";
 import PushPrompt from "../components/PushPrompt";
-import { Clapperboard, Heart, MessageCircle } from "lucide-react";
+import { Camera, Clapperboard, Heart, MessageCircle } from "lucide-react";
 
 interface NotificationItem {
   id: string;
-  type: "like" | "comment" | "newPost";
+  type: "like" | "comment" | "newPost" | "submissionPosted";
   actorName: string | null;
   posterName: string;
   reel: { id: string; caption: string; locationName: string | null; videoUrl: string };
@@ -64,6 +64,8 @@ export default function NotificationsPage() {
                     <Heart className="h-5 w-5 fill-jz-warm text-jz-warm" />
                   ) : n.type === "newPost" ? (
                     <Clapperboard className="h-5 w-5 text-jz-accent" />
+                  ) : n.type === "submissionPosted" ? (
+                    <Camera className="h-5 w-5 text-jz-accent" />
                   ) : (
                     <MessageCircle className="h-5 w-5 text-gray-900" />
                   )}
@@ -72,6 +74,8 @@ export default function NotificationsPage() {
                 <p className={`text-sm text-gray-900 ${n.read ? "" : "font-semibold"}`}>
                   {n.type === "newPost"
                     ? t("notifications.newPost", { name: n.posterName, post: n.reel.locationName || n.reel.caption.slice(0, 20) })
+                    : n.type === "submissionPosted"
+                      ? t("notifications.submissionPosted", { name: n.posterName, post: n.reel.locationName || n.reel.caption.slice(0, 20) })
                     : t(n.type === "like" ? "notifications.liked" : "notifications.commented", {
                         name: n.actorName ?? t("notifications.deletedUser"),
                         post: n.reel.locationName || n.reel.caption.slice(0, 20),
@@ -82,7 +86,7 @@ export default function NotificationsPage() {
                 )}
                 <p className="mt-1 text-[11px] text-gray-500">{new Date(n.createdAt).toLocaleString(i18n.language)}</p>
                 </span>
-                {n.type === "newPost" && (
+                {(n.type === "newPost" || n.type === "submissionPosted") && (
                   <video
                     src={`${n.reel.videoUrl}#t=0.1`}
                     className="on-media h-14 w-11 shrink-0 rounded-lg bg-gray-100 object-cover"

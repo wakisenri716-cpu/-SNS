@@ -213,7 +213,9 @@
     "spotCoordsNote": "填写纬度・经度（可选）后会显示在「附近的观光景点」中。两者都留空时，将根据景点名称和地方政府名称自动查找位置（找不到时为无位置）。",
     "spotHasLocation": "有位置",
     "spotNoLocation": "无位置",
-    "deleteSpotConfirm": "确定要删除这个观光景点吗？删除后无法恢复。"
+    "deleteSpotConfirm": "确定要删除这个观光景点吗？删除后无法恢复。",
+    "tabSubmissions": "提供素材",
+    "tabSubmissionsCount": "提供素材（{{count}}）"
   },
   "companyDashboard": {
     "manageScreen": "{{name}} 管理页面",
@@ -610,7 +612,8 @@
     "commented": "{{name}} 评论了「{{post}}」",
     "deletedUser": "已注销的用户",
     "newPost": "{{name}}发布了新帖子：{{post}}",
-    "subtitleTraveler": "关注的自治体和企业的新帖子"
+    "subtitleTraveler": "关注的自治体和企业的新帖子",
+    "submissionPosted": "你提供的照片・视频已成为{{name}}的帖子「{{post}}」"
   },
   "share": {
     "label": "分享",
@@ -1399,5 +1402,87 @@
     "heading": "大家的评价（来自{{count}}条评论）",
     "note": "由设备上的AI总结。请同时查看原评论。",
     "context": "旅行者在旅游景点帖子下写的评论。请简短总结优点、注意事项和推荐。"
+  },
+  "submit": {
+    "cta": "提供照片・视频",
+    "ctaSub": "可能会用于{{name}}的帖子。获批即得{{points}}积分",
+    "open": "提供",
+    "loginToSend": "登录后提供",
+    "title": "向{{name}}提供照片・视频",
+    "intro": "可以发送你在{{name}}拍摄的照片或视频。{{name}}确认并批准后可获得100积分，并可能作为{{name}}的帖子发布。",
+    "pick": "选择照片或视频（视频不超过200MB）",
+    "tooBig": "视频太大（不超过200MB）",
+    "hasPlace": "已读取照片的拍摄地点（只发送地点信息）",
+    "noPlace": "照片中没有拍摄地点信息。如需要请填写地点名称",
+    "videoPlace": "填写地点名称更便于了解",
+    "descriptionLabel": "说明（可选）",
+    "descriptionPlaceholder": "例：早上7点的河童桥，雾散开的瞬间",
+    "placeLabel": "拍摄地点（可选）",
+    "placePlaceholder": "例：上高地 河童桥",
+    "credit": "发布时显示我的名字作为提供者",
+    "consent": "这是我本人拍摄的，同意{{name}}和Jaziba用于发布和介绍（如有人物入镜，已获得其同意）",
+    "note": "照片在发送前会在此设备上缩小，并删除位置等附加数据。审核中的可在我的页面撤回。",
+    "send": "发送",
+    "sending": "发送中…",
+    "sent": "已发送给{{name}}。审核结果将通过我的页面和通知告知",
+    "viewMine": "在我的页面查看",
+    "error": "发送失败，请重试"
+  },
+  "submissions": {
+    "mineHeading": "我提供的照片・视频",
+    "earned": "已获得 {{points}}积分",
+    "status": {
+      "pending": "审核中",
+      "approved": "已批准 +{{points}}积分",
+      "posted": "已发布",
+      "rejected": "未采用"
+    },
+    "reason": "来自自治体：{{note}}",
+    "viewPost": "查看帖子",
+    "withdraw": "撤回",
+    "withdrawConfirm": "要撤回吗？",
+    "pointsNote": "提供获批 {{count}}件",
+    "creditBadge": "提供：{{name}}",
+    "creditAnonymous": "旅行者提供"
+  },
+  "inbox": {
+    "intro": "旅行者提供的照片和视频。批准后提供者获得{{points}}积分，之后可作为自治体的帖子发布。",
+    "view": {
+      "pending": "待审核",
+      "approved": "已批准（未发布）",
+      "posted": "已发布",
+      "rejected": "未采用"
+    },
+    "empty": {
+      "pending": "没有待审核的提供",
+      "approved": "没有待发布的素材",
+      "posted": "还没有发布",
+      "rejected": "没有未采用的提供"
+    },
+    "video": "视频",
+    "photo": "照片",
+    "photoAlt": "提供的照片",
+    "hasCoords": "有拍摄地点",
+    "sentAt": "{{date}}收到",
+    "takenAt": "{{date}}拍摄",
+    "creditYes": "可显示名字",
+    "creditNo": "希望匿名",
+    "approve": "批准（+{{points}}积分）",
+    "reject": "不采用",
+    "noteLabel": "原因",
+    "notePlaceholder": "告诉提供者的原因（可选）。例：人脸拍得很清楚",
+    "rejectConfirm": "不采用",
+    "approved": "已批准，{{name}}获得{{points}}积分",
+    "post": "用此素材发布",
+    "postTitle": "用提供的素材发布",
+    "postCredit": "帖子将显示“提供：{{name}}”。",
+    "postAnonymous": "提供者希望匿名，将显示“旅行者提供”。",
+    "photoNote": "照片会先在此设备上制作成6秒、缓慢放大的竖屏视频再发布（转换期间请保持此页面打开）。",
+    "making": "正在用照片制作视频… {{percent}}%",
+    "uploading": "正在上传…",
+    "cantMake": "此浏览器无法用照片制作视频，请用最新版Chrome或Safari打开",
+    "postButton": "发布",
+    "posted": "已发布，并已通知提供者",
+    "postError": "发布失败"
   }
 }

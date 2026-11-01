@@ -43,3 +43,5 @@ export const passkeyOptionsLimiter = limiter(10, 60, "ログインの回数が�
 export const weatherLimiter = limiter(10, 120, "天気の表示が多すぎます。少し時間をおいてから再度お試しください");
 // 旅のアルバム: a day's worth of photos can go up at once.
 export const photoUploadLimiter = limiter(10, 150, "写真の追加が多すぎます。少し時間をおいてから再度お試しください");
+// 素材の提供: a traveler offering photos/videos to a municipality.
+export const submissionLimiter = limiter(60, 30, "提供が続いたため、少し時間をおいてから再度お試しください");

@@ -20,6 +20,8 @@ export const reelInclude = {
     },
   },
   company: { select: { id: true, name: true } },
+  // 素材の提供: who sent it, when they asked to be credited.
+  submission: { select: { credit: true, user: { select: { name: true } } } },
   _count: { select: { likes: true, comments: true } },
 } as const;
 
@@ -55,6 +57,7 @@ export async function serializeReel(
     viewCount: number;
     editorial?: boolean;
     checkinToken?: string | null;
+    submission?: { credit: boolean; user: { name: string } } | null;
     createdAt: Date;
     municipality: {
       id: string;
@@ -92,6 +95,8 @@ export async function serializeReel(
     editorial: reel.editorial ?? false,
     // Whether the spot has a 現地スタンプのタグ (never the token itself).
     hasCheckinTag: !!reel.checkinToken,
+    // A traveler's photo/video the municipality posted: their name, if they chose to be credited.
+    contributedBy: reel.submission ? (reel.submission.credit ? reel.submission.user.name : "") : null,
     createdAt: reel.createdAt,
     municipality: { ...municipality, isFollowing: viewer.followedMunicipalityIds.has(municipality.id) },
     postedByCompany: reel.company

@@ -10,12 +10,14 @@ import UpcomingEvents from "../components/UpcomingEvents";
 import ReelThumb from "../components/ReelGrid";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import AccessPlannerForm from "../components/AccessPlannerForm";
+import SubmitMediaSheet from "../components/SubmitMediaSheet";
 import type { Municipality, Reel } from "../types";
 import {
   ArrowUpRight,
   BadgeCheck,
   BedDouble,
   CalendarDays,
+  Camera,
   Globe,
   Grid3x3,
   Info,
@@ -61,7 +63,8 @@ function AccessPlanner({
 
 export default function MunicipalityProfilePage() {
   const { id } = useParams<{ id: string }>();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const [submitOpen, setSubmitOpen] = useState(false);
   const { t, i18n } = useTranslation();
   const tabs = [
     { key: "posts", label: t("dashboard.tabPosts"), icon: Grid3x3 },
@@ -267,6 +270,29 @@ export default function MunicipalityProfilePage() {
           )}
         </div>
       </header>
+
+      {/* 素材の提供: travelers offer their own photos/videos (not on listing pages, which no municipality runs). */}
+      {!municipality.listing && (!token || user?.role === "USER") && (
+        <div className="mx-4 mt-4 flex items-center gap-3 rounded-2xl border border-gray-200 p-3 md:mx-12">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-jz-tint text-jz-accent">
+            <Camera className="h-5 w-5" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-bold text-jz-ink">{t("submit.cta")}</span>
+            <span className="block text-[11px] leading-relaxed text-gray-500">{t("submit.ctaSub", { name: municipality.name, points: 100 })}</span>
+          </span>
+          {token ? (
+            <button type="button" onClick={() => setSubmitOpen(true)} className="shrink-0 rounded-full bg-jz-accent px-3.5 py-2 text-xs font-bold text-white active:scale-95">
+              {t("submit.open")}
+            </button>
+          ) : (
+            <Link to="/login" state={{ from: `/municipalities/${municipality.id}` }} className="shrink-0 rounded-full bg-jz-accent px-3.5 py-2 text-xs font-bold text-white">
+              {t("submit.loginToSend")}
+            </Link>
+          )}
+        </div>
+      )}
+      {submitOpen && <SubmitMediaSheet municipality={municipality} onClose={() => setSubmitOpen(false)} />}
 
       {municipality.listing && (
         <div className="mx-4 mt-4 flex gap-2.5 rounded-2xl bg-gray-50 p-3 text-xs leading-relaxed text-gray-600 md:mx-12">

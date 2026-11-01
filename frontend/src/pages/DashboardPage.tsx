@@ -5,6 +5,7 @@ import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import ReelUploader from "../components/ReelUploader";
 import PosterLiveCard from "../components/PosterLiveCard";
+import SubmissionInbox from "../components/SubmissionInbox";
 import ReelEditor from "../components/ReelEditor";
 import { TravelerTagChips } from "../components/TravelerTagChips";
 import AutoplayVideo from "../components/AutoplayVideo";
@@ -19,7 +20,7 @@ import { Pencil, QrCode } from "lucide-react";
 // below), and 投稿 (posts) is the reel management grid, not a Municipality
 // field at all — both get their own tab panel instead.
 const TEXT_TAB_KEYS = ["accessInfo", "lodgingInfo", "restaurantInfo"] as const;
-const TAB_KEYS = ["posts", "tourismInfo", ...TEXT_TAB_KEYS] as const;
+const TAB_KEYS = ["posts", "submissions", "tourismInfo", ...TEXT_TAB_KEYS] as const;
 type TabKey = (typeof TAB_KEYS)[number];
 
 function TextInfoEditor({
@@ -424,11 +425,13 @@ export default function DashboardPage() {
   const [showUploader, setShowUploader] = useState(false);
   const [editingReel, setEditingReel] = useState<Reel | null>(null);
   const [tab, setTab] = useState<TabKey>("posts");
+  const [pendingSubmissions, setPendingSubmissions] = useState(0);
 
   useEffect(() => {
     if (!municipality) return;
     api.get("/reels/mine").then(({ data }) => setReels(data.items));
     api.get("/municipalities/me/companies").then(({ data }) => setCompanies(data));
+    api.get<{ counts: { pending: number } }>("/submissions/inbox").then(({ data }) => setPendingSubmissions(data.counts.pending)).catch(() => {});
   }, [municipality?.id]);
 
   if (!municipality) return null;
@@ -448,6 +451,7 @@ export default function DashboardPage() {
 
   const tabs: { key: TabKey; label: string }[] = [
     { key: "posts", label: t("dashboard.tabPosts") },
+    { key: "submissions", label: pendingSubmissions > 0 ? t("dashboard.tabSubmissionsCount", { count: pendingSubmissions }) : t("dashboard.tabSubmissions") },
     { key: "tourismInfo", label: t("dashboard.tabTourism") },
     { key: "accessInfo", label: t("dashboard.tabAccess") },
     { key: "lodgingInfo", label: t("dashboard.tabLodging") },
@@ -565,6 +569,7 @@ export default function DashboardPage() {
           onEdit={setEditingReel}
         />
       )}
+      {tab === "submissions" && <SubmissionInbox onCountsChange={setPendingSubmissions} onPosted={(reel) => setReels((prev) => [reel, ...prev])} />}
       {tab === "tourismInfo" && (
         <TourismSpotsEditor key={municipality.id} initialSpots={municipality.tourismSpots} />
       )}

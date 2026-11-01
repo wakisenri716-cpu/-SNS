@@ -143,6 +143,8 @@ export type TravelerTag = (typeof TRAVELER_TAGS)[number];
 
 export interface Reel {
   id: string;
+  /** Made from a traveler's 提供された素材: their name if credited, "" if anonymous; null otherwise. */
+  contributedBy?: string | null;
   /** The spot has an NFC / QR stamp tag (現地スタンプのタグ). */
   hasCheckinTag?: boolean;
   videoUrl: string;
@@ -324,4 +326,25 @@ export interface EventItem {
   url: string;
   municipality: { id: string; name: string; prefecture: string; avatarUrl: string | null };
   company: { id: string; name: string } | null;
+}
+
+// 素材の提供: a traveler's photo/video offered to a municipality (GET /submissions/mine, /submissions/inbox).
+export interface Submission {
+  id: string;
+  kind: "video" | "photo";
+  fileUrl: string;
+  description: string;
+  locationName: string;
+  locationLat: number | null;
+  locationLng: number | null;
+  takenAt: string | null;
+  credit: boolean;
+  status: "pending" | "approved" | "rejected";
+  reviewNote: string;
+  reviewedAt: string | null;
+  reelId: string | null;
+  createdAt: string;
+  points: number;
+  municipality?: { id: string; name: string; prefecture: string };
+  contributor?: { id: string; name: string };
 }

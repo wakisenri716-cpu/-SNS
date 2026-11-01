@@ -43,4 +43,13 @@ export const uploadImage = multer({
   fileFilter: onlyTypes(IMAGE_MIME, "画像ファイル（JPEG・PNG・WebP）を選んでください"),
 });
 
+// 素材の提供: a traveler's photo or video (videos up to the reel limit).
+export const uploadMedia = multer({
+  storage,
+  limits: { fileSize: 200 * 1024 * 1024 },
+  fileFilter: onlyTypes(new Set([...VIDEO_MIME, ...IMAGE_MIME]), "写真（JPEG・PNG・WebP）か動画（MP4・MOV・WebM）を選んでください"),
+});
+
+export const isVideoMime = (mime: string) => VIDEO_MIME.has(mime);
+
 export { UPLOAD_DIR };

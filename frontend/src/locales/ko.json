@@ -213,7 +213,9 @@
     "spotCoordsNote": "위도・경도(선택)를 입력하면 「주변 관광 스팟」에 표시됩니다. 둘 다 비우면 스팟 이름과 지자체 이름으로 위치를 자동으로 찾습니다 (찾지 못하면 위치 없음).",
     "spotHasLocation": "위치 있음",
     "spotNoLocation": "위치 없음",
-    "deleteSpotConfirm": "이 관광 스팟을 삭제하시겠습니까? 되돌릴 수 없습니다."
+    "deleteSpotConfirm": "이 관광 스팟을 삭제하시겠습니까? 되돌릴 수 없습니다.",
+    "tabSubmissions": "제공 소재",
+    "tabSubmissionsCount": "제공 소재 ({{count}})"
   },
   "companyDashboard": {
     "manageScreen": "{{name}} 관리 화면",
@@ -610,7 +612,8 @@
     "commented": "{{name}}님이 「{{post}}」에 댓글을 달았습니다",
     "deletedUser": "탈퇴한 사용자",
     "newPost": "{{name}}에서 새 게시물을 올렸어요: {{post}}",
-    "subtitleTraveler": "팔로우 중인 지자체·기업의 새 게시물이에요"
+    "subtitleTraveler": "팔로우 중인 지자체·기업의 새 게시물이에요",
+    "submissionPosted": "내가 제공한 사진・동영상이 {{name}}의 게시물 \"{{post}}\"이(가) 되었습니다"
   },
   "share": {
     "label": "공유",
@@ -1399,5 +1402,87 @@
     "heading": "모두의 의견 ({{count}}개 댓글에서)",
     "note": "기기의 AI가 요약한 내용입니다. 원래 댓글도 확인하세요.",
     "context": "관광 스폿 게시물에 여행자가 쓴 댓글입니다. 좋은 점・주의점・추천을 짧게 요약해 주세요."
+  },
+  "submit": {
+    "cta": "사진・동영상 제공하기",
+    "ctaSub": "{{name}}의 게시물에 쓰일 수 있어요. 승인되면 {{points}}포인트",
+    "open": "제공하기",
+    "loginToSend": "로그인하고 제공",
+    "title": "{{name}}에 사진・동영상 제공",
+    "intro": "{{name}}에서 찍은 사진・동영상을 보낼 수 있습니다. {{name}}이(가) 확인하고 승인하면 100포인트를 받고, {{name}}의 게시물로 소개될 수 있습니다.",
+    "pick": "사진 또는 동영상 선택 (동영상은 200MB까지)",
+    "tooBig": "동영상이 너무 큽니다 (200MB까지)",
+    "hasPlace": "사진의 촬영 장소를 읽었습니다 (장소 정보만 보냅니다)",
+    "noPlace": "사진에 촬영 장소 정보가 없습니다. 필요하면 장소 이름을 넣어 주세요",
+    "videoPlace": "장소 이름을 넣으면 전달하기 쉽습니다",
+    "descriptionLabel": "한마디 (선택)",
+    "descriptionPlaceholder": "예: 아침 7시의 갓파바시. 안개가 걷힌 순간",
+    "placeLabel": "찍은 장소 (선택)",
+    "placePlaceholder": "예: 가미코치 갓파바시",
+    "credit": "게시될 때 내 이름을 \"제공\"으로 싣기",
+    "consent": "직접 촬영한 것이며, {{name}}과(와) Jaziba가 게시・소개에 사용하는 것에 동의합니다 (사람이 찍혀 있다면 그 사람의 동의를 받았습니다)",
+    "note": "사진은 보내기 전에 이 기기에서 줄이고 위치 등 부가 데이터를 지웁니다. 심사 중인 것은 마이페이지에서 철회할 수 있습니다.",
+    "send": "보내기",
+    "sending": "보내는 중…",
+    "sent": "{{name}}에 보냈습니다. 심사 결과는 마이페이지와 알림으로 알려 드립니다",
+    "viewMine": "마이페이지에서 보기",
+    "error": "보내지 못했습니다. 다시 시도해 주세요"
+  },
+  "submissions": {
+    "mineHeading": "제공한 사진・동영상",
+    "earned": "획득 {{points}}pt",
+    "status": {
+      "pending": "심사 중",
+      "approved": "승인 +{{points}}pt",
+      "posted": "게시됨",
+      "rejected": "보류"
+    },
+    "reason": "지자체의 한마디: {{note}}",
+    "viewPost": "게시물 보기",
+    "withdraw": "철회",
+    "withdrawConfirm": "이 제공을 철회할까요?",
+    "pointsNote": "제공 승인 {{count}}건",
+    "creditBadge": "제공: {{name}}님",
+    "creditAnonymous": "여행자 제공"
+  },
+  "inbox": {
+    "intro": "여행자가 제공한 사진・동영상입니다. 승인하면 제공자에게 {{points}}포인트가 지급되고, 그 후 지자체 게시물로 올릴 수 있습니다.",
+    "view": {
+      "pending": "심사 대기",
+      "approved": "승인됨 (미게시)",
+      "posted": "게시됨",
+      "rejected": "보류"
+    },
+    "empty": {
+      "pending": "심사 대기 중인 제공이 없습니다",
+      "approved": "게시 대기 중인 소재가 없습니다",
+      "posted": "아직 게시하지 않았습니다",
+      "rejected": "보류한 제공이 없습니다"
+    },
+    "video": "동영상",
+    "photo": "사진",
+    "photoAlt": "제공된 사진",
+    "hasCoords": "촬영 장소 있음",
+    "sentAt": "{{date}} 접수",
+    "takenAt": "{{date}} 촬영",
+    "creditYes": "이름 게재 OK",
+    "creditNo": "익명 희망",
+    "approve": "승인 (+{{points}}pt)",
+    "reject": "보류",
+    "noteLabel": "보류 이유",
+    "notePlaceholder": "제공자에게 전할 이유 (선택). 예: 사람 얼굴이 뚜렷하게 찍혀 있어서",
+    "rejectConfirm": "보류",
+    "approved": "승인했습니다. {{name}}님에게 {{points}}포인트가 지급되었습니다",
+    "post": "이 소재로 게시",
+    "postTitle": "제공된 소재로 게시",
+    "postCredit": "게시물에 \"제공: {{name}}님\"이 표시됩니다.",
+    "postAnonymous": "제공자가 익명을 희망해 \"여행자 제공\"으로 표시됩니다.",
+    "photoNote": "사진은 이 기기에서 6초 동안 천천히 확대되는 세로 동영상으로 만든 뒤 게시합니다 (변환 중에는 이 화면을 열어 두세요).",
+    "making": "사진으로 동영상을 만드는 중… {{percent}}%",
+    "uploading": "업로드 중…",
+    "cantMake": "이 브라우저에서는 사진으로 동영상을 만들 수 없습니다. 최신 Chrome이나 Safari로 열어 주세요",
+    "postButton": "게시",
+    "posted": "게시했습니다. 제공자에게도 알렸습니다",
+    "postError": "게시하지 못했습니다"
   }
 }

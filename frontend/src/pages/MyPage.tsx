@@ -8,6 +8,7 @@ import Avatar from "../components/Avatar";
 import Stamp from "../components/Stamp";
 import ReelThumb from "../components/ReelGrid";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
+import MySubmissions from "../components/MySubmissions";
 import { formatStampDate } from "../lib/stampDate";
 import { renderStampCard, shareOrDownload } from "../lib/stampCard";
 import { showToast } from "../lib/toast";
@@ -78,7 +79,7 @@ export default function MyPage() {
   const [liked, setLiked] = useState<Reel[] | null>(null);
   const [saved, setSaved] = useState<Reel[] | null>(null);
   const [following, setFollowing] = useState<FollowItem[] | null>(null);
-  const [points, setPoints] = useState<{ points: number; reportCount: number; visitCount: number } | null>(null);
+  const [points, setPoints] = useState<{ points: number; reportCount: number; visitCount: number; submissionCount?: number } | null>(null);
   const [stamps, setStamps] = useState<StampItem[] | null>(null);
 
   useEffect(() => {
@@ -197,9 +198,17 @@ export default function MyPage() {
               {t("myPage.pointsNote", { count: points.reportCount })}
               <br />
               {t("stamps.pointsNote", { count: points.visitCount })}
+              {!!points.submissionCount && (
+                <>
+                  <br />
+                  {t("submissions.pointsNote", { count: points.submissionCount })}
+                </>
+              )}
             </p>
           </div>
         )}
+
+        <MySubmissions />
 
         <section className="mt-7">
           <div className="flex items-center gap-2">

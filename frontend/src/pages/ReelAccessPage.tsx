@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import OriginFoundNote, { type OriginFound } from "../components/OriginFoundNote";
 import EditorialBadge from "../components/EditorialBadge";
+import ContributorBadge from "../components/ContributorBadge";
 import { api } from "../api/client";
 import AutoplayVideo from "../components/AutoplayVideo";
 import SchematicRouteMap from "../components/SchematicRouteMap";
@@ -360,6 +361,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
           <span className="mb-1 flex flex-wrap items-center gap-1 self-start">
             <span className="rounded bg-white/90 px-2 py-0.5 text-[10px] font-bold text-gray-800">{t(`category.${reel.category}`)}</span>
             {reel.editorial && <EditorialBadge />}
+            {reel.contributedBy != null && <ContributorBadge name={reel.contributedBy} />}
           </span>
           <p className="text-base font-bold text-white drop-shadow lg:text-xl">
             {reel.locationName || reel.municipality.name}
