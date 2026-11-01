@@ -116,7 +116,7 @@ body {
 /* Loading placeholder with a light sweep. */
 .skeleton {
   display: block;
-  background: linear-gradient(90deg, var(--color-gray-100) 30%, var(--color-gray-50) 50%, var(--color-gray-100) 70%);
+  background: linear-gradient(100deg, var(--color-gray-100) 30%, color-mix(in oklab, var(--color-jz-tint) 70%, var(--color-gray-50)) 50%, var(--color-gray-100) 70%);
   background-size: 300% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }
@@ -140,6 +140,105 @@ body {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
     0 10px 30px -8px rgba(0, 0, 0, 0.35);
+}
+
+/* Liquid glass (the phone tab bar): a thicker, brighter frost with a lit
+   rim — a gradient border drawn by a masked pseudo-element — and a soft
+   inner glow, so it reads as a lens floating over the content. */
+.liquid-glass {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.44));
+  -webkit-backdrop-filter: blur(22px) saturate(190%) brightness(1.06);
+  backdrop-filter: blur(22px) saturate(190%) brightness(1.06);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    inset 0 -8px 16px -10px rgba(31, 42, 48, 0.12),
+    0 18px 40px -14px rgba(31, 42, 48, 0.35),
+    0 3px 10px rgba(31, 42, 48, 0.08);
+}
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.15) 40%, rgba(255, 255, 255, 0.05) 60%, rgba(255, 255, 255, 0.7));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+/* The pill that glides to the current tab, with a little overshoot. */
+.tab-pill {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7));
+  box-shadow:
+    inset 0 1px 1px #fff,
+    0 4px 14px -4px rgba(14, 127, 127, 0.35),
+    0 0 0 1px rgba(14, 127, 127, 0.08);
+  transition: transform 0.45s cubic-bezier(0.3, 1.35, 0.5, 1);
+}
+.dark .liquid-glass {
+  background: linear-gradient(180deg, rgba(40, 44, 52, 0.66), rgba(24, 27, 33, 0.55));
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.12),
+    0 18px 40px -14px rgba(0, 0, 0, 0.7);
+}
+.dark .liquid-glass::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.04) 45%, rgba(255, 255, 255, 0.18));
+}
+.dark .tab-pill {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07));
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.18), 0 4px 14px -4px rgba(60, 199, 199, 0.35);
+}
+
+/* Page changes from the tab bar slide the way you moved; the bars stay. */
+::view-transition-group(tab-bar),
+::view-transition-group(top-bar) {
+  animation: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html[data-nav-dir="forward"]::view-transition-old(root) { animation: 0.3s cubic-bezier(0.4, 0, 0.2, 1) both vt-out-left; }
+  html[data-nav-dir="forward"]::view-transition-new(root) { animation: 0.3s cubic-bezier(0.2, 0.9, 0.3, 1) both vt-in-right; }
+  html[data-nav-dir="back"]::view-transition-old(root) { animation: 0.3s cubic-bezier(0.4, 0, 0.2, 1) both vt-out-right; }
+  html[data-nav-dir="back"]::view-transition-new(root) { animation: 0.3s cubic-bezier(0.2, 0.9, 0.3, 1) both vt-in-left; }
+}
+@keyframes vt-out-left { to { opacity: 0; transform: translateX(-12%); } }
+@keyframes vt-in-right { from { opacity: 0; transform: translateX(12%); } }
+@keyframes vt-out-right { to { opacity: 0; transform: translateX(12%); } }
+@keyframes vt-in-left { from { opacity: 0; transform: translateX(-12%); } }
+
+/* ---- Type ------------------------------------------------------------- */
+/* Headings break where they read best and set Japanese tighter (palt:
+   proportional kana), like print; long text avoids one-word last lines. */
+h1, h2, h3 {
+  text-wrap: balance;
+  font-feature-settings: "palt";
+  letter-spacing: 0.01em;
+}
+p, li {
+  text-wrap: pretty;
+}
+.tabular-nums {
+  font-feature-settings: "tnum";
+}
+
+/* ---- Brand loader: the logo's four tiles popping in turn ------------- */
+.mosaic-loader {
+  display: grid;
+  grid-template-columns: repeat(2, 18px);
+  gap: 4px;
+}
+.mosaic-loader > span {
+  width: 18px;
+  height: 18px;
+  animation: mosaic-pop 1.2s cubic-bezier(0.3, 1.4, 0.5, 1) infinite;
+}
+.mosaic-loader > span:nth-child(1) { background: #14a3a3; border-radius: 0 100% 0 0 / 0 100% 0 0; }
+.mosaic-loader > span:nth-child(2) { background: #f26b38; border-radius: 9999px; animation-delay: 0.15s; }
+.mosaic-loader > span:nth-child(3) { background: #f6c343; border-radius: 4px; animation-delay: 0.45s; }
+.mosaic-loader > span:nth-child(4) { background: #3a6ea5; clip-path: polygon(100% 0, 100% 100%, 0 100%); animation-delay: 0.3s; }
+@keyframes mosaic-pop {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  35% { transform: scale(0.55); opacity: 0.55; }
 }
 
 /* Posts ease in as they scroll into view (scroll-driven animation; browsers

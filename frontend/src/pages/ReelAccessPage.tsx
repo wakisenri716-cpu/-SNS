@@ -1,8 +1,9 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import OriginFoundNote, { type OriginFound } from "../components/OriginFoundNote";
 import EditorialBadge from "../components/EditorialBadge";
+import { useAmbientColor } from "../lib/useAmbientColor";
 import ContributorBadge from "../components/ContributorBadge";
 import { api } from "../api/client";
 import AutoplayVideo from "../components/AutoplayVideo";
@@ -259,6 +260,8 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
 
   const stateReel = (location.state as { reel?: Reel } | null)?.reel;
   const [reel, setReel] = useState<Reel | null>(stateReel ?? null);
+  const heroVideo = useRef<HTMLVideoElement | null>(null);
+  const heroAmbient = useAmbientColor(heroVideo);
   const [notFound, setNotFound] = useState(false);
 
   const [origin, setOrigin] = useState("");
@@ -346,8 +349,12 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
         />
       </div>
 
-      <div className="on-media relative mb-4 h-40 overflow-hidden rounded-lg bg-gray-900 lg:h-56">
-        <AutoplayVideo src={reel.videoUrl} className="h-full w-full object-cover opacity-90" />
+      {/* The spot's video, lit by its own colours (ambient glow). */}
+      <div
+        className="on-media relative mb-5 h-52 overflow-hidden rounded-[28px] bg-gray-900 transition-shadow duration-1000 lg:h-72"
+        style={{ boxShadow: heroAmbient ? `0 26px 56px -24px ${heroAmbient}, 0 10px 28px -16px ${heroAmbient}` : undefined }}
+      >
+        <AutoplayVideo src={reel.videoUrl} className="h-full w-full object-cover opacity-90" videoRef={heroVideo} />
         {liveViewers != null && liveViewers >= 2 && (
           <span className="glass-dark animate-fade-in absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold text-white" aria-live="polite">
             <span className="relative flex h-2 w-2">

@@ -261,6 +261,7 @@ export default function Layout() {
     <div className="flex min-h-screen w-full flex-col text-gray-900 md:flex-row">
       {/* Phones: frosted top bar + bottom tab bar (below). */}
       <header
+        style={{ viewTransitionName: "top-bar" }}
         className={`sticky top-0 z-40 flex h-[53px] items-center justify-between border-b border-gray-100 bg-white/80 px-4 backdrop-blur-xl backdrop-saturate-150 transition-transform duration-300 md:hidden ${
           headerHidden ? "-translate-y-full" : ""
         }`}
@@ -343,7 +344,13 @@ export default function Layout() {
         <Suspense
           fallback={
             <div className="flex justify-center p-16" role="status" aria-label={t("feed.loading")}>
-              <span className="h-3 w-3 animate-ping rounded-full bg-jz-accent" />
+              {/* The logo's four tiles, popping in turn. */}
+              <span className="mosaic-loader" aria-hidden>
+                <span />
+                <span />
+                <span />
+                <span />
+              </span>
             </div>
           }
         >
@@ -361,35 +368,59 @@ export default function Layout() {
 
       <ItineraryRail />
 
-      <nav
-        aria-label={t("nav.tabBar")}
-        className="glass fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-1/2 z-40 flex h-16 w-[min(calc(100%-2rem),420px)] -translate-x-1/2 items-center gap-1 rounded-full px-2 md:hidden"
-      >
-        {primary.filter((item) => item.tabBar !== false).map(({ to, label, icon: IconC, badge = 0 }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={to === "/"}
-            aria-label={label}
-            className={({ isActive }) =>
-              `relative flex h-12 flex-1 flex-col items-center justify-center rounded-full text-jz-ink transition-all duration-300 active:scale-90 ${
-                isActive ? "" : "text-gray-500"
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <IconC className="h-[25px] w-[25px]" strokeWidth={isActive ? 2.4 : 1.7} />
-                <span
-                  className={`mt-1 h-1.5 w-1.5 rounded-full bg-jz-warm transition-all duration-300 ${isActive ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
-                  aria-hidden
-                />
-                {badge > 0 && <Badge count={badge} className="absolute left-1/2 top-1 ml-1.5" />}
-              </>
-            )}
-          </NavLink>
-        ))}
-      </nav>
+      <TabBar tabs={primary.filter((item) => item.tabBar !== false)} label={t("nav.tabBar")} />
     </div>
+  );
+}
+
+// Which tab a path belongs to ("/" only for the home itself).
+const tabIndexOf = (tabs: { to: string }[], path: string) => tabs.findIndex((tab) => (tab.to === "/" ? path === "/" : path === tab.to || path.startsWith(`${tab.to}/`)));
+
+// The floating tab bar on phones: liquid glass, with a lens-like pill that
+// glides to the tab you're on. Switching tabs slides the page left or right
+// the way you moved (View Transitions; the bar itself stays put).
+function TabBar({ tabs, label }: { tabs: NavEntry[]; label: string }) {
+  const location = useLocation();
+  const active = tabIndexOf(tabs, location.pathname);
+  return (
+    <nav
+      aria-label={label}
+      className="liquid-glass fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-1/2 z-40 flex h-16 w-[min(calc(100%-2rem),420px)] -translate-x-1/2 items-center rounded-full px-1.5 md:hidden"
+      style={{ viewTransitionName: "tab-bar" }}
+    >
+      {active >= 0 && (
+        <span
+          aria-hidden
+          className="tab-pill pointer-events-none absolute inset-y-1.5 left-1.5 rounded-full"
+          style={{ width: `calc((100% - 0.75rem) / ${tabs.length})`, transform: `translateX(${active * 100}%)` }}
+        />
+      )}
+      {tabs.map(({ to, label: tabLabel, icon: IconC, badge = 0 }, i) => (
+        <NavLink
+          key={to}
+          to={to}
+          end={to === "/"}
+          aria-label={tabLabel}
+          viewTransition
+          onClick={() => {
+            document.documentElement.dataset.navDir = active < 0 || i === active ? "" : i > active ? "forward" : "back";
+          }}
+          className={({ isActive }) =>
+            `relative z-[1] flex h-12 flex-1 flex-col items-center justify-center rounded-full transition-[color,transform] duration-300 active:scale-90 ${isActive ? "text-jz-ink" : "text-gray-500"}`
+          }
+        >
+          {({ isActive }) => (
+            <>
+              <IconC className={`h-[25px] w-[25px] transition-transform duration-300 ${isActive ? "scale-105" : ""}`} strokeWidth={isActive ? 2.4 : 1.7} />
+              <span
+                className={`mt-1 h-1.5 w-1.5 rounded-full bg-jz-warm transition-all duration-300 ${isActive ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
+                aria-hidden
+              />
+              {badge > 0 && <Badge count={badge} className="absolute left-1/2 top-1 ml-1.5" />}
+            </>
+          )}
+        </NavLink>
+      ))}
+    </nav>
   );
 }
