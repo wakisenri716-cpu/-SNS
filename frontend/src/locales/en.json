@@ -474,6 +474,7 @@
           "Google (US): starting points and destinations for route search (Google Maps Platform); loading fonts (Google Fonts)",
           "Stripe (US): your email address, name and card details for paid plans (you enter card details directly on Stripe's page)",
           "Notification delivery services (Google, Apple, Mozilla and others that make your browser): the content of push notifications (sent encrypted)",
+          "Rakuten Group (Japan): the place's location, dates and number of guests to search for rooms (no user information is sent). “Book” opens Rakuten Travel, where the booking is made",
           "OpenFreeMap: loading map images",
           "Open-Meteo: locations of tourist spots for weather forecasts (no user information is sent)",
           "Render (US): hosting the Service's servers and data",
@@ -2013,5 +2014,28 @@
     "check": "Check status",
     "contact": "Contact us",
     "registerNote": "After you sign up, we check the details to prevent impersonation. Once approved you can post and edit your information (we may contact you to confirm)."
+  },
+  "stays": {
+    "heading": "Find & book a stay",
+    "sub": "Enter your dates to see places nearby with rooms free and their prices, from Rakuten Travel.",
+    "checkin": "Check-in",
+    "nights": "Nights",
+    "nightsValue": "{{count}} nights",
+    "adults": "Guests",
+    "adultsValue": "{{count}} adults",
+    "search": "Search rooms",
+    "error": "We can't check rooms right now. Please try again later",
+    "notConfigured": "The Rakuten Travel connection isn't set up yet. You can look for places to stay on the map.",
+    "noPosition": "We don't know where this place is, so we can't check rooms. You can look on the map.",
+    "mapSearch": "Find places to stay on the map",
+    "none": "No rooms free within 3 km for these dates. Try other dates or guests.",
+    "from": "from {{price}} / person",
+    "breakfast": "Breakfast",
+    "dinner": "Dinner",
+    "total": "total, {{nights}} nights, {{adults}} guests",
+    "reserve": "Book",
+    "allPlans": "See other plans on Rakuten Travel",
+    "note": "Rooms and prices are Rakuten Travel's and may change. Booking, payment and cancellation are done on Rakuten Travel.",
+    "affiliate": "[Ad] Jaziba may receive a referral fee when you book through these links (your price is the same)."
   }
 }

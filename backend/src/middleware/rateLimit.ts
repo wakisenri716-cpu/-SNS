@@ -35,6 +35,8 @@ export const translateLimiter = limiter(10, 60, "翻訳の回数が多すぎま�
 // A shared しおり link is public and each view may estimate every leg with the
 // maps API, so cap how often one visitor can reload it.
 export const tripViewLimiter = limiter(10, 60, "表示の回数が多すぎます。少し時間をおいてから再度お試しください");
+// 宿の空室検索 calls 楽天トラベル (cached for a while per search).
+export const staySearchLimiter = limiter(10, 40, "宿の検索が続いたため、少し時間をおいてから再度お試しください");
 // Live reactions are tiny, but a script could still spam them to viewers.
 export const reactionLimiter = limiter(1, 40, "リアクションが多すぎます。少し時間をおいてください");
 // Each passkey sign-in start holds a challenge in memory until it's used or expires.

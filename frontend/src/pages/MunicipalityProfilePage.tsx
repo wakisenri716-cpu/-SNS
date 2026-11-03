@@ -11,6 +11,7 @@ import ReelThumb from "../components/ReelGrid";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import AccessPlannerForm from "../components/AccessPlannerForm";
 import LocalTransitList from "../components/LocalTransitList";
+import StaySearch from "../components/StaySearch";
 import SubmitMediaSheet from "../components/SubmitMediaSheet";
 import MunicipalityCoupons from "../components/MunicipalityCoupons";
 import type { Municipality, Reel } from "../types";
@@ -388,6 +389,11 @@ export default function MunicipalityProfilePage() {
         </>
       )}
 
+      {tab === "lodgingInfo" && (
+        <div className="border-b border-gray-200 p-4 lg:p-6">
+          <StaySearch municipalityId={municipality.id} />
+        </div>
+      )}
       {tab === "lodgingInfo" && municipality.otaLinks.length > 0 && (
         <div className="border-b border-gray-200 p-4 lg:p-6">
           <h2 className="mb-2 text-sm font-semibold text-gray-600">{t("municipalityProfile.otaHeading")}</h2>

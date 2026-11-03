@@ -280,6 +280,15 @@ AIコンシェルジュのカメラボタンから写真を送ると、Claudeが
   5. **特定商取引法に基づく表記**（`/legal/commerce`）の事業者名・責任者・所在地・電話番号を `frontend/src/lib/operatorInfo.ts` に記入する（空欄のあいだは「下書き」と表示されます）
 - 環境変数が無いあいだは、プランの一覧は見られますが「お支払いの準備中」と表示され、申し込めません
 
+### 宿を探す・予約（楽天トラベル）
+
+場所のアクセスページと、自治体ページの「宿情報」タブで、チェックイン日・泊数・人数を入れると、その近く（半径3km）で**空室のある宿と料金**を楽天トラベルの空室検索APIで調べて表示します（`backend/src/services/rakutenTravel.ts`、`backend/src/routes/stays.ts`、画面は `frontend/src/components/StaySearch.tsx`）。安いプラン順に、朝食・夕食の有無と合計金額、「予約へ」ボタンが並び、**予約・お支払い・キャンセルは楽天トラベルの画面で**行います（ジャジバは予約の当事者になりません。旅行業の登録が要らない形です）。同じ検索は10分間キャッシュします。
+
+- 使うには [楽天ウェブサービス](https://webservice.rakuten.co.jp/) でアプリを登録し、Render の環境変数に `RAKUTEN_APP_ID`（アプリID）と `RAKUTEN_ACCESS_KEY`（アクセスキー）を入れて Manual Deploy
+- `RAKUTEN_AFFILIATE_ID`（楽天アフィリエイトID）も入れると、予約リンクがアフィリエイトリンクになり、予約されるとジャジバに紹介料が入ります。そのときは画面に「［PR］」の表示が出ます（ステルスマーケティング規制への対応）
+- 楽天の規約に合わせて「Supported by Rakuten Developers」の表示を出しています
+- キーが無いあいだは、空室は出さず（作り物のデータは出しません）「地図で近くの宿を探す」を案内します
+
 ### 地元の交通情報（自治体・企業 → アクセスページ）
 
 コミュニティバス・乗合タクシー・宿の送迎・季節運行など、自治体のホームページや紙の資料にしか載っていない交通情報を、自治体（管理画面の「アクセス方法」タブ）と企業（管理画面）が追加できます（`LocalTransit`、`backend/src/routes/localTransit.ts`、画面は `frontend/src/components/LocalTransitManager.tsx`）。

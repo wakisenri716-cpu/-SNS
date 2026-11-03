@@ -1725,3 +1725,68 @@ test("管理者への通知: a sign-up waiting for approval and a new inquiry ar
     delete process.env.ADMIN_EMAILS;
   }
 });
+
+test("宿を探す: rooms free near a spot from 楽天トラベル (booking happens there), or a map search without the keys", async () => {
+  const { json: map } = await call("GET", "/api/reels/map");
+  const castle = map.items.find((r: any) => r.locationName === "松本城");
+  const day = (n: number) => new Date(Date.now() + n * 86_400_000).toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
+  const q = `reelId=${castle.id}&checkin=${day(7)}&checkout=${day(8)}&adults=2`;
+
+  // Not set up: no fake hotels, a map search to go on with.
+  const off = (await call("GET", `/api/stays?${q}`)).json;
+  assert.equal(off.configured, false);
+  assert.deepEqual(off.items, []);
+  assert.match(off.mapSearchUrl, /^https:\/\/www\.google\.com\/maps\/search\/\?api=1&query=/);
+  assert.equal((await call("GET", `/api/stays?reelId=${castle.id}&checkin=2020-01-01&checkout=2020-01-02`)).status, 400);
+  assert.equal((await call("GET", `/api/stays?reelId=${castle.id}&checkin=${day(7)}&checkout=${day(7)}`)).status, 400);
+
+  process.env.RAKUTEN_APP_ID = "app-id";
+  process.env.RAKUTEN_ACCESS_KEY = "access-key";
+  process.env.RAKUTEN_AFFILIATE_ID = "aff-id";
+  const asked: URL[] = [];
+  const real = globalThis.fetch;
+  const fetchMock = mock.method(globalThis, "fetch", async (input: any, init?: any) => {
+    if (!String(input).includes("openapi.rakuten.co.jp")) return real(input, init);
+    const url = new URL(String(input));
+    asked.push(url);
+    if (url.searchParams.get("adultNum") === "9") return new Response(JSON.stringify({ error: "not_found" }), { status: 404 });
+    return new Response(
+      JSON.stringify({
+        hotels: [
+          [
+            { hotelBasicInfo: { hotelNo: 1234, hotelName: "松本城下の宿", hotelImageUrl: "https://img.travel.rakuten.co.jp/a.jpg", hotelMinCharge: 9800, reviewAverage: 4.4, reviewCount: 210, access: "松本駅から徒歩10分", nearestStation: "松本", address1: "長野県", address2: "松本市大手", latitude: 36.238, longitude: 137.969, hotelInformationUrl: "https://travel.rakuten.co.jp/HOTEL/1234/", planListUrl: "https://hotel.travel.rakuten.co.jp/hotelinfo/plan/1234" } },
+            { roomInfo: [{ roomBasicInfo: { planName: "素泊まり", roomName: "和室", withBreakfastFlag: 0, withDinnerFlag: 0, reserveUrl: "https://hotel.travel.rakuten.co.jp/reserve/1" } }, { dailyCharge: { total: 23600 } }] },
+            { roomInfo: [{ roomBasicInfo: { planName: "朝食付き", roomName: "洋室", withBreakfastFlag: 1, withDinnerFlag: 0, reserveUrl: "https://hotel.travel.rakuten.co.jp/reserve/2" } }, { dailyCharge: { total: 19600 } }] },
+            { roomInfo: [{ roomBasicInfo: { planName: "怪しい", reserveUrl: "javascript:alert(1)" } }, { dailyCharge: { total: 1 } }] },
+          ],
+          [{ hotelBasicInfo: { hotelName: "番号なし" } }],
+        ],
+      })
+    );
+  });
+  try {
+    const on = (await call("GET", `/api/stays?${q}`)).json;
+    assert.equal(on.configured, true);
+    assert.deepEqual(on.items.map((h: any) => [h.name, h.minChargeYen, h.reviewAverage]), [["松本城下の宿", 9800, 4.4]]);
+    // Cheapest first; only https booking links.
+    assert.deepEqual(on.items[0].plans.map((p: any) => [p.name, p.totalYen, p.breakfast]), [["朝食付き", 19600, true], ["素泊まり", 23600, false]]);
+    const sent = asked[0];
+    assert.match(sent.pathname, /\/Travel\/VacantHotelSearch\/20170426$/);
+    assert.deepEqual(
+      ["applicationId", "accessKey", "affiliateId", "datumType", "adultNum", "checkinDate", "searchRadius"].map((k) => sent.searchParams.get(k)),
+      ["app-id", "access-key", "aff-id", "1", "2", day(7), "3"]
+    );
+    assert.equal(Number(sent.searchParams.get("latitude")), castle.locationLat);
+    // The same search again comes from the cache.
+    await call("GET", `/api/stays?${q}`);
+    assert.equal(asked.length, 1);
+    // No rooms free is an empty list, not an error.
+    const none = await call("GET", `/api/stays?reelId=${castle.id}&checkin=${day(7)}&checkout=${day(8)}&adults=9`);
+    assert.deepEqual([none.status, none.json.items], [200, []]);
+  } finally {
+    fetchMock.mock.restore();
+    delete process.env.RAKUTEN_APP_ID;
+    delete process.env.RAKUTEN_ACCESS_KEY;
+    delete process.env.RAKUTEN_AFFILIATE_ID;
+  }
+});

@@ -32,3 +32,9 @@ services:
         sync: false
       - key: ADMIN_EMAILS
         sync: false
+      - key: RAKUTEN_APP_ID
+        sync: false
+      - key: RAKUTEN_ACCESS_KEY
+        sync: false
+      - key: RAKUTEN_AFFILIATE_ID
+        sync: false
