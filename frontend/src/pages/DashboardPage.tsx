@@ -7,6 +7,7 @@ import ReelUploader from "../components/ReelUploader";
 import PosterLiveCard from "../components/PosterLiveCard";
 import SubmissionInbox from "../components/SubmissionInbox";
 import CouponManager from "../components/CouponManager";
+import LocalTransitManager from "../components/LocalTransitManager";
 import ReelEditor from "../components/ReelEditor";
 import { TravelerTagChips } from "../components/TravelerTagChips";
 import AutoplayVideo from "../components/AutoplayVideo";
@@ -584,6 +585,7 @@ export default function DashboardPage() {
           onUpdated={setMunicipality}
         />
       )}
+      {tab === "accessInfo" && <LocalTransitManager reels={reels} />}
 
       <ReportedComments />
       <MaasStationEditor municipality={municipality} onUpdated={setMunicipality} />

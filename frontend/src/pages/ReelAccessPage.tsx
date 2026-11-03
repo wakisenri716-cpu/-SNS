@@ -11,6 +11,7 @@ import SchematicRouteMap from "../components/SchematicRouteMap";
 import NearbySpots from "../components/NearbySpots";
 import ShareButton from "../components/ShareButton";
 import MunicipalityStayInfo from "../components/MunicipalityStayInfo";
+import LocalTransitList from "../components/LocalTransitList";
 import VisitStampCard from "../components/VisitStampCard";
 import WalkCompass from "../components/WalkCompass";
 import AudioGuide from "../components/AudioGuide";
@@ -471,6 +472,8 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
           </p>
         </div>
       )}
+
+      <LocalTransitList reelId={reel.id} className="mt-6" />
 
       <TravelReportSection
         reelId={reel.id}

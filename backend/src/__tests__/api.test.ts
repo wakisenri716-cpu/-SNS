@@ -1520,3 +1520,61 @@ test("有料プラン: Stripe Checkout, the webhook turns the plan on and off, a
 function days(n: number) {
   return new Date(Date.now() + n * 86400_000);
 }
+
+test("地元の交通情報: a municipality or business adds a screenshot/PDF and notes; travelers see them on the access pages", async () => {
+  const muni = await login("demo-matsumoto@example.com");
+  const me = (await call("GET", "/api/auth/me", undefined, muni)).json;
+  const municipalityId = me.municipality.id;
+  const reels = (await call("GET", `/api/municipalities/${municipalityId}`)).json.reels ?? (await call("GET", "/api/reels/mine", undefined, muni)).json.items;
+  const spot = reels[0].id;
+  const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
+  const post = (fields: Record<string, string>, file?: { data: Buffer; type: string; name: string }, token = muni) => {
+    const form = new FormData();
+    for (const [k, v] of Object.entries(fields)) form.append(k, v);
+    if (file) form.append("file", new Blob([file.data], { type: file.type }), file.name);
+    return fetch(`${base}/api/local-transit`, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: form });
+  };
+
+  // A timetable screenshot for the whole town, and notes for one spot.
+  const bus = await post({ title: "コミュニティバス 市内線", body: "・1日6便\n・運賃 200円", sourceUrl: "https://www.city.example.jp/bus", aiDrafted: "true" }, { data: png, type: "image/png", name: "時刻表.png" });
+  assert.equal(bus.status, 201);
+  const busJson = await bus.json();
+  assert.deepEqual([busJson.fileKind, busJson.fileName, busJson.aiDrafted, busJson.issuer.name, busJson.reel], ["image", "時刻表.png", true, "松本市", null]);
+  assert.equal((await fetch(`${base}${busJson.fileUrl}`)).status, 200);
+  const taxi = await (await post({ title: "乗合タクシー", body: "前日までに予約", reelId: spot })).json();
+  // Not without content, not a video, not a bad URL, not by travelers.
+  assert.equal((await post({ title: "空" })).status, 400);
+  assert.equal((await post({ title: "動画" }, { data: Buffer.from("x"), type: "video/mp4", name: "a.mp4" })).status, 400);
+  assert.equal((await post({ title: "URL", body: "x", sourceUrl: "javascript:alert(1)" })).status, 400);
+  const traveler = (await call("POST", "/api/auth/register", { email: "transit-viewer@example.com", password: "password123", name: "見る人" })).json.token;
+  assert.equal((await post({ title: "x", body: "y" }, undefined, traveler)).status, 403);
+  // An expired one is hidden.
+  const old = await (await post({ title: "夏季臨時バス", body: "8月のみ", validUntil: "2020-08-31" })).json();
+
+  // The spot's page: its own first, then the town's; the town's page: all current ones.
+  const forSpot = (await call("GET", `/api/local-transit?reelId=${spot}`)).json.items;
+  assert.deepEqual(forSpot.map((x: any) => x.title), ["乗合タクシー", "コミュニティバス 市内線"]);
+  const otherSpot = reels.find((r: any) => r.id !== spot)?.id;
+  if (otherSpot) assert.deepEqual((await call("GET", `/api/local-transit?reelId=${otherSpot}`)).json.items.map((x: any) => x.title), ["コミュニティバス 市内線"]);
+  assert.equal((await call("GET", `/api/local-transit?municipalityId=${municipalityId}`)).json.items.some((x: any) => x.id === old.id), false);
+
+  // A business adds its shuttle (shown with its name); it can't attach to the town's spot.
+  const shop = (await call("POST", "/api/auth/register-company", { email: "inn@example.com", password: "password123", name: "宿の人", companyName: "山の宿", municipalityId })).json.token;
+  const shuttle = await post({ title: "送迎バス", body: "松本駅から1日2便" }, undefined, shop);
+  assert.equal((await shuttle.json()).issuer.name, "山の宿");
+  assert.equal((await post({ title: "x", body: "y", reelId: spot }, undefined, shop)).status, 400);
+
+  // Edit and delete only your own.
+  assert.equal((await call("PUT", `/api/local-transit/${taxi.id}`, { title: "乗合タクシー（予約制）", body: "前日17時までに電話で予約", reelId: spot }, muni)).json.title, "乗合タクシー（予約制）");
+  assert.equal((await call("PUT", `/api/local-transit/${taxi.id}`, { title: "乗っ取り", body: "x" }, shop)).status, 404);
+  assert.equal((await call("DELETE", `/api/local-transit/${busJson.id}`, undefined, shop)).status, 404);
+  assert.deepEqual((await call("GET", "/api/local-transit/mine", undefined, muni)).json.items.map((x: any) => x.title).sort(), ["コミュニティバス 市内線", "乗合タクシー（予約制）", "夏季臨時バス"].sort());
+  assert.equal((await call("DELETE", `/api/local-transit/${busJson.id}`, undefined, muni)).status, 204);
+  assert.equal((await fetch(`${base}${busJson.fileUrl}`)).status, 404, "the file goes too");
+
+  // Without a Claude key the AI reading says so (type it in instead).
+  const form = new FormData();
+  form.append("file", new Blob([png], { type: "image/png" }), "a.png");
+  const read = await fetch(`${base}/api/local-transit/read`, { method: "POST", headers: { Authorization: `Bearer ${muni}` }, body: form });
+  assert.deepEqual([read.status, (await read.json()).code], [503, "aiUnavailable"]);
+});

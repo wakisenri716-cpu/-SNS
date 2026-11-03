@@ -112,6 +112,7 @@ model Municipality {
   events       Event[]
   submissions   Submission[]
   coupons       Coupon[]
+  localTransit   LocalTransit[]
 }
 
 // One tourist attraction within a municipality's jurisdiction — the 観光情報
@@ -153,6 +154,7 @@ model Company {
   followers Follow[]
   events    Event[]
   coupons       Coupon[]
+  localTransit   LocalTransit[]
 }
 
 model Reel {
@@ -198,6 +200,7 @@ model Reel {
   visits        Visit[]
   // Set when the post was made from a traveler's 提供された素材.
   submission    Submission?
+  localTransit   LocalTransit[]
 }
 
 // スタンプラリー: a traveler checked in at a post's spot (within
@@ -738,4 +741,37 @@ model PlanSubscription {
   cancelAtPeriodEnd    Boolean   @default(false)
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
+}
+
+// 地元の交通情報: transport a visitor needs that is often only on the town's
+// own website — community buses, on-demand taxis, inn shuttles, seasonal
+// routes. A municipality, or a business under it, uploads the screenshot or
+// PDF they have, writes the key points (the AI can draft them from the file),
+// and it shows on the access pages: for one spot (reelId) or, without one,
+// for every spot of the municipality.
+model LocalTransit {
+  id             String       @id @default(cuid())
+  municipalityId String
+  municipality   Municipality @relation(fields: [municipalityId], references: [id], onDelete: Cascade)
+  companyId      String?
+  company        Company?     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  reelId         String?
+  reel           Reel?        @relation(fields: [reelId], references: [id], onDelete: SetNull)
+  title          String
+  body           String       @default("")
+  fileUrl        String       @default("")
+  // "image" | "pdf" | "" (no file)
+  fileKind       String       @default("")
+  fileName       String       @default("")
+  // Where it comes from (the page on the town's site), shown as the source.
+  sourceUrl      String       @default("")
+  // "YYYY-MM-DD": hidden from travelers after this day (a timetable's end).
+  validUntil     String?
+  // The text started as the AI's reading of the file (and was then checked).
+  aiDrafted      Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([municipalityId])
+  @@index([reelId])
 }

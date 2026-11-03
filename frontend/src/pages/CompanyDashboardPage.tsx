@@ -7,6 +7,7 @@ import PosterLiveCard from "../components/PosterLiveCard";
 import ReelManageGrid from "../components/ReelManageGrid";
 import EventManager from "../components/EventManager";
 import CouponManager from "../components/CouponManager";
+import LocalTransitManager from "../components/LocalTransitManager";
 import ReportedComments from "../components/ReportedComments";
 import type { Reel } from "../types";
 
@@ -62,6 +63,10 @@ export default function CompanyDashboardPage() {
         <h3 className="px-4 pt-4 text-sm font-semibold text-gray-600">{t("coupons.tab")}</h3>
         <CouponManager />
       </section>
+
+      <div className="-mx-4 rounded-2xl border border-gray-200 sm:mx-0">
+        <LocalTransitManager reels={reels} />
+      </div>
     </div>
   );
 }

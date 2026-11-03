@@ -400,7 +400,7 @@ export interface PointsSummary {
     freeLeftThisMonth: number;
     credits: number;
     /** How many uses each AI feature counts for. */
-    units: Record<"concierge" | "photoConcierge" | "tripPlan" | "tripCompose", number>;
+    units: Record<"concierge" | "photoConcierge" | "tripPlan" | "tripCompose" | "transitRead", number>;
     packs: { id: string; credits: number; points: number }[];
   };
 }
@@ -422,4 +422,22 @@ export interface BillingInfo {
     currentPeriodEnd: string | null;
     cancelAtPeriodEnd: boolean;
   } | null;
+}
+
+/** 地元の交通情報 (GET /local-transit): added by a municipality or a business. */
+export interface LocalTransit {
+  id: string;
+  title: string;
+  body: string;
+  fileUrl: string | null;
+  fileKind: "image" | "pdf" | null;
+  fileName: string;
+  sourceUrl: string | null;
+  validUntil: string | null;
+  /** The text began as the AI's reading of the file (checked by the poster). */
+  aiDrafted: boolean;
+  updatedAt: string;
+  issuer: { kind: "municipality" | "company"; id: string; name: string };
+  /** The spot it's for, or null for the whole municipality. */
+  reel: { id: string; locationName: string | null } | null;
 }

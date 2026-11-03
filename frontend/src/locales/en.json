@@ -1651,7 +1651,8 @@
       "concierge": "Ask the AI",
       "photoConcierge": "Search by photo",
       "tripPlan": "AI plan",
-      "tripCompose": "AI trip (builds the plan for you)"
+      "tripCompose": "AI trip (builds the plan for you)",
+      "transitRead": "Read transport info with AI"
     },
     "planCta": "With Plus you get up to {{count}} uses a month",
     "planCtaButton": "See plans"
@@ -1805,5 +1806,45 @@
       "ai": "Jaziba AI",
       "picks": "Suggested places"
     }
+  },
+  "localTransit": {
+    "heading": "Local transport",
+    "sub": "Provided by the municipality and local businesses. Please also check the latest service with them.",
+    "imageAlt": "Material for {{title}}",
+    "pdf": "PDF",
+    "openPdf": "Open PDF",
+    "by": "From {{name}}",
+    "until": "until {{date}}",
+    "updated": "updated {{date}}",
+    "source": "Source",
+    "aiDrafted": "Read from the material by AI and checked by the provider",
+    "manageHeading": "Local transport",
+    "add": "Add",
+    "manageIntro": "Add transport information that's only on your website or leaflets (community buses, shared taxis, shuttles, seasonal services) from a screenshot or PDF. AI can read out the key points. It appears on the spots' access pages.",
+    "fileLabel": "Screenshot, photo or PDF",
+    "chooseFile": "Choose a file",
+    "changeFile": "Change file",
+    "readWithAi": "Read with AI",
+    "reading": "Reading…",
+    "fileHint": "An image (JPEG, PNG, WebP) or PDF, up to 15MB. Travelers can see the file too. AI reading counts as one use.",
+    "checkAi": "This is an AI draft. Check that times, fares and phone numbers match the material before publishing.",
+    "readError": "AI couldn't read it. Please type the details",
+    "titleLabel": "Title",
+    "titlePlaceholder": "e.g. Community bus, city loop",
+    "bodyLabel": "Details (key points for travelers)",
+    "bodyPlaceholder": "・Days and hours\n・Main stops\n・Fares\n・How to reserve",
+    "spotLabel": "Show on",
+    "allSpots": "All spots",
+    "validUntilLabel": "Show until (optional)",
+    "sourceLabel": "Source page (optional)",
+    "publish": "Publish",
+    "save": "Save",
+    "published": "Published",
+    "saved": "Saved",
+    "saveError": "Something went wrong. Please try again",
+    "deleteConfirm": "Delete “{{title}}”?",
+    "none": "No transport information yet",
+    "edit": "Edit",
+    "delete": "Delete"
   }
 }

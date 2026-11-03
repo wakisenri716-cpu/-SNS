@@ -1618,7 +1618,8 @@
       "concierge": "AI 여행 상담",
       "photoConcierge": "사진으로 찾기",
       "tripPlan": "AI 플랜 만들기",
-      "tripCompose": "AI 여행 만들기 (일정 자동 작성)"
+      "tripCompose": "AI 여행 만들기 (일정 자동 작성)",
+      "transitRead": "AI로 교통 정보 읽기"
     },
     "planCta": "플러스는 매월 {{count}}회까지 사용할 수 있습니다",
     "planCtaButton": "플랜 보기"
@@ -1772,5 +1773,45 @@
       "ai": "Jaziba AI",
       "picks": "추천받은 장소"
     }
+  },
+  "localTransit": {
+    "heading": "지역 교통 정보",
+    "sub": "지자체・지역 사업자가 제공하는 정보입니다. 최신 운행 상황은 제공처에서도 확인해 주세요.",
+    "imageAlt": "{{title}} 자료",
+    "pdf": "PDF 자료",
+    "openPdf": "PDF 열기",
+    "by": "제공: {{name}}",
+    "until": "{{date}}까지",
+    "updated": "{{date}} 업데이트",
+    "source": "출처",
+    "aiDrafted": "자료를 AI로 읽고 제공처가 확인한 내용입니다",
+    "manageHeading": "지역 교통 정보",
+    "add": "추가",
+    "manageIntro": "홈페이지나 종이 자료에만 실려 있는 교통 정보(커뮤니티 버스・합승 택시・송영 버스・계절 운행 등)를 스크린숏이나 PDF로 추가할 수 있습니다. AI로 요점을 읽을 수도 있으며, 장소의 교통편 페이지에 표시됩니다.",
+    "fileLabel": "스크린숏・사진・PDF",
+    "chooseFile": "파일 선택",
+    "changeFile": "파일 변경",
+    "readWithAi": "AI로 읽기",
+    "reading": "읽는 중…",
+    "fileHint": "이미지(JPEG・PNG・WebP) 또는 PDF, 15MB까지. 여행자도 자료를 볼 수 있습니다. AI 읽기는 1회분입니다.",
+    "checkAi": "AI가 읽은 초안입니다. 시각・요금・전화번호 등이 자료와 맞는지 반드시 확인한 후 공개해 주세요.",
+    "readError": "AI로 읽지 못했습니다. 내용을 직접 입력해 주세요",
+    "titleLabel": "제목",
+    "titlePlaceholder": "예: 커뮤니티 버스 시내 순환선",
+    "bodyLabel": "내용 (여행자에게 전할 요점)",
+    "bodyPlaceholder": "・운행일과 시간\n・주요 승차장\n・요금\n・예약 방법",
+    "spotLabel": "표시할 장소",
+    "allSpots": "모든 장소 (전체)",
+    "validUntilLabel": "게재 기한 (선택)",
+    "sourceLabel": "출처 페이지 (선택)",
+    "publish": "공개하기",
+    "save": "저장하기",
+    "published": "교통 정보를 공개했습니다",
+    "saved": "저장했습니다",
+    "saveError": "문제가 발생했습니다. 다시 시도해 주세요",
+    "deleteConfirm": "'{{title}}'을(를) 삭제할까요?",
+    "none": "아직 교통 정보가 없습니다",
+    "edit": "편집",
+    "delete": "삭제"
   }
 }

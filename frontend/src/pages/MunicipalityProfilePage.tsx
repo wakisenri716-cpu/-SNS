@@ -10,6 +10,7 @@ import UpcomingEvents from "../components/UpcomingEvents";
 import ReelThumb from "../components/ReelGrid";
 import ReelFullscreenViewer from "../components/ReelFullscreenViewer";
 import AccessPlannerForm from "../components/AccessPlannerForm";
+import LocalTransitList from "../components/LocalTransitList";
 import SubmitMediaSheet from "../components/SubmitMediaSheet";
 import MunicipalityCoupons from "../components/MunicipalityCoupons";
 import type { Municipality, Reel } from "../types";
@@ -383,6 +384,7 @@ export default function MunicipalityProfilePage() {
             </div>
           )}
           <AccessPlanner municipalityId={municipality.id} stationConfigured={!!municipality.nearestStationName || !!municipality.officeName} />
+          <LocalTransitList municipalityId={municipality.id} className="border-b border-gray-200 p-4 lg:p-6" />
         </>
       )}
 

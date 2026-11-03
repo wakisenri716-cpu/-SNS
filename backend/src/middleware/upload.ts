@@ -50,6 +50,21 @@ export const uploadMedia = multer({
   fileFilter: onlyTypes(new Set([...VIDEO_MIME, ...IMAGE_MIME]), "写真（JPEG・PNG・WebP）か動画（MP4・MOV・WebM）を選んでください"),
 });
 
+// 地元の交通情報: a screenshot or a PDF of the town's transport information.
+export const TRANSIT_FILE_MIME = new Set([...IMAGE_MIME, "application/pdf"]);
+const TRANSIT_FILE_ERROR = "画像（JPEG・PNG・WebP）かPDFを選んでください";
+export const uploadTransitFile = multer({
+  storage,
+  limits: { fileSize: 15 * 1024 * 1024 },
+  fileFilter: onlyTypes(TRANSIT_FILE_MIME, TRANSIT_FILE_ERROR),
+});
+// For the AI's reading only: kept in memory, never saved.
+export const readTransitFileUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 15 * 1024 * 1024 },
+  fileFilter: onlyTypes(TRANSIT_FILE_MIME, TRANSIT_FILE_ERROR),
+});
+
 export const isVideoMime = (mime: string) => VIDEO_MIME.has(mime);
 
 export { UPLOAD_DIR };

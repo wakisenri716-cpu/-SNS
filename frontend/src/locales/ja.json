@@ -1618,7 +1618,8 @@
       "concierge": "AIに旅を相談",
       "photoConcierge": "写真で探す",
       "tripPlan": "AIでプランを作る",
-      "tripCompose": "AIで旅をつくる（しおりを自動作成）"
+      "tripCompose": "AIで旅をつくる（しおりを自動作成）",
+      "transitRead": "交通情報をAIで読み取る"
     },
     "planCta": "プラスなら月{{count}}回分まで使えます",
     "planCtaButton": "プランを見る"
@@ -1772,5 +1773,45 @@
       "ai": "ジャジバのAI",
       "picks": "おすすめされた場所"
     }
+  },
+  "localTransit": {
+    "heading": "地元の交通情報",
+    "sub": "自治体・地元の事業者が提供している情報です。最新の運行状況は提供元でもご確認ください。",
+    "imageAlt": "{{title}}の資料",
+    "pdf": "PDF資料",
+    "openPdf": "PDFを開く",
+    "by": "提供：{{name}}",
+    "until": "{{date}}まで",
+    "updated": "{{date}}更新",
+    "source": "出典",
+    "aiDrafted": "資料をAIで読み取り、提供元が確認した内容です",
+    "manageHeading": "地元の交通情報",
+    "add": "追加",
+    "manageIntro": "ホームページや紙の資料にしか載っていない交通情報（コミュニティバス・乗合タクシー・送迎バス・季節運行など）を、スクショやPDFから追加できます。AIで要点を読み取ることもでき、場所のアクセスページに表示されます。",
+    "fileLabel": "スクショ・写真・PDF",
+    "chooseFile": "ファイルを選ぶ",
+    "changeFile": "ファイルを変える",
+    "readWithAi": "AIで読み取る",
+    "reading": "読み取り中…",
+    "fileHint": "画像（JPEG・PNG・WebP）かPDF、15MBまで。資料はそのまま旅行者も見られます。AIの読み取りは1回分です。",
+    "checkAi": "AIが読み取った下書きです。時刻・運賃・電話番号などが資料と合っているか、必ず確認してから公開してください。",
+    "readError": "AIで読み取れませんでした。内容を文字で入力してください",
+    "titleLabel": "タイトル",
+    "titlePlaceholder": "例：コミュニティバス 市内循環線",
+    "bodyLabel": "内容（旅行者に伝えたい要点）",
+    "bodyPlaceholder": "・運行日と時間\n・主な乗り場\n・運賃\n・予約の方法",
+    "spotLabel": "表示する場所",
+    "allSpots": "すべての場所（全体）",
+    "validUntilLabel": "掲載期限（任意）",
+    "sourceLabel": "出典のページ（任意）",
+    "publish": "公開する",
+    "save": "保存する",
+    "published": "交通情報を公開しました",
+    "saved": "保存しました",
+    "saveError": "うまくいきませんでした。もう一度お試しください",
+    "deleteConfirm": "「{{title}}」を削除しますか？",
+    "none": "まだ交通情報はありません",
+    "edit": "編集",
+    "delete": "削除"
   }
 }

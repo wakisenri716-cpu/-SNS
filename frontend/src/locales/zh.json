@@ -1618,7 +1618,8 @@
       "concierge": "AI旅行咨询",
       "photoConcierge": "以图搜索",
       "tripPlan": "AI制定计划",
-      "tripCompose": "AI制作行程（自动生成行程）"
+      "tripCompose": "AI制作行程（自动生成行程）",
+      "transitRead": "用AI读取交通信息"
     },
     "planCta": "Plus每月可使用{{count}}次",
     "planCtaButton": "查看方案"
@@ -1772,5 +1773,45 @@
       "ai": "Jaziba的AI",
       "picks": "推荐的地点"
     }
+  },
+  "localTransit": {
+    "heading": "当地交通信息",
+    "sub": "由地方政府和当地事业者提供。最新运行情况请同时向提供方确认。",
+    "imageAlt": "{{title}}的资料",
+    "pdf": "PDF资料",
+    "openPdf": "打开PDF",
+    "by": "提供：{{name}}",
+    "until": "至{{date}}",
+    "updated": "{{date}}更新",
+    "source": "出处",
+    "aiDrafted": "由AI读取资料并经提供方确认的内容",
+    "manageHeading": "当地交通信息",
+    "add": "添加",
+    "manageIntro": "可以用截图或PDF添加只刊登在官网或纸质资料上的交通信息（社区巴士、拼车出租车、接送巴士、季节运行等）。也可以用AI读取要点，并显示在地点的交通页面上。",
+    "fileLabel": "截图・照片・PDF",
+    "chooseFile": "选择文件",
+    "changeFile": "更换文件",
+    "readWithAi": "用AI读取",
+    "reading": "读取中…",
+    "fileHint": "图片（JPEG・PNG・WebP）或PDF，15MB以内。旅行者也可以查看该资料。AI读取计1次。",
+    "checkAi": "这是AI读取的草稿。公开前请务必确认时刻、票价、电话号码等是否与资料一致。",
+    "readError": "AI未能读取，请手动输入内容",
+    "titleLabel": "标题",
+    "titlePlaceholder": "例：社区巴士 市内循环线",
+    "bodyLabel": "内容（想告诉旅行者的要点）",
+    "bodyPlaceholder": "・运行日期和时间\n・主要乘车点\n・票价\n・预约方法",
+    "spotLabel": "显示的地点",
+    "allSpots": "所有地点（整体）",
+    "validUntilLabel": "刊登期限（可选）",
+    "sourceLabel": "出处页面（可选）",
+    "publish": "公开",
+    "save": "保存",
+    "published": "已公开交通信息",
+    "saved": "已保存",
+    "saveError": "操作失败，请重试",
+    "deleteConfirm": "要删除“{{title}}”吗？",
+    "none": "还没有交通信息",
+    "edit": "编辑",
+    "delete": "删除"
   }
 }
