@@ -1970,6 +1970,26 @@
       "decidedAt": "{{date}} 已决定",
       "mail": "邮件联系",
       "mailSubject": "关于您在Jaziba的注册"
+    },
+    "integrations": {
+      "heading": "外部服务连接状态",
+      "ready": "已设置",
+      "notReady": "未设置",
+      "missing": "缺少：{{list}}",
+      "noAffiliate": "（未设置联盟ID，不会获得介绍费）",
+      "note": "仅显示Render的Environment中是否有各项设置（不显示内容）。更改设置后需要执行Save, rebuild, and deploy。",
+      "name": {
+        "rakuten": "乐天旅游（空房搜索）",
+        "anthropic": "AI（Claude）",
+        "stripe": "支付（Stripe）",
+        "googleMaps": "Google地图（路线）"
+      },
+      "part": {
+        "appId": "RAKUTEN_APP_ID（应用ID）",
+        "accessKey": "RAKUTEN_ACCESS_KEY（访问密钥）",
+        "secretKey": "STRIPE_SECRET_KEY",
+        "webhookSecret": "STRIPE_WEBHOOK_SECRET"
+      }
     }
   },
   "approval": {

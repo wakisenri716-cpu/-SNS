@@ -1636,6 +1636,14 @@ test("管理者サイト: only ADMIN_EMAILS get in; overview, inquiries, users (
     assert.equal((await call("GET", "/api/admin/reports", undefined, boss.token)).json.items.some((r: any) => r.id === comment.id), false);
     assert.equal((await call("DELETE", `/api/admin/comments/${comment.id}`, undefined, boss.token)).status, 204);
 
+    // 連携の状況: which settings are there (never their values), forgiving of slips in the names.
+    process.env.RAKUTEN_APPLICATION_ID = " app-id\n";
+    const integrations = (await call("GET", "/api/admin/integrations", undefined, boss.token)).json.items;
+    const rakuten = integrations.find((i: any) => i.id === "rakuten");
+    assert.deepEqual([rakuten.ready, rakuten.parts], [false, { appId: true, accessKey: false, affiliateId: false }]);
+    assert.equal(JSON.stringify(integrations).includes("app-id"), false);
+    delete process.env.RAKUTEN_APPLICATION_ID;
+
     const logs = (await call("GET", "/api/admin/logs", undefined, boss.token)).json.items.map((l: any) => l.action);
     assert.deepEqual(logs.slice(0, 6), ["deleteComment", "dismissReports", "unsuspend", "suspend", "plan", "inquiryDone"]);
   } finally {

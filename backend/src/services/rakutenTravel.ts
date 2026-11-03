@@ -7,7 +7,14 @@
 const BASE = () => process.env.RAKUTEN_API_BASE || "https://openapi.rakuten.co.jp/engine/api";
 const VERSION = "20170426";
 
-export const isRakutenConfigured = () => !!process.env.RAKUTEN_APP_ID && !!process.env.RAKUTEN_ACCESS_KEY;
+// The settings, forgiving of the usual slips in the Render box (spaces, a
+// line break, RAKUTEN_APPLICATION_ID for RAKUTEN_APP_ID).
+const env = (...names: string[]) => names.map((n) => process.env[n]?.trim()).find((v) => !!v) ?? "";
+export const rakutenAppId = () => env("RAKUTEN_APP_ID", "RAKUTEN_APPLICATION_ID", "RAKUTEN_APPID");
+export const rakutenAccessKey = () => env("RAKUTEN_ACCESS_KEY", "RAKUTEN_ACCESSKEY", "RAKUTEN_KEY");
+export const rakutenAffiliateId = () => env("RAKUTEN_AFFILIATE_ID", "RAKUTEN_AFFILIATEID");
+
+export const isRakutenConfigured = () => !!rakutenAppId() && !!rakutenAccessKey();
 
 export interface StayPlan {
   name: string;
@@ -104,17 +111,17 @@ export function parseHotel(entry: unknown): StayHotel | null {
 async function rakutenGet(api: string, params: Record<string, string>): Promise<{ hotels?: unknown[] } | null> {
   const url = new URL(`${BASE()}/Travel/${api}/${VERSION}`);
   const all: Record<string, string> = {
-    applicationId: process.env.RAKUTEN_APP_ID ?? "",
-    accessKey: process.env.RAKUTEN_ACCESS_KEY ?? "",
+    applicationId: rakutenAppId(),
+    accessKey: rakutenAccessKey(),
     format: "json",
     formatVersion: "2",
     // Degrees in WGS84, like the rest of Jaziba.
     datumType: "1",
     ...params,
   };
-  if (process.env.RAKUTEN_AFFILIATE_ID) all.affiliateId = process.env.RAKUTEN_AFFILIATE_ID;
+  if (rakutenAffiliateId()) all.affiliateId = rakutenAffiliateId();
   for (const [k, v] of Object.entries(all)) url.searchParams.set(k, v);
-  const res = await fetch(url, { headers: { accessKey: process.env.RAKUTEN_ACCESS_KEY ?? "" }, signal: AbortSignal.timeout(8000) });
+  const res = await fetch(url, { headers: { accessKey: rakutenAccessKey() }, signal: AbortSignal.timeout(8000) });
   // Nothing found (or no rooms free) is a 404 "not_found", not a failure.
   if (res.status === 404) return null;
   if (!res.ok) throw new RakutenError(`rakuten travel ${api} ${res.status}`, res.status);

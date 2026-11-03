@@ -70,6 +70,23 @@ router.get("/overview", async (_req, res) => {
   });
 });
 
+// ---- 連携の状況 ---------------------------------------------------------------------
+
+// Which outside services the server is set up for (never the values), so
+// the operator can see what's missing after changing Render's settings.
+router.get("/integrations", async (_req, res) => {
+  const set = (name: string) => !!process.env[name]?.trim();
+  const rakuten = await import("../services/rakutenTravel");
+  res.json({
+    items: [
+      { id: "rakuten", ready: rakuten.isRakutenConfigured(), parts: { appId: !!rakuten.rakutenAppId(), accessKey: !!rakuten.rakutenAccessKey(), affiliateId: !!rakuten.rakutenAffiliateId() } },
+      { id: "anthropic", ready: set("ANTHROPIC_API_KEY"), parts: {} },
+      { id: "stripe", ready: set("STRIPE_SECRET_KEY") && set("STRIPE_WEBHOOK_SECRET"), parts: { secretKey: set("STRIPE_SECRET_KEY"), webhookSecret: set("STRIPE_WEBHOOK_SECRET"), pricePlus: set("STRIPE_PRICE_PLUS"), priceBusiness: set("STRIPE_PRICE_BUSINESS") } },
+      { id: "googleMaps", ready: set("GOOGLE_MAPS_API_KEY"), parts: {} },
+    ],
+  });
+});
+
 // ---- お問い合わせ ----------------------------------------------------------------
 
 router.get("/inquiries", async (req, res) => {

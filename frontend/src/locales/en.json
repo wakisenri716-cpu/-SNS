@@ -2003,6 +2003,26 @@
       "decidedAt": "Decided {{date}}",
       "mail": "Email them",
       "mailSubject": "About your Jaziba registration"
+    },
+    "integrations": {
+      "heading": "Connected services",
+      "ready": "Set up",
+      "notReady": "Not set up",
+      "missing": "Missing: {{list}}",
+      "noAffiliate": "(No affiliate ID: no referral fees)",
+      "note": "Shows only whether each setting is in Render's Environment (never the values). After changing settings, run Save, rebuild, and deploy.",
+      "name": {
+        "rakuten": "Rakuten Travel (room search)",
+        "anthropic": "AI (Claude)",
+        "stripe": "Payments (Stripe)",
+        "googleMaps": "Google Maps (routes)"
+      },
+      "part": {
+        "appId": "RAKUTEN_APP_ID (application ID)",
+        "accessKey": "RAKUTEN_ACCESS_KEY (access key)",
+        "secretKey": "STRIPE_SECRET_KEY",
+        "webhookSecret": "STRIPE_WEBHOOK_SECRET"
+      }
     }
   },
   "approval": {

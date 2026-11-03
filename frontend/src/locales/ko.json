@@ -1970,6 +1970,26 @@
       "decidedAt": "{{date}} 결정",
       "mail": "메일로 연락",
       "mailSubject": "Jaziba 가입에 대해"
+    },
+    "integrations": {
+      "heading": "연동 상태",
+      "ready": "설정됨",
+      "notReady": "미설정",
+      "missing": "부족한 것: {{list}}",
+      "noAffiliate": "(제휴 ID 미설정. 소개료가 들어오지 않습니다)",
+      "note": "Render의 Environment에 설정이 있는지만 표시합니다(내용은 표시하지 않음). 설정을 바꾼 후에는 Save, rebuild, and deploy가 필요합니다.",
+      "name": {
+        "rakuten": "라쿠텐 트래블(빈방 검색)",
+        "anthropic": "AI(Claude)",
+        "stripe": "결제(Stripe)",
+        "googleMaps": "Google 지도(경로)"
+      },
+      "part": {
+        "appId": "RAKUTEN_APP_ID(앱 ID)",
+        "accessKey": "RAKUTEN_ACCESS_KEY(액세스 키)",
+        "secretKey": "STRIPE_SECRET_KEY",
+        "webhookSecret": "STRIPE_WEBHOOK_SECRET"
+      }
     }
   },
   "approval": {

@@ -286,6 +286,8 @@ function OverviewSection({ data }: { data: Overview | null }) {
         </section>
       </div>
 
+      <Integrations />
+
       <div className="mt-3 grid gap-3 lg:grid-cols-2">
         <section className="rounded-2xl border border-gray-200 bg-white p-4 text-sm">
           <h2 className="font-bold text-jz-ink">{t("admin.overview.accounts")}</h2>
@@ -315,6 +317,38 @@ function OverviewSection({ data }: { data: Overview | null }) {
         </section>
       </div>
     </>
+  );
+}
+
+// 連携の状況: which outside services the server has settings for (and which part is missing).
+function Integrations() {
+  const { t } = useTranslation();
+  const [items, setItems] = useState<{ id: string; ready: boolean; parts: Record<string, boolean> }[] | null>(null);
+  useEffect(() => {
+    void api.get("/admin/integrations").then(({ data }) => setItems(data.items));
+  }, []);
+  if (!items) return null;
+  return (
+    <section className="mt-3 rounded-2xl border border-gray-200 bg-white p-4">
+      <h2 className="text-sm font-bold text-jz-ink">{t("admin.integrations.heading")}</h2>
+      <ul className="mt-2 divide-y divide-gray-100 text-xs">
+        {items.map((i) => {
+          const missing = Object.entries(i.parts)
+            .filter(([k, v]) => !v && k !== "affiliateId" && !k.startsWith("price"))
+            .map(([k]) => t(`admin.integrations.part.${k}`, { defaultValue: k }));
+          return (
+            <li key={i.id} className="flex flex-wrap items-center gap-2 py-2">
+              <span className={`h-2 w-2 shrink-0 rounded-full ${i.ready ? "bg-jz-accent" : "bg-gray-300"}`} aria-hidden />
+              <span className="font-semibold text-gray-800">{t(`admin.integrations.name.${i.id}`)}</span>
+              <span className={i.ready ? "text-jz-accent" : "text-gray-500"}>{t(i.ready ? "admin.integrations.ready" : "admin.integrations.notReady")}</span>
+              {!i.ready && missing.length > 0 && <span className="text-jz-warm-text">{t("admin.integrations.missing", { list: missing.join("・") })}</span>}
+              {i.id === "rakuten" && i.ready && !i.parts.affiliateId && <span className="text-gray-400">{t("admin.integrations.noAffiliate")}</span>}
+            </li>
+          );
+        })}
+      </ul>
+      <p className="mt-2 text-[10px] leading-relaxed text-gray-400">{t("admin.integrations.note")}</p>
+    </section>
   );
 }
 

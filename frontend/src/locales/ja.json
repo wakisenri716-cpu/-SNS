@@ -1970,6 +1970,26 @@
       "decidedAt": "{{date}} に判断",
       "mail": "メールで連絡",
       "mailSubject": "ジャジバへのご登録について"
+    },
+    "integrations": {
+      "heading": "連携の状況",
+      "ready": "設定済み",
+      "notReady": "未設定",
+      "missing": "足りないもの：{{list}}",
+      "noAffiliate": "（アフィリエイトIDは未設定。紹介料は入りません）",
+      "note": "Render の Environment に入っている設定の有無だけを表示します（中身は表示しません）。設定を変えたら Save, rebuild, and deploy が必要です。",
+      "name": {
+        "rakuten": "楽天トラベル（宿の空室検索）",
+        "anthropic": "AI（Claude）",
+        "stripe": "お支払い（Stripe）",
+        "googleMaps": "Google マップ（経路）"
+      },
+      "part": {
+        "appId": "RAKUTEN_APP_ID（アプリID）",
+        "accessKey": "RAKUTEN_ACCESS_KEY（アクセスキー）",
+        "secretKey": "STRIPE_SECRET_KEY",
+        "webhookSecret": "STRIPE_WEBHOOK_SECRET"
+      }
     }
   },
   "approval": {

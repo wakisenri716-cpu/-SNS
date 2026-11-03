@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "../prisma";
 import { staySearchLimiter } from "../middleware/rateLimit";
 import { ttlCache } from "../lib/ttlCache";
-import { RakutenError, hotelsNear, isRakutenConfigured, searchVacantHotels, type StayHotel } from "../services/rakutenTravel";
+import { RakutenError, hotelsNear, isRakutenConfigured, rakutenAffiliateId, searchVacantHotels, type StayHotel } from "../services/rakutenTravel";
 import { requireAuth } from "../middleware/auth";
 import { isAdminEmail } from "../lib/admin";
 import { matchHotel } from "../lib/hotelMatch";
@@ -75,7 +75,7 @@ router.get("/", staySearchLimiter, async (req, res) => {
       items = own ? [own, ...near.filter((h) => h.id !== linkedHotelNo)] : near;
     }
     // affiliate: the links earn Jaziba a commission, which the page must say (ステマ規制).
-    res.json({ configured: true, located: true, provider: "rakuten", affiliate: !!process.env.RAKUTEN_AFFILIATE_ID, items, linkedHotelNo, mapSearchUrl, nights });
+    res.json({ configured: true, located: true, provider: "rakuten", affiliate: !!rakutenAffiliateId(), items, linkedHotelNo, mapSearchUrl, nights });
   } catch (err) {
     console.error("[stays]", err instanceof RakutenError ? err.message : err);
     res.status(502).json({ error: "いまは宿の空室を調べられません。少し時間をおいてお試しください", mapSearchUrl });
@@ -135,7 +135,7 @@ router.get("/near/:reelId", staySearchLimiter, async (req, res) => {
     const ordered = linkedNo != null ? [...hotels.filter((h) => h.id === linkedNo), ...hotels.filter((h) => h.id !== linkedNo)] : hotels;
     res.json({
       configured: true,
-      affiliate: !!process.env.RAKUTEN_AFFILIATE_ID,
+      affiliate: !!rakutenAffiliateId(),
       linked: linkedNo != null ? { no: linkedNo, name: reel.rakutenHotelName } : null,
       hotels: ordered.slice(0, 6),
       mapSearchUrl,
