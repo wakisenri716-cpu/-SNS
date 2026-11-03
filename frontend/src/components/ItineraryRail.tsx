@@ -18,6 +18,8 @@ import { showToast } from "../lib/toast";
 import { useDragReorder } from "../lib/useDragReorder";
 import { useTripLive } from "../lib/useTripLive";
 import TripCollab from "./TripCollab";
+import OwnAiButtons from "./OwnAiButtons";
+import { tripPrompt } from "../lib/ownAi";
 import TripWeather from "./TripWeather";
 import TripTransports from "./TripTransports";
 import LegOptions from "./LegOptions";
@@ -731,6 +733,33 @@ export function ItineraryPanel({
               </>
             )}
           </div>
+          <OwnAiButtons
+            className="mt-4"
+            prompt={tripPrompt(
+              {
+                name: itinerary.trip.name,
+                date: itinerary.trip.startDate,
+                origin: itinerary.originLabel,
+                startTime: itinerary.startTime,
+                stops: itinerary.stops.map((stop, i) => ({
+                  name: stop.locationName || stop.caption.slice(0, 30),
+                  place: `${stop.municipality.prefecture}${stop.municipality.name}`,
+                  // "2日目 10:00" on a trip of several days, else just the time.
+                  arrive: times[i] ? formatClock(times[i].arrive, t, multiDay ? -2 : 0) : undefined,
+                  stayMinutes: stop.stayMinutes,
+                })),
+              },
+              {
+                intro: t("ownAi.trip.intro"),
+                ask: t("ownAi.trip.ask"),
+                date: (date) => t("ownAi.trip.date", { date }),
+                origin: (origin) => t("ownAi.trip.origin", { origin }),
+                start: (time) => t("ownAi.trip.start", { time }),
+                stops: t("ownAi.trip.stops"),
+                stay: (min) => t("ownAi.trip.stay", { min }),
+              }
+            )}
+          />
           <TripAlbum
             tripId={tripId}
             stops={itinerary.stops}

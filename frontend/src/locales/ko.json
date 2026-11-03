@@ -471,6 +471,7 @@
           "OpenFreeMap: 지도 이미지 불러오기",
           "Open-Meteo: 일기예보를 위한 관광지 위치(이용자 정보는 보내지 않습니다)",
           "Render(미국): 본 서비스의 서버와 데이터 보관",
+          "'내 AI로 이어서 하기'를 누르면 일정이나 대화 내용이 입력된 상태로 ChatGPT(OpenAI, 미국)나 Claude(Anthropic, 미국)가 브라우저에서 열립니다. Jaziba에서는 보내지 않으며, 보낼지는 해당 화면에서 직접 결정합니다",
           "기기에 내장된 AI(Chrome 등)로 번역・요약・문장 다듬기가 가능한 경우, 기기 안에서만 처리하며 외부로 보내지 않습니다"
         ]
       },
@@ -725,7 +726,11 @@
     "photoQuestion": "이 사진 같은 곳",
     "photoUnreadable": "이 이미지를 열 수 없습니다",
     "photoError": "사진을 읽지 못했습니다. 다시 시도해 주세요",
-    "photoHint": "📷 사진을 보내면 분위기가 비슷한 곳을 찾아 드려요"
+    "photoHint": "📷 사진을 보내면 분위기가 비슷한 곳을 찾아 드려요",
+    "talk": "대화 모드",
+    "talkOn": "대화 모드: 말을 걸면 답변을 읽어 줍니다",
+    "talkOff": "대화 모드 종료",
+    "talkPicks": "추천 장소는 {{names}}입니다."
   },
   "stories": {
     "tapHint": "오른쪽을 탭하면 다음, 왼쪽은 이전, 길게 누르면 일시정지",
@@ -1739,5 +1744,33 @@
     "cancelValue": "'플랜 관리'에서 언제든지 해지할 수 있습니다. 해지 후에도 결제한 기간이 끝날 때까지 이용할 수 있습니다. 디지털 서비스이므로 결제한 요금(일할 포함)은 환불하지 않습니다.",
     "environment": "동작 환경",
     "environmentValue": "최신 버전 Chrome・Safari・Edge・Firefox"
+  },
+  "ownAi": {
+    "heading": "내 AI로 이어서 하기",
+    "open": {
+      "chatgpt": "ChatGPT에서 열기",
+      "claude": "Claude에서 열기"
+    },
+    "copy": "복사",
+    "share": "다른 앱으로",
+    "copied": "복사했습니다. 사용하는 AI에 붙여 넣어 주세요",
+    "copyFailed": "복사하지 못했습니다",
+    "note": "사용 중인 ChatGPT・Claude가 내용이 입력된 상태로 열립니다. Jaziba에서는 보내지 않으며, 해당 서비스의 약관・요금이 적용되고 Jaziba의 AI 횟수에는 포함되지 않습니다.",
+    "trip": {
+      "intro": "다음 여행 일정에 대해 상담하고 싶습니다.",
+      "ask": "이 일정에 무리가 없는지, 더 즐기기 위한 아이디어와 준비물・주의할 점을 알려 주세요.",
+      "date": "날짜: {{date}}",
+      "origin": "출발지: {{origin}}",
+      "start": "출발 시각: {{time}}",
+      "stops": "들를 곳:",
+      "stay": "{{min}}분 체류"
+    },
+    "chat": {
+      "intro": "관광 SNS 'Jaziba'의 AI와 일본 여행에 대해 상담하던 내용의 계속입니다.",
+      "ask": "이어서 상담하고 싶습니다.",
+      "me": "나",
+      "ai": "Jaziba AI",
+      "picks": "추천받은 장소"
+    }
   }
 }

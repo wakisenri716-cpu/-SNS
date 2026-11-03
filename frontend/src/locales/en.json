@@ -475,6 +475,7 @@
           "OpenFreeMap: loading map images",
           "Open-Meteo: locations of tourist spots for weather forecasts (no user information is sent)",
           "Render (US): hosting the Service's servers and data",
+          "When you press “Continue in your own AI”, ChatGPT (OpenAI, US) or Claude (Anthropic, US) opens in your browser with your trip plan or conversation written in. Jaziba sends nothing; you decide there whether to send it",
           "Where your device has built-in AI (such as in Chrome) for translating, summarizing or polishing text, it is processed on your device and not sent anywhere"
         ]
       },
@@ -732,7 +733,11 @@
     "photoQuestion": "Places like this photo",
     "photoUnreadable": "Couldn't open this image",
     "photoError": "Couldn't read the photo. Please try again.",
-    "photoHint": "📷 Send a photo to find places with a similar feel"
+    "photoHint": "📷 Send a photo to find places with a similar feel",
+    "talk": "Conversation mode",
+    "talkOn": "Conversation mode: speak, and the answer is read aloud",
+    "talkOff": "End conversation mode",
+    "talkPicks": "My suggestions: {{names}}."
   },
   "stories": {
     "tapHint": "Tap right for next, left for previous, hold to pause",
@@ -1772,5 +1777,33 @@
     "cancelValue": "Cancel anytime from “Manage plan”. You can keep using it until the end of the paid period. As a digital service, paid fees are not refunded (including prorated amounts).",
     "environment": "Supported browsers",
     "environmentValue": "Latest Chrome, Safari, Edge or Firefox"
+  },
+  "ownAi": {
+    "heading": "Continue in your own AI",
+    "open": {
+      "chatgpt": "Open in ChatGPT",
+      "claude": "Open in Claude"
+    },
+    "copy": "Copy",
+    "share": "Other apps",
+    "copied": "Copied. Paste it into your AI",
+    "copyFailed": "Couldn't copy",
+    "note": "Your ChatGPT or Claude opens with this already written in. Jaziba doesn't send anything; that service's terms and prices apply, and it doesn't count toward Jaziba's AI uses.",
+    "trip": {
+      "intro": "I'd like advice on this trip plan.",
+      "ask": "Is this schedule realistic? Please suggest ways to enjoy it more, and what to bring or watch out for.",
+      "date": "Date: {{date}}",
+      "origin": "Starting from: {{origin}}",
+      "start": "Leaving at: {{time}}",
+      "stops": "Stops:",
+      "stay": "{{min}} min stay"
+    },
+    "chat": {
+      "intro": "This continues a conversation about travel in Japan with the AI of Jaziba, a tourism social app.",
+      "ask": "Let's continue from here.",
+      "me": "Me",
+      "ai": "Jaziba AI",
+      "picks": "Suggested places"
+    }
   }
 }

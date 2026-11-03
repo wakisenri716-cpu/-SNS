@@ -471,6 +471,7 @@
           "OpenFreeMap：地图图片的加载",
           "Open-Meteo：天气预报所需的景点位置（不发送用户信息）",
           "Render（美国）：本服务的服务器和数据存储",
+          "点击“用自己的AI继续”后，ChatGPT（OpenAI，美国）或Claude（Anthropic，美国）会在您的浏览器中打开，并已填好行程或对话内容。Jaziba不会发送，是否发送由您在对方页面上决定",
           "如果您的设备内置AI（如Chrome）可进行翻译、摘要或润色文字，则仅在设备内处理，不向外部发送"
         ]
       },
@@ -725,7 +726,11 @@
     "photoQuestion": "像这张照片的地方",
     "photoUnreadable": "无法读取这张图片",
     "photoError": "无法识别照片，请重试",
-    "photoHint": "📷 发送照片，寻找氛围相似的地方"
+    "photoHint": "📷 发送照片，寻找氛围相似的地方",
+    "talk": "对话模式",
+    "talkOn": "对话模式：说话后，会朗读回答",
+    "talkOff": "结束对话模式",
+    "talkPicks": "推荐的是{{names}}。"
   },
   "stories": {
     "tapHint": "点右侧下一个，点左侧上一个，长按暂停",
@@ -1739,5 +1744,33 @@
     "cancelValue": "可随时在“管理方案”中解约。解约后可使用到已付期间结束。由于是数字服务，已付费用（包括按日计算的部分）不予退还。",
     "environment": "运行环境",
     "environmentValue": "最新版Chrome・Safari・Edge・Firefox"
+  },
+  "ownAi": {
+    "heading": "用自己的AI继续",
+    "open": {
+      "chatgpt": "在ChatGPT中打开",
+      "claude": "在Claude中打开"
+    },
+    "copy": "复制",
+    "share": "其他应用",
+    "copied": "已复制，请粘贴到您使用的AI中",
+    "copyFailed": "复制失败",
+    "note": "将打开您的ChatGPT或Claude，并已填好内容。Jaziba不会发送任何内容；适用对方的条款和费用，不计入Jaziba的AI次数。",
+    "trip": {
+      "intro": "想请您帮我看看下面的行程。",
+      "ask": "这个安排是否合理？请告诉我让旅行更有趣的建议，以及需要携带的物品和注意事项。",
+      "date": "日期：{{date}}",
+      "origin": "出发地：{{origin}}",
+      "start": "出发时间：{{time}}",
+      "stops": "途经地点：",
+      "stay": "停留{{min}}分钟"
+    },
+    "chat": {
+      "intro": "这是与旅游社交应用“Jaziba”的AI关于日本旅行的对话的继续。",
+      "ask": "请继续帮我规划。",
+      "me": "我",
+      "ai": "Jaziba的AI",
+      "picks": "推荐的地点"
+    }
   }
 }

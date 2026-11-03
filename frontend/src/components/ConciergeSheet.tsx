@@ -2,13 +2,16 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowUp, Bookmark, Camera, Mic, Navigation, RotateCcw, Sparkles, X } from "lucide-react";
+import { ArrowUp, AudioLines, Bookmark, Camera, Mic, Navigation, RotateCcw, Sparkles, X } from "lucide-react";
 import { api } from "../api/client";
 import { aiLimitOf } from "../lib/aiLimit";
 import AiLimitNotice from "./AiLimitNotice";
 import { useAuth } from "../auth/AuthContext";
 import { showToast } from "../lib/toast";
 import { useSpeechInput } from "../lib/useSpeechInput";
+import { canSpeak, speak, speakingRun, stopSpeaking } from "../lib/speak";
+import { conversationPrompt } from "../lib/ownAi";
+import OwnAiButtons from "./OwnAiButtons";
 import { resizeImageToDataUrl } from "../lib/resizeImage";
 import { chooseTrips } from "../lib/trips";
 import type { Reel, TravelerTag } from "../types";
@@ -119,6 +122,34 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
     setInput(text);
     if (final) void ask(text);
   });
+  // 会話モード: answers are read aloud, then it listens again — a spoken
+  // back-and-forth. Uses the browser's own voices and speech recognition.
+  const [talk, setTalk] = useState(false);
+  const talkRef = useRef(false);
+  const canTalk = speech.supported && canSpeak();
+  useEffect(() => () => stopSpeaking(), []);
+
+  function setTalking(on: boolean) {
+    talkRef.current = on;
+    setTalk(on);
+    if (on) {
+      if (!busy) speech.start();
+    } else {
+      stopSpeaking();
+      speech.stop();
+    }
+  }
+
+  // In 会話モード: read the answer (and the places it picked), then listen again.
+  function sayReply(reply: string, picks: Pick[] = []) {
+    if (!talkRef.current) return;
+    const names = picks.slice(0, 3).map((p) => p.reel.locationName || p.reel.municipality.name);
+    const done = speak(names.length > 0 ? `${reply} ${t("concierge.talkPicks", { names: names.join("、") })}` : reply, i18n.language);
+    const run = speakingRun();
+    void done.then(() => {
+      if (talkRef.current && speakingRun() === run) speech.start();
+    });
+  }
 
   useEffect(() => {
     api.get<{ ai: boolean }>("/concierge/status").then(({ data }) => setAiEnabled(data.ai)).catch(() => setAiEnabled(false));
@@ -165,9 +196,11 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
         data.reply ??
         (data.picks.length > 0 ? t("concierge.keywordReply", { count: data.picks.length }) : t("concierge.noMatch"));
       setTurns((prev) => prev.map((turn) => (turn.id === id ? { ...turn, mode: data.mode, reply, picks: data.picks } : turn)));
+      sayReply(reply, data.picks);
     } catch (err) {
       const limit = aiLimitOf(err) ?? undefined;
       setTurns((prev) => prev.map((turn) => (turn.id === id ? { ...turn, error: true, limit, reply: limit ? "" : t("concierge.error") } : turn)));
+      if (!limit) sayReply(t("concierge.error"));
     } finally {
       setBusy(false);
     }
@@ -194,6 +227,7 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
       });
       const reply = data.reply ?? (data.picks.length > 0 ? t("concierge.keywordReply", { count: data.picks.length }) : t("concierge.noMatch"));
       setTurns((prev) => prev.map((turn) => (turn.id === id ? { ...turn, mode: data.mode, reply, picks: data.picks } : turn)));
+      sayReply(reply, data.picks);
     } catch (err) {
       const limit = aiLimitOf(err) ?? undefined;
       setTurns((prev) => prev.map((turn) => (turn.id === id ? { ...turn, error: true, limit, reply: limit ? "" : t("concierge.photoError") } : turn)));
@@ -220,6 +254,22 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
 
   // Portaled to <body> so no ancestor's stacking context (e.g. the feed
   // hero's `isolate`) can put page content above the sheet.
+  // 自分のAIで続ける: once an answer (or the AI limit) is in, the conversation
+  // can go on in the traveler's own ChatGPT / Claude.
+  // (Photo turns are left out: the photo can't go along in the address.)
+  const last = turns.at(-1);
+  const forOwnAi = turns
+    .filter((turn) => turn.reply != null && !turn.image && (!turn.error || turn.limit))
+    .map((turn) => ({
+      question: turn.question,
+      reply: turn.reply ?? "",
+      picks: (turn.picks ?? []).map((p) => [p.reel.locationName, p.reel.municipality.name].filter(Boolean).join("・")),
+    }));
+  const ownAiPrompt =
+    !busy && last?.reply != null && (!last.error || last.limit) && forOwnAi.length > 0
+      ? conversationPrompt(forOwnAi, { intro: t("ownAi.chat.intro"), ask: t("ownAi.chat.ask"), me: t("ownAi.chat.me"), ai: t("ownAi.chat.ai"), picks: t("ownAi.chat.picks") })
+      : null;
+
   return createPortal(
     <div className="animate-fade-in fixed inset-0 z-[65] flex items-end justify-center bg-black/40 md:items-center" onClick={onClose}>
       <div
@@ -239,6 +289,18 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
               {aiEnabled == null ? "" : aiEnabled ? t("concierge.modeAi") : t("concierge.modeKeyword")}
             </p>
           </div>
+          {canTalk && (
+            <button
+              type="button"
+              onClick={() => setTalking(!talk)}
+              aria-pressed={talk}
+              aria-label={talk ? t("concierge.talkOff") : t("concierge.talk")}
+              title={talk ? t("concierge.talkOff") : t("concierge.talk")}
+              className={`flex h-9 w-9 items-center justify-center rounded-full transition ${talk ? "bg-jz-accent text-white" : "text-gray-500 hover:bg-gray-100"}`}
+            >
+              <AudioLines className="h-[18px] w-[18px]" />
+            </button>
+          )}
           {turns.length > 0 && (
             <button
               type="button"
@@ -261,6 +323,11 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
           </button>
         </div>
 
+        {talk && (
+          <p className="animate-fade-in flex items-center gap-2 bg-jz-tint px-5 py-2 text-[11px] font-semibold text-jz-ink" role="status">
+            <AudioLines className={`h-3.5 w-3.5 text-jz-accent ${speech.listening ? "animate-pulse" : ""}`} /> {t("concierge.talkOn")}
+          </p>
+        )}
         <div ref={scrollRef} className="flex-1 space-y-5 overflow-y-auto px-4 py-5">
           {turns.length === 0 && (
             <div className="animate-page-in px-1">
@@ -318,6 +385,7 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
               )}
             </div>
           ))}
+          {ownAiPrompt && <OwnAiButtons prompt={ownAiPrompt} className="animate-fade-in" />}
         </div>
 
         {turns.length === 1 && turns[0].picks && turns[0].picks.length > 0 && !busy && (
@@ -355,7 +423,11 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
           {speech.supported && (
             <button
               type="button"
-              onClick={speech.listening ? speech.stop : speech.start}
+              onClick={() => {
+                stopSpeaking();
+                if (speech.listening) speech.stop();
+                else speech.start();
+              }}
               aria-label={speech.listening ? t("concierge.stopVoice") : t("concierge.voice")}
               aria-pressed={speech.listening}
               className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition active:scale-90 ${

@@ -23,6 +23,9 @@ function getRecognitionCtor(): (new () => RecognitionLike) | null {
 
 export function useSpeechInput(lang: string, onText: (text: string, final: boolean) => void) {
   const [listening, setListening] = useState(false);
+  // For start() called from an older render (会話モード restarts listening
+  // after the answer is read out), which would see a stale `listening`.
+  const listeningRef = useRef(false);
   const recRef = useRef<RecognitionLike | null>(null);
   const onTextRef = useRef(onText);
   onTextRef.current = onText;
@@ -32,7 +35,7 @@ export function useSpeechInput(lang: string, onText: (text: string, final: boole
 
   function start() {
     const Ctor = getRecognitionCtor();
-    if (!Ctor || listening) return;
+    if (!Ctor || listeningRef.current) return;
     const rec = new Ctor();
     rec.lang = LOCALES[lang] ?? "ja-JP";
     rec.interimResults = true;
@@ -46,9 +49,16 @@ export function useSpeechInput(lang: string, onText: (text: string, final: boole
       }
       onTextRef.current(text, final);
     };
-    rec.onend = () => setListening(false);
-    rec.onerror = () => setListening(false);
+    rec.onend = () => {
+      listeningRef.current = false;
+      setListening(false);
+    };
+    rec.onerror = () => {
+      listeningRef.current = false;
+      setListening(false);
+    };
     recRef.current = rec;
+    listeningRef.current = true;
     setListening(true);
     rec.start();
   }
