@@ -5,6 +5,7 @@ import { api } from "../api/client";
 import { TravelerTagPicker } from "./TravelerTagChips";
 import { BestMonthsPicker } from "./BestMonths";
 import CheckinTagSection from "./CheckinTagSection";
+import RakutenHotelLink from "./RakutenHotelLink";
 import { REEL_CATEGORIES, type Reel, type ReelCategory, type TravelerTag } from "../types";
 
 const inputClass =
@@ -29,6 +30,7 @@ export default function ReelEditor({
   const [lng, setLng] = useState(reel.locationLng?.toString() ?? "");
   const [tags, setTags] = useState<TravelerTag[]>(reel.travelerTags);
   const [bestMonths, setBestMonths] = useState<number[]>(reel.bestMonths ?? []);
+  const [rakutenHotel, setRakutenHotel] = useState(reel.rakutenHotel ?? null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,7 +54,7 @@ export default function ReelEditor({
         travelerTags: tags,
         bestMonths,
       });
-      onSaved(data);
+      onSaved({ ...data, rakutenHotel });
       onClose();
     } catch {
       setError(t("reelEditor.saveError"));
@@ -113,6 +115,12 @@ export default function ReelEditor({
           </div>
         </div>
         {reel.locationLat != null && <CheckinTagSection reelId={reel.id} placeName={reel.locationName || reel.caption.slice(0, 30)} />}
+        {category === "lodging" && reel.locationLat != null && (
+          <RakutenHotelLink reelId={reel.id} current={rakutenHotel} onChange={(h) => {
+            setRakutenHotel(h);
+            onSaved({ ...reel, rakutenHotel: h });
+          }} />
+        )}
         {error && <p className="text-xs text-jz-warm-text">{error}</p>}
         <div className="flex justify-end gap-2">
           <button type="button" onClick={onClose} className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100">

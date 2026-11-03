@@ -10,7 +10,8 @@ import CommentsSheet from "./CommentsSheet";
 import ShareButton from "./ShareButton";
 import { TravelerTagChips } from "./TravelerTagChips";
 import { SeasonBadge } from "./BestMonths";
-import { Bookmark, Heart, MapPin, MessageCircle, Navigation, Play, Sparkles, Volume2, VolumeX, X } from "lucide-react";
+import { BedDouble, Bookmark, Heart, MapPin, MessageCircle, Navigation, Play, Sparkles, Volume2, VolumeX, X } from "lucide-react";
+import StaySheet from "./StaySheet";
 import { toggleSound, useSoundOn } from "../lib/videoPlayback";
 import { useTapGestures } from "../lib/useTapGestures";
 import type { Reel } from "../types";
@@ -30,6 +31,7 @@ function ReelOverlayInfo({
 }) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const [stayOpen, setStayOpen] = useState(false);
   const poster = reel.postedByCompany ?? reel.municipality;
   const reasonLabels = (reel.recommendReasons ?? []).map((reason) =>
     reason === "favoriteCategory"
@@ -148,6 +150,16 @@ function ReelOverlayInfo({
             <Navigation className="h-4 w-4 fill-white" /> {t("reelViewer.accessButton")}
           </Link>
         )}
+        {reel.locationLat != null && reel.locationLng != null && (
+          <button
+            type="button"
+            onClick={() => setStayOpen(true)}
+            className="glass-dark pointer-events-auto ml-2 mt-3 inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-bold text-white transition active:scale-95"
+          >
+            <BedDouble className="h-4 w-4" /> {reel.rakutenHotel ? t("stays.bookButton") : t("stays.stayButton")}
+          </button>
+        )}
+        {stayOpen && <StaySheet reel={reel} onClose={() => setStayOpen(false)} />}
       </div>
     </>
   );

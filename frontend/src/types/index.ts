@@ -152,6 +152,8 @@ export interface Reel {
   contributedBy?: string | null;
   /** The spot has an NFC / QR stamp tag (現地スタンプのタグ). */
   hasCheckinTag?: boolean;
+  /** 楽天トラベルの宿 this lodging post is (booking opens there). */
+  rakutenHotel?: { no: number; name: string } | null;
   videoUrl: string;
   thumbnailUrl: string | null;
   caption: string;

@@ -2003,6 +2003,21 @@
     "reserve": "예약하기",
     "allPlans": "라쿠텐 트래블에서 다른 플랜 보기",
     "note": "빈방・요금은 라쿠텐 트래블의 정보이며 바뀔 수 있습니다. 예약・결제・취소는 라쿠텐 트래블에서 합니다.",
-    "affiliate": "[광고] 이 링크로 예약하면 Jaziba에 소개료가 지급될 수 있습니다(요금은 같습니다)."
+    "affiliate": "[광고] 이 링크로 예약하면 Jaziba에 소개료가 지급될 수 있습니다(요금은 같습니다).",
+    "stayButton": "숙소",
+    "nearButton": "근처 숙소 찾기",
+    "bookButton": "예약",
+    "sheetTitle": "{{place}} 근처 숙소",
+    "bookThis": "{{name}} 예약",
+    "nearHeading": "이 근처 숙소(라쿠텐 트래블)",
+    "thisPost": "이 게시물의 숙소",
+    "pickDates": "일정을 넣고 '빈방 찾기'를 누르면 빈방과 요금을 알 수 있습니다.",
+    "linkHeading": "라쿠텐 트래블 숙소와 연결",
+    "linkedTo": "연결됨: {{name}} (게시물에서 빈방・요금을 보고 예약할 수 있습니다)",
+    "linkNone": "아직 연결되지 않았습니다. 근처에 같은 이름의 숙소가 있으면 자동으로 연결됩니다.",
+    "linkChoose": "근처 숙소에서 선택",
+    "linkChange": "변경",
+    "unlink": "연결 해제",
+    "noCandidates": "1km 안에 라쿠텐 트래블 숙소가 없습니다"
   }
 }

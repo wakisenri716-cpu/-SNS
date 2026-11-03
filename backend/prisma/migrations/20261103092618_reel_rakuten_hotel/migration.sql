@@ -1,0 +1,33 @@
+-- RedefineTables
+PRAGMA defer_foreign_keys=ON;
+PRAGMA foreign_keys=OFF;
+CREATE TABLE "new_Reel" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "municipalityId" TEXT NOT NULL,
+    "companyId" TEXT,
+    "videoUrl" TEXT NOT NULL,
+    "thumbnailUrl" TEXT,
+    "checkinToken" TEXT,
+    "caption" TEXT NOT NULL DEFAULT '',
+    "locationName" TEXT,
+    "locationLat" REAL,
+    "locationLng" REAL,
+    "category" TEXT NOT NULL DEFAULT 'nature',
+    "travelerTags" TEXT NOT NULL DEFAULT '',
+    "bestMonths" TEXT NOT NULL DEFAULT '',
+    "editorial" BOOLEAN NOT NULL DEFAULT false,
+    "viewCount" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "rakutenHotelNo" INTEGER,
+    "rakutenHotelName" TEXT NOT NULL DEFAULT '',
+    "rakutenCheckedAt" DATETIME,
+    CONSTRAINT "Reel_municipalityId_fkey" FOREIGN KEY ("municipalityId") REFERENCES "Municipality" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "Reel_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+INSERT INTO "new_Reel" ("bestMonths", "caption", "category", "checkinToken", "companyId", "createdAt", "editorial", "id", "locationLat", "locationLng", "locationName", "municipalityId", "thumbnailUrl", "travelerTags", "videoUrl", "viewCount") SELECT "bestMonths", "caption", "category", "checkinToken", "companyId", "createdAt", "editorial", "id", "locationLat", "locationLng", "locationName", "municipalityId", "thumbnailUrl", "travelerTags", "videoUrl", "viewCount" FROM "Reel";
+DROP TABLE "Reel";
+ALTER TABLE "new_Reel" RENAME TO "Reel";
+CREATE UNIQUE INDEX "Reel_checkinToken_key" ON "Reel"("checkinToken");
+PRAGMA foreign_keys=ON;
+PRAGMA defer_foreign_keys=OFF;
+

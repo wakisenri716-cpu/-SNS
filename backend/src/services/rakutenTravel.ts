@@ -101,31 +101,56 @@ export function parseHotel(entry: unknown): StayHotel | null {
   };
 }
 
-/** Hotels with rooms free for these dates near the point, cheapest plans first. */
-export async function searchVacantHotels(q: StaySearch): Promise<StayHotel[]> {
-  const url = new URL(`${BASE()}/Travel/VacantHotelSearch/${VERSION}`);
-  const params: Record<string, string> = {
+async function rakutenGet(api: string, params: Record<string, string>): Promise<{ hotels?: unknown[] } | null> {
+  const url = new URL(`${BASE()}/Travel/${api}/${VERSION}`);
+  const all: Record<string, string> = {
     applicationId: process.env.RAKUTEN_APP_ID ?? "",
     accessKey: process.env.RAKUTEN_ACCESS_KEY ?? "",
     format: "json",
     formatVersion: "2",
-    checkinDate: q.checkin,
-    checkoutDate: q.checkout,
-    adultNum: String(q.adults),
-    latitude: String(q.lat),
-    longitude: String(q.lng),
     // Degrees in WGS84, like the rest of Jaziba.
     datumType: "1",
-    searchRadius: String(Math.min(3, Math.max(0.1, q.radiusKm))),
-    hits: "20",
-    sort: "standard",
+    ...params,
   };
-  if (process.env.RAKUTEN_AFFILIATE_ID) params.affiliateId = process.env.RAKUTEN_AFFILIATE_ID;
-  for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
+  if (process.env.RAKUTEN_AFFILIATE_ID) all.affiliateId = process.env.RAKUTEN_AFFILIATE_ID;
+  for (const [k, v] of Object.entries(all)) url.searchParams.set(k, v);
   const res = await fetch(url, { headers: { accessKey: process.env.RAKUTEN_ACCESS_KEY ?? "" }, signal: AbortSignal.timeout(8000) });
-  // No rooms free is a 404 "not_found", not a failure.
-  if (res.status === 404) return [];
-  if (!res.ok) throw new RakutenError(`rakuten travel ${res.status}`, res.status);
-  const data = (await res.json()) as { hotels?: unknown[] };
-  return (data.hotels ?? []).map(parseHotel).filter((h): h is StayHotel => h != null);
+  // Nothing found (or no rooms free) is a 404 "not_found", not a failure.
+  if (res.status === 404) return null;
+  if (!res.ok) throw new RakutenError(`rakuten travel ${api} ${res.status}`, res.status);
+  return (await res.json()) as { hotels?: unknown[] };
+}
+
+const hotelsOf = (data: { hotels?: unknown[] } | null) => (data?.hotels ?? []).map(parseHotel).filter((h): h is StayHotel => h != null);
+
+/**
+ * Hotels with rooms free for these dates — near the point, or just these
+ * hotels (hotelNos, up to 15) — cheapest plans first.
+ */
+export async function searchVacantHotels(q: StaySearch & { hotelNos?: number[] }): Promise<StayHotel[]> {
+  const where: Record<string, string> = q.hotelNos?.length
+    ? { hotelNo: q.hotelNos.slice(0, 15).join(",") }
+    : { latitude: String(q.lat), longitude: String(q.lng), searchRadius: String(Math.min(3, Math.max(0.1, q.radiusKm))) };
+  return hotelsOf(
+    await rakutenGet("VacantHotelSearch", {
+      ...where,
+      checkinDate: q.checkin,
+      checkoutDate: q.checkout,
+      adultNum: String(q.adults),
+      hits: "20",
+      sort: "standard",
+    })
+  );
+}
+
+/** The hotels near a point (no dates: who they are and from what price). */
+export async function hotelsNear(lat: number, lng: number, radiusKm: number, hits = 10): Promise<StayHotel[]> {
+  return hotelsOf(
+    await rakutenGet("SimpleHotelSearch", {
+      latitude: String(lat),
+      longitude: String(lng),
+      searchRadius: String(Math.min(3, Math.max(0.1, radiusKm))),
+      hits: String(Math.min(30, hits)),
+    })
+  );
 }

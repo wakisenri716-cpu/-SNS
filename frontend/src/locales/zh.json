@@ -2003,6 +2003,21 @@
     "reserve": "去预订",
     "allPlans": "在乐天旅游查看其他方案",
     "note": "空房和价格为乐天旅游的信息，可能会有变动。预订、付款和取消均在乐天旅游进行。",
-    "affiliate": "［广告］通过此链接预订时，Jaziba可能会获得介绍费（价格不变）。"
+    "affiliate": "［广告］通过此链接预订时，Jaziba可能会获得介绍费（价格不变）。",
+    "stayButton": "住宿",
+    "nearButton": "查找附近住宿",
+    "bookButton": "预订",
+    "sheetTitle": "{{place}}附近的住宿",
+    "bookThis": "预订{{name}}",
+    "nearHeading": "附近的住宿（乐天旅游）",
+    "thisPost": "本帖子的住宿",
+    "pickDates": "输入日期并点击“查找空房”，即可查看空房和价格。",
+    "linkHeading": "关联乐天旅游的住宿",
+    "linkedTo": "已关联：{{name}}（旅行者可在帖子中查看空房和价格并预订）",
+    "linkNone": "尚未关联。附近有同名住宿时会自动关联。",
+    "linkChoose": "从附近住宿中选择",
+    "linkChange": "更改",
+    "unlink": "取消关联",
+    "noCandidates": "1公里内没有找到乐天旅游的住宿"
   }
 }

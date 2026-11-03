@@ -210,6 +210,12 @@ model Reel {
   // Set when the post was made from a traveler's 提供された素材.
   submission    Submission?
   localTransit   LocalTransit[]
+  // 宿の投稿 ↔ 楽天トラベルの宿: set by the poster, or found automatically for
+  // a lodging post (same name, same place); rakutenCheckedAt keeps the
+  // automatic lookup from repeating. Booking itself happens on 楽天トラベル.
+  rakutenHotelNo   Int?
+  rakutenHotelName String    @default("")
+  rakutenCheckedAt DateTime?
 }
 
 // スタンプラリー: a traveler checked in at a post's spot (within

@@ -1790,3 +1790,57 @@ test("宿を探す: rooms free near a spot from 楽天トラベル (booking happ
     delete process.env.RAKUTEN_AFFILIATE_ID;
   }
 });
+
+test("投稿から宿を予約: a lodging post finds its 楽天トラベル hotel by itself; every post lists real hotels near it", async () => {
+  const { json: map } = await call("GET", "/api/reels/map");
+  const inn = map.items.find((r: any) => r.locationName === "上高地帝国ホテル");
+  const castle = map.items.find((r: any) => r.locationName === "松本城");
+  process.env.RAKUTEN_APP_ID = "app-id";
+  process.env.RAKUTEN_ACCESS_KEY = "access-key";
+  const calls: URL[] = [];
+  const basic = (no: number, name: string, lat: number, lng: number) => [
+    { hotelBasicInfo: { hotelNo: no, hotelName: name, latitude: lat, longitude: lng, hotelMinCharge: 30000, planListUrl: `https://hotel.travel.rakuten.co.jp/hotelinfo/plan/${no}` } },
+  ];
+  const real = globalThis.fetch;
+  const fetchMock = mock.method(globalThis, "fetch", async (input: any, init?: any) => {
+    if (!String(input).includes("openapi.rakuten.co.jp")) return real(input, init);
+    const url = new URL(String(input));
+    calls.push(url);
+    if (url.pathname.includes("SimpleHotelSearch")) {
+      return new Response(JSON.stringify({ hotels: [basic(501, "上高地温泉ホテル", 36.2451, 137.6382), basic(777, "上高地帝国ホテル", 36.2426, 137.6285)] }));
+    }
+    return new Response(JSON.stringify({ hotels: [] }), { status: 404 });
+  });
+  try {
+    const near = (await call("GET", `/api/stays/near/${inn.id}`)).json;
+    assert.deepEqual(near.linked, { no: 777, name: "上高地帝国ホテル" });
+    assert.deepEqual(near.hotels.map((h: any) => h.id), [777, 501], "its own hotel first");
+    // Remembered: the post now says which hotel it is, without asking again.
+    const before = calls.filter((c) => c.searchParams.get("searchRadius") === "0.6").length;
+    await call("GET", `/api/stays/near/${inn.id}`);
+    assert.equal(calls.filter((c) => c.searchParams.get("searchRadius") === "0.6").length, before);
+    assert.deepEqual((await call("GET", "/api/reels/map")).json.items.find((r: any) => r.id === inn.id).rakutenHotel, { no: 777, name: "上高地帝国ホテル" });
+    // Not a lodging post: no hotel of its own, but the hotels around it.
+    const castleNear = (await call("GET", `/api/stays/near/${castle.id}`)).json;
+    assert.equal(castleNear.linked, null);
+    assert.equal(castleNear.hotels.length, 2);
+
+    // Booking dates: the post's own hotel is asked for by number.
+    const day = (n: number) => new Date(Date.now() + n * 86_400_000).toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
+    const vac = (await call("GET", `/api/stays?reelId=${inn.id}&checkin=${day(10)}&checkout=${day(11)}&adults=2`)).json;
+    assert.equal(vac.linkedHotelNo, 777);
+    assert.ok(calls.some((c) => c.pathname.includes("VacantHotelSearch") && c.searchParams.get("hotelNo") === "777"));
+
+    // The poster (or an admin) can change it; others can't.
+    const muni = await login("demo-matsumoto@example.com");
+    const stranger = (await call("POST", "/api/auth/register", { email: "nosy@example.com", password: "password123", name: "通りすがり" })).json.token;
+    assert.equal((await call("PUT", `/api/stays/link/${inn.id}`, { hotelNo: 501, name: "x" }, stranger)).status, 404);
+    assert.equal((await call("GET", `/api/stays/candidates/${inn.id}`, undefined, muni)).json.hotels.length, 2);
+    assert.deepEqual((await call("PUT", `/api/stays/link/${inn.id}`, { hotelNo: null }, muni)).json, { rakutenHotel: null });
+    assert.deepEqual((await call("PUT", `/api/stays/link/${inn.id}`, { hotelNo: 777, name: "上高地帝国ホテル" }, muni)).json.rakutenHotel.no, 777);
+  } finally {
+    fetchMock.mock.restore();
+    delete process.env.RAKUTEN_APP_ID;
+    delete process.env.RAKUTEN_ACCESS_KEY;
+  }
+});

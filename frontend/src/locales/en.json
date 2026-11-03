@@ -2036,6 +2036,21 @@
     "reserve": "Book",
     "allPlans": "See other plans on Rakuten Travel",
     "note": "Rooms and prices are Rakuten Travel's and may change. Booking, payment and cancellation are done on Rakuten Travel.",
-    "affiliate": "[Ad] Jaziba may receive a referral fee when you book through these links (your price is the same)."
+    "affiliate": "[Ad] Jaziba may receive a referral fee when you book through these links (your price is the same).",
+    "stayButton": "Stay",
+    "nearButton": "Find a stay nearby",
+    "bookButton": "Book",
+    "sheetTitle": "Stays near {{place}}",
+    "bookThis": "Book {{name}}",
+    "nearHeading": "Places to stay nearby (Rakuten Travel)",
+    "thisPost": "This post's stay",
+    "pickDates": "Pick dates and tap “Search rooms” to see rooms free and prices.",
+    "linkHeading": "Link to a Rakuten Travel listing",
+    "linkedTo": "Linked: {{name}} (travelers can check rooms and book from the post)",
+    "linkNone": "Not linked yet. A place with the same name nearby is linked automatically.",
+    "linkChoose": "Choose from nearby",
+    "linkChange": "Change",
+    "unlink": "Unlink",
+    "noCandidates": "No Rakuten Travel listings within 1 km"
   }
 }

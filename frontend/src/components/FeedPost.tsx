@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import EditorialBadge from "./EditorialBadge";
 import ContributorBadge from "./ContributorBadge";
-import { Bookmark, Heart, MapPin, MessageCircle, Navigation, Volume2, VolumeX } from "lucide-react";
+import { BedDouble, Bookmark, Heart, MapPin, MessageCircle, Navigation, Volume2, VolumeX } from "lucide-react";
+import StaySheet from "./StaySheet";
 import AutoplayVideo from "./AutoplayVideo";
 import Avatar from "./Avatar";
 import HeartBurst from "./HeartBurst";
@@ -48,6 +49,8 @@ export default function FeedPost({
   onToggleFollow: (reel: Reel) => void;
   onOpenComments: (reel: Reel) => void;
 }) {
+  // 宿を予約 (StaySheet): the hotels around this place, bookable on 楽天トラベル.
+  const [stayOpen, setStayOpen] = useState(false);
   const { t, i18n } = useTranslation();
   const poster = reel.postedByCompany ?? reel.municipality;
   const tags = [
@@ -192,6 +195,19 @@ export default function FeedPost({
             variant="icon"
           />
         </span>
+        {hasLocation && (
+          <button
+            type="button"
+            onClick={() => setStayOpen(true)}
+            aria-label={reel.rakutenHotel ? t("stays.bookButton") : t("stays.nearButton")}
+            className={`flex items-center gap-1 rounded-full px-2.5 py-1.5 text-[13px] font-bold transition active:scale-90 ${
+              reel.rakutenHotel ? "bg-jz-tint text-jz-accent" : "text-jz-ink hover:bg-gray-100"
+            }`}
+          >
+            <BedDouble className="h-5 w-5" strokeWidth={1.8} />
+            <span>{reel.rakutenHotel ? t("stays.bookButton") : t("stays.stayButton")}</span>
+          </button>
+        )}
         <button
           type="button"
           onClick={() => {
@@ -235,6 +251,7 @@ export default function FeedPost({
           <time dateTime={reel.createdAt}>{relativeTime(reel.createdAt, i18n.language)}</time>
         </p>
       </div>
+      {stayOpen && <StaySheet reel={reel} onClose={() => setStayOpen(false)} />}
     </article>
   );
 }

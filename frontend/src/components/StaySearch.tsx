@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { BedDouble, Coffee, ExternalLink, Loader2, MapPin, Star, UtensilsCrossed } from "lucide-react";
 import { api } from "../api/client";
@@ -44,7 +44,21 @@ const addDays = (day: string, n: number) => {
 
 // 宿を探す・予約: rooms free on your dates near this spot / town, with prices,
 // from 楽天トラベル. Booking and payment happen on 楽天トラベル.
-export default function StaySearch({ reelId, municipalityId, className = "" }: { reelId?: string; municipalityId?: string; className?: string }) {
+export default function StaySearch({
+  reelId,
+  municipalityId,
+  className = "",
+  preview = null,
+  linkedHotelNo = null,
+}: {
+  reelId?: string;
+  municipalityId?: string;
+  className?: string;
+  /** Shown until the first search (the hotels around, without dates). */
+  preview?: ReactNode;
+  /** A lodging post's own 楽天トラベル hotel, marked in the results. */
+  linkedHotelNo?: number | null;
+}) {
   const { t, i18n } = useTranslation();
   const [checkin, setCheckin] = useState(localDay(1));
   const [nights, setNights] = useState(1);
@@ -111,6 +125,7 @@ export default function StaySearch({ reelId, municipalityId, className = "" }: {
       </form>
 
       {error && <p className="mt-3 text-xs text-jz-warm-text">{error}</p>}
+      {!result && preview}
 
       {result && (!result.configured || !result.located) && (
         <div className="mt-3 rounded-xl bg-gray-50 p-3 text-xs leading-relaxed text-gray-600">
@@ -138,7 +153,10 @@ export default function StaySearch({ reelId, municipalityId, className = "" }: {
                       </span>
                     )}
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold leading-snug text-jz-ink">{h.name}</p>
+                      <p className="text-sm font-bold leading-snug text-jz-ink">
+                        {linkedHotelNo === h.id && <span className="mr-1 rounded-full bg-jz-tint px-1.5 py-0.5 text-[10px] text-jz-accent">{t("stays.thisPost")}</span>}
+                        {h.name}
+                      </p>
                       <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[11px] text-gray-500">
                         {h.reviewAverage != null && (
                           <span className="inline-flex items-center gap-0.5 font-semibold text-gray-700">
