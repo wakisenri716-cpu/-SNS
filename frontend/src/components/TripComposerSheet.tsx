@@ -7,6 +7,7 @@ import { api } from "../api/client";
 import { aiLimitOf } from "../lib/aiLimit";
 import AiLimitNotice from "./AiLimitNotice";
 import { useAiAvailable } from "../lib/aiStatus";
+import { useAiAllowance } from "../lib/useAiAllowance";
 import { useSpeechInput } from "../lib/useSpeechInput";
 import { createTrip, setCurrentTripId } from "../lib/trips";
 import { notifySavesChanged } from "../lib/savesChanged";
@@ -46,6 +47,8 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const ai = useAiAvailable();
+  const [builds, setBuilds] = useState(0);
+  const allowance = useAiAllowance(builds);
   const [message, setMessage] = useState("");
   const [draft, setDraft] = useState<Composed | null>(null);
   const [name, setName] = useState("");
@@ -72,6 +75,7 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
     try {
       const { data } = await api.post<Composed>("/me/trips/compose", { message: text, lang: i18n.language });
       setDraft(data);
+      setBuilds((n) => n + 1);
       setName(data.name);
     } catch (err) {
       setLimit(aiLimitOf(err));
@@ -258,7 +262,14 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
           {limit && <AiLimitNotice signedIn={limit.signedIn} className="mt-4" />}
         </div>
 
-        <div className="flex gap-2 border-t border-gray-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        {/* 1回でいくら: what a trip made by the AI counts for, and what's left. */}
+        {ai && !draft && (
+          <p className="border-t border-gray-100 px-4 pt-3 text-center text-[11px] text-gray-500">
+            {t("composer.cost", { units: allowance?.units.tripCompose ?? 5 })}
+            {allowance && ` ${t("composer.costLeft", { month: allowance.freeLeftThisMonth, today: allowance.freeLeft, credits: allowance.credits })}`}
+          </p>
+        )}
+        <div className={`flex gap-2 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] ${ai && !draft ? "" : "border-t border-gray-100"}`}>
           {!draft ? (
             <button
               type="button"

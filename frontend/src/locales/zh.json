@@ -1009,7 +1009,9 @@
     "created": "已创建旅行",
     "removeStop": "移除{{place}}",
     "afterNote": "创建后仍可在旅行手册中调整顺序、添加或删除地点、修改停留时间。",
-    "error": "无法规划旅行，请稍后再试"
+    "error": "无法规划旅行，请稍后再试",
+    "cost": "AI制作行程每次计5次（从免费次数或AI券中扣除）。",
+    "costLeft": "本月免费 剩余{{month}}次（今天还可{{today}}次）・AI券{{credits}}张"
   },
   "passkey": {
     "heading": "通行密钥",
@@ -1487,8 +1489,8 @@
     "postError": "发布失败"
   },
   "aiLimit": {
-    "signedIn": "今天的5次免费AI已用完。用积分兑换“AI券”即可继续使用。",
-    "visitor": "未登录时AI每天最多3次。登录后每天可免费使用5次。",
+    "signedIn": "免费AI已用完（每月30次・每天10次）。用积分兑换“AI券”即可继续使用。",
+    "visitor": "未登录时AI每天最多3次。登录后每月可免费使用30次。",
     "getTickets": "兑换AI券",
     "login": "登录"
   },
@@ -1516,13 +1518,13 @@
     "notEnough": "积分不足",
     "error": "操作失败，请重试",
     "aiHeading": "AI券",
-    "aiIntro": "AI旅行咨询・以图搜索・AI制定计划・AI制作行程每天可免费使用{{free}}次。超出后每次使用1张AI券。",
-    "aiLeft": "今日免费 剩余{{free}}/{{freePerDay}}次・AI券 {{credits}}张",
+    "aiIntro": "登录后，AI功能每月可免费使用{{free}}次（每天最多{{perDay}}次）。超出后每次使用1张AI券。",
+    "aiLeft": "本月免费 剩余{{month}}/{{perMonth}}次（今天还可{{today}}次）・AI券 {{credits}}张",
     "pack": "AI券 {{credits}}张",
     "packButton": "{{points}}积分兑换",
     "ticketConfirm": "用 {{points}}积分 兑换AI券{{credits}}张吗？",
     "ticketsBought": "已增加AI券{{credits}}张",
-    "aiNote": "免费次数每天0点（日本时间）重置。AI券没有期限。翻译仍不计入次数。",
+    "aiNote": "免费次数每月1日0点（日本时间）重置。AI券没有期限。翻译不计入次数。繁忙时可能改用不使用AI的搜索（此时不计次数）。",
     "noneHeld": "还没有优惠券",
     "code": "优惠券代码",
     "qrAlt": "优惠券二维码",
@@ -1530,7 +1532,14 @@
     "useConfirm": "请在店员面前点击。确定设为已使用吗？（无法撤销）",
     "usedAt": "{{time}} 已使用",
     "expired": "已过期",
-    "useCoupon": "使用此优惠券"
+    "useCoupon": "使用此优惠券",
+    "unitsPerUse": "每次计{{count}}次",
+    "feature": {
+      "concierge": "AI旅行咨询",
+      "photoConcierge": "以图搜索",
+      "tripPlan": "AI制定计划",
+      "tripCompose": "AI制作行程（自动生成行程）"
+    }
   },
   "coupons": {
     "tab": "优惠券",

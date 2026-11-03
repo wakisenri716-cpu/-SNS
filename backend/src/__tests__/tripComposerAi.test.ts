@@ -37,8 +37,12 @@ test("Claude's trip is limited to listed posts, with tidy stay times and days sp
   try {
     const result = await composeTrip("1泊2日で松本、お城と温泉", "ja", [...posts]);
     assert.deepEqual(sent.output_config.format.schema.properties.stops.items.properties.id.enum, ["castle", "onsen", "bridge"]);
-    assert.match(sent.messages[0].content, /2-day trip/);
-    assert.match(sent.messages[0].content, /<traveler_request>\n1泊2日で松本、お城と温泉\n<\/traveler_request>/);
+    // The post list is its own (cached) block; the request comes after it.
+    const [postList, request] = sent.messages[0].content;
+    assert.match(postList.text, /^<posts>/);
+    assert.deepEqual(postList.cache_control, { type: "ephemeral" });
+    assert.match(request.text, /2-day trip/);
+    assert.match(request.text, /<traveler_request>\n1泊2日で松本、お城と温泉\n<\/traveler_request>/);
     assert.equal(result.mode, "ai");
     assert.equal(result.name, "松本 城と温泉 1泊2日");
     assert.deepEqual(

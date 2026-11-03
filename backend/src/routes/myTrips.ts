@@ -674,7 +674,8 @@ router.post("/:id/plan", conciergeLimiter, async (req, res) => {
     orderBy: [{ position: "asc" }, { createdAt: "asc" }],
   });
   if (items.length < 2) return res.status(400).json({ error: "しおりに2か所以上入れると、プランを作れます" });
-  if (!(await checkAiQuota(req, res))) return;
+  const quota = await checkAiQuota(req, res, "tripPlan");
+  if (quota === "refused") return;
 
   const plan = await planTrip(
     items.map((s) => ({
@@ -689,10 +690,12 @@ router.post("/:id/plan", conciergeLimiter, async (req, res) => {
     })),
     parsed.data.wishes,
     trip.startTime,
-    parsed.data.lang
+    parsed.data.lang,
+    { allowAi: quota === "ai" }
   );
-  if (plan.mode === "ai") await recordAiUse(req, "tripPlan");
-  res.json(plan);
+  if (plan.mode === "ai") await recordAiUse(req, "tripPlan", plan.usage);
+  const { usage: _usage, ...out } = plan;
+  res.json(out);
 });
 
 // "AIで旅をつくる": a whole trip proposed from a description ("2泊3日で長野、
@@ -707,7 +710,8 @@ const composeSchema = z.object({
 router.post("/compose", conciergeLimiter, async (req, res) => {
   const parsed = composeSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "どんな旅にしたいか入力してください（300文字まで）" });
-  if (!(await checkAiQuota(req, res))) return;
+  const quota = await checkAiQuota(req, res, "tripCompose");
+  if (quota === "refused") return;
   const reels = await prisma.reel.findMany({
     where: { locationLat: { not: null }, locationLng: { not: null } },
     take: COMPOSE_POOL,
@@ -728,12 +732,14 @@ router.post("/compose", conciergeLimiter, async (req, res) => {
       bestMonths: parseBestMonths(r.bestMonths),
       lat: r.locationLat!,
       lng: r.locationLng!,
-    }))
+    })),
+    { allowAi: quota === "ai" }
   );
-  if (result.mode === "ai") await recordAiUse(req, "tripCompose");
+  if (result.mode === "ai") await recordAiUse(req, "tripCompose", result.usage);
   const byId = new Map(reels.map((r) => [r.id, r]));
+  const { usage: _usage, ...composed } = result;
   res.json({
-    ...result,
+    ...composed,
     stops: result.stops.map((s) => {
       const r = byId.get(s.id)!;
       return {

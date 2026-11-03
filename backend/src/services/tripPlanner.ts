@@ -1,5 +1,5 @@
 import { haversineMeters } from "./googleMaps";
-import { CLAUDE_MODEL, getClaudeClient, isClaudeConfigured, logClaudeError } from "./claude";
+import { CLAUDE_MODEL, getClaudeClient, isClaudeConfigured, logClaudeError, usageOf, type AiUsageInfo } from "./claude";
 
 // "AIでプランを作る" for the しおり: proposes a visiting order and how long to
 // stay at each saved spot, plus a short summary. The user reviews it and
@@ -25,6 +25,8 @@ export interface PlanResult {
   mode: "ai" | "auto";
   summary: string | null;
   stops: { id: string; stayMinutes: number; note: string | null }[];
+  /** Tokens used (AI mode), for the usage log. */
+  usage?: AiUsageInfo;
 }
 
 type Located = PlanStopInput & { lat: number; lng: number };
@@ -150,11 +152,17 @@ async function aiPlan(stops: PlanStopInput[], wishes: string, startTime: string,
       note: s.note || null,
     }));
   const missing = stops.filter((s) => !seen.has(s.id)).map((s) => ({ id: s.id, stayMinutes: s.stayMinutes, note: null }));
-  return { mode: "ai", summary: parsed.summary, stops: [...planned, ...missing] };
+  return { mode: "ai", summary: parsed.summary, stops: [...planned, ...missing], usage: usageOf(response) };
 }
 
-export async function planTrip(stops: PlanStopInput[], wishes: string, startTime: string, lang: string): Promise<PlanResult> {
-  if (isClaudeConfigured()) {
+export async function planTrip(
+  stops: PlanStopInput[],
+  wishes: string,
+  startTime: string,
+  lang: string,
+  { allowAi = true }: { allowAi?: boolean } = {}
+): Promise<PlanResult> {
+  if (allowAi && isClaudeConfigured()) {
     try {
       return await aiPlan(stops, wishes, startTime, lang);
     } catch (err) {

@@ -1,4 +1,4 @@
-import { CLAUDE_MODEL, getClaudeClient, isClaudeConfigured, logClaudeError } from "./claude";
+import { CLAUDE_MODEL, getClaudeClient, isClaudeConfigured, logClaudeError, usageOf, type AiUsageInfo } from "./claude";
 import { REEL_CATEGORIES, TRAVELER_TAGS, type ReelCategory, type TravelerTag } from "../types";
 
 // "AIに旅を相談" — the travel concierge. Given a free-text wish ("家族で雪景色
@@ -42,6 +42,8 @@ export interface ConciergeResult {
   mode: "ai" | "keyword";
   reply: string | null;
   picks: ConciergePick[];
+  /** Tokens used (AI mode), for the usage log. */
+  usage?: AiUsageInfo;
 }
 
 const MAX_PICKS = 5;
@@ -184,7 +186,10 @@ async function aiConcierge(
     caption: c.caption.slice(0, 280),
   }));
 
-  const userText = `Answer in ${LANGUAGE_NAMES[lang] ?? "Japanese"}.\n\n<posts>\n${JSON.stringify(posts)}\n</posts>\n\n${
+  // The post list comes first and is cached (it's the same for a while and
+  // is most of the input); what changes per request comes after it.
+  const postsText = `<posts>\n${JSON.stringify(posts)}\n</posts>`;
+  const userText = `Answer in ${LANGUAGE_NAMES[lang] ?? "Japanese"}.\n\n${
     history.length > 0
       ? `<conversation_so_far>\n${JSON.stringify(history.map((h) => ({ traveler: h.question, you: h.reply, picked: h.pickIds })))}\n</conversation_so_far>\n\n`
       : ""
@@ -225,7 +230,8 @@ async function aiConcierge(
       {
         role: "user",
         content: [
-          // The photo first, then the instructions that refer to it.
+          { type: "text" as const, text: postsText, cache_control: { type: "ephemeral" as const } },
+          // The photo, then the instructions that refer to it.
           ...(image ? [{ type: "image" as const, source: { type: "base64" as const, media_type: image.mediaType, data: image.data } }] : []),
           { type: "text" as const, text: userText },
         ],
@@ -245,16 +251,18 @@ async function aiConcierge(
     .filter((p) => ids.includes(p.id) && !seen.has(p.id) && seen.add(p.id))
     .slice(0, MAX_PICKS)
     .map((p) => ({ id: p.id, reason: p.reason, matched: null }));
-  return { mode: "ai", reply: parsed.reply, picks };
+  return { mode: "ai", reply: parsed.reply, picks, usage: usageOf(response) };
 }
 
 export async function runConcierge(
   message: string,
   lang: string,
   candidates: ConciergeCandidate[],
-  history: ConciergeTurn[] = []
+  history: ConciergeTurn[] = [],
+  // false: answer without AI (e.g. the app's AI budget is used up).
+  { allowAi = true }: { allowAi?: boolean } = {}
 ): Promise<ConciergeResult> {
-  if (isAiConciergeConfigured() && candidates.length > 0) {
+  if (allowAi && isAiConciergeConfigured() && candidates.length > 0) {
     try {
       return await aiConcierge(message, lang, candidates, history);
     } catch (err) {

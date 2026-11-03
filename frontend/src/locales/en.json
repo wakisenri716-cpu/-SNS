@@ -1035,7 +1035,9 @@
     "created": "Trip created",
     "removeStop": "Remove {{place}}",
     "afterNote": "After creating it you can still reorder, add or remove places and change stay times in the trip plan.",
-    "error": "Couldn't build the trip. Please try again in a moment"
+    "error": "Couldn't build the trip. Please try again in a moment",
+    "cost": "An AI trip takes 5 uses each time (from free uses or AI tickets).",
+    "costLeft": "Free this month: {{month}} left ({{today}} today) · AI tickets: {{credits}}"
   },
   "passkey": {
     "heading": "Passkeys",
@@ -1519,8 +1521,8 @@
     "postError": "Couldn't post"
   },
   "aiLimit": {
-    "signedIn": "You've used today's 5 free AI requests. Exchange points for AI tickets to keep going.",
-    "visitor": "Without logging in, AI is limited to 3 times a day. Log in for 5 free a day.",
+    "signedIn": "You've used your free AI (30 uses a month, 10 a day). Exchange points for AI tickets to keep going.",
+    "visitor": "Without logging in, AI is limited to 3 times a day. Log in for 30 free uses a month.",
     "getTickets": "Get AI tickets",
     "login": "Log in"
   },
@@ -1548,13 +1550,13 @@
     "notEnough": "Not enough points",
     "error": "Something went wrong. Please try again",
     "aiHeading": "AI tickets",
-    "aiIntro": "Asking the AI, photo search, AI plans and AI trips are free up to {{free}} times a day. Beyond that, each use takes one AI ticket.",
-    "aiLeft": "Free today: {{free}}/{{freePerDay}} left · AI tickets: {{credits}}",
+    "aiIntro": "Signed in, AI features are free up to {{free}} uses a month ({{perDay}} a day). Beyond that, each use takes one AI ticket.",
+    "aiLeft": "Free this month: {{month}}/{{perMonth}} left ({{today}} today) · AI tickets: {{credits}}",
     "pack": "{{credits}} AI tickets",
     "packButton": "For {{points}} pt",
     "ticketConfirm": "Exchange {{points}} pt for {{credits}} AI tickets?",
     "ticketsBought": "Added {{credits}} AI tickets",
-    "aiNote": "Free uses reset at midnight (Japan time). AI tickets don't expire. Translations still don't count.",
+    "aiNote": "Free uses reset on the 1st of each month (Japan time). AI tickets don't expire. Translations don't count. When busy, the app may answer without AI (that doesn't count).",
     "noneHeld": "You don't have any coupons yet",
     "code": "Coupon code",
     "qrAlt": "Coupon QR code",
@@ -1562,7 +1564,15 @@
     "useConfirm": "Press this in front of the staff. Mark it used? (This cannot be undone)",
     "usedAt": "Used {{time}}",
     "expired": "Expired",
-    "useCoupon": "Use this coupon"
+    "useCoupon": "Use this coupon",
+    "unitsPerUse_one": "{{count}} use each time",
+    "unitsPerUse_other": "{{count}} uses each time",
+    "feature": {
+      "concierge": "Ask the AI",
+      "photoConcierge": "Search by photo",
+      "tripPlan": "AI plan",
+      "tripCompose": "AI trip (builds the plan for you)"
+    }
   },
   "coupons": {
     "tab": "Coupons",

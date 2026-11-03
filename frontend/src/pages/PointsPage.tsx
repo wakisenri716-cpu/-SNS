@@ -168,10 +168,18 @@ export default function PointsPage() {
             <p className="flex items-center gap-1.5 font-bold">
               <Sparkles className="h-4 w-4 text-jz-accent" /> {t("points.aiHeading")}
             </p>
-            <p className="mt-1">{t("points.aiIntro", { free: summary?.ai.freePerDay ?? 5 })}</p>
+            <p className="mt-1">{t("points.aiIntro", { free: summary?.ai.freePerMonth ?? 30, perDay: summary?.ai.freeMaxPerDay ?? 10 })}</p>
+            <ul className="mt-2 space-y-0.5">
+              {(["concierge", "photoConcierge", "tripPlan", "tripCompose"] as const).map((f) => (
+                <li key={f} className="flex justify-between gap-2">
+                  <span>{t(`points.feature.${f}`)}</span>
+                  <b className="shrink-0 tabular-nums">{t("points.unitsPerUse", { count: summary?.ai.units[f] ?? (f === "tripCompose" ? 5 : 1) })}</b>
+                </li>
+              ))}
+            </ul>
             {summary && (
               <p className="mt-2 text-sm font-bold">
-                {t("points.aiLeft", { free: summary.ai.freeLeft, freePerDay: summary.ai.freePerDay, credits: summary.ai.credits })}
+                {t("points.aiLeft", { month: summary.ai.freeLeftThisMonth, perMonth: summary.ai.freePerMonth, today: summary.ai.freeLeft, credits: summary.ai.credits })}
               </p>
             )}
           </div>

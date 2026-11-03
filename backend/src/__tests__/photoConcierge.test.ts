@@ -24,10 +24,13 @@ test("the photo goes to Claude as a base64 image block, and only listed posts co
   });
   try {
     const result = await runPhotoConcierge({ mediaType: "image/jpeg", data: "AAAA" }, "ja", [...posts]);
+    // The cached post list, then the photo, then the instructions that refer to it.
     const content = sent.messages[0].content;
-    assert.deepEqual(content[0], { type: "image", source: { type: "base64", media_type: "image/jpeg", data: "AAAA" } });
-    assert.equal(content[1].type, "text");
-    assert.match(content[1].text, /<photo_request>/);
+    assert.match(content[0].text, /^<posts>/);
+    assert.deepEqual(content[0].cache_control, { type: "ephemeral" });
+    assert.deepEqual(content[1], { type: "image", source: { type: "base64", media_type: "image/jpeg", data: "AAAA" } });
+    assert.equal(content[2].type, "text");
+    assert.match(content[2].text, /<photo_request>/);
     assert.deepEqual(sent.output_config.format.schema.properties.picks.items.properties.id.enum, ["castle", "bridge"]);
     assert.equal(result.mode, "ai");
     assert.deepEqual(result.picks.map((p) => p.id), ["bridge"]);

@@ -1,5 +1,5 @@
 import { haversineMeters } from "./googleMaps";
-import { CLAUDE_MODEL, getClaudeClient, isClaudeConfigured, logClaudeError } from "./claude";
+import { CLAUDE_MODEL, getClaudeClient, isClaudeConfigured, logClaudeError, usageOf, type AiUsageInfo } from "./claude";
 import { keywordScore, type ConciergeCandidate, type ConciergePick } from "./concierge";
 import { nearestPath } from "./tripPlanner";
 
@@ -34,6 +34,8 @@ export interface ComposeResult {
   /** Days the request asked for; the stops' own `day` is what the しおり will show. */
   requestedDays: number;
   stops: ComposedStop[];
+  /** Tokens used (AI mode), for the usage log. */
+  usage?: AiUsageInfo;
 }
 
 const MAX_DAYS = 7;
@@ -208,9 +210,16 @@ async function aiCompose(message: string, lang: string, candidates: ComposeCandi
       messages: [
         {
           role: "user",
-          content: `Answer in ${LANGUAGE_NAMES[lang] ?? "Japanese"}. ${
-            days > 1 ? `The request reads as a ${days}-day trip.` : "Infer the number of days from the request (a day trip if it doesn't say)."
-          }\n\n<posts>\n${JSON.stringify(posts)}\n</posts>\n\n<traveler_request>\n${message}\n</traveler_request>`,
+          // The post list first, cached; the request after it.
+          content: [
+            { type: "text" as const, text: `<posts>\n${JSON.stringify(posts)}\n</posts>`, cache_control: { type: "ephemeral" as const } },
+            {
+              type: "text" as const,
+              text: `Answer in ${LANGUAGE_NAMES[lang] ?? "Japanese"}. ${
+                days > 1 ? `The request reads as a ${days}-day trip.` : "Infer the number of days from the request (a day trip if it doesn't say)."
+              }\n\n<traveler_request>\n${message}\n</traveler_request>`,
+            },
+          ],
         },
       ],
     },
@@ -242,11 +251,17 @@ async function aiCompose(message: string, lang: string, candidates: ComposeCandi
     summary: parsed.summary || null,
     requestedDays: days,
     stops,
+    usage: usageOf(response),
   };
 }
 
-export async function composeTrip(message: string, lang: string, candidates: ComposeCandidate[]): Promise<ComposeResult> {
-  if (isClaudeConfigured() && candidates.length > 0) {
+export async function composeTrip(
+  message: string,
+  lang: string,
+  candidates: ComposeCandidate[],
+  { allowAi = true }: { allowAi?: boolean } = {}
+): Promise<ComposeResult> {
+  if (allowAi && isClaudeConfigured() && candidates.length > 0) {
     try {
       return await aiCompose(message, lang, candidates);
     } catch (err) {

@@ -944,38 +944,63 @@ test("ポイントで交換: coupons from a municipality, exchanged for points, 
   assert.equal((await call("PATCH", `/api/coupons/${pricey.id}`, { active: false }, muni)).status, 204);
   assert.equal((await call("GET", `/api/coupons?municipalityId=${municipalityId}`)).json.items.some((x: any) => x.id === pricey.id), false);
 
-  // AIチケット: 10 uses for 50 points; with a key set, free uses come first, then tickets.
+  // AIチケット: 10 uses for 50 points.
   const bought = await call("POST", "/api/points/ai-tickets", { pack: "small" }, me);
   assert.equal(bought.status, 201);
   assert.equal(bought.json.points, 70);
   assert.equal(bought.json.ai.credits, 10);
-  assert.equal(bought.json.ai.freeLeft, 5);
+  assert.deepEqual([bought.json.ai.freeLeft, bought.json.ai.freeLeftThisMonth, bought.json.ai.units.tripCompose], [10, 30, 5]);
   assert.equal((await call("POST", "/api/points/ai-tickets", { pack: "large" }, me)).json.code, "notEnoughPoints");
 
   const { checkAiQuota, recordAiUse } = await import("../lib/aiQuota");
+  const { prisma } = await import("../prisma");
   process.env.ANTHROPIC_API_KEY = "test-key";
   try {
     const meId = (await call("GET", "/api/auth/me", undefined, me)).json.user.id;
     const req = { auth: { userId: meId, role: "USER" }, ip: "1.2.3.4" } as any;
     let status = 0;
     const res = { status: (s: number) => ((status = s), { json: () => {} }) } as any;
-    for (let i = 0; i < 5 + 10; i++) {
-      assert.equal(await checkAiQuota(req, res), true, `use ${i + 1}`);
-      await recordAiUse(req, "concierge");
+    const usage = { model: "claude-sonnet-5-5", inputTokens: 1000, cacheReadTokens: 12000, cacheWriteTokens: 0, outputTokens: 800 };
+    // Free first (at most 10 a day), then tickets.
+    for (let i = 0; i < 10; i++) {
+      assert.equal(await checkAiQuota(req, res, "concierge"), "ai", `free use ${i + 1}`);
+      await recordAiUse(req, "concierge", usage);
     }
-    assert.equal(await checkAiQuota(req, res), false);
+    // A whole trip counts for 5: two from the 10 tickets.
+    for (let i = 0; i < 2; i++) {
+      assert.equal(await checkAiQuota(req, res, "tripCompose"), "ai");
+      await recordAiUse(req, "tripCompose", usage);
+    }
+    assert.equal(await checkAiQuota(req, res, "concierge"), "refused");
     assert.equal(status, 402);
     const ai = (await call("GET", "/api/points", undefined, me)).json.ai;
-    assert.deepEqual([ai.freeLeft, ai.credits], [0, 0]);
+    assert.deepEqual([ai.freeLeft, ai.freeLeftThisMonth, ai.credits], [0, 20, 0]);
+    // Each use is logged with its tokens and estimated cost (Sonnet 5.5 list prices).
+    const logged = await prisma.aiUsage.findFirstOrThrow({ where: { userId: meId, feature: "tripCompose" } });
+    assert.deepEqual([logged.units, logged.paidUnits, logged.costMicroUsd], [5, 5, 1000 * 2 + 12000 * 0.2 + 800 * 10]);
+
+    // 30 free uses a month: someone who used them earlier this month gets none today.
+    const other = (await call("POST", "/api/auth/register", { email: "ai-month@example.com", password: "password123", name: "月末" })).json;
+    const monthStart = new Date(`${new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" }).slice(0, 7)}-01T00:00:01+09:00`);
+    await prisma.aiUsage.create({ data: { userId: other.user.id, feature: "concierge", units: 30, createdAt: monthStart } });
+    assert.equal(await checkAiQuota({ auth: { userId: other.user.id, role: "USER" } } as any, res, "concierge"), "refused");
+
     // Visitors: 3 a day per address.
     const anon = { ip: "5.6.7.8" } as any;
     for (let i = 0; i < 3; i++) {
-      assert.equal(await checkAiQuota(anon, res), true);
-      await recordAiUse(anon, "concierge");
+      assert.equal(await checkAiQuota(anon, res, "concierge"), "ai");
+      await recordAiUse(anon, "concierge", usage);
     }
-    assert.equal(await checkAiQuota(anon, res), false);
+    assert.equal(await checkAiQuota(anon, res, "concierge"), "refused");
+
+    // The app's budget: once today's estimated spend passes it, answer without AI (no refusal).
+    process.env.AI_DAILY_BUDGET_USD = "0.01";
+    assert.equal(await checkAiQuota({ ip: "9.9.9.9" } as any, res, "concierge"), "noAi");
+    delete process.env.AI_DAILY_BUDGET_USD;
+    assert.equal(await checkAiQuota({ ip: "9.9.9.9" } as any, res, "concierge"), "ai");
   } finally {
     delete process.env.ANTHROPIC_API_KEY;
+    delete process.env.AI_DAILY_BUDGET_USD;
   }
 });
 

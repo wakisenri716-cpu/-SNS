@@ -390,5 +390,15 @@ export interface PointsSummary {
   reportCount: number;
   visitCount: number;
   submissionCount: number;
-  ai: { freePerDay: number; freeLeft: number; credits: number; packs: { id: string; credits: number; points: number }[] };
+  ai: {
+    freePerMonth: number;
+    freeMaxPerDay: number;
+    /** Free uses left today (the month's rest, at most the day's limit). */
+    freeLeft: number;
+    freeLeftThisMonth: number;
+    credits: number;
+    /** How many uses each AI feature counts for. */
+    units: Record<"concierge" | "photoConcierge" | "tripPlan" | "tripCompose", number>;
+    packs: { id: string; credits: number; points: number }[];
+  };
 }

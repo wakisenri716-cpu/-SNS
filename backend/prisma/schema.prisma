@@ -690,15 +690,27 @@ model AiCreditPurchase {
   @@index([userId])
 }
 
-// One AI request by a signed-in account; `paid` when it used a ticket.
+// One AI request (concierge, photo search, trip planning): who (null for a
+// visitor who isn't signed in), how many uses it counted for (units — a
+// whole trip counts for several), how many of those came from AIチケット, and
+// what it cost — the tokens and an estimate in millionths of a US$ — for the
+// usage report and the app's overall AI budget (lib/aiQuota.ts).
 model AiUsage {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id               String   @id @default(cuid())
+  userId           String?
+  user             User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   // "concierge" | "photoConcierge" | "tripPlan" | "tripCompose"
-  feature   String
-  paid      Boolean  @default(false)
-  createdAt DateTime @default(now())
+  feature          String
+  units            Int      @default(1)
+  paidUnits        Int      @default(0)
+  model            String   @default("")
+  inputTokens      Int      @default(0)
+  outputTokens     Int      @default(0)
+  cacheReadTokens  Int      @default(0)
+  cacheWriteTokens Int      @default(0)
+  costMicroUsd     Int      @default(0)
+  createdAt        DateTime @default(now())
 
   @@index([userId, createdAt])
+  @@index([createdAt])
 }

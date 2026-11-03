@@ -1009,7 +1009,9 @@
     "created": "여행을 만들었어요",
     "removeStop": "{{place}} 빼기",
     "afterNote": "만든 뒤에도 일정표에서 순서 변경·장소 추가·삭제·머무는 시간 변경을 할 수 있어요.",
-    "error": "여행을 만들지 못했어요. 잠시 후 다시 시도해 주세요"
+    "error": "여행을 만들지 못했어요. 잠시 후 다시 시도해 주세요",
+    "cost": "AI 여행 만들기는 1회에 5회분을 씁니다 (무료분・AI 티켓에서).",
+    "costLeft": "이번 달 무료 남은 {{month}}회분 (오늘은 {{today}}회분)・AI 티켓 {{credits}}장"
   },
   "passkey": {
     "heading": "패스키",
@@ -1487,8 +1489,8 @@
     "postError": "게시하지 못했습니다"
   },
   "aiLimit": {
-    "signedIn": "오늘의 무료 AI(5회)를 다 썼습니다. 포인트로 \"AI 티켓\"을 교환하면 계속 쓸 수 있습니다.",
-    "visitor": "로그인하지 않으면 AI는 하루 3회까지입니다. 로그인하면 하루 5회까지 무료입니다.",
+    "signedIn": "무료 AI를 다 썼습니다 (월 30회분・하루 10회분까지). 포인트로 \"AI 티켓\"을 교환하면 계속 쓸 수 있습니다.",
+    "visitor": "로그인하지 않으면 AI는 하루 3회까지입니다. 로그인하면 월 30회분까지 무료입니다.",
     "getTickets": "AI 티켓 교환",
     "login": "로그인"
   },
@@ -1516,13 +1518,13 @@
     "notEnough": "포인트가 부족합니다",
     "error": "실패했습니다. 다시 시도해 주세요",
     "aiHeading": "AI 티켓",
-    "aiIntro": "AI 여행 상담・사진으로 찾기・AI 플랜 만들기・AI 여행 만들기는 하루 {{free}}회까지 무료입니다. 그보다 많이 쓰면 1회에 AI 티켓 1장을 씁니다.",
-    "aiLeft": "오늘 무료 남은 {{free}}/{{freePerDay}}회・AI 티켓 {{credits}}장",
+    "aiIntro": "로그인하면 AI 기능은 월 {{free}}회분까지 무료입니다(하루 {{perDay}}회분까지). 그보다 많이 쓰면 1회분에 AI 티켓 1장을 씁니다.",
+    "aiLeft": "이번 달 무료 남은 {{month}}/{{perMonth}}회분 (오늘은 {{today}}회분)・AI 티켓 {{credits}}장",
     "pack": "AI 티켓 {{credits}}장",
     "packButton": "{{points}}pt로 교환",
     "ticketConfirm": "{{points}}pt를 AI 티켓 {{credits}}장으로 교환할까요?",
     "ticketsBought": "AI 티켓 {{credits}}장을 추가했습니다",
-    "aiNote": "무료 횟수는 매일 0시(일본 시간)에 돌아옵니다. AI 티켓에는 기한이 없습니다. 번역은 지금처럼 횟수에 세지 않습니다.",
+    "aiNote": "무료 횟수는 매월 1일 0시(일본 시간)에 돌아옵니다. AI 티켓에는 기한이 없습니다. 번역은 횟수에 세지 않습니다. 혼잡할 때는 AI를 쓰지 않는 검색으로 바뀔 수 있습니다(그때는 횟수에 세지 않습니다).",
     "noneHeld": "아직 쿠폰이 없습니다",
     "code": "쿠폰 코드",
     "qrAlt": "쿠폰 QR 코드",
@@ -1530,7 +1532,14 @@
     "useConfirm": "가게 직원 앞에서 눌러 주세요. 사용 완료로 할까요? (되돌릴 수 없습니다)",
     "usedAt": "{{time}} 사용 완료",
     "expired": "기한 만료",
-    "useCoupon": "이 쿠폰 사용"
+    "useCoupon": "이 쿠폰 사용",
+    "unitsPerUse": "1회에 {{count}}회분",
+    "feature": {
+      "concierge": "AI 여행 상담",
+      "photoConcierge": "사진으로 찾기",
+      "tripPlan": "AI 플랜 만들기",
+      "tripCompose": "AI 여행 만들기 (일정 자동 작성)"
+    }
   },
   "coupons": {
     "tab": "쿠폰",

@@ -93,10 +93,11 @@ async function respond(
 router.post("/", conciergeLimiter, optionalAuth, async (req, res) => {
   const parsed = bodySchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "相談内容を入力してください（300文字まで）" });
-  if (!(await checkAiQuota(req, res))) return;
+  const quota = await checkAiQuota(req, res, "concierge");
+  if (quota === "refused") return;
   const { reels, candidates } = await loadCandidates(req.auth?.userId);
-  const result = await runConcierge(parsed.data.message, parsed.data.lang, candidates, parsed.data.history);
-  if (result.mode === "ai") await recordAiUse(req, "concierge");
+  const result = await runConcierge(parsed.data.message, parsed.data.lang, candidates, parsed.data.history, { allowAi: quota === "ai" });
+  if (result.mode === "ai") await recordAiUse(req, "concierge", result.usage);
   await respond(res, req.auth?.userId, reels, result);
 });
 
@@ -116,12 +117,15 @@ router.post("/photo", conciergeLimiter, optionalAuth, async (req, res) => {
   if (!isAiConciergeConfigured()) return res.status(503).json({ error: "写真で探す機能は現在利用できません" });
   const parsed = photoSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "画像（JPEG・PNG・WebP）を送ってください" });
-  if (!(await checkAiQuota(req, res))) return;
+  const quota = await checkAiQuota(req, res, "photoConcierge");
+  if (quota === "refused") return;
+  // No keyword fallback for a photo: say so when the app's AI budget is spent.
+  if (quota === "noAi") return res.status(503).json({ code: "aiBusy", error: "写真で探す機能は混み合っているため、いまは使えません。しばらくしてからお試しください" });
   const [, kind, data] = parsed.data.image.match(/^data:image\/(jpeg|png|webp);base64,(.+)$/)!;
   const { reels, candidates } = await loadCandidates(req.auth?.userId);
   try {
     const result = await runPhotoConcierge({ mediaType: `image/${kind}` as "image/jpeg", data }, parsed.data.lang, candidates);
-    if (result.mode === "ai") await recordAiUse(req, "photoConcierge");
+    if (result.mode === "ai") await recordAiUse(req, "photoConcierge", result.usage);
     await respond(res, req.auth?.userId, reels, result);
   } catch (err) {
     logClaudeError("photo concierge", err);
