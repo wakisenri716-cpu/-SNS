@@ -1,0 +1,211 @@
+import { Router } from "express";
+import { z } from "zod";
+import { prisma } from "../prisma";
+import { requireAuth } from "../middleware/auth";
+import { isAdminEmail, logAdmin, requireAdmin, setSuspended } from "../lib/admin";
+import { PLANS, PlanGrantError, activePlan, grantPlan, type PlanId } from "../lib/plans";
+import { aiSpend } from "../lib/aiQuota";
+import { todayInJapan } from "./events";
+
+// 管理者サイト (/admin) API: for the operator only (ADMIN_EMAILS). Every
+// change is written to the AdminLog.
+const router = Router();
+router.use(requireAuth, requireAdmin);
+
+const DAY = 86_400_000;
+const jstDay = (d: Date) => todayInJapan(d);
+
+router.get("/me", (req, res) => res.json({ admin: true, name: req.admin!.name }));
+
+// ---- 概要 ------------------------------------------------------------------------
+
+router.get("/overview", async (_req, res) => {
+  const now = new Date();
+  const since14 = new Date(now.getTime() - 14 * DAY);
+  const [roles, newUsers7d, suspended, recentSignups, reels, comments, visits30d, pendingSubmissions, inquiriesOpen, reported, plans, ai, logs] =
+    await Promise.all([
+      prisma.user.groupBy({ by: ["role"], _count: true }),
+      prisma.user.count({ where: { createdAt: { gte: new Date(now.getTime() - 7 * DAY) } } }),
+      prisma.user.count({ where: { suspendedAt: { not: null } } }),
+      prisma.user.findMany({ where: { createdAt: { gte: since14 } }, select: { createdAt: true } }),
+      prisma.reel.count(),
+      prisma.comment.count(),
+      prisma.visit.count({ where: { createdAt: { gte: new Date(now.getTime() - 30 * DAY) } } }),
+      prisma.submission.count({ where: { status: "pending" } }),
+      prisma.inquiry.count({ where: { handledAt: null } }),
+      prisma.comment.count({ where: { reports: { some: {} } } }),
+      prisma.planSubscription.findMany({ select: { plan: true, status: true, source: true, currentPeriodEnd: true, userId: true } }),
+      aiSpend(now),
+      prisma.adminLog.findMany({ orderBy: { createdAt: "desc" }, take: 8 }),
+    ]);
+
+  // Sign-ups per day for the last 14 days (Japan time).
+  const days = Array.from({ length: 14 }, (_, i) => jstDay(new Date(now.getTime() - (13 - i) * DAY)));
+  const perDay = new Map(days.map((d) => [d, 0]));
+  for (const u of recentSignups) {
+    const d = jstDay(u.createdAt);
+    if (perDay.has(d)) perDay.set(d, perDay.get(d)! + 1);
+  }
+
+  // Paid plans in force now, and the monthly card revenue they mean.
+  const active = (await Promise.all(plans.map(async (p) => ((await activePlan(p.userId, now)) ? p : null)))).filter((p) => p != null);
+  const count = (plan: PlanId) => active.filter((p) => p.plan === plan).length;
+  const monthlyYen = active.filter((p) => p.source === "stripe").reduce((sum, p) => sum + (PLANS[p.plan as PlanId]?.priceYen ?? 0), 0);
+
+  res.json({
+    users: {
+      byRole: Object.fromEntries(roles.map((r) => [r.role, r._count])),
+      total: roles.reduce((s, r) => s + r._count, 0),
+      new7d: newUsers7d,
+      suspended,
+      signupsByDay: days.map((d) => ({ day: d, count: perDay.get(d)! })),
+    },
+    content: { reels, comments, visits30d },
+    todo: { pendingSubmissions, inquiriesOpen, reportedComments: reported },
+    plans: { plus: count("plus"), business: count("business"), municipalityPro: count("municipalityPro"), monthlyYen },
+    ai,
+    recentLogs: logs,
+  });
+});
+
+// ---- お問い合わせ ----------------------------------------------------------------
+
+router.get("/inquiries", async (req, res) => {
+  const done = req.query.status === "done";
+  const items = await prisma.inquiry.findMany({ where: { handledAt: done ? { not: null } : null }, orderBy: { createdAt: done ? "desc" : "asc" }, take: 200 });
+  res.json({ items });
+});
+
+router.patch("/inquiries/:id", async (req, res) => {
+  const parsed = z.object({ done: z.boolean() }).safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
+  const { count } = await prisma.inquiry.updateMany({ where: { id: req.params.id }, data: { handledAt: parsed.data.done ? new Date() : null } });
+  if (count === 0) return res.status(404).json({ error: "見つかりません" });
+  await logAdmin(req, parsed.data.done ? "inquiryDone" : "inquiryOpen", req.params.id);
+  res.status(204).end();
+});
+
+// ---- ユーザー ----------------------------------------------------------------------
+
+const PAGE = 50;
+
+router.get("/users", async (req, res) => {
+  const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
+  const role = typeof req.query.role === "string" && ["USER", "MUNICIPALITY", "COMPANY"].includes(req.query.role) ? req.query.role : undefined;
+  const page = Math.max(0, Number(req.query.page) || 0);
+  const where = {
+    ...(role ? { role } : {}),
+    ...(req.query.suspended === "1" ? { suspendedAt: { not: null } } : {}),
+    ...(q ? { OR: [{ name: { contains: q } }, { email: { contains: q } }, { municipality: { name: { contains: q } } }, { company: { name: { contains: q } } }] } : {}),
+  };
+  const [total, rows] = await Promise.all([
+    prisma.user.count({ where }),
+    prisma.user.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: page * PAGE,
+      take: PAGE,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
+        suspendedAt: true,
+        municipality: { select: { id: true, name: true, prefecture: true } },
+        company: { select: { id: true, name: true, municipality: { select: { name: true } } } },
+        planSubscription: true,
+        _count: { select: { comments: true, visits: true, submissions: true } },
+      },
+    }),
+  ]);
+  const items = await Promise.all(
+    rows.map(async (u) => ({
+      ...u,
+      isAdmin: isAdminEmail(u.email),
+      plan: u.planSubscription
+        ? { ...u.planSubscription, active: (await activePlan(u.id)) === u.planSubscription.plan }
+        : null,
+      planSubscription: undefined,
+    }))
+  );
+  res.json({ total, page, pageSize: PAGE, items });
+});
+
+router.post("/users/:id/suspend", async (req, res) => {
+  const parsed = z.object({ suspended: z.boolean(), reason: z.string().trim().max(300).default("") }).safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
+  const user = await prisma.user.findUnique({ where: { id: req.params.id }, select: { id: true, name: true, email: true } });
+  if (!user) return res.status(404).json({ error: "見つかりません" });
+  if (user.id === req.admin!.id || isAdminEmail(user.email)) return res.status(400).json({ error: "管理者のアカウントは停止できません" });
+  await prisma.user.update({ where: { id: user.id }, data: { suspendedAt: parsed.data.suspended ? new Date() : null } });
+  setSuspended(user.id, parsed.data.suspended);
+  await logAdmin(req, parsed.data.suspended ? "suspend" : "unsuspend", user.id, `${user.name}${parsed.data.reason ? `：${parsed.data.reason}` : ""}`);
+  res.status(204).end();
+});
+
+router.post("/users/:id/plan", async (req, res) => {
+  const parsed = z
+    .object({ plan: z.enum(["plus", "business", "municipalityPro", "none"]), months: z.coerce.number().int().min(1).max(60).default(12) })
+    .safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "プランと月数を確認してください" });
+  try {
+    const result = await grantPlan(req.params.id, parsed.data.plan as PlanId | "none", parsed.data.months);
+    await logAdmin(req, "plan", req.params.id, result ? `${parsed.data.plan}（${parsed.data.months}か月）` : "プランを外す");
+    res.json({ plan: result });
+  } catch (err) {
+    if (err instanceof PlanGrantError) return res.status(400).json({ error: err.message });
+    throw err;
+  }
+});
+
+// ---- 通報されたコメント ----------------------------------------------------------
+
+router.get("/reports", async (_req, res) => {
+  const rows = await prisma.comment.findMany({
+    where: { reports: { some: {} } },
+    include: {
+      user: { select: { id: true, name: true, suspendedAt: true } },
+      reel: { select: { id: true, locationName: true, municipality: { select: { name: true } } } },
+      reports: { select: { reason: true, createdAt: true } },
+    },
+    take: 200,
+  });
+  rows.sort((a, b) => b.reports.length - a.reports.length);
+  res.json({
+    items: rows.map((c) => ({
+      id: c.id,
+      body: c.body,
+      createdAt: c.createdAt,
+      user: c.user,
+      reel: c.reel,
+      reports: c.reports.length,
+      reasons: Object.fromEntries(["spam", "abuse", "other"].map((r) => [r, c.reports.filter((x) => x.reason === r).length])),
+      lastReportedAt: c.reports.reduce((d, r) => (r.createdAt > d ? r.createdAt : d), new Date(0)),
+    })),
+  });
+});
+
+// Not a problem: the reports go, the comment stays.
+router.post("/reports/:commentId/dismiss", async (req, res) => {
+  const { count } = await prisma.commentReport.deleteMany({ where: { commentId: req.params.commentId } });
+  if (count === 0) return res.status(404).json({ error: "見つかりません" });
+  await logAdmin(req, "dismissReports", req.params.commentId);
+  res.status(204).end();
+});
+
+router.delete("/comments/:id", async (req, res) => {
+  const comment = await prisma.comment.findUnique({ where: { id: req.params.id }, select: { id: true, body: true } });
+  if (!comment) return res.status(404).json({ error: "見つかりません" });
+  await prisma.comment.delete({ where: { id: comment.id } });
+  await logAdmin(req, "deleteComment", comment.id, comment.body.slice(0, 120));
+  res.status(204).end();
+});
+
+// ---- 操作の記録 ----------------------------------------------------------------------
+
+router.get("/logs", async (_req, res) => {
+  res.json({ items: await prisma.adminLog.findMany({ orderBy: { createdAt: "desc" }, take: 200 }) });
+});
+
+export default router;

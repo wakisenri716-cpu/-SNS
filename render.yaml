@@ -30,3 +30,5 @@ services:
         sync: false
       - key: APP_ORIGIN
         sync: false
+      - key: ADMIN_EMAILS
+        sync: false

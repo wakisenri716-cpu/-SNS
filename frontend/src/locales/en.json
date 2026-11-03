@@ -25,10 +25,12 @@
     "reels": "Reels",
     "map": "Map",
     "points": "Points & coupons",
-    "plans": "Plans"
+    "plans": "Plans",
+    "admin": "Admin site"
   },
   "auth": {
-    "sessionExpired": "Your session has expired. Please log in again."
+    "sessionExpired": "Your session has expired. Please log in again.",
+    "suspended": "This account is suspended. Please contact us through the contact form."
   },
   "login": {
     "title": "Log In",
@@ -1846,5 +1848,124 @@
     "none": "No transport information yet",
     "edit": "Edit",
     "delete": "Delete"
+  },
+  "admin": {
+    "title": "Jaziba Admin",
+    "loginFirst": "Log in with an admin account.",
+    "notAllowed": "This account doesn't have admin access.",
+    "backToApp": "Back to the app",
+    "error": "Something went wrong",
+    "nav": {
+      "overview": "Overview",
+      "inquiries": "Inquiries",
+      "users": "Users",
+      "reports": "Reports",
+      "logs": "Activity log"
+    },
+    "role": {
+      "USER": "Traveler",
+      "MUNICIPALITY": "Municipality",
+      "COMPANY": "Business"
+    },
+    "overview": {
+      "sub": "How Jaziba is doing right now.",
+      "users": "Users",
+      "new7d": "+{{count}} in 7 days",
+      "monthlyYen": "Monthly revenue (est.)",
+      "cardOnly": "Monthly total of card-paid plans (invoice plans not included)",
+      "paid": "Paid plans",
+      "paidBreakdown": "Plus {{plus}} · Business {{business}} · Pro {{pro}}",
+      "aiMonth": "AI cost this month (est.)",
+      "aiToday": "Today ¥{{yen}}",
+      "inquiriesOpen": "Open inquiries",
+      "reported": "Reported comments",
+      "pendingSubmissions": "Photos/videos awaiting approval",
+      "pendingNote": "Each municipality approves its own",
+      "signups": "Sign-ups (14 days)",
+      "signupsOn": "{{day}}: {{count}}",
+      "aiBudget": "AI budget",
+      "aiBudgetLine": "This month ¥{{used}} / budget ¥{{budget}} ({{pct}}%)",
+      "feature": "Feature",
+      "requests": "Uses",
+      "cost": "Cost",
+      "noAi": "No AI use this month yet",
+      "aiNote": "Estimated from tokens at list prices (1 USD = {{rate}} yen). Check Anthropic's invoice for exact amounts.",
+      "accounts": "Accounts and posts",
+      "suspended": "Suspended",
+      "reels": "Posts",
+      "comments": "Comments",
+      "visits30d": "Stamps (30 days)",
+      "recent": "Recent actions",
+      "allLogs": "See the full log",
+      "signupsTotal": "{{count}} in total"
+    },
+    "inquiries": {
+      "sub": "Messages from the contact form.",
+      "open": "Open",
+      "done": "Done",
+      "none": "No inquiries",
+      "reply": "Reply by email",
+      "replySubject": "About your inquiry to Jaziba",
+      "markDone": "Mark as done",
+      "reopen": "Reopen"
+    },
+    "users": {
+      "sub": "Search by name, email, municipality or business.",
+      "search": "Search name, email, municipality, business",
+      "searchButton": "Search",
+      "all": "All",
+      "none": "No one found",
+      "count": "{{count}} accounts",
+      "more": "Show more",
+      "admin": "Admin",
+      "activity": "Comments {{comments}} · stamps {{visits}} · provided photos/videos {{submissions}}",
+      "planNow": "{{plan}} ({{source}}, until {{until}}, {{state}})",
+      "planActive": "active",
+      "planEnded": "ended",
+      "noPlan": "Free plan",
+      "source": {
+        "stripe": "card",
+        "invoice": "invoice/manual"
+      },
+      "months": "Period",
+      "monthsValue": "{{count}} months",
+      "givePlan": "Give {{plan}}",
+      "removePlan": "Remove plan",
+      "planGiven": "Plan given",
+      "planRemoved": "Plan removed",
+      "stripeNote": "This is a card plan. Change or cancel it in the Stripe dashboard.",
+      "suspend": "Suspend",
+      "restore": "Lift suspension",
+      "suspendReason": "Suspend {{name}}. Reason (kept in the log)",
+      "suspended": "Suspended",
+      "restored": "Suspension lifted"
+    },
+    "reports": {
+      "sub": "Comments other users reported. Three reports hide a comment automatically.",
+      "none": "No reported comments",
+      "count": "{{count}} reports",
+      "reason": {
+        "spam": "Spam",
+        "abuse": "Abuse",
+        "other": "Other"
+      },
+      "by": "By {{name}}",
+      "dismiss": "No problem",
+      "dismissed": "Reports cleared",
+      "delete": "Delete comment",
+      "deleteConfirm": "Delete this comment? This can't be undone.",
+      "deleted": "Comment deleted"
+    },
+    "log": {
+      "sub": "What was done in the admin site.",
+      "none": "Nothing yet",
+      "suspend": "Suspended",
+      "unsuspend": "Suspension lifted",
+      "plan": "Plan changed",
+      "deleteComment": "Comment deleted",
+      "dismissReports": "Reports cleared",
+      "inquiryDone": "Inquiry done",
+      "inquiryOpen": "Inquiry reopened"
+    }
   }
 }

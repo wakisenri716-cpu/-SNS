@@ -76,6 +76,26 @@ export async function aiAllowance(userId: string, now = new Date()) {
   };
 }
 
+/** Today's and this month's estimated AI spend against the budgets (admin console). */
+export async function aiSpend(now = new Date()) {
+  const { dailyMicroUsd, monthlyMicroUsd } = budgets();
+  const [today, month, byFeature] = await Promise.all([
+    prisma.aiUsage.aggregate({ where: { createdAt: { gte: startOfTodayJst(now) } }, _sum: { costMicroUsd: true, units: true } }),
+    prisma.aiUsage.aggregate({ where: { createdAt: { gte: startOfMonthJst(now) } }, _sum: { costMicroUsd: true, units: true }, _count: true }),
+    prisma.aiUsage.groupBy({ by: ["feature"], where: { createdAt: { gte: startOfMonthJst(now) } }, _sum: { costMicroUsd: true, units: true }, _count: true }),
+  ]);
+  return {
+    todayMicroUsd: today._sum.costMicroUsd ?? 0,
+    todayUnits: today._sum.units ?? 0,
+    monthMicroUsd: month._sum.costMicroUsd ?? 0,
+    monthUnits: month._sum.units ?? 0,
+    monthRequests: month._count,
+    dailyBudgetMicroUsd: dailyMicroUsd,
+    monthlyBudgetMicroUsd: monthlyMicroUsd,
+    byFeature: byFeature.map((f) => ({ feature: f.feature, requests: f._count, units: f._sum.units ?? 0, microUsd: f._sum.costMicroUsd ?? 0 })),
+  };
+}
+
 /** Whether the app's AI budget for today and this month still has room. */
 export async function aiBudgetLeft(now = new Date()) {
   const { dailyMicroUsd, monthlyMicroUsd } = budgets();

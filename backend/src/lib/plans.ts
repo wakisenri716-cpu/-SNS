@@ -57,3 +57,31 @@ export const priceIdOf = (plan: PlanId) => {
 /** Which plan a Stripe price is (from the env vars). */
 export const planOfPrice = (priceId: string | null | undefined): PlanId | null =>
   (Object.keys(PLANS) as PlanId[]).find((p) => priceId && priceIdOf(p) === priceId) ?? null;
+
+// ---- Plans by invoice -------------------------------------------------------------
+
+export class PlanGrantError extends Error {}
+
+/**
+ * Turn a plan on for `months` from today, or off ("none"), without Stripe:
+ * for 自治体プロ by invoice, or a plan the operator gives. Card plans are
+ * Stripe's to change.
+ */
+export async function grantPlan(userId: string, plan: PlanId | "none", months = 12) {
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, role: true } });
+  if (!user) throw new PlanGrantError("アカウントが見つかりません");
+  const existing = await prisma.planSubscription.findUnique({ where: { userId } });
+  const stripeLive = existing?.source === "stripe" && !["canceled", "incomplete_expired"].includes(existing.status);
+  if (stripeLive) throw new PlanGrantError("カード払いのプランです。Stripeのダッシュボードから変更・解約してください");
+  if (plan === "none") {
+    await prisma.planSubscription.deleteMany({ where: { userId } });
+    return null;
+  }
+  if (!PLANS[plan]) throw new PlanGrantError("不明なプランです");
+  if (PLANS[plan].role !== user.role) throw new PlanGrantError("このアカウントの種類では使えないプランです");
+  if (!Number.isInteger(months) || months < 1 || months > 60) throw new PlanGrantError("月数は1〜60で指定してください");
+  const currentPeriodEnd = new Date();
+  currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + months);
+  const data = { plan, status: "active", source: "invoice", stripeSubscriptionId: null, currentPeriodEnd, cancelAtPeriodEnd: false };
+  return prisma.planSubscription.upsert({ where: { userId }, create: { userId, ...data }, update: data });
+}

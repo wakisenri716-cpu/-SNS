@@ -11,6 +11,7 @@ import { prisma } from "../prisma";
 import { requireAuth } from "../middleware/auth";
 import { loginLimiter, passkeyOptionsLimiter } from "../middleware/rateLimit";
 import { signedInPayload } from "./auth";
+import { isSuspended } from "../lib/admin";
 
 // パスキー (WebAuthn): sign in with Face ID / Touch ID / Windows Hello / an
 // Android fingerprint instead of the password. A signed-in user adds a
@@ -197,6 +198,7 @@ router.post("/login/verify", loginLimiter, async (req, res) => {
     where: { id: passkey.id },
     data: { counter: verification.authenticationInfo.newCounter, backedUp: verification.authenticationInfo.credentialBackedUp, lastUsedAt: new Date() },
   });
+  if (isSuspended(passkey.userId)) return res.status(403).json({ code: "suspended", error: "このアカウントは利用停止中です。お問い合わせフォームからご連絡ください" });
   const payload = await signedInPayload(passkey.userId);
   if (!payload) return res.status(401).json({ error: "アカウントが見つかりません" });
   res.json(payload);

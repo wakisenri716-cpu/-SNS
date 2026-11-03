@@ -1578,3 +1578,64 @@ test("地元の交通情報: a municipality or business adds a screenshot/PDF an
   const read = await fetch(`${base}/api/local-transit/read`, { method: "POST", headers: { Authorization: `Bearer ${muni}` }, body: form });
   assert.deepEqual([read.status, (await read.json()).code], [503, "aiUnavailable"]);
 });
+
+test("管理者サイト: only ADMIN_EMAILS get in; overview, inquiries, users (suspend, plan), reported comments, and a log of it all", async () => {
+  const boss = (await call("POST", "/api/auth/register", { email: "Boss@example.com", password: "password123", name: "運営者" })).json;
+  const someone = (await call("POST", "/api/auth/register", { email: "someone@example.com", password: "password123", name: "ふつうの人" })).json;
+  process.env.ADMIN_EMAILS = "other@example.com, boss@example.com";
+  try {
+    assert.equal((await call("GET", "/api/admin/overview", undefined, someone.token)).status, 403);
+    assert.equal((await call("GET", "/api/admin/overview")).status, 401);
+    assert.equal((await call("GET", "/api/admin/me", undefined, boss.token)).json.admin, true);
+    // The app learns it can show the admin link.
+    assert.equal((await call("POST", "/api/auth/login", { email: "Boss@example.com", password: "password123" })).json.user.isAdmin, true);
+    assert.equal((await call("POST", "/api/auth/login", { email: "someone@example.com", password: "password123" })).json.user.isAdmin, false);
+
+    const overview = (await call("GET", "/api/admin/overview", undefined, boss.token)).json;
+    assert.ok(overview.users.total >= 2);
+    assert.equal(overview.users.signupsByDay.length, 14);
+    assert.ok(overview.users.signupsByDay.at(-1).count >= 2);
+    assert.equal(typeof overview.ai.monthlyBudgetMicroUsd, "number");
+    assert.equal(typeof overview.plans.monthlyYen, "number");
+
+    // お問い合わせ: open → done.
+    await call("POST", "/api/inquiries", { name: "問い合わせ人", email: "ask@example.com", message: "掲載について教えてください" });
+    const open = (await call("GET", "/api/admin/inquiries", undefined, boss.token)).json.items;
+    const inquiry = open.find((i: any) => i.message === "掲載について教えてください");
+    assert.ok(inquiry);
+    assert.equal((await call("PATCH", `/api/admin/inquiries/${inquiry.id}`, { done: true }, boss.token)).status, 204);
+    assert.equal((await call("GET", "/api/admin/inquiries?status=done", undefined, boss.token)).json.items.some((i: any) => i.id === inquiry.id), true);
+
+    // Users: search, give a plan, suspend (signed out at once, can't sign in), restore.
+    const found = (await call("GET", "/api/admin/users?q=someone", undefined, boss.token)).json;
+    assert.deepEqual(found.items.map((u: any) => u.email), ["someone@example.com"]);
+    assert.equal((await call("POST", `/api/admin/users/${someone.user.id}/plan`, { plan: "business", months: 3 }, boss.token)).status, 400, "not for a traveler");
+    assert.equal((await call("POST", `/api/admin/users/${someone.user.id}/plan`, { plan: "plus", months: 3 }, boss.token)).status, 200);
+    assert.equal((await call("GET", "/api/points", undefined, someone.token)).json.ai.plan, "plus");
+    assert.equal((await call("POST", `/api/admin/users/${boss.user.id}/suspend`, { suspended: true }, boss.token)).status, 400);
+    assert.equal((await call("POST", `/api/admin/users/${someone.user.id}/suspend`, { suspended: true, reason: "スパム" }, boss.token)).status, 204);
+    const blocked = await call("GET", "/api/points", undefined, someone.token);
+    assert.deepEqual([blocked.status, blocked.json.code], [401, "suspended"]);
+    assert.equal((await call("POST", "/api/auth/login", { email: "someone@example.com", password: "password123" })).json.code, "suspended");
+    assert.equal((await call("POST", `/api/admin/users/${someone.user.id}/suspend`, { suspended: false }, boss.token)).status, 204);
+    assert.equal((await call("GET", "/api/points", undefined, someone.token)).status, 200);
+
+    // A reported comment: dismissed once, then removed.
+    const reelId = (await call("GET", "/api/reels")).json.items[0].id;
+    const comment = (await call("POST", `/api/reels/${reelId}/comments`, { body: "宣伝です" }, someone.token)).json;
+    const reporter = (await call("POST", "/api/auth/register", { email: "reporter@example.com", password: "password123", name: "通報する人" })).json.token;
+    const report = () => call("POST", `/api/reels/${reelId}/comments/${comment.id}/report`, { reason: "spam" }, reporter);
+    assert.ok([200, 201, 204].includes((await report()).status));
+    const reports = (await call("GET", "/api/admin/reports", undefined, boss.token)).json.items;
+    const item = reports.find((r: any) => r.id === comment.id);
+    assert.deepEqual([item.reports, item.reasons.spam, item.user.name], [1, 1, "ふつうの人"]);
+    assert.equal((await call("POST", `/api/admin/reports/${comment.id}/dismiss`, undefined, boss.token)).status, 204);
+    assert.equal((await call("GET", "/api/admin/reports", undefined, boss.token)).json.items.some((r: any) => r.id === comment.id), false);
+    assert.equal((await call("DELETE", `/api/admin/comments/${comment.id}`, undefined, boss.token)).status, 204);
+
+    const logs = (await call("GET", "/api/admin/logs", undefined, boss.token)).json.items.map((l: any) => l.action);
+    assert.deepEqual(logs.slice(0, 6), ["deleteComment", "dismissReports", "unsuspend", "suspend", "plan", "inquiryDone"]);
+  } finally {
+    delete process.env.ADMIN_EMAILS;
+  }
+});

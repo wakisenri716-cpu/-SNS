@@ -34,6 +34,8 @@ export interface AuthUser {
   email: string;
   name: string;
   role: Role;
+  /** May open the 管理者サイト (/admin); the server checks again. */
+  isAdmin?: boolean;
   avatarUrl: string | null;
   nationality: string | null;
   birthYear: number | null;

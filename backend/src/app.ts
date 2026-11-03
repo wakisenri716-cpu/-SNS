@@ -17,6 +17,8 @@ import checkinRoutes from "./routes/checkins";
 import submissionRoutes from "./routes/submissions";
 import pointsRoutes from "./routes/points";
 import couponRoutes from "./routes/coupons";
+import adminRoutes from "./routes/admin";
+import { loadSuspendedUsers } from "./lib/admin";
 import localTransitRoutes from "./routes/localTransit";
 import billingRoutes, { stripeWebhook } from "./routes/billing";
 import searchRoutes from "./routes/search";
@@ -30,6 +32,9 @@ import pushRoutes from "./routes/push";
 import { applyMeta, metaForPath } from "./lib/pageMeta";
 
 const app = express();
+
+// 利用停止 accounts, checked on every request (lib/admin.ts).
+void loadSuspendedUsers().catch((err) => console.error("[admin] could not load suspended accounts:", err));
 
 // Render sits behind one reverse proxy, so without this req.ip would always
 // be the proxy's address instead of the real client's — needed for the
@@ -64,6 +69,7 @@ app.use("/api/points", pointsRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/billing", billingRoutes);
 app.use("/api/local-transit", localTransitRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/notifications", notificationRoutes);

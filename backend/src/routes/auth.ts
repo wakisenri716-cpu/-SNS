@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { prisma } from "../prisma";
 import { getStripe } from "../lib/plans";
+import { isAdminEmail } from "../lib/admin";
 import { JWT_SECRET, requireAuth } from "../middleware/auth";
 import { uploadImage } from "../middleware/upload";
 import { guessNationalityFromIp } from "../services/geoLookup";
@@ -36,6 +37,8 @@ function serializeUser(user: {
     email: user.email,
     name: user.name,
     role: user.role,
+    // Opens the admin console link (the console itself checks again).
+    isAdmin: isAdminEmail(user.email),
     avatarUrl: user.avatarUrl,
     nationality: user.nationality,
     birthYear: user.birthYear,
@@ -227,6 +230,7 @@ router.post("/login", loginLimiter, async (req, res) => {
   if (!valid) {
     return res.status(401).json({ error: "メールアドレスまたはパスワードが違います" });
   }
+  if (user.suspendedAt) return res.status(403).json({ code: "suspended", error: "このアカウントは利用停止中です。お問い合わせフォームからご連絡ください" });
 
   res.json(signedIn(user));
 });

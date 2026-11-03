@@ -25,10 +25,12 @@
     "reels": "リール",
     "map": "地図",
     "points": "ポイント・クーポン",
-    "plans": "プラン"
+    "plans": "プラン",
+    "admin": "管理者サイト"
   },
   "auth": {
-    "sessionExpired": "セッションが切れました。もう一度ログインしてください。"
+    "sessionExpired": "セッションが切れました。もう一度ログインしてください。",
+    "suspended": "このアカウントは利用停止中です。お問い合わせフォームからご連絡ください。"
   },
   "login": {
     "title": "ログイン",
@@ -1813,5 +1815,124 @@
     "none": "まだ交通情報はありません",
     "edit": "編集",
     "delete": "削除"
+  },
+  "admin": {
+    "title": "ジャジバ 管理者サイト",
+    "loginFirst": "管理者のアカウントでログインしてください。",
+    "notAllowed": "このアカウントには管理者の権限がありません。",
+    "backToApp": "アプリに戻る",
+    "error": "うまくいきませんでした",
+    "nav": {
+      "overview": "概要",
+      "inquiries": "お問い合わせ",
+      "users": "ユーザー",
+      "reports": "通報",
+      "logs": "操作の記録"
+    },
+    "role": {
+      "USER": "旅行者",
+      "MUNICIPALITY": "自治体",
+      "COMPANY": "企業・お店"
+    },
+    "overview": {
+      "sub": "いまのジャジバの状況です。",
+      "users": "ユーザー",
+      "new7d": "この7日で +{{count}}",
+      "monthlyYen": "月の売上見込み",
+      "cardOnly": "カード払いの有料プランの月額合計（請求書払いは含みません）",
+      "paid": "有料プラン",
+      "paidBreakdown": "プラス {{plus}}・ビジネス {{business}}・自治体プロ {{pro}}",
+      "aiMonth": "今月のAI費用（概算）",
+      "aiToday": "今日 ¥{{yen}}",
+      "inquiriesOpen": "未対応のお問い合わせ",
+      "reported": "通報されたコメント",
+      "pendingSubmissions": "承認待ちの写真・動画",
+      "pendingNote": "各自治体が承認します",
+      "signups": "新規登録（14日間）",
+      "signupsOn": "{{day}}：{{count}}人",
+      "aiBudget": "AIの予算",
+      "aiBudgetLine": "今月 ¥{{used}} / 予算 ¥{{budget}}（{{pct}}%）",
+      "feature": "機能",
+      "requests": "回数",
+      "cost": "費用",
+      "noAi": "今月はまだAIが使われていません",
+      "aiNote": "トークンから定価で計算した概算（1ドル={{rate}}円）。正確な金額はAnthropicの請求をご確認ください。",
+      "accounts": "アカウントと投稿",
+      "suspended": "利用停止中",
+      "reels": "投稿",
+      "comments": "コメント",
+      "visits30d": "スタンプ（30日）",
+      "recent": "最近の操作",
+      "allLogs": "すべての記録を見る",
+      "signupsTotal": "合計 {{count}}人"
+    },
+    "inquiries": {
+      "sub": "お問い合わせフォームから届いた内容です。",
+      "open": "未対応",
+      "done": "対応済み",
+      "none": "お問い合わせはありません",
+      "reply": "メールで返信",
+      "replySubject": "ジャジバへのお問い合わせについて",
+      "markDone": "対応済みにする",
+      "reopen": "未対応に戻す"
+    },
+    "users": {
+      "sub": "名前・メールアドレス・自治体名・企業名で探せます。",
+      "search": "名前・メール・自治体・企業で検索",
+      "searchButton": "検索",
+      "all": "すべて",
+      "none": "見つかりません",
+      "count": "{{count}}件",
+      "more": "もっと見る",
+      "admin": "管理者",
+      "activity": "コメント {{comments}}・スタンプ {{visits}}・写真や動画の提供 {{submissions}}",
+      "planNow": "{{plan}}（{{source}}・{{until}}まで・{{state}}）",
+      "planActive": "有効",
+      "planEnded": "終了",
+      "noPlan": "無料プラン",
+      "source": {
+        "stripe": "カード",
+        "invoice": "請求書・手動"
+      },
+      "months": "期間",
+      "monthsValue": "{{count}}か月",
+      "givePlan": "{{plan}}を付ける",
+      "removePlan": "プランを外す",
+      "planGiven": "プランを付けました",
+      "planRemoved": "プランを外しました",
+      "stripeNote": "カード払いのプランです。変更・解約はStripeのダッシュボードから行ってください。",
+      "suspend": "利用停止にする",
+      "restore": "利用停止を解除",
+      "suspendReason": "{{name}}さんを利用停止にします。理由（記録に残ります）",
+      "suspended": "利用停止にしました",
+      "restored": "利用停止を解除しました"
+    },
+    "reports": {
+      "sub": "ほかの利用者から通報されたコメントです。3件で自動的に非表示になります。",
+      "none": "通報されたコメントはありません",
+      "count": "通報 {{count}}件",
+      "reason": {
+        "spam": "スパム",
+        "abuse": "嫌がらせ",
+        "other": "その他"
+      },
+      "by": "投稿者：{{name}}",
+      "dismiss": "問題なし",
+      "dismissed": "通報を取り消しました",
+      "delete": "コメントを削除",
+      "deleteConfirm": "このコメントを削除しますか？（元に戻せません）",
+      "deleted": "コメントを削除しました"
+    },
+    "log": {
+      "sub": "管理者サイトで行った操作の記録です。",
+      "none": "まだ記録はありません",
+      "suspend": "利用停止",
+      "unsuspend": "利用停止を解除",
+      "plan": "プランの変更",
+      "deleteComment": "コメントを削除",
+      "dismissReports": "通報を取り消し",
+      "inquiryDone": "問い合わせを対応済みに",
+      "inquiryOpen": "問い合わせを未対応に"
+    }
   }
 }

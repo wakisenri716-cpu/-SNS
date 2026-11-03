@@ -27,6 +27,7 @@ const CheckinPage = lazy(() => import("./pages/CheckinPage"));
 const PointsPage = lazy(() => import("./pages/PointsPage"));
 const PlansPage = lazy(() => import("./pages/PlansPage"));
 const CommercePage = lazy(() => import("./pages/CommercePage"));
+const AdminPage = lazy(() => import("./pages/AdminPage"));
 
 // The bottom tabs' screens are fetched in the background once the feed is up
 // and the browser is idle, so the first tap on a tab opens it at once. Not
@@ -95,6 +96,15 @@ function App() {
         element={
           <Suspense fallback={null}>
             <PosterPage />
+          </Suspense>
+        }
+      />
+      {/* 管理者サイト: its own screen, without the app's menus. */}
+      <Route
+        path="/admin/:section?"
+        element={
+          <Suspense fallback={null}>
+            <AdminPage />
           </Suspense>
         }
       />

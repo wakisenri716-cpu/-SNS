@@ -69,6 +69,8 @@ model User {
   aiUsages      AiUsage[]
   // 有料プラン: the account's customer at Stripe (made at its first checkout).
   stripeCustomerId String? @unique
+  // 利用停止 by the operator (admin console): can't sign in or use the API.
+  suspendedAt         DateTime?
   planSubscription PlanSubscription?
 }
 
@@ -348,6 +350,8 @@ model Inquiry {
   email     String
   message   String
   createdAt DateTime @default(now())
+  // Marked 対応済み in the admin console.
+  handledAt DateTime?
 }
 
 // A traveler's self-reported "it actually took me N minutes" for getting to a
@@ -774,4 +778,20 @@ model LocalTransit {
 
   @@index([municipalityId])
   @@index([reelId])
+}
+
+// What the operator did in the admin console (/admin), for the record:
+// suspending accounts, changing plans, removing comments, …
+model AdminLog {
+  id        String   @id @default(cuid())
+  // The admin's account (kept as text so the log survives the account).
+  adminId   String
+  adminName String
+  // "suspend" | "unsuspend" | "plan" | "deleteComment" | "dismissReports" | "inquiryDone" | "inquiryOpen"
+  action    String
+  targetId  String   @default("")
+  detail    String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }

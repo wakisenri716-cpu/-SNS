@@ -10,7 +10,7 @@ export function setAuthToken(token: string | null) {
   }
 }
 
-type UnauthorizedHandler = () => void;
+type UnauthorizedHandler = (code?: string) => void;
 let unauthorizedHandler: UnauthorizedHandler | null = null;
 
 export function setUnauthorizedHandler(handler: UnauthorizedHandler | null) {
@@ -26,7 +26,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error?.response?.status === 401) {
-      unauthorizedHandler?.();
+      unauthorizedHandler?.(error.response.data?.code);
     }
     return Promise.reject(error);
   }

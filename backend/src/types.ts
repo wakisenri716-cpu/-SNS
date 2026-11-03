@@ -79,6 +79,8 @@ declare global {
   namespace Express {
     interface Request {
       auth?: AuthTokenPayload;
+      /** Set by requireAdmin (lib/admin.ts). */
+      admin?: { id: string; name: string };
     }
   }
 }

@@ -25,10 +25,12 @@
     "reels": "短视频",
     "map": "地图",
     "points": "积分・优惠券",
-    "plans": "方案"
+    "plans": "方案",
+    "admin": "管理后台"
   },
   "auth": {
-    "sessionExpired": "登录已过期，请重新登录。"
+    "sessionExpired": "登录已过期，请重新登录。",
+    "suspended": "此账户已被停用。请通过咨询表单联系我们。"
   },
   "login": {
     "title": "登录",
@@ -1813,5 +1815,124 @@
     "none": "还没有交通信息",
     "edit": "编辑",
     "delete": "删除"
+  },
+  "admin": {
+    "title": "Jaziba 管理后台",
+    "loginFirst": "请用管理员账户登录。",
+    "notAllowed": "此账户没有管理员权限。",
+    "backToApp": "返回应用",
+    "error": "操作失败",
+    "nav": {
+      "overview": "概览",
+      "inquiries": "咨询",
+      "users": "用户",
+      "reports": "举报",
+      "logs": "操作记录"
+    },
+    "role": {
+      "USER": "旅行者",
+      "MUNICIPALITY": "地方政府",
+      "COMPANY": "企业・店铺"
+    },
+    "overview": {
+      "sub": "Jaziba的当前状况。",
+      "users": "用户",
+      "new7d": "近7天 +{{count}}",
+      "monthlyYen": "月销售额预估",
+      "cardOnly": "信用卡付费方案的月费合计（不含发票付款）",
+      "paid": "付费方案",
+      "paidBreakdown": "Plus {{plus}}・商务 {{business}}・专业版 {{pro}}",
+      "aiMonth": "本月AI费用（估算）",
+      "aiToday": "今天 ¥{{yen}}",
+      "inquiriesOpen": "未处理的咨询",
+      "reported": "被举报的评论",
+      "pendingSubmissions": "待审核的照片・视频",
+      "pendingNote": "由各地方政府审核",
+      "signups": "新注册（14天）",
+      "signupsOn": "{{day}}：{{count}}人",
+      "aiBudget": "AI预算",
+      "aiBudgetLine": "本月 ¥{{used}} / 预算 ¥{{budget}}（{{pct}}%）",
+      "feature": "功能",
+      "requests": "次数",
+      "cost": "费用",
+      "noAi": "本月尚未使用AI",
+      "aiNote": "按令牌和标价估算（1美元={{rate}}日元）。准确金额请以Anthropic的账单为准。",
+      "accounts": "账户和帖子",
+      "suspended": "已停用",
+      "reels": "帖子",
+      "comments": "评论",
+      "visits30d": "印章（30天）",
+      "recent": "最近的操作",
+      "allLogs": "查看全部记录",
+      "signupsTotal": "合计 {{count}}人"
+    },
+    "inquiries": {
+      "sub": "通过咨询表单收到的内容。",
+      "open": "未处理",
+      "done": "已处理",
+      "none": "没有咨询",
+      "reply": "邮件回复",
+      "replySubject": "关于您对Jaziba的咨询",
+      "markDone": "标记为已处理",
+      "reopen": "改回未处理"
+    },
+    "users": {
+      "sub": "可按姓名、邮箱、地方政府名、企业名搜索。",
+      "search": "搜索姓名・邮箱・地方政府・企业",
+      "searchButton": "搜索",
+      "all": "全部",
+      "none": "未找到",
+      "count": "{{count}}个",
+      "more": "显示更多",
+      "admin": "管理员",
+      "activity": "评论 {{comments}}・印章 {{visits}}・提供照片和视频 {{submissions}}",
+      "planNow": "{{plan}}（{{source}}・至{{until}}・{{state}}）",
+      "planActive": "有效",
+      "planEnded": "已结束",
+      "noPlan": "免费方案",
+      "source": {
+        "stripe": "信用卡",
+        "invoice": "发票・手动"
+      },
+      "months": "期间",
+      "monthsValue": "{{count}}个月",
+      "givePlan": "开通{{plan}}",
+      "removePlan": "取消方案",
+      "planGiven": "已开通方案",
+      "planRemoved": "已取消方案",
+      "stripeNote": "这是信用卡付费方案。请在Stripe后台变更或解约。",
+      "suspend": "停用账户",
+      "restore": "解除停用",
+      "suspendReason": "将停用{{name}}。原因（会保留记录）",
+      "suspended": "已停用",
+      "restored": "已解除停用"
+    },
+    "reports": {
+      "sub": "其他用户举报的评论。累计3次举报将自动隐藏。",
+      "none": "没有被举报的评论",
+      "count": "举报 {{count}}次",
+      "reason": {
+        "spam": "垃圾信息",
+        "abuse": "骚扰",
+        "other": "其他"
+      },
+      "by": "发布者：{{name}}",
+      "dismiss": "没有问题",
+      "dismissed": "已撤销举报",
+      "delete": "删除评论",
+      "deleteConfirm": "要删除这条评论吗？（无法恢复）",
+      "deleted": "已删除评论"
+    },
+    "log": {
+      "sub": "在管理后台进行的操作记录。",
+      "none": "还没有记录",
+      "suspend": "停用",
+      "unsuspend": "解除停用",
+      "plan": "变更方案",
+      "deleteComment": "删除评论",
+      "dismissReports": "撤销举报",
+      "inquiryDone": "咨询已处理",
+      "inquiryOpen": "咨询改回未处理"
+    }
   }
 }

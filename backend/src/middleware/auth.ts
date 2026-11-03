@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { AuthTokenPayload, Role } from "../types";
+import { isSuspended } from "../lib/admin";
 
 const JWT_SECRET = process.env.JWT_SECRET || "change-me-in-production";
 
@@ -12,6 +13,8 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
   const token = header.slice("Bearer ".length);
   try {
     const payload = jwt.verify(token, JWT_SECRET) as AuthTokenPayload;
+    // 401 so the app signs the account out.
+    if (isSuspended(payload.userId)) return res.status(401).json({ code: "suspended", error: "このアカウントは利用停止中です" });
     req.auth = payload;
     next();
   } catch {
@@ -33,7 +36,8 @@ export function optionalAuth(req: Request, _res: Response, next: NextFunction) {
   if (header && header.startsWith("Bearer ")) {
     const token = header.slice("Bearer ".length);
     try {
-      req.auth = jwt.verify(token, JWT_SECRET) as AuthTokenPayload;
+      const payload = jwt.verify(token, JWT_SECRET) as AuthTokenPayload;
+      if (!isSuspended(payload.userId)) req.auth = payload;
     } catch {
       // ignore invalid token for optional auth
     }

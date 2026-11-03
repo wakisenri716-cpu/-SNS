@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    setUnauthorizedHandler(() => logout(i18n.t("auth.sessionExpired")));
+    setUnauthorizedHandler((code) => logout(i18n.t(code === "suspended" ? "auth.suspended" : "auth.sessionExpired")));
     return () => setUnauthorizedHandler(null);
   }, []);
 

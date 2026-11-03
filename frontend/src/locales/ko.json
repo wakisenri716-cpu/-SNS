@@ -25,10 +25,12 @@
     "reels": "릴스",
     "map": "지도",
     "points": "포인트・쿠폰",
-    "plans": "플랜"
+    "plans": "플랜",
+    "admin": "관리자 사이트"
   },
   "auth": {
-    "sessionExpired": "세션이 만료되었습니다. 다시 로그인해 주세요."
+    "sessionExpired": "세션이 만료되었습니다. 다시 로그인해 주세요.",
+    "suspended": "이 계정은 이용 정지 중입니다. 문의 양식으로 연락해 주세요."
   },
   "login": {
     "title": "로그인",
@@ -1813,5 +1815,124 @@
     "none": "아직 교통 정보가 없습니다",
     "edit": "편집",
     "delete": "삭제"
+  },
+  "admin": {
+    "title": "Jaziba 관리자 사이트",
+    "loginFirst": "관리자 계정으로 로그인해 주세요.",
+    "notAllowed": "이 계정에는 관리자 권한이 없습니다.",
+    "backToApp": "앱으로 돌아가기",
+    "error": "문제가 발생했습니다",
+    "nav": {
+      "overview": "개요",
+      "inquiries": "문의",
+      "users": "사용자",
+      "reports": "신고",
+      "logs": "작업 기록"
+    },
+    "role": {
+      "USER": "여행자",
+      "MUNICIPALITY": "지자체",
+      "COMPANY": "기업・가게"
+    },
+    "overview": {
+      "sub": "지금의 Jaziba 현황입니다.",
+      "users": "사용자",
+      "new7d": "최근 7일 +{{count}}",
+      "monthlyYen": "월 매출 예상",
+      "cardOnly": "카드 결제 유료 플랜의 월액 합계(청구서 결제 제외)",
+      "paid": "유료 플랜",
+      "paidBreakdown": "플러스 {{plus}}・비즈니스 {{business}}・지자체 프로 {{pro}}",
+      "aiMonth": "이번 달 AI 비용(추정)",
+      "aiToday": "오늘 ¥{{yen}}",
+      "inquiriesOpen": "미처리 문의",
+      "reported": "신고된 댓글",
+      "pendingSubmissions": "승인 대기 사진・동영상",
+      "pendingNote": "각 지자체가 승인합니다",
+      "signups": "신규 가입(14일)",
+      "signupsOn": "{{day}}: {{count}}명",
+      "aiBudget": "AI 예산",
+      "aiBudgetLine": "이번 달 ¥{{used}} / 예산 ¥{{budget}} ({{pct}}%)",
+      "feature": "기능",
+      "requests": "횟수",
+      "cost": "비용",
+      "noAi": "이번 달은 아직 AI 사용이 없습니다",
+      "aiNote": "토큰과 정가로 계산한 추정치(1달러={{rate}}엔). 정확한 금액은 Anthropic 청구서를 확인해 주세요.",
+      "accounts": "계정과 게시물",
+      "suspended": "이용 정지",
+      "reels": "게시물",
+      "comments": "댓글",
+      "visits30d": "스탬프(30일)",
+      "recent": "최근 작업",
+      "allLogs": "모든 기록 보기",
+      "signupsTotal": "합계 {{count}}명"
+    },
+    "inquiries": {
+      "sub": "문의 양식으로 받은 내용입니다.",
+      "open": "미처리",
+      "done": "처리 완료",
+      "none": "문의가 없습니다",
+      "reply": "메일로 답장",
+      "replySubject": "Jaziba 문의에 대해",
+      "markDone": "처리 완료로 표시",
+      "reopen": "미처리로 되돌리기"
+    },
+    "users": {
+      "sub": "이름・이메일・지자체명・기업명으로 찾을 수 있습니다.",
+      "search": "이름・이메일・지자체・기업 검색",
+      "searchButton": "검색",
+      "all": "전체",
+      "none": "찾을 수 없습니다",
+      "count": "{{count}}건",
+      "more": "더 보기",
+      "admin": "관리자",
+      "activity": "댓글 {{comments}}・스탬프 {{visits}}・사진과 동영상 제공 {{submissions}}",
+      "planNow": "{{plan}} ({{source}}・{{until}}까지・{{state}})",
+      "planActive": "유효",
+      "planEnded": "종료",
+      "noPlan": "무료 플랜",
+      "source": {
+        "stripe": "카드",
+        "invoice": "청구서・수동"
+      },
+      "months": "기간",
+      "monthsValue": "{{count}}개월",
+      "givePlan": "{{plan}} 부여",
+      "removePlan": "플랜 해제",
+      "planGiven": "플랜을 부여했습니다",
+      "planRemoved": "플랜을 해제했습니다",
+      "stripeNote": "카드 결제 플랜입니다. 변경・해지는 Stripe 대시보드에서 해 주세요.",
+      "suspend": "이용 정지",
+      "restore": "이용 정지 해제",
+      "suspendReason": "{{name}} 님을 이용 정지합니다. 사유(기록에 남습니다)",
+      "suspended": "이용 정지했습니다",
+      "restored": "이용 정지를 해제했습니다"
+    },
+    "reports": {
+      "sub": "다른 사용자가 신고한 댓글입니다. 3건이 되면 자동으로 숨겨집니다.",
+      "none": "신고된 댓글이 없습니다",
+      "count": "신고 {{count}}건",
+      "reason": {
+        "spam": "스팸",
+        "abuse": "괴롭힘",
+        "other": "기타"
+      },
+      "by": "작성자: {{name}}",
+      "dismiss": "문제 없음",
+      "dismissed": "신고를 취소했습니다",
+      "delete": "댓글 삭제",
+      "deleteConfirm": "이 댓글을 삭제할까요? (되돌릴 수 없습니다)",
+      "deleted": "댓글을 삭제했습니다"
+    },
+    "log": {
+      "sub": "관리자 사이트에서 한 작업의 기록입니다.",
+      "none": "아직 기록이 없습니다",
+      "suspend": "이용 정지",
+      "unsuspend": "이용 정지 해제",
+      "plan": "플랜 변경",
+      "deleteComment": "댓글 삭제",
+      "dismissReports": "신고 취소",
+      "inquiryDone": "문의 처리 완료",
+      "inquiryOpen": "문의 미처리로 변경"
+    }
   }
 }
