@@ -6,7 +6,9 @@ import { prisma } from "../prisma";
 // so nobody can make themselves an admin from the app.
 export function adminEmails(): string[] {
   return (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
+    // Commas, spaces or line breaks between addresses (a stray line break
+    // pasted into the Render box shouldn't lock the operator out).
+    .split(/[\s,]+/)
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean);
 }

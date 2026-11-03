@@ -1582,7 +1582,7 @@ test("地元の交通情報: a municipality or business adds a screenshot/PDF an
 test("管理者サイト: only ADMIN_EMAILS get in; overview, inquiries, users (suspend, plan), reported comments, and a log of it all", async () => {
   const boss = (await call("POST", "/api/auth/register", { email: "Boss@example.com", password: "password123", name: "運営者" })).json;
   const someone = (await call("POST", "/api/auth/register", { email: "someone@example.com", password: "password123", name: "ふつうの人" })).json;
-  process.env.ADMIN_EMAILS = "other@example.com, boss@example.com";
+  process.env.ADMIN_EMAILS = "other@example.com,\n boss@example.com ";
   try {
     const denied = await call("GET", "/api/admin/overview", undefined, someone.token);
     assert.deepEqual([denied.status, denied.json.code, denied.json.configured], [403, "notAdmin", true]);
