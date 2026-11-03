@@ -788,6 +788,12 @@ export default function SettingsPage() {
         <button onClick={() => navigate("/contact")} className="text-sm font-medium text-gray-900 hover:underline">
           {t("settings.contactLink")}
         </button>
+        <button onClick={() => navigate("/plans")} className="text-sm font-medium text-gray-900 hover:underline">
+          {t("nav.plans")}
+        </button>
+        <button onClick={() => navigate("/legal/commerce")} className="text-sm font-medium text-gray-900 hover:underline">
+          {t("plans.commerceLink")}
+        </button>
       </div>
 
       <div className="border-b border-gray-200 p-4 lg:p-6">

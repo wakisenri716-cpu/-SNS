@@ -20,3 +20,13 @@ services:
         sync: false
       - key: OPEN_METEO_API_KEY
         sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRICE_PLUS
+        sync: false
+      - key: STRIPE_PRICE_BUSINESS
+        sync: false
+      - key: APP_ORIGIN
+        sync: false

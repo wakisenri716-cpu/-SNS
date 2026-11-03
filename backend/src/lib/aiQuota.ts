@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { prisma } from "../prisma";
 import { estimateCostMicroUsd, isClaudeConfigured, type AiUsageInfo } from "../services/claude";
 import { todayInJapan } from "../routes/events";
+import { AI_MAX_PER_DAY, AI_PER_MONTH, activePlan } from "./plans";
 
 // AIの利用回数と予算: the AI concierge, photo search and AI trip planning call
 // Claude, which costs money per request.
@@ -9,8 +10,9 @@ import { todayInJapan } from "../routes/events";
 // - Each feature counts for a number of uses (AI_FEATURE_UNITS): one for a
 //   question or a plan, five for a whole trip made from a sentence.
 // - A signed-in account gets FREE_AI_PER_MONTH uses a month (Japan time),
-//   at most FREE_AI_MAX_PER_DAY of them a day; beyond that each use takes an
-//   AIチケット, bought with points (routes/points.ts).
+//   at most FREE_AI_MAX_PER_DAY of them a day — more with a paid plan
+//   (lib/plans.ts); beyond that each use takes an AIチケット, bought with
+//   points (routes/points.ts).
 // - Visitors who aren't signed in get ANON_AI_PER_DAY uses per network address.
 // - The whole app has a budget (AI_DAILY_BUDGET_USD / AI_MONTHLY_BUDGET_USD,
 //   estimated from the tokens each request used): once it's spent, the
@@ -18,8 +20,8 @@ import { todayInJapan } from "../routes/events";
 //   next day or month, so the bill can't run past it.
 // Nothing is counted when no Claude key is set (the features then run
 // without AI and cost nothing).
-export const FREE_AI_PER_MONTH = 30;
-export const FREE_AI_MAX_PER_DAY = 10;
+export const FREE_AI_PER_MONTH = AI_PER_MONTH.free;
+export const FREE_AI_MAX_PER_DAY = AI_MAX_PER_DAY.free;
 export const ANON_AI_PER_DAY = 3;
 
 export type AiFeature = "concierge" | "photoConcierge" | "tripPlan" | "tripCompose";
@@ -51,17 +53,22 @@ async function freeUnitsSince(userId: string, since: Date) {
 }
 
 export async function aiAllowance(userId: string, now = new Date()) {
-  const [usedMonth, usedToday, purchased, paid] = await Promise.all([
+  const [plan, usedMonth, usedToday, purchased, paid] = await Promise.all([
+    activePlan(userId, now),
     freeUnitsSince(userId, startOfMonthJst(now)),
     freeUnitsSince(userId, startOfTodayJst(now)),
     prisma.aiCreditPurchase.aggregate({ where: { userId }, _sum: { credits: true } }),
     prisma.aiUsage.aggregate({ where: { userId }, _sum: { paidUnits: true } }),
   ]);
+  // Any paid plan comes with the larger AI allowance.
+  const perMonth = plan ? AI_PER_MONTH.plus : AI_PER_MONTH.free;
+  const maxPerDay = plan ? AI_MAX_PER_DAY.plus : AI_MAX_PER_DAY.free;
   return {
-    freePerMonth: FREE_AI_PER_MONTH,
-    freeMaxPerDay: FREE_AI_MAX_PER_DAY,
-    freeLeftThisMonth: Math.max(0, FREE_AI_PER_MONTH - usedMonth),
-    freeLeft: Math.max(0, Math.min(FREE_AI_PER_MONTH - usedMonth, FREE_AI_MAX_PER_DAY - usedToday)),
+    plan,
+    freePerMonth: perMonth,
+    freeMaxPerDay: maxPerDay,
+    freeLeftThisMonth: Math.max(0, perMonth - usedMonth),
+    freeLeft: Math.max(0, Math.min(perMonth - usedMonth, maxPerDay - usedToday)),
     credits: Math.max(0, (purchased._sum.credits ?? 0) - (paid._sum.paidUnits ?? 0)),
     units: AI_FEATURE_UNITS,
   };
@@ -110,14 +117,17 @@ export async function checkAiQuota(req: Request, res: Response, feature: AiFeatu
   }
   const a = await aiAllowance(req.auth.userId);
   if (a.freeLeft + a.credits >= units) return "ai";
+  const kind = a.plan ? "プランの" : "無料の";
+  const more = a.plan ? "ポイントで「AIチケット」と交換すると続けて使えます" : "ポイントで「AIチケット」と交換するか、有料プランにすると続けて使えます";
   res.status(402).json({
     code: "aiLimit",
     signedIn: true,
     units,
+    plan: a.plan,
     error:
       a.freeLeftThisMonth > 0
-        ? `今日の無料のAI（1日${FREE_AI_MAX_PER_DAY}回まで）を使い切りました。明日また使えます。ポイントで「AIチケット」と交換すると続けて使えます`
-        : `今月の無料のAI（${FREE_AI_PER_MONTH}回）を使い切りました。ポイントで「AIチケット」と交換すると続けて使えます`,
+        ? `今日の${kind}AI（1日${a.freeMaxPerDay}回まで）を使い切りました。明日また使えます。${more}`
+        : `今月の${kind}AI（${a.freePerMonth}回）を使い切りました。${more}`,
   });
   return "refused";
 }

@@ -25,6 +25,8 @@ const RecapPage = lazy(() => import("./pages/RecapPage"));
 const SharePage = lazy(() => import("./pages/SharePage"));
 const CheckinPage = lazy(() => import("./pages/CheckinPage"));
 const PointsPage = lazy(() => import("./pages/PointsPage"));
+const PlansPage = lazy(() => import("./pages/PlansPage"));
+const CommercePage = lazy(() => import("./pages/CommercePage"));
 
 // The bottom tabs' screens are fetched in the background once the feed is up
 // and the browser is idle, so the first tap on a tab opens it at once. Not
@@ -106,6 +108,8 @@ function App() {
         <Route path="/share" element={<SharePage />} />
         <Route path="/c/:token" element={<CheckinPage />} />
         <Route path="/points" element={<PointsPage />} />
+        <Route path="/plans" element={<PlansPage />} />
+        <Route path="/legal/commerce" element={<CommercePage />} />
         <Route path="/tags/:kind/:value" element={<TagPage />} />
         <Route path="/areas" element={<AreasPage />} />
         <Route path="/login" element={<LoginPage />} />

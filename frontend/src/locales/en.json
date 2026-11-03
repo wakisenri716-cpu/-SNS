@@ -24,7 +24,8 @@
     "backOnline": "Back online",
     "reels": "Reels",
     "map": "Map",
-    "points": "Points & coupons"
+    "points": "Points & coupons",
+    "plans": "Plans"
   },
   "auth": {
     "sessionExpired": "Your session has expired. Please log in again."
@@ -1521,10 +1522,12 @@
     "postError": "Couldn't post"
   },
   "aiLimit": {
-    "signedIn": "You've used your free AI (30 uses a month, 10 a day). Exchange points for AI tickets to keep going.",
+    "signedIn": "You've used this month's or today's free AI. Exchange points for AI tickets, or upgrade to Plus to keep going.",
     "visitor": "Without logging in, AI is limited to 3 times a day. Log in for 30 free uses a month.",
     "getTickets": "Get AI tickets",
-    "login": "Log in"
+    "login": "Log in",
+    "planUsed": "You've used your plan's AI for now. Exchange points for AI tickets to keep going.",
+    "upgrade": "See plans"
   },
   "points": {
     "title": "Points & coupons",
@@ -1572,7 +1575,9 @@
       "photoConcierge": "Search by photo",
       "tripPlan": "AI plan",
       "tripCompose": "AI trip (builds the plan for you)"
-    }
+    },
+    "planCta": "With Plus you get up to {{count}} uses a month",
+    "planCtaButton": "See plans"
   },
   "coupons": {
     "tab": "Coupons",
@@ -1604,7 +1609,9 @@
     "stop": "Stop handing out",
     "restart": "Restart",
     "onProfile": "Coupons for points",
-    "scan": "Scan the QR with the camera"
+    "scan": "Scan the QR with the camera",
+    "planLimit": "With a paid plan you can publish more coupons at once.",
+    "planLimitLink": "See plans"
   },
   "captionAssist": {
     "heading": "Polish the text with on-device AI",
@@ -1624,5 +1631,74 @@
     "title": "Scan a coupon QR",
     "hint": "Fit the traveler's coupon QR code inside the frame",
     "noCamera": "Couldn't use the camera. Allow it in the browser settings, or type the code"
+  },
+  "plans": {
+    "title": "Plans",
+    "subtitle": "The basics stay free. Paid plans are for those who use AI a lot or want to offer more coupons.",
+    "travelers": "Travelers",
+    "companies": "Businesses & shops",
+    "municipalities": "Municipalities",
+    "name": {
+      "free": "Free",
+      "plus": "Plus",
+      "business": "Business",
+      "municipalityPro": "Municipality Pro"
+    },
+    "perMonth": " yen / month (tax incl.)",
+    "freePrice": "0 yen",
+    "byInvoice": "Quote (paid by invoice)",
+    "feature": {
+      "ai": "AI features: {{month}} uses a month (up to {{day}} a day)",
+      "compose": "{{count}} auto-made trip plans a month",
+      "basics": "Browse posts, trip plans, stamps and other basics",
+      "points": "Earn points and exchange them for coupons and AI tickets",
+      "posting": "Posts, events and insights",
+      "coupons": "Up to {{count}} coupons published at once",
+      "invoice": "Invoice payment and annual contracts"
+    },
+    "current": "Current",
+    "recommended": "Recommended",
+    "subscribe": "Get {{plan}}",
+    "loginToSubscribe": "Log in to subscribe",
+    "notReady": "Coming soon",
+    "contact": "Contact us",
+    "manage": "Manage plan (change, cancel, receipts)",
+    "renews": "Renews on {{date}}",
+    "endsOn": "Ends on {{date}} (you can use it until then)",
+    "validUntil": "Valid until {{date}}",
+    "pastDue": "We couldn't take your payment. Check your card in “Manage plan”.",
+    "paymentsNotReady": "Payments are being set up. Please check back soon.",
+    "checkoutSuccess": "Thank you! Confirming your subscription…",
+    "activated": "{{plan}} is now active",
+    "checkoutPending": "This is taking a while. Please reopen this page in a few minutes.",
+    "checkoutCancel": "Your sign-up was cancelled. You haven't been charged.",
+    "error": "Something went wrong. Please try again",
+    "note": "Payments are processed by Stripe; Jaziba never stores your card number. Cancel anytime and keep using the plan until the end of the period. No prorated refunds.",
+    "commerceLink": "Legal notice (Specified Commercial Transactions Act)"
+  },
+  "commerce": {
+    "title": "Legal notice (Specified Commercial Transactions Act)",
+    "draftNotice": "This notice is a draft. The operator must review it and fill in the blanks before publishing.",
+    "unfilled": "(to be filled in by the operator)",
+    "seller": "Seller",
+    "manager": "Person in charge",
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Contact",
+    "emailValue": "Please use the contact form",
+    "price": "Price",
+    "priceValue": "Shown on the plans page (tax incl.). Plus 480 yen/month, Business 2,000 yen/month. Municipality Pro by quote.",
+    "extraCost": "Other charges",
+    "extraCostValue": "Internet connection and data charges are paid by the customer.",
+    "payment": "Payment method",
+    "paymentValue": "Credit card (Stripe). Municipality Pro by invoice.",
+    "timing": "Payment timing",
+    "timingValue": "The first payment is made when you subscribe; it then renews and is charged automatically on the same day each month.",
+    "delivery": "Delivery",
+    "deliveryValue": "Available right after payment.",
+    "cancel": "Cancellation and refunds",
+    "cancelValue": "Cancel anytime from “Manage plan”. You can keep using it until the end of the paid period. As a digital service, paid fees are not refunded (including prorated amounts).",
+    "environment": "Supported browsers",
+    "environmentValue": "Latest Chrome, Safari, Edge or Firefox"
   }
 }

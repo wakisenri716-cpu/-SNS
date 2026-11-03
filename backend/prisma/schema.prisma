@@ -67,6 +67,9 @@ model User {
   couponRedemptions CouponRedemption[]
   aiCreditPurchases AiCreditPurchase[]
   aiUsages      AiUsage[]
+  // 有料プラン: the account's customer at Stripe (made at its first checkout).
+  stripeCustomerId String? @unique
+  planSubscription PlanSubscription?
 }
 
 model Municipality {
@@ -713,4 +716,26 @@ model AiUsage {
 
   @@index([userId, createdAt])
   @@index([createdAt])
+}
+
+// 有料プラン: one per account — ジャジバ プラス (travelers), ビジネス (a company:
+// shop, inn, restaurant) or 自治体プロ (a municipality, paid by invoice).
+// Kept in step with Stripe by its webhook (routes/billing.ts); 自治体プロ is
+// set by the operator after a contract (npm run plan:grant).
+model PlanSubscription {
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // "plus" | "business" | "municipalityPro"
+  plan                 String
+  // Stripe's subscription status (active, trialing, past_due, canceled, …);
+  // "active" for an invoice contract.
+  status               String
+  // "stripe" | "invoice"
+  source               String
+  stripeSubscriptionId String?   @unique
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 }

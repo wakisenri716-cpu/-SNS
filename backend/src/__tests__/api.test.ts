@@ -1408,3 +1408,109 @@ test("共同編集: invite, join, edit together with live updates, and leave", a
   controller.abort();
   await reading;
 });
+
+test("有料プラン: Stripe Checkout, the webhook turns the plan on and off, and what it unlocks", async () => {
+  const { setStripeForTests, activePlan } = await import("../lib/plans");
+  const { prisma } = await import("../prisma");
+  const me = (await call("POST", "/api/auth/register", { email: "payer@example.com", password: "password123", name: "払う人" })).json;
+
+  // Without Stripe set up the plans are shown but can't be bought.
+  const before = (await call("GET", "/api/billing", undefined, me.token)).json;
+  assert.equal(before.paymentsReady, false);
+  assert.deepEqual(before.plans.map((p: any) => [p.id, p.priceYen, p.purchasable]), [["plus", 480, false], ["business", 2000, false], ["municipalityPro", null, false]]);
+  assert.equal(before.current, null);
+  assert.equal((await call("POST", "/api/billing/checkout", { plan: "plus" }, me.token)).json.code, "paymentsNotReady");
+
+  const sent: Record<string, any> = {};
+  const periodEnd = Math.floor(Date.now() / 1000) + 30 * 86400;
+  const subscription = (status: string, metadata: Record<string, string>) => ({
+    id: "sub_1",
+    customer: "cus_1",
+    status,
+    metadata,
+    cancel_at_period_end: false,
+    items: { data: [{ price: { id: "price_plus" }, current_period_end: periodEnd }] },
+  });
+  setStripeForTests({
+    customers: { create: async (p: any) => ((sent.customer = p), { id: "cus_1" }) },
+    checkout: { sessions: { create: async (p: any) => ((sent.checkout = p), { url: "https://checkout.stripe.test/s1" }) } },
+    billingPortal: { sessions: { create: async (p: any) => ((sent.portal = p), { url: "https://billing.stripe.test/p1" }) } },
+    // No metadata: the account is found from the Stripe customer, the plan from the price.
+    subscriptions: { retrieve: async () => subscription("active", {}) },
+    webhooks: {
+      constructEvent: (body: Buffer, signature: string) => {
+        if (signature !== "good") throw new Error("bad signature");
+        return JSON.parse(body.toString());
+      },
+    },
+  });
+  process.env.STRIPE_PRICE_PLUS = "price_plus";
+  process.env.STRIPE_PRICE_BUSINESS = "price_business";
+  process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
+  const webhook = (event: unknown, signature = "good") =>
+    fetch(`${base}/api/billing/webhook`, { method: "POST", headers: { "Content-Type": "application/json", "Stripe-Signature": signature }, body: JSON.stringify(event) });
+  try {
+    assert.equal((await call("GET", "/api/billing")).json.plans[0].purchasable, true);
+    // Only the plan for this kind of account.
+    assert.equal((await call("POST", "/api/billing/checkout", { plan: "business" }, me.token)).status, 403);
+    const checkout = await call("POST", "/api/billing/checkout", { plan: "plus" }, me.token);
+    assert.deepEqual(checkout.json, { url: "https://checkout.stripe.test/s1" });
+    assert.equal(sent.checkout.mode, "subscription");
+    assert.equal(sent.checkout.customer, "cus_1");
+    assert.deepEqual(sent.checkout.line_items, [{ price: "price_plus", quantity: 1 }]);
+    assert.deepEqual(sent.checkout.subscription_data.metadata, { userId: me.user.id, plan: "plus" });
+    assert.match(sent.checkout.success_url, /\/plans\?checkout=success$/);
+    assert.equal((await prisma.user.findUniqueOrThrow({ where: { id: me.user.id } })).stripeCustomerId, "cus_1");
+    // Nothing changes until Stripe confirms.
+    assert.equal((await call("GET", "/api/points", undefined, me.token)).json.ai.freePerMonth, 30);
+
+    assert.equal((await webhook({ type: "checkout.session.completed", data: { object: { mode: "subscription", subscription: "sub_1" } } }, "forged")).status, 400);
+    assert.equal(await activePlan(me.user.id), null);
+    assert.equal((await webhook({ type: "checkout.session.completed", data: { object: { mode: "subscription", subscription: "sub_1" } } })).status, 200);
+    const now = (await call("GET", "/api/billing", undefined, me.token)).json.current;
+    assert.deepEqual([now.plan, now.active, now.status, now.source], ["plus", true, "active", "stripe"]);
+    assert.equal(new Date(now.currentPeriodEnd).getTime(), periodEnd * 1000);
+    const ai = (await call("GET", "/api/points", undefined, me.token)).json.ai;
+    assert.deepEqual([ai.plan, ai.freePerMonth, ai.freeMaxPerDay, ai.freeLeft], ["plus", 300, 50, 50]);
+    assert.equal((await call("POST", "/api/billing/checkout", { plan: "plus" }, me.token)).status, 400, "already on a plan");
+    const portal = await call("POST", "/api/billing/portal", undefined, me.token);
+    assert.equal(portal.json.url, "https://billing.stripe.test/p1");
+    assert.deepEqual([sent.portal.customer, /\/plans$/.test(sent.portal.return_url)], ["cus_1", true]);
+
+    // A failed renewal keeps the plan for a week while Stripe retries; cancelling ends it.
+    await prisma.planSubscription.update({ where: { userId: me.user.id }, data: { status: "past_due", currentPeriodEnd: days(-3) } });
+    assert.equal(await activePlan(me.user.id), "plus");
+    await prisma.planSubscription.update({ where: { userId: me.user.id }, data: { currentPeriodEnd: days(-8) } });
+    assert.equal(await activePlan(me.user.id), null);
+    assert.equal((await webhook({ type: "customer.subscription.deleted", data: { object: subscription("canceled", { userId: me.user.id, plan: "plus" }) } })).status, 200);
+    assert.equal((await call("GET", "/api/billing", undefined, me.token)).json.current.active, false);
+    assert.equal((await call("GET", "/api/points", undefined, me.token)).json.ai.freePerMonth, 30);
+  } finally {
+    setStripeForTests(undefined);
+    delete process.env.STRIPE_PRICE_PLUS;
+    delete process.env.STRIPE_PRICE_BUSINESS;
+    delete process.env.STRIPE_WEBHOOK_SECRET;
+  }
+
+  // Coupons: a shop can hand out 1 at a time for free, 50 with ビジネス.
+  const muni = await login("demo-matsumoto@example.com");
+  const municipalityId = (await call("GET", "/api/auth/me", undefined, muni)).json.municipality.id;
+  const shop = (await call("POST", "/api/auth/register-company", { email: "shop@example.com", password: "password123", name: "店主", companyName: "そば処", municipalityId })).json;
+  const coupon = { title: "そば100円引き", pointsCost: 50 };
+  const first = (await call("POST", "/api/coupons", coupon, shop.token)).json;
+  const second = await call("POST", "/api/coupons", { ...coupon, title: "天ぷら無料" }, shop.token);
+  assert.deepEqual([second.status, second.json.code, second.json.limit], [400, "planLimit", 1]);
+  await prisma.planSubscription.create({ data: { userId: shop.user.id, plan: "business", status: "active", source: "invoice", currentPeriodEnd: days(30) } });
+  const more = (await call("POST", "/api/coupons", { ...coupon, title: "天ぷら無料" }, shop.token)).json;
+  assert.ok(more.id);
+  // Back on the free plan: both stay out, but a stopped one can't be restarted past the limit.
+  await prisma.planSubscription.delete({ where: { userId: shop.user.id } });
+  assert.equal((await call("PATCH", `/api/coupons/${more.id}`, { active: false }, shop.token)).status, 204);
+  assert.equal((await call("PATCH", `/api/coupons/${more.id}`, { active: true }, shop.token)).json.code, "planLimit");
+  assert.equal((await call("PATCH", `/api/coupons/${first.id}`, { active: false }, shop.token)).status, 204);
+  assert.equal((await call("PATCH", `/api/coupons/${more.id}`, { active: true }, shop.token)).status, 204);
+});
+
+function days(n: number) {
+  return new Date(Date.now() + n * 86400_000);
+}

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import QRCode from "qrcode";
-import { CheckCircle2, Sparkles, Store, Ticket } from "lucide-react";
+import { CheckCircle2, Gem, Sparkles, Store, Ticket } from "lucide-react";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { showToast } from "../lib/toast";
@@ -183,6 +183,13 @@ export default function PointsPage() {
               </p>
             )}
           </div>
+          {summary && !summary.ai.plan && (
+            <Link to="/plans" className="flex items-center gap-3 rounded-2xl bg-jz-ink p-3 text-white active:scale-[0.99]">
+              <Gem className="h-6 w-6 shrink-0 text-jz-accent" />
+              <p className="min-w-0 flex-1 text-sm font-bold">{t("points.planCta", { count: 300 })}</p>
+              <span className="shrink-0 rounded-full bg-white px-3 py-1.5 text-[11px] font-bold text-jz-ink">{t("points.planCtaButton")}</span>
+            </Link>
+          )}
           {summary &&
             summary.ai.packs.map((p) => (
               <div key={p.id} className="flex items-center gap-3 rounded-2xl border border-gray-200 p-3">

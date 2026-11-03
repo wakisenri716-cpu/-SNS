@@ -19,6 +19,7 @@ import {
   Search,
   Settings,
   Ticket,
+  Gem,
   Sun,
   User,
   X,
@@ -127,6 +128,7 @@ function SecondaryNav() {
         </>
       )}
       {!municipality && !company && <SideNavItem to="/points" label={t("nav.points")} icon={Ticket} />}
+      <SideNavItem to="/plans" label={t("nav.plans")} icon={Gem} />
       <SideNavItem to="/settings" label={t("nav.settings")} icon={Settings} />
       <ThemeToggle />
       <InstallButton />

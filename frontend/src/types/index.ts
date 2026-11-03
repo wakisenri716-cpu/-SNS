@@ -391,6 +391,8 @@ export interface PointsSummary {
   visitCount: number;
   submissionCount: number;
   ai: {
+    /** The paid plan in use, if any (it raises the monthly and daily uses). */
+    plan: PlanId | null;
     freePerMonth: number;
     freeMaxPerDay: number;
     /** Free uses left today (the month's rest, at most the day's limit). */
@@ -401,4 +403,23 @@ export interface PointsSummary {
     units: Record<"concierge" | "photoConcierge" | "tripPlan" | "tripCompose", number>;
     packs: { id: string; credits: number; points: number }[];
   };
+}
+
+export type PlanId = "plus" | "business" | "municipalityPro";
+
+/** GET /billing: the 有料プラン and this account's current one. */
+export interface BillingInfo {
+  /** False until the operator connects Stripe (plans can't be bought yet). */
+  paymentsReady: boolean;
+  limits: Record<"free" | "paid", { aiPerMonth: number; aiPerDay: number; coupons: Record<"COMPANY" | "MUNICIPALITY", number> }>;
+  plans: { id: PlanId; role: "USER" | "COMPANY" | "MUNICIPALITY"; priceYen: number | null; purchasable: boolean }[];
+  current: {
+    plan: PlanId;
+    active: boolean;
+    status: string;
+    /** "stripe" (card) or "invoice" (turned on by the operator). */
+    source: string;
+    currentPeriodEnd: string | null;
+    cancelAtPeriodEnd: boolean;
+  } | null;
 }

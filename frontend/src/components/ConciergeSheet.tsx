@@ -29,7 +29,7 @@ interface Turn {
   picks?: Pick[];
   error?: boolean;
   // Refused: today's free AI uses are gone (see AiLimitNotice).
-  limit?: { signedIn: boolean };
+  limit?: { signedIn: boolean; plan: string | null };
 }
 
 const SUGGESTIONS = ["suggestFamilySnow", "suggestCoupleFood", "suggestCastle", "suggestStay"] as const;
@@ -300,7 +300,7 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
               ) : (
                 <>
                   {turn.limit ? (
-                    <AiLimitNotice signedIn={turn.limit.signedIn} className="max-w-[90%]" />
+                    <AiLimitNotice signedIn={turn.limit.signedIn} plan={turn.limit.plan} className="max-w-[90%]" />
                   ) : (
                     <p className={`max-w-[90%] px-1 text-sm leading-relaxed ${turn.error ? "text-jz-warm-text" : "text-jz-ink"}`}>
                       <Typewriter text={turn.reply} />

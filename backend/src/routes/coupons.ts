@@ -7,13 +7,33 @@ import { writeLimiter } from "../middleware/rateLimit";
 import { resolvePosterContext } from "../lib/posterContext";
 import { NotEnoughPoints, getUserPoints } from "../lib/points";
 import { todayInJapan } from "./events";
+import { ACTIVE_COUPONS, activePlan } from "../lib/plans";
 
 // ポイントで交換 (see the Coupon model): municipalities and the businesses
 // under them offer coupons; travelers exchange points for them and show the
 // code at the counter; the issuer can look a code up and mark it used.
 const router = Router();
 
-const MAX_ACTIVE_COUPONS = 50;
+// How many coupons an issuer can hand out at once: a few for free, many with
+// ビジネス / 自治体プロ (lib/plans.ts).
+async function activeCouponLimit(userId: string, role: string) {
+  const limits = role === "COMPANY" ? ACTIVE_COUPONS.COMPANY : ACTIVE_COUPONS.MUNICIPALITY;
+  return (await activePlan(userId)) ? limits.paid : limits.free;
+}
+async function overCouponLimit(req: { auth?: { userId: string; role: string } }, poster: { municipalityId: string; companyId: string | null }) {
+  const [limit, active] = await Promise.all([
+    activeCouponLimit(req.auth!.userId, req.auth!.role),
+    prisma.coupon.count({ where: { ...issuerWhere(poster), active: true } }),
+  ]);
+  return active >= limit ? limit : null;
+}
+const couponLimitBody = async (userId: string, limit: number) => ({
+  code: "planLimit",
+  limit,
+  error: (await activePlan(userId))
+    ? `公開中のクーポンは${limit}件までです`
+    : `無料プランで公開できるクーポンは${limit}件までです。有料プランにすると最大${ACTIVE_COUPONS.COMPANY.paid}件まで公開できます`,
+});
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 const newCode = () => {
@@ -157,9 +177,8 @@ router.post("/", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), writeLimit
   const poster = await resolvePosterContext(req, res);
   if (!poster) return;
   if (parsed.data.validUntil && parsed.data.validUntil < todayInJapan()) return res.status(400).json({ error: "有効期限は今日以降にしてください" });
-  if ((await prisma.coupon.count({ where: { ...issuerWhere(poster), active: true } })) >= MAX_ACTIVE_COUPONS) {
-    return res.status(400).json({ error: `公開中のクーポンは${MAX_ACTIVE_COUPONS}件までです` });
-  }
+  const limit = await overCouponLimit(req, poster);
+  if (limit != null) return res.status(400).json(await couponLimitBody(req.auth!.userId, limit));
   const created = await prisma.coupon.create({ data: { ...parsed.data, municipalityId: poster.municipalityId, companyId: poster.companyId }, include: issuerSelect });
   res.status(201).json(serialize(created, { exchanged: 0, used: 0 }));
 });
@@ -170,6 +189,11 @@ router.patch("/:id", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async 
   if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
   const poster = await resolvePosterContext(req, res);
   if (!poster) return;
+  if (parsed.data.active) {
+    const current = await prisma.coupon.findFirst({ where: { id: req.params.id, ...issuerWhere(poster) }, select: { active: true } });
+    const limit = current && !current.active ? await overCouponLimit(req, poster) : null;
+    if (limit != null) return res.status(400).json(await couponLimitBody(req.auth!.userId, limit));
+  }
   const { count } = await prisma.coupon.updateMany({ where: { id: req.params.id, ...issuerWhere(poster) }, data: { active: parsed.data.active } });
   if (count === 0) return res.status(404).json({ error: "クーポンが見つかりません" });
   res.status(204).end();

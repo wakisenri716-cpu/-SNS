@@ -35,7 +35,7 @@ export default function TripPlanSheet({
   const [planning, setPlanning] = useState(false);
   const [applying, setApplying] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [limit, setLimit] = useState<{ signedIn: boolean } | null>(null);
+  const [limit, setLimit] = useState<{ signedIn: boolean; plan: string | null } | null>(null);
   const byId = new Map(stops.map((s) => [s.id, s]));
 
   useEffect(() => {
@@ -156,7 +156,7 @@ export default function TripPlanSheet({
             </>
           )}
           {error && <p className="mt-4 text-xs text-jz-warm-text">{error}</p>}
-          {limit && <AiLimitNotice signedIn={limit.signedIn} className="mt-4" />}
+          {limit && <AiLimitNotice signedIn={limit.signedIn} plan={limit.plan} className="mt-4" />}
         </div>
 
         <div className="flex gap-2 border-t border-gray-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">

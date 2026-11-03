@@ -241,6 +241,27 @@ AIコンシェルジュのカメラボタンから写真を送ると、Claudeが
 
 - **現地スタンプのタグ（NFC・QR）**：自治体・企業は、投稿の編集画面の「現地スタンプのタグ」で、その場所に置くNFCタグやQRコードを作れます（`POST/GET/DELETE /api/reels/:id/checkin-tag`、`Reel.checkinToken`、画面は `frontend/src/components/CheckinTagSection.tsx`）。旅行者がタグにスマホをかざす（QRを読む）と `/c/◯◯` が開き、ログイン済みならその場で振動とともにスタンプが押されます（`POST /api/checkin/:token`、`frontend/src/pages/CheckinPage.tsx`。未ログインなら「ログインしてスタンプを押す」）。電波が弱い山の中や、位置情報がずれやすい屋内でも押せます。NFCタグへの書き込みは Android の Chrome なら画面のボタンから（Web NFC）、ほかの端末では市販のNFCアプリでURLを書き込みます。読み取りは iPhone・Android どちらでもでき、アプリを開いていなくても反応します。スタンプには押し方（`Visit.method`：`gps` か `tag`）を記録します。タグのあるスポットでは、スポット画面のスタンプラリー欄に「この場所には現地スタンプのタグがあります」と出ます（投稿の `hasCheckinTag`。タグのURLそのものは出しません）。URLを知っていれば誰でも開けるので、QRの写真が出回ったときは「作り直す」で古いタグ・QRを無効にできます
 
+### 有料プラン
+
+基本の機能は無料のまま、`/plans`（メニューの「プラン」、`frontend/src/pages/PlansPage.tsx`）で有料プランを選べます。内容と値段は `backend/src/lib/plans.ts` にまとめています。
+
+| アカウント | フリー | 有料プラン |
+| --- | --- | --- |
+| 旅行者 | AI 月30回分（1日10回分まで） | **プラス 月480円（税込）**：AI 月300回分（1日50回分まで） |
+| 企業・お店 | クーポンを同時に1件まで公開・AI 月30回分 | **ビジネス 月2,000円（税込）**：クーポン50件まで・AI 月300回分 |
+| 自治体 | クーポンを同時に3件まで公開・AI 月30回分 | **自治体プロ（お見積り・請求書払い）**：クーポン50件まで・AI 月300回分 |
+
+- **カード払い（プラス・ビジネス）**：Stripe Checkout で支払います（カード番号はジャジバに届きません）。支払いが終わると Stripe からの通知（Webhook、`POST /api/billing/webhook`）でプランが有効になり、画面は反映を待って「有効になりました」と出します。変更・解約・領収書・カードの更新は「プランの管理」（Stripe のカスタマーポータル）。解約しても期間の終わりまで使え、更新の支払いに失敗したときは Stripe が再請求するあいだ7日間はそのまま使えます（`backend/src/routes/billing.ts`）
+- **請求書払い（自治体プロなど）**：契約後に運営者が `backend` で `npm run plan:grant -- <メールアドレス> municipalityPro 12`（12か月）を実行して有効にします。外すときは `none`
+- **AIチケットをお金で売る機能はあえて作っていません**：前払いのチケットを現金で売ると資金決済法（前払式支払手段）の対象になる可能性があるため、チケットはポイント交換だけ、お金は月額プランでいただく形にしています
+- **始めるために運営者がすること**
+  1. [Stripe](https://dashboard.stripe.com/) のアカウントを作り、商品「プラス」（月480円・税込）と「ビジネス」（月2,000円・税込）の**定期支払いの価格**を作る（金額は `plans.ts` の表示と同じにする）
+  2. Webhook の送り先に `https://<backendのURL>/api/billing/webhook` を登録し、イベント `checkout.session.completed`・`customer.subscription.created`・`customer.subscription.updated`・`customer.subscription.deleted` を選ぶ
+  3. Stripe の「カスタマーポータル」を有効にする（解約・カード更新を許可）
+  4. Render の backend の環境変数に `STRIPE_SECRET_KEY`・`STRIPE_WEBHOOK_SECRET`・`STRIPE_PRICE_PLUS`・`STRIPE_PRICE_BUSINESS`・`APP_ORIGIN`（フロントのURL）を入れて Manual Deploy
+  5. **特定商取引法に基づく表記**（`/legal/commerce`）の事業者名・責任者・所在地・電話番号を `frontend/src/lib/operatorInfo.ts` に記入する（空欄のあいだは「下書き」と表示されます）
+- 環境変数が無いあいだは、プランの一覧は見られますが「お支払いの準備中」と表示され、申し込めません
+
 ### 写真・動画の提供（旅行者 → 自治体）
 
 旅行者は自治体のページの「写真・動画を提供する」から、自分で撮った写真・動画をその自治体に送れます（`POST /api/submissions`、`Submission` テーブル、画面は `frontend/src/components/SubmitMediaSheet.tsx`）。「自分で撮影したもので、投稿・紹介に使うことに同意する（人が写っている場合はその人の了解を得ている）」への同意が必要で、投稿されるときに名前を載せるか匿名にするかを選べます。写真は送る前に端末で縮小して位置情報などの付属データを消し、撮影場所・日時だけを先に読み取ります。審査待ちは1つの自治体に20件までで、審査中ならマイページから取り下げられます。

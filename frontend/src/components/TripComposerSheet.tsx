@@ -55,7 +55,7 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
   const [building, setBuilding] = useState(false);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [limit, setLimit] = useState<{ signedIn: boolean } | null>(null);
+  const [limit, setLimit] = useState<{ signedIn: boolean; plan: string | null } | null>(null);
   const speech = useSpeechInput(i18n.language, (text, final) => {
     setMessage(text);
     if (final) void build(text);
@@ -259,7 +259,7 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
             </>
           )}
           {error && <p className="mt-4 text-xs text-jz-warm-text">{error}</p>}
-          {limit && <AiLimitNotice signedIn={limit.signedIn} className="mt-4" />}
+          {limit && <AiLimitNotice signedIn={limit.signedIn} plan={limit.plan} className="mt-4" />}
         </div>
 
         {/* 1回でいくら: what a trip made by the AI counts for, and what's left. */}

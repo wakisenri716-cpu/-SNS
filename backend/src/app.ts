@@ -17,6 +17,7 @@ import checkinRoutes from "./routes/checkins";
 import submissionRoutes from "./routes/submissions";
 import pointsRoutes from "./routes/points";
 import couponRoutes from "./routes/coupons";
+import billingRoutes, { stripeWebhook } from "./routes/billing";
 import searchRoutes from "./routes/search";
 import inquiryRoutes from "./routes/inquiries";
 import notificationRoutes from "./routes/notifications";
@@ -39,6 +40,9 @@ const app = express();
 app.set("trust proxy", Number(process.env.TRUST_PROXY_HOPS ?? 1));
 
 app.use(cors());
+// Stripe's webhook needs the exact body to check its signature, so it's read
+// raw, before the JSON parser.
+app.post("/api/billing/webhook", express.raw({ type: "application/json" }), (req, res) => void stripeWebhook(req, res));
 // 写真で探す sends a resized photo as JSON, well over the 100kb default.
 app.use("/api/concierge/photo", express.json({ limit: "3mb" }));
 app.use(express.json());
@@ -57,6 +61,7 @@ app.use("/api/checkin", checkinRoutes);
 app.use("/api/submissions", submissionRoutes);
 app.use("/api/points", pointsRoutes);
 app.use("/api/coupons", couponRoutes);
+app.use("/api/billing", billingRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/notifications", notificationRoutes);

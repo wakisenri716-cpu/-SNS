@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Camera, CheckCircle2, Plus, ScanLine, Ticket } from "lucide-react";
+import { Camera, CheckCircle2, Gem, Plus, ScanLine, Ticket } from "lucide-react";
 import { api } from "../api/client";
 import { showToast } from "../lib/toast";
 import type { Coupon, CouponRedemption } from "../types";
@@ -18,6 +19,8 @@ export default function CouponManager() {
   const [form, setForm] = useState(empty);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Refused for the free plan's limit on coupons handed out at once.
+  const [planLimit, setPlanLimit] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [found, setFound] = useState<CouponRedemption | null>(null);
   const [lookupError, setLookupError] = useState<string | null>(null);
@@ -50,13 +53,20 @@ export default function CouponManager() {
       showToast(t("coupons.created"));
       void load();
     } catch (err: any) {
-      setError(err?.response?.data?.error ?? t("points.error"));
+      if (err?.response?.data?.code === "planLimit") setPlanLimit(err.response.data.error);
+      else setError(err?.response?.data?.error ?? t("points.error"));
     }
   }
 
   async function toggle(c: Coupon) {
-    await api.patch(`/coupons/${c.id}`, { active: !c.active });
-    void load();
+    try {
+      await api.patch(`/coupons/${c.id}`, { active: !c.active });
+      setPlanLimit(null);
+      void load();
+    } catch (err: any) {
+      if (err?.response?.data?.code === "planLimit") setPlanLimit(err.response.data.error);
+      else showToast(err?.response?.data?.error ?? t("points.error"));
+    }
   }
 
   async function lookup(e: FormEvent | null, value = code) {
@@ -145,6 +155,7 @@ export default function CouponManager() {
           </button>
         )}
       </div>
+      {!creating && planLimit && <PlanLimitNote message={planLimit} />}
 
       {creating && (
         <form onSubmit={create} className="space-y-3 rounded-2xl border border-gray-200 p-3">
@@ -179,6 +190,7 @@ export default function CouponManager() {
             </label>
           </div>
           {error && <p className="text-xs text-jz-warm-text">{error}</p>}
+          {planLimit && <PlanLimitNote message={planLimit} />}
           <div className="flex justify-end gap-2">
             <button type="button" onClick={() => setCreating(false)} className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100">
               {t("dashboard.cancel")}
@@ -221,6 +233,19 @@ export default function CouponManager() {
           ))}
         </ul>
       )}
+    </div>
+  );
+}
+
+function PlanLimitNote({ message }: { message: string }) {
+  const { t } = useTranslation();
+  return (
+    <div className="rounded-2xl bg-jz-tint p-3 text-xs leading-relaxed text-jz-ink" role="status">
+      <p className="font-semibold">{message}</p>
+      <p className="mt-0.5">{t("coupons.planLimit")}</p>
+      <Link to="/plans" className="mt-2 inline-flex items-center gap-1 rounded-full bg-jz-ink px-3 py-1.5 text-[11px] font-bold text-white">
+        <Gem className="h-3.5 w-3.5" /> {t("coupons.planLimitLink")}
+      </Link>
     </div>
   );
 }

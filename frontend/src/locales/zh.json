@@ -24,7 +24,8 @@
     "backOnline": "已恢复联网",
     "reels": "短视频",
     "map": "地图",
-    "points": "积分・优惠券"
+    "points": "积分・优惠券",
+    "plans": "方案"
   },
   "auth": {
     "sessionExpired": "登录已过期，请重新登录。"
@@ -1489,10 +1490,12 @@
     "postError": "发布失败"
   },
   "aiLimit": {
-    "signedIn": "免费AI已用完（每月30次・每天10次）。用积分兑换“AI券”即可继续使用。",
+    "signedIn": "本月或今天的免费AI次数已用完。可用积分兑换AI券，或升级到Plus继续使用。",
     "visitor": "未登录时AI每天最多3次。登录后每月可免费使用30次。",
     "getTickets": "兑换AI券",
-    "login": "登录"
+    "login": "登录",
+    "planUsed": "方案内的AI次数已用完。可用积分兑换AI券继续使用。",
+    "upgrade": "查看方案"
   },
   "points": {
     "title": "积分・优惠券",
@@ -1539,7 +1542,9 @@
       "photoConcierge": "以图搜索",
       "tripPlan": "AI制定计划",
       "tripCompose": "AI制作行程（自动生成行程）"
-    }
+    },
+    "planCta": "Plus每月可使用{{count}}次",
+    "planCtaButton": "查看方案"
   },
   "coupons": {
     "tab": "优惠券",
@@ -1571,7 +1576,9 @@
     "stop": "停止发放",
     "restart": "重新发放",
     "onProfile": "可用积分兑换的优惠券",
-    "scan": "用相机扫描二维码"
+    "scan": "用相机扫描二维码",
+    "planLimit": "升级到付费方案后，可同时发布更多优惠券。",
+    "planLimitLink": "查看方案"
   },
   "captionAssist": {
     "heading": "用设备上的AI润色文字",
@@ -1591,5 +1598,74 @@
     "title": "扫描优惠券二维码",
     "hint": "请将旅行者的优惠券二维码对准框内",
     "noCamera": "无法使用相机。请在浏览器设置中允许相机，或输入代码"
+  },
+  "plans": {
+    "title": "方案",
+    "subtitle": "基本功能永久免费。付费方案适合经常使用AI或想发布更多优惠券的用户。",
+    "travelers": "旅行者",
+    "companies": "企业・店铺",
+    "municipalities": "地方政府",
+    "name": {
+      "free": "免费",
+      "plus": "Plus",
+      "business": "商务",
+      "municipalityPro": "地方政府专业版"
+    },
+    "perMonth": "日元 / 月（含税）",
+    "freePrice": "0日元",
+    "byInvoice": "报价（发票付款）",
+    "feature": {
+      "ai": "AI功能 每月{{month}}次（每天最多{{day}}次）",
+      "compose": "每月可用AI自动生成行程{{count}}次",
+      "basics": "浏览帖子、行程、印章等基本功能",
+      "points": "积攒积分兑换优惠券和AI券",
+      "posting": "发布帖子・活动・数据分析",
+      "coupons": "可同时发布最多{{count}}张优惠券",
+      "invoice": "支持发票付款・年度合同"
+    },
+    "current": "使用中",
+    "recommended": "推荐",
+    "subscribe": "升级到{{plan}}",
+    "loginToSubscribe": "登录后申请",
+    "notReady": "准备中",
+    "contact": "联系我们",
+    "manage": "管理方案（变更・解约・收据）",
+    "renews": "下次续订日：{{date}}",
+    "endsOn": "将于{{date}}结束（在此之前可继续使用）",
+    "validUntil": "有效期至{{date}}",
+    "pastDue": "未能确认付款。请在“管理方案”中检查银行卡。",
+    "paymentsNotReady": "支付功能正在准备中，请稍后再来。",
+    "checkoutSuccess": "感谢您的申请，正在确认…",
+    "activated": "{{plan}}已生效",
+    "checkoutPending": "确认需要一些时间，请几分钟后重新打开此页面。",
+    "checkoutCancel": "申请已取消，未产生费用。",
+    "error": "操作失败，请重试",
+    "note": "付款由Stripe处理，Jaziba不会保存您的卡号。可随时解约，解约后可使用到当期结束。不按日退款。",
+    "commerceLink": "基于特定商业交易法的标示"
+  },
+  "commerce": {
+    "title": "基于特定商业交易法的标示",
+    "draftNotice": "此标示为草稿。运营者需确认内容并填写空白处后再公开。",
+    "unfilled": "（由运营者填写）",
+    "seller": "销售者",
+    "manager": "运营负责人",
+    "address": "地址",
+    "phone": "电话",
+    "email": "联系方式",
+    "emailValue": "请通过咨询表单联系",
+    "price": "价格",
+    "priceValue": "显示在方案页面（含税）。Plus 每月480日元，商务 每月2,000日元。地方政府专业版需报价。",
+    "extraCost": "其他费用",
+    "extraCostValue": "网络连接费和通信费由客户承担。",
+    "payment": "付款方式",
+    "paymentValue": "信用卡（Stripe）。地方政府专业版为发票付款。",
+    "timing": "付款时间",
+    "timingValue": "申请时支付首期费用，之后每月同一天自动续订并扣款。",
+    "delivery": "提供时间",
+    "deliveryValue": "付款完成后即可使用。",
+    "cancel": "解约・退款",
+    "cancelValue": "可随时在“管理方案”中解约。解约后可使用到已付期间结束。由于是数字服务，已付费用（包括按日计算的部分）不予退还。",
+    "environment": "运行环境",
+    "environmentValue": "最新版Chrome・Safari・Edge・Firefox"
   }
 }
