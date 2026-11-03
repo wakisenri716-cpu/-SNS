@@ -15,7 +15,11 @@ export const isAdminEmail = (email: string) => adminEmails().includes(email.toLo
 /** After requireAuth: only admins; sets req.admin. */
 export async function requireAdmin(req: Request, res: Response, next: NextFunction) {
   const user = req.auth ? await prisma.user.findUnique({ where: { id: req.auth.userId }, select: { id: true, name: true, email: true } }) : null;
-  if (!user || !isAdminEmail(user.email)) return res.status(403).json({ error: "管理者だけが使えます" });
+  // A sign-in from before the database was reset: 401 so the app signs out.
+  if (!user) return res.status(401).json({ error: "もう一度ログインしてください" });
+  // `configured` says whether ADMIN_EMAILS is set at all, so the page can
+  // tell "not set on the server (yet)" from "not this account".
+  if (!isAdminEmail(user.email)) return res.status(403).json({ code: "notAdmin", configured: adminEmails().length > 0, error: "管理者だけが使えます" });
   req.admin = { id: user.id, name: user.name };
   next();
 }

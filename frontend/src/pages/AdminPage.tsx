@@ -47,9 +47,12 @@ interface Log {
 
 export default function AdminPage() {
   const { t } = useTranslation();
-  const { user, ready } = useAuth();
+  const { user, ready, logout } = useAuth();
+  const navigate = useNavigate();
   const { section = "" } = useParams();
   const [allowed, setAllowed] = useState<boolean | null>(null);
+  // Why not: ADMIN_EMAILS isn't set on the server, or this account isn't in it.
+  const [configured, setConfigured] = useState(true);
   const [overview, setOverview] = useState<Overview | null>(null);
 
   useEffect(() => {
@@ -70,7 +73,10 @@ export default function AdminPage() {
     api
       .get("/admin/me")
       .then(() => setAllowed(true))
-      .catch(() => setAllowed(false));
+      .catch((err) => {
+        setConfigured(err?.response?.data?.configured !== false);
+        setAllowed(false);
+      });
   }, [user]);
 
   const loadOverview = useCallback(() => {
@@ -91,6 +97,22 @@ export default function AdminPage() {
           <ShieldCheck className="mx-auto h-8 w-8 text-jz-accent" />
           <p className="mt-2 text-lg font-extrabold text-jz-ink">{t("admin.title")}</p>
           <p className="mt-1 text-sm text-gray-600">{t(user ? "admin.notAllowed" : "admin.loginFirst")}</p>
+          {user && (
+            <>
+              <p className="mt-3 rounded-xl bg-gray-50 p-2 text-xs text-gray-600">{t("admin.signedInAs", { email: user.email })}</p>
+              <p className="mt-2 text-left text-xs leading-relaxed text-gray-600">{t(configured ? "admin.hintNotListed" : "admin.hintNotConfigured")}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  logout();
+                  navigate("/login", { state: { from: "/admin" } });
+                }}
+                className="mt-4 inline-block rounded-full bg-jz-accent px-5 py-2 text-sm font-bold text-white"
+              >
+                {t("admin.switchAccount")}
+              </button>
+            </>
+          )}
           {!user && (
             <Link to="/login" state={{ from: "/admin" }} className="mt-4 inline-block rounded-full bg-jz-accent px-5 py-2 text-sm font-bold text-white">
               {t("nav.login")}

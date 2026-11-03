@@ -1933,6 +1933,10 @@
       "dismissReports": "撤销举报",
       "inquiryDone": "咨询已处理",
       "inquiryOpen": "咨询改回未处理"
-    }
+    },
+    "signedInAs": "当前登录：{{email}}",
+    "hintNotConfigured": "服务器上尚未设置管理员邮箱。在Render的“Environment”中保存ADMIN_EMAILS后，执行Manual Deploy（或重启）即可生效。",
+    "hintNotListed": "此邮箱不在ADMIN_EMAILS中。请用填写在其中的邮箱账户重新登录（注意空格和拼写）。",
+    "switchAccount": "用其他账户登录"
   }
 }

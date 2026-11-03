@@ -1933,6 +1933,10 @@
       "dismissReports": "신고 취소",
       "inquiryDone": "문의 처리 완료",
       "inquiryOpen": "문의 미처리로 변경"
-    }
+    },
+    "signedInAs": "로그인 중: {{email}}",
+    "hintNotConfigured": "서버에 관리자 이메일이 아직 설정되지 않았습니다. Render의 'Environment'에 ADMIN_EMAILS를 저장한 후 Manual Deploy(또는 재시작)를 하면 반영됩니다.",
+    "hintNotListed": "이 이메일은 ADMIN_EMAILS에 없습니다. 그곳에 적은 주소의 계정으로 다시 로그인해 주세요(공백이나 오타에 주의).",
+    "switchAccount": "다른 계정으로 로그인"
   }
 }

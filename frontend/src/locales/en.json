@@ -1966,6 +1966,10 @@
       "dismissReports": "Reports cleared",
       "inquiryDone": "Inquiry done",
       "inquiryOpen": "Inquiry reopened"
-    }
+    },
+    "signedInAs": "Signed in as {{email}}",
+    "hintNotConfigured": "No admin email is set on the server yet. Save ADMIN_EMAILS under Environment in Render, then run Manual Deploy (or restart) for it to take effect.",
+    "hintNotListed": "This email isn't in ADMIN_EMAILS. Sign in with the account whose address you put there (check for typos).",
+    "switchAccount": "Sign in with another account"
   }
 }

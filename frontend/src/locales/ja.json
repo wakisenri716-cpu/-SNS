@@ -1933,6 +1933,10 @@
       "dismissReports": "通報を取り消し",
       "inquiryDone": "問い合わせを対応済みに",
       "inquiryOpen": "問い合わせを未対応に"
-    }
+    },
+    "signedInAs": "ログイン中：{{email}}",
+    "hintNotConfigured": "サーバーに管理者のメールアドレスがまだ設定されていません。Renderの「Environment」に ADMIN_EMAILS を保存したあと、Manual Deploy（または再起動）をすると反映されます。",
+    "hintNotListed": "このメールアドレスは ADMIN_EMAILS に入っていません。ADMIN_EMAILS に書いたアドレスのアカウントでログインし直してください（スペースや打ち間違いにもご注意ください）。",
+    "switchAccount": "別のアカウントでログイン"
   }
 }
