@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowUp, AudioLines, Bookmark, Camera, Mic, Navigation, RotateCcw, Sparkles, X } from "lucide-react";
+import { ArrowUp, AudioLines, Bookmark, BusFront, Camera, Mic, Navigation, RotateCcw, Sparkles, X } from "lucide-react";
 import { api } from "../api/client";
 import { aiLimitOf } from "../lib/aiLimit";
 import AiLimitNotice from "./AiLimitNotice";
@@ -20,6 +20,8 @@ interface Pick {
   reel: Reel;
   reason: string | null;
   matched: { category: boolean; tags: TravelerTag[]; text: boolean; season?: boolean } | null;
+  /** The town or a local business gave 地元の交通情報 for it. */
+  hasLocalTransit?: boolean;
 }
 
 interface Turn {
@@ -78,6 +80,15 @@ function PickCard({ pick, onSave }: { pick: Pick; onSave: (reel: Reel) => void }
         </div>
       </div>
       <p className="line-clamp-3 min-h-[3.75rem] px-3 pt-2.5 text-xs leading-relaxed text-gray-700">{reason}</p>
+      {pick.hasLocalTransit && (
+        <Link
+          to={`/reels/${reel.id}/access#local-transit-heading`}
+          state={{ reel }}
+          className="mx-3 mt-1.5 inline-flex items-center gap-1 rounded-full bg-jz-tint px-2 py-0.5 text-[10px] font-bold text-jz-accent"
+        >
+          <BusFront className="h-3 w-3" /> {t("concierge.localTransit")}
+        </Link>
+      )}
       <div className="flex gap-1.5 p-3 pt-2">
         {reel.locationLat != null && reel.locationLng != null && (
           <Link

@@ -45,3 +45,22 @@ test("without an API key the photo concierge refuses instead of guessing", async
   await assert.rejects(runPhotoConcierge({ mediaType: "image/jpeg", data: "AAAA" }, "ja", [...posts]));
   process.env.ANTHROPIC_API_KEY = "test-key-not-real";
 });
+
+test("地元の交通情報 a town gave goes along with its post, and only then", async () => {
+  const { getClaudeClient } = await import("../services/claude");
+  const { runConcierge } = await import("../services/concierge");
+  let sent: any = null;
+  const create = mock.method(getClaudeClient().beta.messages, "create", async (body: any) => {
+    sent = body;
+    return { stop_reason: "end_turn", content: [{ type: "text", text: JSON.stringify({ reply: "車がなくても行けます。", picks: [{ id: "bridge", reason: "シャトルバスがあります" }] }) }] };
+  });
+  try {
+    await runConcierge("車なしで行ける山", "ja", [{ ...posts[0] }, { ...posts[1], localTransit: ["上高地シャトルバス: ・沢渡から30分おき"] }]);
+    const list = JSON.parse(sent.messages[0].content[0].text.replace(/^<posts>\n|\n<\/posts>$/g, ""));
+    assert.equal("local_transport" in list[0], false);
+    assert.deepEqual(list[1].local_transport, ["上高地シャトルバス: ・沢渡から30分おき"]);
+    assert.match(sent.system, /local_transport/);
+  } finally {
+    create.mock.restore();
+  }
+});

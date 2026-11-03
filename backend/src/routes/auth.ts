@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { prisma } from "../prisma";
 import { getStripe } from "../lib/plans";
-import { approvalRequired, isAdminEmail, setApproval } from "../lib/admin";
+import { approvalRequired, isAdminEmail, notifyAdmins, setApproval } from "../lib/admin";
 import { JWT_SECRET, requireAuth } from "../middleware/auth";
 import { uploadImage } from "../middleware/upload";
 import { guessNationalityFromIp } from "../services/geoLookup";
@@ -166,6 +166,7 @@ router.post("/register-municipality", registerLimiter, async (req, res) => {
   });
 
   setApproval(user.id, user.approval);
+  if (user.approval === "pending") void notifyAdmins({ type: "adminSignup", name: `${prefecture}${municipalityName}`, kind: "MUNICIPALITY" });
   const token = issueToken(user.id, "MUNICIPALITY");
   res.status(201).json({
     token,
@@ -214,6 +215,7 @@ router.post("/register-company", registerLimiter, async (req, res) => {
   });
 
   setApproval(user.id, user.approval);
+  if (user.approval === "pending") void notifyAdmins({ type: "adminSignup", name: companyName, kind: "COMPANY" });
   const token = issueToken(user.id, "COMPANY");
   res.status(201).json({
     token,

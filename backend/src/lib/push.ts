@@ -48,7 +48,10 @@ export type PushMessage =
   | { type: "submissionPosted"; municipality: string; place: string; reelId: string }
   | { type: "couponExpiring"; title: string; issuer: string; until: string; redemptionId: string }
   // 登録の承認 (admin console): `path` is the account's dashboard.
-  | { type: "accountReviewed"; approved: boolean; path: string };
+  | { type: "accountReviewed"; approved: boolean; path: string }
+  // To the operator (ADMIN_EMAILS): something waits in the admin site.
+  | { type: "adminSignup"; name: string; kind: "MUNICIPALITY" | "COMPANY" }
+  | { type: "adminInquiry"; name: string; preview: string };
 
 const TEXT: Record<string, Record<PushMessage["type"], (m: any) => { title: string; body: string }>> = {
   ja: {
@@ -61,6 +64,8 @@ const TEXT: Record<string, Record<PushMessage["type"], (m: any) => { title: stri
     submissionReviewed: (m) => (m.approved ? { title: `${m.municipality}があなたの写真・動画を承認しました`, body: `+${m.points}ポイント` } : { title: `${m.municipality}が今回の写真・動画を見送りました`, body: "マイページで理由を確認できます" }),
     submissionPosted: (m) => ({ title: `あなたの写真・動画が${m.municipality}の投稿になりました`, body: m.place }),
     accountReviewed: (m) => (m.approved ? { title: "ジャジバの登録が承認されました", body: "投稿や情報の編集ができるようになりました" } : { title: "ジャジバの登録は承認されませんでした", body: "管理画面で理由を確認できます" }),
+    adminSignup: (m) => ({ title: `承認待ち：${m.name}（${m.kind === "MUNICIPALITY" ? "自治体" : "企業"}）`, body: "管理者サイトで確認してください" }),
+    adminInquiry: (m) => ({ title: `お問い合わせ：${m.name}`, body: m.preview }),
   },
   en: {
     newPost: (m) => ({ title: `New post from ${m.poster}`, body: m.place }),
@@ -72,6 +77,8 @@ const TEXT: Record<string, Record<PushMessage["type"], (m: any) => { title: stri
     submissionReviewed: (m) => (m.approved ? { title: `${m.municipality} approved your photo/video`, body: `+${m.points} points` } : { title: `${m.municipality} passed on your photo/video this time`, body: "See why on My page" }),
     submissionPosted: (m) => ({ title: `Your photo/video is now a post by ${m.municipality}`, body: m.place }),
     accountReviewed: (m) => (m.approved ? { title: "Your Jaziba account is approved", body: "You can now post and edit your information" } : { title: "Your Jaziba registration wasn't approved", body: "See why on your dashboard" }),
+    adminSignup: (m) => ({ title: `Awaiting approval: ${m.name} (${m.kind === "MUNICIPALITY" ? "municipality" : "business"})`, body: "Check it in the admin site" }),
+    adminInquiry: (m) => ({ title: `Inquiry: ${m.name}`, body: m.preview }),
   },
   zh: {
     newPost: (m) => ({ title: `${m.poster}发布了新帖子`, body: m.place }),
@@ -83,6 +90,8 @@ const TEXT: Record<string, Record<PushMessage["type"], (m: any) => { title: stri
     submissionReviewed: (m) => (m.approved ? { title: `${m.municipality}批准了你的照片・视频`, body: `+${m.points}积分` } : { title: `${m.municipality}这次没有采用你的照片・视频`, body: "可在我的页面查看原因" }),
     submissionPosted: (m) => ({ title: `你的照片・视频已成为${m.municipality}的帖子`, body: m.place }),
     accountReviewed: (m) => (m.approved ? { title: "你的Jaziba注册已通过审核", body: "现在可以发布和编辑信息了" } : { title: "你的Jaziba注册未通过审核", body: "可在管理页面查看原因" }),
+    adminSignup: (m) => ({ title: `待审核：${m.name}（${m.kind === "MUNICIPALITY" ? "地方政府" : "企业"}）`, body: "请在管理后台确认" }),
+    adminInquiry: (m) => ({ title: `咨询：${m.name}`, body: m.preview }),
   },
   ko: {
     newPost: (m) => ({ title: `${m.poster}의 새 게시물`, body: m.place }),
@@ -94,6 +103,8 @@ const TEXT: Record<string, Record<PushMessage["type"], (m: any) => { title: stri
     submissionReviewed: (m) => (m.approved ? { title: `${m.municipality}이(가) 사진・동영상을 승인했습니다`, body: `+${m.points}포인트` } : { title: `${m.municipality}이(가) 이번 사진・동영상을 보류했습니다`, body: "마이페이지에서 이유를 확인할 수 있습니다" }),
     submissionPosted: (m) => ({ title: `내 사진・동영상이 ${m.municipality}의 게시물이 되었습니다`, body: m.place }),
     accountReviewed: (m) => (m.approved ? { title: "Jaziba 가입이 승인되었습니다", body: "이제 게시와 정보 편집을 할 수 있습니다" } : { title: "Jaziba 가입이 승인되지 않았습니다", body: "관리 화면에서 이유를 확인할 수 있습니다" }),
+    adminSignup: (m) => ({ title: `승인 대기: ${m.name} (${m.kind === "MUNICIPALITY" ? "지자체" : "기업"})`, body: "관리자 사이트에서 확인해 주세요" }),
+    adminInquiry: (m) => ({ title: `문의: ${m.name}`, body: m.preview }),
   },
 };
 
@@ -107,6 +118,10 @@ export function pushPayload(message: PushMessage, lang: string) {
     url:
       message.type === "accountReviewed"
         ? message.path
+        : message.type === "adminSignup"
+          ? "/admin/approvals"
+          : message.type === "adminInquiry"
+            ? "/admin/inquiries"
         : message.type === "newPost" || message.type === "submissionPosted"
         ? `/reels/${message.reelId}/access`
         : message.type === "submissionReviewed"
@@ -116,7 +131,7 @@ export function pushPayload(message: PushMessage, lang: string) {
         : message.type === "departSoon" || message.type === "arriveSoon"
           ? `/itinerary/${message.tripId}`
           : "/notifications",
-    tag: `${message.type}-${message.type === "accountReviewed" ? "account" : "transportId" in message ? message.transportId : "submissionId" in message ? message.submissionId : "redemptionId" in message ? message.redemptionId : message.reelId}`,
+    tag: `${message.type}-${message.type === "accountReviewed" || message.type === "adminSignup" || message.type === "adminInquiry" ? "account" : "transportId" in message ? message.transportId : "submissionId" in message ? message.submissionId : "redemptionId" in message ? message.redemptionId : message.reelId}`,
   };
 }
 

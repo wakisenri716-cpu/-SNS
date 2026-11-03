@@ -739,7 +739,8 @@
     "talk": "Conversation mode",
     "talkOn": "Conversation mode: speak, and the answer is read aloud",
     "talkOff": "End conversation mode",
-    "talkPicks": "My suggestions: {{names}}."
+    "talkPicks": "My suggestions: {{names}}.",
+    "localTransit": "Local transport info"
   },
   "stories": {
     "tapHint": "Tap right for next, left for previous, hold to pause",

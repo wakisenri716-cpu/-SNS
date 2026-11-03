@@ -21,6 +21,8 @@ export interface ConciergeCandidate {
   prefecture: string;
   /** 見頃 months (1–12) set by the poster; empty if not stated. */
   bestMonths: number[];
+  /** 地元の交通情報 the town or a local business gave for this place (short). */
+  localTransit?: string[];
 }
 
 export interface ConciergePick {
@@ -153,7 +155,7 @@ const LANGUAGE_NAMES: Record<string, string> = { ja: "Japanese", en: "English", 
 const SYSTEM_PROMPT = `You are the travel concierge of Jaziba, a tourism social network where only municipalities and local businesses post short videos about places in Japan.
 A traveler describes the kind of trip they want. You are given the posts currently on Jaziba, as JSON. Choose the posts that best fit the request (at most ${MAX_PICKS}, best first) and explain each choice in one short sentence.
 
-Ground everything in the post data you are given: each reason must refer only to what that post's caption, place, category, tags or best_months (the months the poster says it is at its best; empty means not stated) actually say. Do not add facts about the places (opening hours, prices, access, accessibility, seasons) that the data does not state, and do not suggest places that are not in the list. If nothing fits, return no picks and say so kindly in the reply, suggesting what the traveler could try asking instead.
+Ground everything in the post data you are given: each reason must refer only to what that post's caption, place, category, tags or best_months (the months the poster says it is at its best; empty means not stated) actually say. Some posts have local_transport: transport the town or a local business itself published for getting there or around (a community bus, an on-demand taxi, a shuttle). When the traveler asks about getting there, going without a car or getting around, you may mention it briefly, exactly as it says. Do not add facts about the places (opening hours, prices, access, accessibility, seasons) that the data does not state, and do not suggest places that are not in the list. If nothing fits, return no picks and say so kindly in the reply, suggesting what the traveler could try asking instead.
 
 The traveler may be following up on earlier messages in the same conversation, which you are given with the posts you picked then. Read the new request in that context (for example "with kids?" refines the previous wish), and when they ask for something else or more, prefer posts you have not picked yet.
 
@@ -184,6 +186,7 @@ async function aiConcierge(
     tags: c.travelerTags,
     best_months: c.bestMonths,
     caption: c.caption.slice(0, 280),
+    ...(c.localTransit && c.localTransit.length > 0 ? { local_transport: c.localTransit } : {}),
   }));
 
   // The post list comes first and is cached (it's the same for a while and

@@ -732,7 +732,8 @@
     "talk": "对话模式",
     "talkOn": "对话模式：说话后，会朗读回答",
     "talkOff": "结束对话模式",
-    "talkPicks": "推荐的是{{names}}。"
+    "talkPicks": "推荐的是{{names}}。",
+    "localTransit": "有当地交通信息"
   },
   "stories": {
     "tapHint": "点右侧下一个，点左侧上一个，长按暂停",

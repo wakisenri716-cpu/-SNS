@@ -1,3 +1,4 @@
+import { notifyAdmins } from "../lib/admin";
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma";
@@ -17,6 +18,7 @@ router.post("/", inquiryLimiter, async (req, res) => {
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
 
   await prisma.inquiry.create({ data: parsed.data });
+  void notifyAdmins({ type: "adminInquiry", name: parsed.data.name, preview: parsed.data.message.slice(0, 80) });
   res.status(201).json({ ok: true });
 });
 

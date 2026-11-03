@@ -732,7 +732,8 @@
     "talk": "会話モード",
     "talkOn": "会話モード：話しかけると、答えを読み上げます",
     "talkOff": "会話モードを終了",
-    "talkPicks": "おすすめは、{{names}}です。"
+    "talkPicks": "おすすめは、{{names}}です。",
+    "localTransit": "地元の交通情報あり"
   },
   "stories": {
     "tapHint": "右をタップで次へ、左で前へ、長押しで一時停止",

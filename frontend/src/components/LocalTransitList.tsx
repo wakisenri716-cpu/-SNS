@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { BusFront, ExternalLink, FileText, Languages } from "lucide-react";
 import { api } from "../api/client";
@@ -13,6 +14,12 @@ import type { LocalTransit } from "../types";
 export default function LocalTransitList({ reelId, municipalityId, className = "" }: { reelId?: string; municipalityId?: string; className?: string }) {
   const { t } = useTranslation();
   const [items, setItems] = useState<LocalTransit[]>([]);
+  const { hash } = useLocation();
+  const ref = useRef<HTMLElement>(null);
+  // Opened from the concierge's 「地元の交通情報あり」: scroll here once it's loaded.
+  useEffect(() => {
+    if (hash === "#local-transit-heading" && items.length > 0) ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [hash, items.length]);
   useEffect(() => {
     const q = reelId ? `reelId=${encodeURIComponent(reelId)}` : `municipalityId=${encodeURIComponent(municipalityId ?? "")}`;
     api
@@ -22,7 +29,7 @@ export default function LocalTransitList({ reelId, municipalityId, className = "
   }, [reelId, municipalityId]);
   if (items.length === 0) return null;
   return (
-    <section className={className} aria-labelledby="local-transit-heading">
+    <section ref={ref} className={`scroll-mt-20 ${className}`} aria-labelledby="local-transit-heading">
       <h2 id="local-transit-heading" className="flex items-center gap-1.5 text-sm font-bold text-jz-ink">
         <BusFront className="h-4 w-4 text-jz-accent" /> {t("localTransit.heading")}
       </h2>

@@ -1,5 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../prisma";
+import { sendPush, type PushMessage } from "./push";
 
 // The operator's admin console (/admin). Who may use it: the accounts whose
 // email address is in ADMIN_EMAILS (comma-separated), set on the server only,
@@ -60,3 +62,16 @@ export async function loadUnapprovedPosters() {
   for (const r of rows) unapproved.add(r.id);
 }
 export const PENDING_APPROVAL = { code: "pendingApproval", error: "運営の確認が終わるまで、投稿や情報の編集はできません" };
+
+/** Push to the operator's devices (admin accounts that turned notifications on). Never throws. */
+export async function notifyAdmins(message: PushMessage) {
+  const emails = adminEmails();
+  if (emails.length === 0) return;
+  try {
+    // Addresses are compared without case, as isAdminEmail does.
+    const admins = await prisma.$queryRaw<{ id: string }[]>`SELECT id FROM "User" WHERE lower(email) IN (${Prisma.join(emails)})`;
+    if (admins.length > 0) await sendPush(admins.map((a) => a.id), message);
+  } catch (err) {
+    console.error("[admin] notify failed:", err);
+  }
+}

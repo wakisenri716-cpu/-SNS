@@ -1693,3 +1693,35 @@ test("登録の承認: a new municipality or business waits for the operator bef
     delete process.env.ADMIN_EMAILS;
   }
 });
+
+test("管理者への通知: a sign-up waiting for approval and a new inquiry are pushed to the operator's devices", async () => {
+  const webpush = (await import("web-push")).default;
+  const sent: { endpoint: string; payload: any }[] = [];
+  const send = mock.method(webpush, "sendNotification", async (sub: any, payload: string) => {
+    sent.push({ endpoint: sub.endpoint, payload: JSON.parse(payload) });
+    return { statusCode: 201, body: "", headers: {} };
+  });
+  delete process.env.POSTER_APPROVAL;
+  process.env.ADMIN_EMAILS = "ops@example.com";
+  try {
+    const ops = (await call("POST", "/api/auth/register", { email: "Ops@example.com", password: "password123", name: "運営" })).json.token;
+    const keys = { p256dh: "BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTpQtUbVlUls0VJXg7A8u-Ts1XbjhazAkj7I99e8QcYP7DkM", auth: "tBHItJI5svbpez7KI4CCXg" };
+    assert.equal((await call("POST", "/api/push/subscribe", { endpoint: "https://fcm.googleapis.com/fcm/send/ops-phone", keys, lang: "ja" }, ops)).status, 204);
+    const toOps = () => sent.filter((s) => s.endpoint.endsWith("ops-phone")).map((s) => s.payload);
+
+    await call("POST", "/api/auth/register-municipality", { email: "new-town@example.com", password: "password123", name: "担当", municipalityName: "通知村", prefecture: "長野県" });
+    await call("POST", "/api/inquiries", { name: "旅行会社A", email: "a@example.com", message: "提携について相談したいです" });
+    for (let i = 0; i < 40 && toOps().length < 2; i++) await new Promise((r) => setTimeout(r, 25));
+    assert.deepEqual(
+      toOps().map((p) => [p.title, p.url]),
+      [
+        ["承認待ち：長野県通知村（自治体）", "/admin/approvals"],
+        ["お問い合わせ：旅行会社A", "/admin/inquiries"],
+      ]
+    );
+  } finally {
+    send.mock.restore();
+    process.env.POSTER_APPROVAL = "off";
+    delete process.env.ADMIN_EMAILS;
+  }
+});

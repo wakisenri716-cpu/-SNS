@@ -9,6 +9,7 @@ import { REEL_ORDER, reelInclude, serializeReel } from "../lib/reelSerializer";
 import { isAiConciergeConfigured, runConcierge, runPhotoConcierge } from "../services/concierge";
 import { logClaudeError } from "../services/claude";
 import { parseBestMonths, parseTravelerTags } from "../types";
+import { todayInJapan } from "./events";
 
 const router = Router();
 
@@ -52,6 +53,16 @@ async function loadCandidates(userId: string | undefined) {
       saves: userId ? { where: { userId }, select: { id: true } } : false,
     },
   });
+  // 地元の交通情報 for these places: a spot's own, then its town's general ones.
+  const transit = await prisma.localTransit.findMany({
+    where: { municipalityId: { in: [...new Set(reels.map((r) => r.municipalityId))] }, OR: [{ validUntil: null }, { validUntil: { gte: todayInJapan() } }] },
+    select: { reelId: true, municipalityId: true, title: true, body: true },
+    orderBy: { updatedAt: "desc" },
+  });
+  const transitFor = (r: { id: string; municipalityId: string }) =>
+    [...transit.filter((x) => x.reelId === r.id), ...transit.filter((x) => !x.reelId && x.municipalityId === r.municipalityId)]
+      .slice(0, 2)
+      .map((x) => `${x.title}: ${x.body.replace(/\s+/g, " ")}`.slice(0, 200));
   const candidates = reels.map((r) => ({
     id: r.id,
     caption: r.caption,
@@ -61,6 +72,7 @@ async function loadCandidates(userId: string | undefined) {
     municipalityName: r.company?.name ?? r.municipality.name,
     prefecture: r.municipality.prefecture,
     bestMonths: parseBestMonths(r.bestMonths),
+    localTransit: transitFor(r),
   }));
   return { reels, candidates };
 }
@@ -69,16 +81,20 @@ async function respond(
   res: Response,
   userId: string | undefined,
   reels: Awaited<ReturnType<typeof loadCandidates>>["reels"],
+  candidates: Awaited<ReturnType<typeof loadCandidates>>["candidates"],
   result: Awaited<ReturnType<typeof runConcierge>>
 ) {
   const followed = await getFollowedIds(userId);
   const byId = new Map(reels.map((r) => [r.id, r]));
+  const transitById = new Map(candidates.map((c) => [c.id, (c.localTransit ?? []).length > 0]));
   const picks = await Promise.all(
     result.picks.map(async (p) => {
       const reel = byId.get(p.id)!;
       return {
         reason: p.reason,
         matched: p.matched,
+        // The card links to the access page's 地元の交通情報.
+        hasLocalTransit: transitById.get(p.id) ?? false,
         reel: await serializeReel(reel, {
           likedByMe: Array.isArray(reel.likes) && reel.likes.length > 0,
           savedByMe: Array.isArray(reel.saves) && reel.saves.length > 0,
@@ -98,7 +114,7 @@ router.post("/", conciergeLimiter, optionalAuth, async (req, res) => {
   const { reels, candidates } = await loadCandidates(req.auth?.userId);
   const result = await runConcierge(parsed.data.message, parsed.data.lang, candidates, parsed.data.history, { allowAi: quota === "ai" });
   if (result.mode === "ai") await recordAiUse(req, "concierge", result.usage);
-  await respond(res, req.auth?.userId, reels, result);
+  await respond(res, req.auth?.userId, reels, candidates, result);
 });
 
 // 写真で探す: the traveler sends a photo of a scene (resized on the device to
@@ -126,7 +142,7 @@ router.post("/photo", conciergeLimiter, optionalAuth, async (req, res) => {
   try {
     const result = await runPhotoConcierge({ mediaType: `image/${kind}` as "image/jpeg", data }, parsed.data.lang, candidates);
     if (result.mode === "ai") await recordAiUse(req, "photoConcierge", result.usage);
-    await respond(res, req.auth?.userId, reels, result);
+    await respond(res, req.auth?.userId, reels, candidates, result);
   } catch (err) {
     logClaudeError("photo concierge", err);
     res.status(502).json({ error: "写真を読み取れませんでした。しばらくしてからもう一度お試しください" });

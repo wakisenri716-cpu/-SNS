@@ -732,7 +732,8 @@
     "talk": "대화 모드",
     "talkOn": "대화 모드: 말을 걸면 답변을 읽어 줍니다",
     "talkOff": "대화 모드 종료",
-    "talkPicks": "추천 장소는 {{names}}입니다."
+    "talkPicks": "추천 장소는 {{names}}입니다.",
+    "localTransit": "지역 교통 정보 있음"
   },
   "stories": {
     "tapHint": "오른쪽을 탭하면 다음, 왼쪽은 이전, 길게 누르면 일시정지",
