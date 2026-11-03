@@ -2,7 +2,8 @@ import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma";
 import { requireAuth } from "../middleware/auth";
-import { isAdminEmail, logAdmin, requireAdmin, setSuspended } from "../lib/admin";
+import { isAdminEmail, logAdmin, requireAdmin, setApproval, setSuspended } from "../lib/admin";
+import { sendPush } from "../lib/push";
 import { PLANS, PlanGrantError, activePlan, grantPlan, type PlanId } from "../lib/plans";
 import { aiSpend } from "../lib/aiQuota";
 import { todayInJapan } from "./events";
@@ -22,7 +23,7 @@ router.get("/me", (req, res) => res.json({ admin: true, name: req.admin!.name })
 router.get("/overview", async (_req, res) => {
   const now = new Date();
   const since14 = new Date(now.getTime() - 14 * DAY);
-  const [roles, newUsers7d, suspended, recentSignups, reels, comments, visits30d, pendingSubmissions, inquiriesOpen, reported, plans, ai, logs] =
+  const [roles, newUsers7d, suspended, recentSignups, reels, comments, visits30d, pendingSubmissions, inquiriesOpen, reported, plans, ai, logs, pendingApprovals] =
     await Promise.all([
       prisma.user.groupBy({ by: ["role"], _count: true }),
       prisma.user.count({ where: { createdAt: { gte: new Date(now.getTime() - 7 * DAY) } } }),
@@ -37,6 +38,7 @@ router.get("/overview", async (_req, res) => {
       prisma.planSubscription.findMany({ select: { plan: true, status: true, source: true, currentPeriodEnd: true, userId: true } }),
       aiSpend(now),
       prisma.adminLog.findMany({ orderBy: { createdAt: "desc" }, take: 8 }),
+      prisma.user.count({ where: { approval: "pending" } }),
     ]);
 
   // Sign-ups per day for the last 14 days (Japan time).
@@ -61,7 +63,7 @@ router.get("/overview", async (_req, res) => {
       signupsByDay: days.map((d) => ({ day: d, count: perDay.get(d)! })),
     },
     content: { reels, comments, visits30d },
-    todo: { pendingSubmissions, inquiriesOpen, reportedComments: reported },
+    todo: { pendingSubmissions, inquiriesOpen, reportedComments: reported, pendingApprovals },
     plans: { plus: count("plus"), business: count("business"), municipalityPro: count("municipalityPro"), monthlyYen },
     ai,
     recentLogs: logs,
@@ -157,6 +159,64 @@ router.post("/users/:id/plan", async (req, res) => {
     if (err instanceof PlanGrantError) return res.status(400).json({ error: err.message });
     throw err;
   }
+});
+
+// ---- 登録の承認 ----------------------------------------------------------------------
+
+// Municipality and company sign-ups: waiting ones oldest first, or the ones decided.
+router.get("/approvals", async (req, res) => {
+  const status = req.query.status === "approved" || req.query.status === "rejected" ? req.query.status : "pending";
+  const rows = await prisma.user.findMany({
+    where: { role: { in: ["MUNICIPALITY", "COMPANY"] }, approval: status, ...(status === "pending" ? {} : { reviewedAt: { not: null } }) },
+    orderBy: status === "pending" ? { createdAt: "asc" } : { reviewedAt: "desc" },
+    take: 200,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      createdAt: true,
+      approval: true,
+      approvalNote: true,
+      reviewedAt: true,
+      municipality: { select: { id: true, name: true, prefecture: true } },
+      company: { select: { id: true, name: true, municipality: { select: { id: true, name: true, prefecture: true } } } },
+    },
+  });
+  // Clues for checking: other pages with the same town name (a listing made
+  // from public data, or another account), and whether the address is on an
+  // official local-government domain (.lg.jp).
+  const items = await Promise.all(
+    rows.map(async (u) => {
+      const domain = u.email.split("@")[1]?.toLowerCase() ?? "";
+      const sameName = u.municipality
+        ? await prisma.municipality.findMany({
+            where: { name: u.municipality.name, prefecture: u.municipality.prefecture, id: { not: u.municipality.id } },
+            select: { id: true, listing: true, user: { select: { approval: true } } },
+          })
+        : [];
+      return {
+        ...u,
+        emailDomain: domain,
+        officialDomain: domain.endsWith(".lg.jp"),
+        sameName: sameName.map((m) => ({ id: m.id, listing: m.listing, approved: m.user.approval === "approved" })),
+      };
+    })
+  );
+  res.json({ items });
+});
+
+router.post("/approvals/:userId", async (req, res) => {
+  const parsed = z.object({ decision: z.enum(["approve", "reject"]), note: z.string().trim().max(500).default("") }).safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
+  const user = await prisma.user.findUnique({ where: { id: req.params.userId }, select: { id: true, name: true, role: true } });
+  if (!user || user.role === "USER") return res.status(404).json({ error: "見つかりません" });
+  const approval = parsed.data.decision === "approve" ? "approved" : "rejected";
+  await prisma.user.update({ where: { id: user.id }, data: { approval, approvalNote: parsed.data.note, reviewedAt: new Date() } });
+  setApproval(user.id, approval);
+  await logAdmin(req, parsed.data.decision, user.id, `${user.name}${parsed.data.note ? `：${parsed.data.note}` : ""}`);
+  void sendPush([user.id], { type: "accountReviewed", approved: approval === "approved", path: user.role === "MUNICIPALITY" ? "/dashboard" : "/company-dashboard" });
+  res.status(204).end();
 });
 
 // ---- 通報されたコメント ----------------------------------------------------------

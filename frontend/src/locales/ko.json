@@ -1827,7 +1827,8 @@
       "inquiries": "문의",
       "users": "사용자",
       "reports": "신고",
-      "logs": "작업 기록"
+      "logs": "작업 기록",
+      "approvals": "가입 승인"
     },
     "role": {
       "USER": "여행자",
@@ -1864,7 +1865,8 @@
       "visits30d": "스탬프(30일)",
       "recent": "최근 작업",
       "allLogs": "모든 기록 보기",
-      "signupsTotal": "합계 {{count}}명"
+      "signupsTotal": "합계 {{count}}명",
+      "pendingApprovals": "승인 대기 가입"
     },
     "inquiries": {
       "sub": "문의 양식으로 받은 내용입니다.",
@@ -1932,11 +1934,50 @@
       "deleteComment": "댓글 삭제",
       "dismissReports": "신고 취소",
       "inquiryDone": "문의 처리 완료",
-      "inquiryOpen": "문의 미처리로 변경"
+      "inquiryOpen": "문의 미처리로 변경",
+      "approve": "가입 승인",
+      "reject": "가입 미승인"
     },
     "signedInAs": "로그인 중: {{email}}",
     "hintNotConfigured": "서버에 관리자 이메일이 아직 설정되지 않았습니다. Render의 'Environment'에 ADMIN_EMAILS를 저장한 후 Manual Deploy(또는 재시작)를 하면 반영됩니다.",
     "hintNotListed": "이 이메일은 ADMIN_EMAILS에 없습니다. 그곳에 적은 주소의 계정으로 다시 로그인해 주세요(공백이나 오타에 주의).",
-    "switchAccount": "다른 계정으로 로그인"
+    "switchAccount": "다른 계정으로 로그인",
+    "approvals": {
+      "sub": "지자체・기업의 새 가입입니다. 승인 전에는 게시・편집을 할 수 없고, 지자체 페이지도 공개되지 않습니다.",
+      "pending": "승인 대기",
+      "approvedTab": "승인됨",
+      "rejectedTab": "미승인",
+      "none": "승인 대기 중인 가입이 없습니다",
+      "noneDecided": "아직 없습니다",
+      "registeredAt": "{{date}} 가입",
+      "under": "소속 지자체: {{municipality}}",
+      "person": "담당자",
+      "email": "이메일",
+      "lgDomain": "지자체 도메인(.lg.jp)",
+      "otherDomain": "일반 이메일 주소",
+      "sameName": "같은 이름의 페이지가 또 있습니다: {{list}}. 사칭이 아닌지 확인해 주세요.",
+      "sameListing": "공개 데이터로 만든 페이지",
+      "sameApproved": "승인된 계정",
+      "samePending": "심사 중인 계정",
+      "howToCheck": "확인 방법(예): 공식 사이트의 대표 전화로 담당 부서에 확인 / 이메일 도메인이 공식인지 확인 / 기업은 소재지나 홈페이지를 확인.",
+      "approve": "승인",
+      "reject": "승인하지 않음",
+      "rejectReason": "'{{name}}'을(를) 승인하지 않는 이유(상대의 관리 화면에 표시됩니다)",
+      "approved": "승인했습니다",
+      "rejected": "미승인으로 했습니다",
+      "decidedAt": "{{date}} 결정",
+      "mail": "메일로 연락",
+      "mailSubject": "Jaziba 가입에 대해"
+    }
+  },
+  "approval": {
+    "pendingTitle": "운영자가 가입 내용을 확인하고 있습니다",
+    "pendingBody": "확인이 끝날 때까지 볼 수는 있지만 게시・정보 편집은 할 수 없습니다. 확인을 위해 연락드릴 수 있습니다.",
+    "rejectedTitle": "이번 가입은 승인되지 않았습니다",
+    "rejectedBody": "문의 양식으로 연락해 주세요.",
+    "reason": "사유: {{note}}",
+    "check": "상태 확인",
+    "contact": "문의하기",
+    "registerNote": "가입 후 사칭 방지를 위해 운영자가 내용을 확인합니다. 승인되면 게시와 정보 편집을 할 수 있습니다(확인을 위해 연락드릴 수 있습니다)."
   }
 }

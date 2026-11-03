@@ -9,6 +9,7 @@ import EventManager from "../components/EventManager";
 import CouponManager from "../components/CouponManager";
 import LocalTransitManager from "../components/LocalTransitManager";
 import ReportedComments from "../components/ReportedComments";
+import ApprovalBanner from "../components/ApprovalBanner";
 import type { Reel } from "../types";
 
 export default function CompanyDashboardPage() {
@@ -26,6 +27,7 @@ export default function CompanyDashboardPage() {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
       <section>
+        <ApprovalBanner />
         <h2 className="mb-1 text-lg font-bold text-gray-900">
           {t("companyDashboard.manageScreen", { name: company.name })}
         </h2>

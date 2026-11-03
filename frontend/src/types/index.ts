@@ -36,6 +36,9 @@ export interface AuthUser {
   role: Role;
   /** May open the 管理者サイト (/admin); the server checks again. */
   isAdmin?: boolean;
+  /** 登録の承認 (municipality and company accounts); travelers are "approved". */
+  approval?: "pending" | "approved" | "rejected";
+  approvalNote?: string;
   avatarUrl: string | null;
   nationality: string | null;
   birthYear: number | null;

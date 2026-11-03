@@ -1827,7 +1827,8 @@
       "inquiries": "お問い合わせ",
       "users": "ユーザー",
       "reports": "通報",
-      "logs": "操作の記録"
+      "logs": "操作の記録",
+      "approvals": "登録の承認"
     },
     "role": {
       "USER": "旅行者",
@@ -1864,7 +1865,8 @@
       "visits30d": "スタンプ（30日）",
       "recent": "最近の操作",
       "allLogs": "すべての記録を見る",
-      "signupsTotal": "合計 {{count}}人"
+      "signupsTotal": "合計 {{count}}人",
+      "pendingApprovals": "承認待ちの登録"
     },
     "inquiries": {
       "sub": "お問い合わせフォームから届いた内容です。",
@@ -1932,11 +1934,50 @@
       "deleteComment": "コメントを削除",
       "dismissReports": "通報を取り消し",
       "inquiryDone": "問い合わせを対応済みに",
-      "inquiryOpen": "問い合わせを未対応に"
+      "inquiryOpen": "問い合わせを未対応に",
+      "approve": "登録を承認",
+      "reject": "登録を承認しない"
     },
     "signedInAs": "ログイン中：{{email}}",
     "hintNotConfigured": "サーバーに管理者のメールアドレスがまだ設定されていません。Renderの「Environment」に ADMIN_EMAILS を保存したあと、Manual Deploy（または再起動）をすると反映されます。",
     "hintNotListed": "このメールアドレスは ADMIN_EMAILS に入っていません。ADMIN_EMAILS に書いたアドレスのアカウントでログインし直してください（スペースや打ち間違いにもご注意ください）。",
-    "switchAccount": "別のアカウントでログイン"
+    "switchAccount": "別のアカウントでログイン",
+    "approvals": {
+      "sub": "自治体・企業の新しい登録です。承認するまで、投稿や編集はできず、自治体のページも公開されません。",
+      "pending": "承認待ち",
+      "approvedTab": "承認済み",
+      "rejectedTab": "承認しなかった",
+      "none": "承認待ちの登録はありません",
+      "noneDecided": "まだありません",
+      "registeredAt": "{{date}} 登録",
+      "under": "所属する自治体：{{municipality}}",
+      "person": "担当者",
+      "email": "メール",
+      "lgDomain": "自治体のドメイン（.lg.jp）",
+      "otherDomain": "一般のメールアドレス",
+      "sameName": "同じ名前のページがほかにもあります：{{list}}。なりすましでないか確認してください。",
+      "sameListing": "公開データから作ったページ",
+      "sameApproved": "承認済みのアカウント",
+      "samePending": "審査中のアカウント",
+      "howToCheck": "確認のしかた（例）：自治体の公式サイトに載っている代表電話から担当課に確認する／メールのドメインが公式のものか見る／企業は所在地やホームページを確認する。",
+      "approve": "承認する",
+      "reject": "承認しない",
+      "rejectReason": "「{{name}}」を承認しない理由（相手の管理画面に表示されます）",
+      "approved": "承認しました",
+      "rejected": "承認しないにしました",
+      "decidedAt": "{{date}} に判断",
+      "mail": "メールで連絡",
+      "mailSubject": "ジャジバへのご登録について"
+    }
+  },
+  "approval": {
+    "pendingTitle": "運営が登録内容を確認しています",
+    "pendingBody": "確認が終わるまで、投稿や情報の編集はできません（見ることはできます）。確認のため、運営からご連絡することがあります。",
+    "rejectedTitle": "今回の登録は承認されませんでした",
+    "rejectedBody": "内容についてはお問い合わせフォームからご連絡ください。",
+    "reason": "理由：{{note}}",
+    "check": "状況を確認",
+    "contact": "お問い合わせ",
+    "registerNote": "登録のあと、なりすまし防止のため運営が内容を確認します。承認されると投稿や情報の編集ができるようになります（確認のためご連絡することがあります）。"
   }
 }

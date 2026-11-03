@@ -46,7 +46,9 @@ export type PushMessage =
   | { type: "arriveSoon"; name: string; to: string; time: string; minutes: number; tripId: string; transportId: string }
   | { type: "submissionReviewed"; approved: boolean; municipality: string; points: number; submissionId: string }
   | { type: "submissionPosted"; municipality: string; place: string; reelId: string }
-  | { type: "couponExpiring"; title: string; issuer: string; until: string; redemptionId: string };
+  | { type: "couponExpiring"; title: string; issuer: string; until: string; redemptionId: string }
+  // 登録の承認 (admin console): `path` is the account's dashboard.
+  | { type: "accountReviewed"; approved: boolean; path: string };
 
 const TEXT: Record<string, Record<PushMessage["type"], (m: any) => { title: string; body: string }>> = {
   ja: {
@@ -58,6 +60,7 @@ const TEXT: Record<string, Record<PushMessage["type"], (m: any) => { title: stri
     couponExpiring: (m) => ({ title: `クーポン「${m.title}」はもうすぐ期限です`, body: `${m.issuer}・${m.until.replace(/-/g, "/")}まで` }),
     submissionReviewed: (m) => (m.approved ? { title: `${m.municipality}があなたの写真・動画を承認しました`, body: `+${m.points}ポイント` } : { title: `${m.municipality}が今回の写真・動画を見送りました`, body: "マイページで理由を確認できます" }),
     submissionPosted: (m) => ({ title: `あなたの写真・動画が${m.municipality}の投稿になりました`, body: m.place }),
+    accountReviewed: (m) => (m.approved ? { title: "ジャジバの登録が承認されました", body: "投稿や情報の編集ができるようになりました" } : { title: "ジャジバの登録は承認されませんでした", body: "管理画面で理由を確認できます" }),
   },
   en: {
     newPost: (m) => ({ title: `New post from ${m.poster}`, body: m.place }),
@@ -68,6 +71,7 @@ const TEXT: Record<string, Record<PushMessage["type"], (m: any) => { title: stri
     couponExpiring: (m) => ({ title: `Your coupon "${m.title}" ends soon`, body: `${m.issuer} · until ${m.until}` }),
     submissionReviewed: (m) => (m.approved ? { title: `${m.municipality} approved your photo/video`, body: `+${m.points} points` } : { title: `${m.municipality} passed on your photo/video this time`, body: "See why on My page" }),
     submissionPosted: (m) => ({ title: `Your photo/video is now a post by ${m.municipality}`, body: m.place }),
+    accountReviewed: (m) => (m.approved ? { title: "Your Jaziba account is approved", body: "You can now post and edit your information" } : { title: "Your Jaziba registration wasn't approved", body: "See why on your dashboard" }),
   },
   zh: {
     newPost: (m) => ({ title: `${m.poster}发布了新帖子`, body: m.place }),
@@ -78,6 +82,7 @@ const TEXT: Record<string, Record<PushMessage["type"], (m: any) => { title: stri
     couponExpiring: (m) => ({ title: `优惠券「${m.title}」即将到期`, body: `${m.issuer}・${m.until.replace(/-/g, "/")}为止` }),
     submissionReviewed: (m) => (m.approved ? { title: `${m.municipality}批准了你的照片・视频`, body: `+${m.points}积分` } : { title: `${m.municipality}这次没有采用你的照片・视频`, body: "可在我的页面查看原因" }),
     submissionPosted: (m) => ({ title: `你的照片・视频已成为${m.municipality}的帖子`, body: m.place }),
+    accountReviewed: (m) => (m.approved ? { title: "你的Jaziba注册已通过审核", body: "现在可以发布和编辑信息了" } : { title: "你的Jaziba注册未通过审核", body: "可在管理页面查看原因" }),
   },
   ko: {
     newPost: (m) => ({ title: `${m.poster}의 새 게시물`, body: m.place }),
@@ -88,6 +93,7 @@ const TEXT: Record<string, Record<PushMessage["type"], (m: any) => { title: stri
     couponExpiring: (m) => ({ title: `쿠폰 "${m.title}"의 기한이 곧 끝납니다`, body: `${m.issuer}・${m.until.replace(/-/g, "/")}까지` }),
     submissionReviewed: (m) => (m.approved ? { title: `${m.municipality}이(가) 사진・동영상을 승인했습니다`, body: `+${m.points}포인트` } : { title: `${m.municipality}이(가) 이번 사진・동영상을 보류했습니다`, body: "마이페이지에서 이유를 확인할 수 있습니다" }),
     submissionPosted: (m) => ({ title: `내 사진・동영상이 ${m.municipality}의 게시물이 되었습니다`, body: m.place }),
+    accountReviewed: (m) => (m.approved ? { title: "Jaziba 가입이 승인되었습니다", body: "이제 게시와 정보 편집을 할 수 있습니다" } : { title: "Jaziba 가입이 승인되지 않았습니다", body: "관리 화면에서 이유를 확인할 수 있습니다" }),
   },
 };
 
@@ -99,7 +105,9 @@ export function pushPayload(message: PushMessage, lang: string) {
     title,
     body: body.length > 120 ? `${body.slice(0, 119)}…` : body,
     url:
-      message.type === "newPost" || message.type === "submissionPosted"
+      message.type === "accountReviewed"
+        ? message.path
+        : message.type === "newPost" || message.type === "submissionPosted"
         ? `/reels/${message.reelId}/access`
         : message.type === "submissionReviewed"
           ? "/mypage"
@@ -108,7 +116,7 @@ export function pushPayload(message: PushMessage, lang: string) {
         : message.type === "departSoon" || message.type === "arriveSoon"
           ? `/itinerary/${message.tripId}`
           : "/notifications",
-    tag: `${message.type}-${"transportId" in message ? message.transportId : "submissionId" in message ? message.submissionId : "redemptionId" in message ? message.redemptionId : message.reelId}`,
+    tag: `${message.type}-${message.type === "accountReviewed" ? "account" : "transportId" in message ? message.transportId : "submissionId" in message ? message.submissionId : "redemptionId" in message ? message.redemptionId : message.reelId}`,
   };
 }
 

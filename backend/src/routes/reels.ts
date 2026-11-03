@@ -1,3 +1,4 @@
+import { PENDING_APPROVAL, isUnapproved } from "../lib/admin";
 import { randomBytes } from "node:crypto";
 import { locatePlace } from "../services/placeLookup";
 import { Request, Response, Router } from "express";
@@ -928,6 +929,8 @@ router.get("/:id/comments", optionalAuth, async (req, res) => {
 });
 
 router.post("/:id/comments", writeLimiter, requireAuth, async (req, res) => {
+  // A municipality or company account still waiting for 登録の承認 can't speak for the town yet.
+  if (req.auth!.role !== "USER" && isUnapproved(req.auth!.userId)) return res.status(403).json(PENDING_APPROVAL);
   const parsed = commentSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "コメントを入力してください（500文字まで）" });
 

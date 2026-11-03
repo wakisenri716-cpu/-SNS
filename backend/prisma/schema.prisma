@@ -71,6 +71,13 @@ model User {
   stripeCustomerId String? @unique
   // 利用停止 by the operator (admin console): can't sign in or use the API.
   suspendedAt         DateTime?
+  // 登録の承認 (admin console) for municipality and company accounts:
+  // "pending" until the operator checks them, then "approved" or "rejected".
+  // Until approved they can sign in but not post or edit, and a
+  // municipality's page isn't public. Travelers are always "approved".
+  approval            String    @default("approved")
+  approvalNote        String    @default("")
+  reviewedAt          DateTime?
   planSubscription PlanSubscription?
 }
 

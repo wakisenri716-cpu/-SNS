@@ -94,6 +94,8 @@ export const municipalityDetailInclude = { ...municipalityCountInclude, ...touri
 router.get("/", async (_req, res) => {
   // Joined municipalities first, then the listings (in code order: cities, then towns and villages).
   const list = await prisma.municipality.findMany({
+    // Accounts still waiting for 登録の承認 aren't listed.
+    where: { user: { approval: "approved" } },
     orderBy: [{ listing: "asc" }, { lgCode: "asc" }, { createdAt: "desc" }],
     include: municipalityCountInclude,
   });
@@ -120,6 +122,10 @@ router.get("/:id", optionalAuth, async (req, res) => {
     },
   });
   if (!m) return res.status(404).json({ error: "自治体が見つかりません" });
+  // Not public until 登録の承認 (the account itself can still see its page).
+  if (m.userId !== req.auth?.userId && (await prisma.user.count({ where: { id: m.userId, approval: { not: "approved" } } })) > 0) {
+    return res.status(404).json({ error: "自治体が見つかりません" });
+  }
   const reels = await Promise.all(
     m.reels.map((r) =>
       serializeReel(r, {

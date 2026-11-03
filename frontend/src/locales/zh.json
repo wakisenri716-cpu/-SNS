@@ -1827,7 +1827,8 @@
       "inquiries": "咨询",
       "users": "用户",
       "reports": "举报",
-      "logs": "操作记录"
+      "logs": "操作记录",
+      "approvals": "注册审核"
     },
     "role": {
       "USER": "旅行者",
@@ -1864,7 +1865,8 @@
       "visits30d": "印章（30天）",
       "recent": "最近的操作",
       "allLogs": "查看全部记录",
-      "signupsTotal": "合计 {{count}}人"
+      "signupsTotal": "合计 {{count}}人",
+      "pendingApprovals": "待审核的注册"
     },
     "inquiries": {
       "sub": "通过咨询表单收到的内容。",
@@ -1932,11 +1934,50 @@
       "deleteComment": "删除评论",
       "dismissReports": "撤销举报",
       "inquiryDone": "咨询已处理",
-      "inquiryOpen": "咨询改回未处理"
+      "inquiryOpen": "咨询改回未处理",
+      "approve": "批准注册",
+      "reject": "不批准注册"
     },
     "signedInAs": "当前登录：{{email}}",
     "hintNotConfigured": "服务器上尚未设置管理员邮箱。在Render的“Environment”中保存ADMIN_EMAILS后，执行Manual Deploy（或重启）即可生效。",
     "hintNotListed": "此邮箱不在ADMIN_EMAILS中。请用填写在其中的邮箱账户重新登录（注意空格和拼写）。",
-    "switchAccount": "用其他账户登录"
+    "switchAccount": "用其他账户登录",
+    "approvals": {
+      "sub": "地方政府和企业的新注册。批准前无法发布或编辑，地方政府页面也不会公开。",
+      "pending": "待审核",
+      "approvedTab": "已批准",
+      "rejectedTab": "未批准",
+      "none": "没有待审核的注册",
+      "noneDecided": "还没有",
+      "registeredAt": "{{date}} 注册",
+      "under": "所属地方政府：{{municipality}}",
+      "person": "负责人",
+      "email": "邮箱",
+      "lgDomain": "地方政府域名（.lg.jp）",
+      "otherDomain": "普通邮箱",
+      "sameName": "还有同名的页面：{{list}}。请确认是否为冒充。",
+      "sameListing": "由公开数据生成的页面",
+      "sameApproved": "已批准的账户",
+      "samePending": "审核中的账户",
+      "howToCheck": "确认方法（例）：通过官网上的总机电话向负责部门确认／查看邮箱域名是否为官方域名／企业则确认地址或网站。",
+      "approve": "批准",
+      "reject": "不批准",
+      "rejectReason": "不批准“{{name}}”的理由（会显示在对方的管理页面）",
+      "approved": "已批准",
+      "rejected": "已设为不批准",
+      "decidedAt": "{{date}} 已决定",
+      "mail": "邮件联系",
+      "mailSubject": "关于您在Jaziba的注册"
+    }
+  },
+  "approval": {
+    "pendingTitle": "运营方正在确认您的注册信息",
+    "pendingBody": "确认完成前可以浏览，但无法发布或编辑信息。为确认身份，运营方可能会联系您。",
+    "rejectedTitle": "本次注册未获批准",
+    "rejectedBody": "如有疑问，请通过咨询表单联系我们。",
+    "reason": "理由：{{note}}",
+    "check": "查看状态",
+    "contact": "联系我们",
+    "registerNote": "注册后，为防止冒充，运营方会确认您的信息。获得批准后即可发布和编辑信息（为确认身份可能会联系您）。"
   }
 }

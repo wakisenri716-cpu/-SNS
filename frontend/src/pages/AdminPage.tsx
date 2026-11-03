@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, Ban, ChartColumn, Flag, Gem, Inbox, ListChecks, Loader2, Mail, Search, ShieldCheck, Trash2, Users } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Ban, BadgeCheck, Building2, ChartColumn, Flag, Gem, Inbox, ListChecks, Loader2, Mail, Search, ShieldCheck, Trash2, UserCheck, Users } from "lucide-react";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import JazibaLogo from "../components/JazibaLogo";
@@ -11,6 +11,7 @@ import { showToast } from "../lib/toast";
 // accounts in the server's ADMIN_EMAILS get in (the API checks every call).
 const SECTIONS = [
   { key: "", icon: ChartColumn, label: "admin.nav.overview" },
+  { key: "approvals", icon: UserCheck, label: "admin.nav.approvals", badge: "pendingApprovals" },
   { key: "inquiries", icon: Inbox, label: "admin.nav.inquiries", badge: "inquiriesOpen" },
   { key: "users", icon: Users, label: "admin.nav.users" },
   { key: "reports", icon: Flag, label: "admin.nav.reports", badge: "reportedComments" },
@@ -23,7 +24,7 @@ const yen = (microUsd: number) => Math.round((microUsd / 1_000_000) * USD_JPY);
 interface Overview {
   users: { byRole: Record<string, number>; total: number; new7d: number; suspended: number; signupsByDay: { day: string; count: number }[] };
   content: { reels: number; comments: number; visits30d: number };
-  todo: { pendingSubmissions: number; inquiriesOpen: number; reportedComments: number };
+  todo: { pendingSubmissions: number; inquiriesOpen: number; reportedComments: number; pendingApprovals: number };
   plans: { plus: number; business: number; municipalityPro: number; monthlyYen: number };
   ai: {
     todayMicroUsd: number;
@@ -165,6 +166,7 @@ export default function AdminPage() {
       </aside>
       <main className="mx-auto w-full max-w-5xl p-4 lg:p-8">
         {section === "" && <OverviewSection data={overview} />}
+        {section === "approvals" && <ApprovalsSection onChange={loadOverview} />}
         {section === "inquiries" && <InquiriesSection onChange={loadOverview} />}
         {section === "users" && <UsersSection />}
         {section === "reports" && <ReportsSection onChange={loadOverview} />}
@@ -230,7 +232,8 @@ function OverviewSection({ data }: { data: Overview | null }) {
         <Tile label={t("admin.overview.aiMonth")} value={`¥${n(yen(data.ai.monthMicroUsd))}`} note={t("admin.overview.aiToday", { yen: n(yen(data.ai.todayMicroUsd)) })} />
       </div>
 
-      <div className="mt-3 grid gap-3 lg:grid-cols-3">
+      <div className="mt-3 grid gap-3 lg:grid-cols-4">
+        <Tile label={t("admin.overview.pendingApprovals")} value={n(data.todo.pendingApprovals)} to="/admin/approvals" />
         <Tile label={t("admin.overview.inquiriesOpen")} value={n(data.todo.inquiriesOpen)} to="/admin/inquiries" />
         <Tile label={t("admin.overview.reported")} value={n(data.todo.reportedComments)} to="/admin/reports" />
         <Tile label={t("admin.overview.pendingSubmissions")} value={n(data.todo.pendingSubmissions)} note={t("admin.overview.pendingNote")} />
@@ -373,6 +376,8 @@ const ACTION_LABEL: Record<string, string> = {
   dismissReports: "admin.log.dismissReports",
   inquiryDone: "admin.log.inquiryDone",
   inquiryOpen: "admin.log.inquiryOpen",
+  approve: "admin.log.approve",
+  reject: "admin.log.reject",
 };
 
 function LogList({ logs }: { logs: Log[] }) {
@@ -402,6 +407,140 @@ function LogsSection() {
     <>
       <Heading sub={t("admin.log.sub")}>{t("admin.nav.logs")}</Heading>
       <div className="rounded-2xl border border-gray-200 bg-white p-4">{logs ? <LogList logs={logs} /> : <div className="skeleton h-40 rounded-xl" />}</div>
+    </>
+  );
+}
+
+// ---- 登録の承認 ----------------------------------------------------------------------
+
+interface Applicant {
+  id: string;
+  name: string;
+  email: string;
+  role: "MUNICIPALITY" | "COMPANY";
+  createdAt: string;
+  approval: "pending" | "approved" | "rejected";
+  approvalNote: string;
+  reviewedAt: string | null;
+  municipality: { id: string; name: string; prefecture: string } | null;
+  company: { id: string; name: string; municipality: { id: string; name: string; prefecture: string } } | null;
+  emailDomain: string;
+  officialDomain: boolean;
+  sameName: { id: string; listing: boolean; approved: boolean }[];
+}
+
+function ApprovalsSection({ onChange }: { onChange: () => void }) {
+  const { t } = useTranslation();
+  const [status, setStatus] = useState<"pending" | "approved" | "rejected">("pending");
+  const [items, setItems] = useState<Applicant[] | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const load = useCallback(() => {
+    void api.get<{ items: Applicant[] }>(`/admin/approvals?status=${status}`).then(({ data }) => setItems(data.items));
+  }, [status]);
+  useEffect(load, [load]);
+
+  async function decide(a: Applicant, decision: "approve" | "reject") {
+    const note = decision === "reject" ? window.prompt(t("admin.approvals.rejectReason", { name: a.municipality?.name ?? a.company?.name ?? a.name })) : "";
+    if (note == null) return;
+    setBusy(a.id);
+    try {
+      await api.post(`/admin/approvals/${a.id}`, { decision, note });
+      showToast(t(decision === "approve" ? "admin.approvals.approved" : "admin.approvals.rejected"));
+      load();
+      onChange();
+    } catch (err: any) {
+      showToast(err?.response?.data?.error ?? t("admin.error"));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  return (
+    <>
+      <Heading sub={t("admin.approvals.sub")}>{t("admin.nav.approvals")}</Heading>
+      <Chips
+        value={status}
+        onChange={setStatus}
+        options={[
+          ["pending", t("admin.approvals.pending")],
+          ["approved", t("admin.approvals.approvedTab")],
+          ["rejected", t("admin.approvals.rejectedTab")],
+        ]}
+      />
+      {items == null ? (
+        <div className="skeleton mt-3 h-40 rounded-2xl" />
+      ) : items.length === 0 ? (
+        <Empty>{t(status === "pending" ? "admin.approvals.none" : "admin.approvals.noneDecided")}</Empty>
+      ) : (
+        <ul className="mt-3 space-y-2.5">
+          {items.map((a) => {
+            const org = a.municipality
+              ? `${a.municipality.prefecture}${a.municipality.name}`
+              : a.company
+                ? a.company.name
+                : a.name;
+            return (
+              <li key={a.id} className="rounded-2xl border border-gray-200 bg-white p-4">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <Building2 className="h-4 w-4 text-jz-accent" />
+                  <p className="text-base font-extrabold text-jz-ink">{org}</p>
+                  <Badge>{t(`admin.role.${a.role}`)}</Badge>
+                  <span className="ml-auto text-[11px] tabular-nums text-gray-400">{t("admin.approvals.registeredAt", { date: new Date(a.createdAt).toLocaleString() })}</span>
+                </div>
+                {a.company && (
+                  <p className="mt-0.5 text-xs text-gray-600">{t("admin.approvals.under", { municipality: `${a.company.municipality.prefecture}${a.company.municipality.name}` })}</p>
+                )}
+                <dl className="mt-2 grid grid-cols-[6rem_1fr] gap-y-1 text-xs">
+                  <dt className="text-gray-500">{t("admin.approvals.person")}</dt>
+                  <dd className="text-gray-800">{a.name}</dd>
+                  <dt className="text-gray-500">{t("admin.approvals.email")}</dt>
+                  <dd className="flex flex-wrap items-center gap-1.5 text-gray-800">
+                    {a.email}
+                    {a.officialDomain ? (
+                      <Badge tone="accent">
+                        <BadgeCheck className="mr-0.5 inline h-3 w-3 align-[-2px]" />
+                        {t("admin.approvals.lgDomain")}
+                      </Badge>
+                    ) : (
+                      <Badge>{t("admin.approvals.otherDomain")}</Badge>
+                    )}
+                  </dd>
+                </dl>
+                {a.sameName.length > 0 && (
+                  <p className="mt-2 flex gap-1.5 rounded-xl bg-orange-50 p-2 text-[11px] leading-relaxed text-jz-warm-text">
+                    <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                    {t("admin.approvals.sameName", {
+                      list: a.sameName.map((m) => t(m.listing ? "admin.approvals.sameListing" : m.approved ? "admin.approvals.sameApproved" : "admin.approvals.samePending")).join("・"),
+                    })}
+                  </p>
+                )}
+                {status !== "pending" && (
+                  <p className="mt-2 text-[11px] text-gray-500">
+                    {t("admin.approvals.decidedAt", { date: a.reviewedAt ? new Date(a.reviewedAt).toLocaleString() : "—" })}
+                    {a.approvalNote && `・${a.approvalNote}`}
+                  </p>
+                )}
+                {status === "pending" && <p className="mt-2 text-[11px] leading-relaxed text-gray-500">{t("admin.approvals.howToCheck")}</p>}
+                <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                  {a.approval !== "approved" && (
+                    <button type="button" disabled={busy === a.id} onClick={() => void decide(a, "approve")} className="rounded-full bg-jz-accent px-4 py-1.5 font-bold text-white disabled:opacity-50">
+                      {t("admin.approvals.approve")}
+                    </button>
+                  )}
+                  {a.approval !== "rejected" && (
+                    <button type="button" disabled={busy === a.id} onClick={() => void decide(a, "reject")} className="rounded-full bg-white px-4 py-1.5 font-bold text-gray-800 ring-1 ring-gray-300 disabled:opacity-50">
+                      {t("admin.approvals.reject")}
+                    </button>
+                  )}
+                  <a href={`mailto:${a.email}?subject=${encodeURIComponent(t("admin.approvals.mailSubject"))}`} className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1.5 font-bold text-gray-800 hover:bg-gray-200">
+                    <Mail className="h-3.5 w-3.5" /> {t("admin.approvals.mail")}
+                  </a>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </>
   );
 }

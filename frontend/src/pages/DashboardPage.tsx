@@ -7,6 +7,7 @@ import ReelUploader from "../components/ReelUploader";
 import PosterLiveCard from "../components/PosterLiveCard";
 import SubmissionInbox from "../components/SubmissionInbox";
 import CouponManager from "../components/CouponManager";
+import ApprovalBanner from "../components/ApprovalBanner";
 import LocalTransitManager from "../components/LocalTransitManager";
 import ReelEditor from "../components/ReelEditor";
 import { TravelerTagChips } from "../components/TravelerTagChips";
@@ -465,6 +466,9 @@ export default function DashboardPage() {
 
   return (
     <div className="mx-auto w-full max-w-2xl overflow-hidden border-gray-200 bg-white sm:my-6 sm:rounded-xl sm:border lg:max-w-4xl">
+      <div className="px-4 pt-4 empty:hidden lg:px-6">
+        <ApprovalBanner />
+      </div>
       <div className="on-media relative aspect-[3/1] w-full bg-gradient-to-br from-gray-100 to-gray-200">
         {featured ? (
           <>

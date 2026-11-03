@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { AuthTokenPayload, Role } from "../types";
-import { isSuspended } from "../lib/admin";
+import { PENDING_APPROVAL, isSuspended, isUnapproved } from "../lib/admin";
 
 const JWT_SECRET = process.env.JWT_SECRET || "change-me-in-production";
 
@@ -26,6 +26,10 @@ export function requireRole(...roles: Role[]) {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.auth || !roles.includes(req.auth.role)) {
       return res.status(403).json({ error: "権限がありません" });
+    }
+    // 登録の承認: a municipality or company still waiting may look, not change anything.
+    if (req.auth.role !== "USER" && req.method !== "GET" && req.method !== "HEAD" && isUnapproved(req.auth.userId)) {
+      return res.status(403).json(PENDING_APPROVAL);
     }
     next();
   };

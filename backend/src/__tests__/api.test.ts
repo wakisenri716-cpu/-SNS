@@ -14,6 +14,8 @@ process.env.DATABASE_URL = `file:${path.join(tmp, "test.db")}`;
 process.env.UPLOAD_DIR = path.join(tmp, "uploads");
 process.env.JWT_SECRET = "test-secret";
 process.env.DISABLE_RATE_LIMITS = "1";
+// 登録の承認 is tested on its own below; elsewhere new accounts can post at once.
+process.env.POSTER_APPROVAL = "off";
 delete process.env.ANTHROPIC_API_KEY;
 delete process.env.GOOGLE_MAPS_API_KEY;
 
@@ -1637,6 +1639,57 @@ test("管理者サイト: only ADMIN_EMAILS get in; overview, inquiries, users (
     const logs = (await call("GET", "/api/admin/logs", undefined, boss.token)).json.items.map((l: any) => l.action);
     assert.deepEqual(logs.slice(0, 6), ["deleteComment", "dismissReports", "unsuspend", "suspend", "plan", "inquiryDone"]);
   } finally {
+    delete process.env.ADMIN_EMAILS;
+  }
+});
+
+test("登録の承認: a new municipality or business waits for the operator before it can post, comment or be listed", async () => {
+  delete process.env.POSTER_APPROVAL;
+  process.env.ADMIN_EMAILS = "approver@example.com";
+  try {
+    const admin = (await call("POST", "/api/auth/register", { email: "approver@example.com", password: "password123", name: "運営" })).json.token;
+    const town = (await call("POST", "/api/auth/register-municipality", { email: "kanko@city.example.lg.jp", password: "password123", name: "観光課", municipalityName: "審査町", prefecture: "長野県" })).json;
+    assert.equal(town.user.approval, "pending");
+    const mid = town.municipality.id;
+
+    // Waiting: can sign in and look at its own page, but can't change anything, and isn't public.
+    assert.equal((await call("GET", "/api/events/mine", undefined, town.token)).status, 200);
+    const blocked = await call("POST", "/api/events", { title: "祭り", startDate: "2027-08-01", endDate: "2027-08-01" }, town.token);
+    assert.deepEqual([blocked.status, blocked.json.code], [403, "pendingApproval"]);
+    assert.equal((await call("PUT", "/api/municipalities/me/profile", { description: "x" }, town.token)).status, 403);
+    const reelId = (await call("GET", "/api/reels")).json.items[0].id;
+    assert.equal((await call("POST", `/api/reels/${reelId}/comments`, { body: "公式です" }, town.token)).json.code, "pendingApproval");
+    assert.equal((await call("GET", `/api/municipalities/${mid}`)).status, 404);
+    assert.equal((await call("GET", `/api/municipalities/${mid}`, undefined, town.token)).status, 200);
+    assert.equal((await call("GET", "/api/municipalities")).json.some((m: any) => m.id === mid), false);
+    assert.equal((await call("GET", "/api/search?q=審査町")).json.municipalities.length, 0);
+    // A business can't join a town that isn't approved.
+    assert.equal((await call("POST", "/api/auth/register-company", { email: "early@example.com", password: "password123", name: "早い人", companyName: "早い店", municipalityId: mid })).status, 400);
+
+    // The admin console lists it with clues, and approves it.
+    const overview = (await call("GET", "/api/admin/overview", undefined, admin)).json;
+    assert.ok(overview.todo.pendingApprovals >= 1);
+    const pending = (await call("GET", "/api/admin/approvals", undefined, admin)).json.items;
+    const row = pending.find((u: any) => u.id === town.user.id);
+    assert.deepEqual([row.municipality.name, row.emailDomain, row.officialDomain], ["審査町", "city.example.lg.jp", true]);
+    assert.equal((await call("POST", `/api/admin/approvals/${town.user.id}`, { decision: "approve" }, admin)).status, 204);
+    assert.equal((await call("POST", "/api/events", { title: "祭り", startDate: "2027-08-01", endDate: "2027-08-01" }, town.token)).status, 201);
+    assert.equal((await call("GET", `/api/municipalities/${mid}`)).status, 200);
+    assert.equal((await call("GET", "/api/auth/me", undefined, town.token)).json.user.approval, "approved");
+
+    // A business under it: refused with a reason, which it sees.
+    const shop = (await call("POST", "/api/auth/register-company", { email: "fake@example.com", password: "password123", name: "怪しい人", companyName: "なりすまし商店", municipalityId: mid })).json;
+    assert.equal(shop.user.approval, "pending");
+    assert.equal((await call("POST", `/api/admin/approvals/${shop.user.id}`, { decision: "reject", note: "確認の電話がつながりませんでした" }, admin)).status, 204);
+    const me = (await call("GET", "/api/auth/me", undefined, shop.token)).json.user;
+    assert.deepEqual([me.approval, me.approvalNote], ["rejected", "確認の電話がつながりませんでした"]);
+    assert.equal((await call("POST", "/api/coupons", { title: "x", pointsCost: 10 }, shop.token)).json.code, "pendingApproval");
+    assert.equal((await call("GET", "/api/admin/approvals?status=rejected", undefined, admin)).json.items[0].id, shop.user.id);
+    assert.deepEqual((await call("GET", "/api/admin/logs", undefined, admin)).json.items.slice(0, 2).map((l: any) => l.action), ["reject", "approve"]);
+    // Travelers aren't held up.
+    assert.equal((await call("POST", "/api/auth/register", { email: "free@example.com", password: "password123", name: "旅人" })).json.user.approval, "approved");
+  } finally {
+    process.env.POSTER_APPROVAL = "off";
     delete process.env.ADMIN_EMAILS;
   }
 });

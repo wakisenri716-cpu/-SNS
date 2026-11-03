@@ -83,6 +83,7 @@ export default function RegisterMunicipalityPage() {
           onChange={(e) => setForm({ ...form, password: e.target.value })}
           className={inputClass}
         />
+        <p className="rounded-xl bg-jz-tint p-3 text-xs leading-relaxed text-jz-ink">{t("approval.registerNote")}</p>
         {error && <p className="text-sm text-jz-warm-text">{error}</p>}
         <button
           type="submit"

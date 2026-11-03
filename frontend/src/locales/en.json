@@ -1860,7 +1860,8 @@
       "inquiries": "Inquiries",
       "users": "Users",
       "reports": "Reports",
-      "logs": "Activity log"
+      "logs": "Activity log",
+      "approvals": "Approvals"
     },
     "role": {
       "USER": "Traveler",
@@ -1897,7 +1898,8 @@
       "visits30d": "Stamps (30 days)",
       "recent": "Recent actions",
       "allLogs": "See the full log",
-      "signupsTotal": "{{count}} in total"
+      "signupsTotal": "{{count}} in total",
+      "pendingApprovals": "Sign-ups awaiting approval"
     },
     "inquiries": {
       "sub": "Messages from the contact form.",
@@ -1965,11 +1967,50 @@
       "deleteComment": "Comment deleted",
       "dismissReports": "Reports cleared",
       "inquiryDone": "Inquiry done",
-      "inquiryOpen": "Inquiry reopened"
+      "inquiryOpen": "Inquiry reopened",
+      "approve": "Sign-up approved",
+      "reject": "Sign-up not approved"
     },
     "signedInAs": "Signed in as {{email}}",
     "hintNotConfigured": "No admin email is set on the server yet. Save ADMIN_EMAILS under Environment in Render, then run Manual Deploy (or restart) for it to take effect.",
     "hintNotListed": "This email isn't in ADMIN_EMAILS. Sign in with the account whose address you put there (check for typos).",
-    "switchAccount": "Sign in with another account"
+    "switchAccount": "Sign in with another account",
+    "approvals": {
+      "sub": "New municipality and business sign-ups. Until approved they can't post or edit, and a municipality's page isn't public.",
+      "pending": "Waiting",
+      "approvedTab": "Approved",
+      "rejectedTab": "Not approved",
+      "none": "No sign-ups waiting",
+      "noneDecided": "None yet",
+      "registeredAt": "Signed up {{date}}",
+      "under": "Municipality: {{municipality}}",
+      "person": "Contact",
+      "email": "Email",
+      "lgDomain": "Local-government domain (.lg.jp)",
+      "otherDomain": "Ordinary email address",
+      "sameName": "Other pages have the same name: {{list}}. Make sure this isn't impersonation.",
+      "sameListing": "page made from public data",
+      "sameApproved": "approved account",
+      "samePending": "account under review",
+      "howToCheck": "How to check (for example): call the department via the main number on the official website; see whether the email domain is official; for a business, check its address or website.",
+      "approve": "Approve",
+      "reject": "Don't approve",
+      "rejectReason": "Why not approve “{{name}}”? (shown on their dashboard)",
+      "approved": "Approved",
+      "rejected": "Marked as not approved",
+      "decidedAt": "Decided {{date}}",
+      "mail": "Email them",
+      "mailSubject": "About your Jaziba registration"
+    }
+  },
+  "approval": {
+    "pendingTitle": "We're checking your registration",
+    "pendingBody": "Until then you can look around but not post or edit. We may contact you to confirm.",
+    "rejectedTitle": "Your registration wasn't approved",
+    "rejectedBody": "Please contact us through the contact form.",
+    "reason": "Reason: {{note}}",
+    "check": "Check status",
+    "contact": "Contact us",
+    "registerNote": "After you sign up, we check the details to prevent impersonation. Once approved you can post and edit your information (we may contact you to confirm)."
   }
 }

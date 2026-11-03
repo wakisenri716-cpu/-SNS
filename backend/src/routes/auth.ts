@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { prisma } from "../prisma";
 import { getStripe } from "../lib/plans";
-import { isAdminEmail } from "../lib/admin";
+import { approvalRequired, isAdminEmail, setApproval } from "../lib/admin";
 import { JWT_SECRET, requireAuth } from "../middleware/auth";
 import { uploadImage } from "../middleware/upload";
 import { guessNationalityFromIp } from "../services/geoLookup";
@@ -31,6 +31,8 @@ function serializeUser(user: {
   needsBarrierFree: boolean;
   needsMultilingual: boolean;
   favoriteCategories: string;
+  approval: string;
+  approvalNote: string;
 }) {
   return {
     id: user.id,
@@ -39,6 +41,9 @@ function serializeUser(user: {
     role: user.role,
     // Opens the admin console link (the console itself checks again).
     isAdmin: isAdminEmail(user.email),
+    // 登録の承認 for municipality and company accounts ("approved" for travelers).
+    approval: user.approval,
+    approvalNote: user.approvalNote,
     avatarUrl: user.avatarUrl,
     nationality: user.nationality,
     birthYear: user.birthYear,
@@ -148,6 +153,8 @@ router.post("/register-municipality", registerLimiter, async (req, res) => {
       passwordHash,
       name,
       role: "MUNICIPALITY",
+      // 登録の承認: waits for the operator (admin console).
+      approval: approvalRequired() ? "pending" : "approved",
       municipality: {
         create: {
           name: municipalityName,
@@ -158,6 +165,7 @@ router.post("/register-municipality", registerLimiter, async (req, res) => {
     include: { municipality: { include: municipalityDetailInclude } },
   });
 
+  setApproval(user.id, user.approval);
   const token = issueToken(user.id, "MUNICIPALITY");
   res.status(201).json({
     token,
@@ -176,8 +184,8 @@ router.post("/register-company", registerLimiter, async (req, res) => {
   }
   const { email, password, name, companyName, municipalityId } = parsed.data;
 
-  const municipality = await prisma.municipality.findUnique({ where: { id: municipalityId } });
-  if (!municipality) {
+  const municipality = await prisma.municipality.findUnique({ where: { id: municipalityId }, include: { user: { select: { approval: true } } } });
+  if (!municipality || municipality.user.approval !== "approved") {
     return res.status(400).json({ error: "選択された自治体が見つかりません" });
   }
 
@@ -193,6 +201,8 @@ router.post("/register-company", registerLimiter, async (req, res) => {
       passwordHash,
       name,
       role: "COMPANY",
+      // 登録の承認: waits for the operator (admin console).
+      approval: approvalRequired() ? "pending" : "approved",
       company: {
         create: {
           name: companyName,
@@ -203,6 +213,7 @@ router.post("/register-company", registerLimiter, async (req, res) => {
     include: { company: { select: companySelect } },
   });
 
+  setApproval(user.id, user.approval);
   const token = issueToken(user.id, "COMPANY");
   res.status(201).json({
     token,

@@ -43,3 +43,20 @@ export async function loadSuspendedUsers() {
   suspended.clear();
   for (const r of rows) suspended.add(r.id);
 }
+
+// 登録の承認: municipality and company accounts wait for the operator before
+// they can post or edit (POSTER_APPROVAL=off turns this off, e.g. for a demo).
+export const approvalRequired = () => process.env.POSTER_APPROVAL !== "off";
+const unapproved = new Set<string>();
+/** Waiting for (or refused) approval: may sign in and look, not post or edit. */
+export const isUnapproved = (userId: string) => approvalRequired() && unapproved.has(userId);
+export function setApproval(userId: string, approval: string) {
+  if (approval === "approved") unapproved.delete(userId);
+  else unapproved.add(userId);
+}
+export async function loadUnapprovedPosters() {
+  const rows = await prisma.user.findMany({ where: { approval: { not: "approved" } }, select: { id: true } });
+  unapproved.clear();
+  for (const r of rows) unapproved.add(r.id);
+}
+export const PENDING_APPROVAL = { code: "pendingApproval", error: "運営の確認が終わるまで、投稿や情報の編集はできません" };

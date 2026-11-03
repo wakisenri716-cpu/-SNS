@@ -18,7 +18,7 @@ import submissionRoutes from "./routes/submissions";
 import pointsRoutes from "./routes/points";
 import couponRoutes from "./routes/coupons";
 import adminRoutes from "./routes/admin";
-import { loadSuspendedUsers } from "./lib/admin";
+import { loadSuspendedUsers, loadUnapprovedPosters } from "./lib/admin";
 import localTransitRoutes from "./routes/localTransit";
 import billingRoutes, { stripeWebhook } from "./routes/billing";
 import searchRoutes from "./routes/search";
@@ -35,6 +35,7 @@ const app = express();
 
 // 利用停止 accounts, checked on every request (lib/admin.ts).
 void loadSuspendedUsers().catch((err) => console.error("[admin] could not load suspended accounts:", err));
+void loadUnapprovedPosters().catch((err) => console.error("[admin] could not load accounts awaiting approval:", err));
 
 // Render sits behind one reverse proxy, so without this req.ip would always
 // be the proxy's address instead of the real client's — needed for the

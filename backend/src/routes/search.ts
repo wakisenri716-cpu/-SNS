@@ -24,6 +24,7 @@ router.get("/", async (req, res) => {
     q
       ? prisma.municipality.findMany({
           where: {
+            user: { approval: "approved" },
             OR: [
               { name: { contains: q } },
               { kana: { contains: q } },
