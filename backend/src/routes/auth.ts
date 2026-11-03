@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { prisma } from "../prisma";
+import { getStripe } from "../lib/plans";
 import { JWT_SECRET, requireAuth } from "../middleware/auth";
 import { uploadImage } from "../middleware/upload";
 import { guessNationalityFromIp } from "../services/geoLookup";
@@ -396,6 +397,22 @@ router.delete("/me", requireAuth, async (req, res) => {
   const valid = await bcrypt.compare(parsed.data.password, user.passwordHash);
   // 403, not 401: the session is fine, and the client treats 401 as "log out".
   if (!valid) return res.status(403).json({ error: "パスワードが正しくありません" });
+
+  // A card plan is stopped at Stripe first, so nothing is charged after the
+  // account is gone (the payment records stay at Stripe, as the law requires).
+  const plan = await prisma.planSubscription.findUnique({ where: { userId: user.id } });
+  if (plan?.source === "stripe" && plan.stripeSubscriptionId && !["canceled", "incomplete_expired"].includes(plan.status)) {
+    const stripe = getStripe();
+    try {
+      if (!stripe) throw new Error("Stripe is not configured");
+      await stripe.subscriptions.cancel(plan.stripeSubscriptionId);
+    } catch (err) {
+      if ((err as { code?: string })?.code !== "resource_missing") {
+        console.error("[billing] cancel on account deletion failed:", err);
+        return res.status(502).json({ error: "有料プランの解約ができませんでした。時間をおいてもう一度お試しください" });
+      }
+    }
+  }
 
   await prisma.user.delete({ where: { id: user.id } });
   res.status(204).end();

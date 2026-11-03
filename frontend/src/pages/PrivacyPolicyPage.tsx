@@ -1,48 +1,43 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { OPERATOR_INFO } from "../lib/operatorInfo";
+
+// When this text was last changed (update it with the policy in the locales).
+const UPDATED = "2026-11-03";
+
+type Section = { heading: string; body?: string; items?: string[] };
 
 export default function PrivacyPolicyPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const sections = t("privacyPolicy.sections", { returnObjects: true }) as Section[];
+  const [y, m, d] = UPDATED.split("-").map(Number);
+  const updated = new Date(y, m - 1, d).toLocaleDateString(i18n.language, { year: "numeric", month: "long", day: "numeric" });
 
   return (
-    <div className="mx-auto w-full max-w-2xl overflow-hidden border-gray-200 bg-white sm:my-6 sm:rounded-xl sm:border p-6 lg:max-w-3xl lg:p-8">
+    <div className="mx-auto w-full max-w-2xl overflow-hidden border-gray-200 bg-white p-6 sm:my-6 sm:rounded-xl sm:border lg:max-w-3xl lg:p-8">
       <h1 className="text-xl font-bold text-gray-900">{t("privacyPolicy.title")}</h1>
-      <p className="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">{t("privacyPolicy.draftNotice")}</p>
+      <p className="mt-1 text-xs text-gray-500">{t("privacyPolicy.updated", { date: updated })}</p>
+      {!OPERATOR_INFO.seller && <p className="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">{t("privacyPolicy.draftNotice")}</p>}
+      <p className="mt-4 text-sm leading-relaxed text-gray-700">{t("privacyPolicy.intro")}</p>
 
-      <div className="mt-6 flex flex-col gap-5 text-sm leading-relaxed text-gray-700">
+      <div className="mt-6 flex flex-col gap-6 text-sm leading-relaxed text-gray-700">
+        {sections.map((s) => (
+          <section key={s.heading}>
+            <h2 className="mb-1.5 font-semibold text-gray-900">{s.heading}</h2>
+            {s.body && <p>{s.body}</p>}
+            {s.items && (
+              <ul className={`list-disc space-y-1 pl-5 ${s.body ? "mt-2" : ""}`}>
+                {s.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            )}
+          </section>
+        ))}
         <section>
-          <h2 className="mb-1 font-semibold text-gray-900">{t("privacyPolicy.section1Heading")}</h2>
-          <p>{t("privacyPolicy.section1Intro")}</p>
-          <ul className="mt-1 list-disc pl-5">
-            <li>{t("privacyPolicy.section1Item1")}</li>
-            <li>{t("privacyPolicy.section1Item2")}</li>
-            <li>{t("privacyPolicy.section1Item3")}</li>
-            <li>{t("privacyPolicy.section1Item4")}</li>
-            <li>{t("privacyPolicy.section1Item5")}</li>
-            <li>{t("privacyPolicy.section1Item6")}</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="mb-1 font-semibold text-gray-900">{t("privacyPolicy.section2Heading")}</h2>
-          <p>{t("privacyPolicy.section2Body")}</p>
-        </section>
-
-        <section>
-          <h2 className="mb-1 font-semibold text-gray-900">{t("privacyPolicy.section3Heading")}</h2>
-          <p>{t("privacyPolicy.section3Body")}</p>
-        </section>
-
-        <section>
-          <h2 className="mb-1 font-semibold text-gray-900">{t("privacyPolicy.section4Heading")}</h2>
-          <p>{t("privacyPolicy.section4Body")}</p>
-        </section>
-
-        <section>
-          <h2 className="mb-1 font-semibold text-gray-900">{t("privacyPolicy.section5Heading")}</h2>
-          <p>{t("privacyPolicy.section5Body")}</p>
-          <Link to="/contact" className="mt-1 inline-block text-gray-900 hover:underline">
-            {t("privacyPolicy.section5Link")}
+          <p>{t("privacyPolicy.operator", { name: OPERATOR_INFO.seller || t("privacyPolicy.unfilled") })}</p>
+          <Link to="/contact" className="mt-1 inline-block font-semibold text-jz-accent hover:underline">
+            {t("privacyPolicy.contactLink")}
           </Link>
         </section>
       </div>

@@ -1436,7 +1436,7 @@ test("有料プラン: Stripe Checkout, the webhook turns the plan on and off, a
     checkout: { sessions: { create: async (p: any) => ((sent.checkout = p), { url: "https://checkout.stripe.test/s1" }) } },
     billingPortal: { sessions: { create: async (p: any) => ((sent.portal = p), { url: "https://billing.stripe.test/p1" }) } },
     // No metadata: the account is found from the Stripe customer, the plan from the price.
-    subscriptions: { retrieve: async () => subscription("active", {}) },
+    subscriptions: { retrieve: async () => subscription("active", {}), cancel: async (id: string) => ((sent.cancelled = id), {}) },
     webhooks: {
       constructEvent: (body: Buffer, signature: string) => {
         if (signature !== "good") throw new Error("bad signature");
@@ -1485,6 +1485,12 @@ test("有料プラン: Stripe Checkout, the webhook turns the plan on and off, a
     assert.equal((await webhook({ type: "customer.subscription.deleted", data: { object: subscription("canceled", { userId: me.user.id, plan: "plus" }) } })).status, 200);
     assert.equal((await call("GET", "/api/billing", undefined, me.token)).json.current.active, false);
     assert.equal((await call("GET", "/api/points", undefined, me.token)).json.ai.freePerMonth, 30);
+
+    // Deleting the account stops the card plan at Stripe first.
+    const leaver = (await call("POST", "/api/auth/register", { email: "leaver@example.com", password: "password123", name: "やめる人" })).json;
+    await prisma.planSubscription.create({ data: { userId: leaver.user.id, plan: "plus", status: "active", source: "stripe", stripeSubscriptionId: "sub_2", currentPeriodEnd: days(20) } });
+    assert.equal((await call("DELETE", "/api/auth/me", { password: "password123" }, leaver.token)).status, 204);
+    assert.equal(sent.cancelled, "sub_2");
   } finally {
     setStripeForTests(undefined);
     delete process.env.STRIPE_PRICE_PLUS;

@@ -420,24 +420,96 @@
   },
   "privacyPolicy": {
     "title": "Privacy Policy",
-    "draftNotice": "This is a development draft. Have it reviewed by legal counsel before launching the service.",
-    "section1Heading": "1. Information We Collect",
-    "section1Intro": "JAZIBA collects the following information.",
-    "section1Item1": "Account information (email address, name, hashed password)",
-    "section1Item2": "Posted content (videos, captions, and location data uploaded by municipality/company accounts)",
-    "section1Item3": "Usage history (likes, comments, view counts, etc.)",
-    "section1Item4": "Login state and some display preferences stored in your browser's local storage",
-    "section1Item5": "Nationality and birth year (optional profile attributes, used only for anonymized, aggregated audience data shown to municipality/company accounts via the Insights feature)",
-    "section1Item6": "IP address (used only momentarily at signup to roughly guess a starting value for the nationality field; not stored, and the guess can always be changed before or after signing up)",
-    "section2Heading": "2. How We Use It",
-    "section2Body": "We use the collected information to provide and maintain the service, improve features, and prevent misuse.",
-    "section3Heading": "3. Sharing with Third Parties",
-    "section3Body": "When a post includes location data, that location may be sent to Google Maps Platform (Geocoding/Directions API) for route calculation. We do not share your personal information with third parties without consent, except where required by law.",
-    "section4Heading": "4. Deleting Your Account",
-    "section4Body": "You can delete your account at any time from Settings. Deletion also removes related data, including posts, likes, and comments, and cannot be undone.",
-    "section5Heading": "5. Contact",
-    "section5Body": "For questions about this policy, please contact the service operator.",
-    "section5Link": "Go to Contact Form ↗"
+    "draftNotice": "This policy is a draft. Fill in the operator's details, and we recommend having an expert review it before publishing.",
+    "updated": "Last updated: {{date}}",
+    "intro": "The operator of Jaziba (the \"Service\") handles users' personal information as follows.",
+    "operator": "Operator: {{name}}",
+    "unfilled": "(to be filled in by the operator)",
+    "contactLink": "Go to the contact form",
+    "sections": [
+      {
+        "heading": "1. Information we collect",
+        "items": [
+          "Account: email address, name, password (stored in a form that can't be reversed), and the public key of any passkey you register",
+          "Optional details: nationality, birth year, travel style (companions, accessibility or language needs, favorite categories), and your trip's starting point",
+          "What you post or provide: photos, videos, text and places. When you provide photos or videos to a municipality, whether you want your name shown",
+          "Activity: likes, comments, saves and views; trip plans and records of transport and travel time; stamps (visits); point and coupon exchanges and use; how many times you used AI features",
+          "Location: your current location when collecting a stamp (only used to check you're nearby; not stored). Your location while “Share location” is on in a trip plan (shown only to members of that trip, not stored, gone when you turn it off). Location and direction for AR and the compass are used only on your device",
+          "Paid plans: payments are processed by Stripe. We store only your Stripe customer ID, your plan and its period; we never receive your card number",
+          "Push notifications: if you turn them on, the delivery address your browser issues",
+          "Inquiries: your name, email address and message",
+          "IP address: used to prevent abuse (many actions in a short time), to count AI uses for visitors who aren't logged in, and to roughly guess a default nationality at sign-up. It isn't stored in our database, and the guess is made on our server only",
+          "On your device: login state, language and display settings, recently viewed posts and offline trip plans are kept in your browser's storage. We don't use cookies for advertising or analytics"
+        ]
+      },
+      {
+        "heading": "2. How we use it",
+        "items": [
+          "To provide the Service (showing posts, trip plans, stamps, points, coupons, notifications and more)",
+          "To personalize recommendations and the display language",
+          "To provide paid plans and charge for them",
+          "To answer inquiries",
+          "To prevent abuse and keep the Service safe",
+          "To improve features and understand how the Service is used",
+          "To produce statistics for municipalities and businesses (aggregated so no individual can be identified)"
+        ]
+      },
+      {
+        "heading": "3. What municipalities, businesses and other users see",
+        "items": [
+          "Statistics: viewers' nationality and age group, and trends in starting regions and transport, are shown only in aggregate. Starting points with few people aren't named",
+          "Coupons: when a shop checks a coupon code, the holder's name (never the email address)",
+          "Provided photos and videos: your name and what you provided, with its place, go to that municipality. If used in a post, your name appears on it if you chose to show it",
+          "Comments and likes are visible to other users",
+          "If you share a trip plan, people you invite or who have the link can see it"
+        ]
+      },
+      {
+        "heading": "4. Information sent to outside services",
+        "body": "To provide features we use the services below and send them what they need. Many of these companies are outside Japan, such as in the United States, and handle the information under their own privacy policies. Maps and fonts load directly from your device, so your IP address and similar information reach those companies.",
+        "items": [
+          "Anthropic (US): the text, photos and trip details when you use AI features (trip concierge, photo search, AI plans, AI trip making, translation). We never send your name or email address",
+          "Google (US): starting points and destinations for route search (Google Maps Platform); loading fonts (Google Fonts)",
+          "Stripe (US): your email address, name and card details for paid plans (you enter card details directly on Stripe's page)",
+          "Notification delivery services (Google, Apple, Mozilla and others that make your browser): the content of push notifications (sent encrypted)",
+          "OpenFreeMap: loading map images",
+          "Open-Meteo: locations of tourist spots for weather forecasts (no user information is sent)",
+          "Render (US): hosting the Service's servers and data",
+          "Where your device has built-in AI (such as in Chrome) for translating, summarizing or polishing text, it is processed on your device and not sent anywhere"
+        ]
+      },
+      {
+        "heading": "5. Sharing with third parties",
+        "body": "Except where required by law, or where needed to protect someone's life, body or property and your consent is hard to obtain, we don't give your personal information to third parties without your consent. What is described in 3 and 4 happens through your own actions or as work entrusted to providers so that we can run the Service."
+      },
+      {
+        "heading": "6. Retention and deletion",
+        "items": [
+          "You can delete your account anytime in Settings. This also deletes related information such as posts, comments, likes, trip plans, points and coupons, and can't be undone",
+          "Photos and videos you provided that a municipality posted stay as that municipality's posts after account deletion (your name is removed from them)",
+          "If you delete your account while on a paid plan, the plan is cancelled too. Payment records are kept by Stripe for the period required by law",
+          "View records stay in statistics after account deletion, in a form not linked to you",
+          "Server access logs may be kept for a period by our hosting provider",
+          "Inquiries are kept separately from accounts, for handling and records"
+        ]
+      },
+      {
+        "heading": "7. Security",
+        "body": "Connections are encrypted with HTTPS, and passwords are stored in a form that can't be reversed. Card details never pass through our servers."
+      },
+      {
+        "heading": "8. Requests for disclosure, correction or deletion",
+        "body": "You can view, change and delete your own information in Settings. For other requests, such as disclosure, correction or stopping use, please use the contact form. We will confirm your identity and respond as required by law."
+      },
+      {
+        "heading": "9. Changes to this policy",
+        "body": "We'll announce changes on this page, and in the app for major changes."
+      },
+      {
+        "heading": "10. Contact",
+        "body": "For questions about this policy, please use the contact form."
+      }
+    ]
   },
   "contact": {
     "title": "Contact Us",
