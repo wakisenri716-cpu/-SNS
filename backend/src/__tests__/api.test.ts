@@ -1752,11 +1752,13 @@ test("宿を探す: rooms free near a spot from 楽天トラベル (booking happ
   process.env.RAKUTEN_ACCESS_KEY = "access-key";
   process.env.RAKUTEN_AFFILIATE_ID = "aff-id";
   const asked: URL[] = [];
+  const sentHeaders: any[] = [];
   const real = globalThis.fetch;
   const fetchMock = mock.method(globalThis, "fetch", async (input: any, init?: any) => {
     if (!String(input).includes("openapi.rakuten.co.jp")) return real(input, init);
     const url = new URL(String(input));
     asked.push(url);
+    sentHeaders.push(init?.headers ?? {});
     if (url.searchParams.get("adultNum") === "9") return new Response(JSON.stringify({ error: "not_found" }), { status: 404 });
     return new Response(
       JSON.stringify({
@@ -1780,6 +1782,8 @@ test("宿を探す: rooms free near a spot from 楽天トラベル (booking happ
     assert.deepEqual(on.items[0].plans.map((p: any) => [p.name, p.totalYen, p.breakfast]), [["朝食付き", 19600, true], ["素泊まり", 23600, false]]);
     const sent = asked[0];
     assert.match(sent.pathname, /\/Travel\/VacantHotelSearch\/20170426$/);
+    // Says which site it's for (楽天's allowed-websites check).
+    assert.match(sentHeaders[0].Referer, /^http:\/\/127\.0\.0\.1:\d+\/$/);
     assert.deepEqual(
       ["applicationId", "accessKey", "affiliateId", "datumType", "adultNum", "checkinDate", "searchRadius"].map((k) => sent.searchParams.get(k)),
       ["app-id", "access-key", "aff-id", "1", "2", day(7), "3"]

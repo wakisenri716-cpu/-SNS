@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "../prisma";
 import { staySearchLimiter } from "../middleware/rateLimit";
 import { ttlCache } from "../lib/ttlCache";
-import { RakutenError, hotelsNear, isRakutenConfigured, rakutenAffiliateId, searchVacantHotels, type StayHotel } from "../services/rakutenTravel";
+import { RakutenError, hotelsNear, isRakutenConfigured, rakutenAffiliateId, setRakutenSiteOrigin, searchVacantHotels, type StayHotel } from "../services/rakutenTravel";
 import { requireAuth } from "../middleware/auth";
 import { isAdminEmail } from "../lib/admin";
 import { matchHotel } from "../lib/hotelMatch";
@@ -13,6 +13,11 @@ import { todayInJapan } from "./events";
 // with prices, from 楽天トラベル; booking happens there. Without the 楽天 keys
 // the app offers a map search instead (configured: false).
 const router = Router();
+// Tell 楽天 which site these searches are for (its allowed-websites check).
+router.use((req, _res, next) => {
+  setRakutenSiteOrigin(`${req.protocol}://${req.get("host")}`);
+  next();
+});
 
 const DAY = 86_400_000;
 const schema = z

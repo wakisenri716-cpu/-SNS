@@ -16,6 +16,17 @@ export const rakutenAffiliateId = () => env("RAKUTEN_AFFILIATE_ID", "RAKUTEN_AFF
 
 export const isRakutenConfigured = () => !!rakutenAppId() && !!rakutenAccessKey();
 
+// 楽天 only accepts requests from the websites registered for the app
+// (「許可されているウェブサイト」), judged by the Referer / Origin a browser
+// would send. These calls come from the server, so they say the site's
+// address themselves: APP_ORIGIN if set, else the address the app was
+// reached at (routes/stays.ts passes it on).
+let siteOrigin = "";
+export function setRakutenSiteOrigin(origin: string) {
+  if (/^https?:\/\/[^/\s]+$/.test(origin)) siteOrigin = origin;
+}
+const origin = () => (process.env.APP_ORIGIN?.trim() || siteOrigin).replace(/\/$/, "");
+
 export interface StayPlan {
   name: string;
   roomName: string;
@@ -121,7 +132,7 @@ async function rakutenGet(api: string, params: Record<string, string>): Promise<
   };
   if (rakutenAffiliateId()) all.affiliateId = rakutenAffiliateId();
   for (const [k, v] of Object.entries(all)) url.searchParams.set(k, v);
-  const res = await fetch(url, { headers: { accessKey: rakutenAccessKey() }, signal: AbortSignal.timeout(8000) });
+  const res = await fetch(url, { headers: { accessKey: rakutenAccessKey(), ...(origin() ? { Referer: `${origin()}/`, Origin: origin() } : {}) }, signal: AbortSignal.timeout(8000) });
   // Nothing found (or no rooms free) is a 404 "not_found", not a failure.
   if (res.status === 404) return null;
   if (!res.ok) throw new RakutenError(`rakuten travel ${api} ${res.status}`, res.status);
