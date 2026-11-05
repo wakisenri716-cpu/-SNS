@@ -24,7 +24,7 @@ export const FREE_AI_PER_MONTH = AI_PER_MONTH.free;
 export const FREE_AI_MAX_PER_DAY = AI_MAX_PER_DAY.free;
 export const ANON_AI_PER_DAY = 3;
 
-export type AiFeature = "concierge" | "photoConcierge" | "tripPlan" | "tripCompose" | "transitRead";
+export type AiFeature = "concierge" | "photoConcierge" | "tripPlan" | "tripCompose" | "transitRead" | "reservationRead";
 export const AI_FEATURE_UNITS: Record<AiFeature, number> = {
   concierge: 1,
   photoConcierge: 1,
@@ -32,6 +32,8 @@ export const AI_FEATURE_UNITS: Record<AiFeature, number> = {
   tripCompose: 5,
   // 地元の交通情報: reading a municipality's or business's file.
   transitRead: 1,
+  // 予約明細: reading a pasted booking confirmation.
+  reservationRead: 1,
 };
 
 export const AI_TICKET_PACKS = [

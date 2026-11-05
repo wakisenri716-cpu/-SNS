@@ -1,3 +1,4 @@
+import { serializeReservation } from "../lib/tripReservations";
 import { Router } from "express";
 import { prisma } from "../prisma";
 import { ACTIVE_RIDE, serializeLegOption, serializeTransport } from "../lib/tripTransports";
@@ -85,6 +86,10 @@ router.get("/:token", tripViewLimiter, optionalAuth, async (req, res) => {
     // The way chosen for each leg (not the others written down), without notes.
     legOptions: (await prisma.tripLegOption.findMany({ where: { tripId: trip.id, chosen: true }, include: { rides: true } })).map((o) =>
       serializeLegOption(o, { forMembers: false })
+    ),
+    // 予約明細: what, where and when only (no booking numbers, prices or notes).
+    reservations: (await prisma.tripReservation.findMany({ where: { tripId: trip.id }, orderBy: { startAt: "asc" } })).map((r) =>
+      serializeReservation(r, { forMembers: false })
     ),
     savedIds,
   });

@@ -1856,3 +1856,28 @@ test("投稿から宿を予約: a lodging post finds its 楽天トラベル hote
     delete process.env.RAKUTEN_ACCESS_KEY;
   }
 });
+
+test("予約明細: bookings in the しおり, booking numbers for members only, read from a pasted email by the AI", async () => {
+  const owner = (await call("POST", "/api/auth/register", { email: "booker@example.com", password: "password123", name: "予約する人" })).json.token;
+  const trip = (await call("POST", "/api/me/trips", { name: "上高地の旅", startDate: "2027-05-20" }, owner)).json;
+  const stay = { kind: "lodging", name: "上高地帝国ホテル", startAt: "2027-05-20T06:00:00.000Z", endAt: "2027-05-21T01:00:00.000Z", address: "長野県松本市安曇上高地", phone: "0263-95-2001", confirmation: "RY12345678", guests: 2, planName: "朝食付き", priceYen: 78000, payment: "onsite", bookedVia: "楽天トラベル", url: "https://travel.rakuten.co.jp/my/booking/1", note: "記念日" };
+  assert.equal((await call("POST", `/api/me/trips/${trip.id}/reservations`, { ...stay, endAt: "2027-05-19T00:00:00.000Z" }, owner)).status, 400, "ends before it starts");
+  assert.equal((await call("POST", `/api/me/trips/${trip.id}/reservations`, { ...stay, url: "javascript:alert(1)" }, owner)).status, 400);
+  const made = await call("POST", `/api/me/trips/${trip.id}/reservations`, stay, owner);
+  assert.equal(made.status, 201);
+  const dinner = (await call("POST", `/api/me/trips/${trip.id}/reservations`, { kind: "restaurant", name: "そば処", startAt: "2027-05-20T09:30:00.000Z" }, owner)).json;
+  const it = (await call("GET", `/api/me/trips/${trip.id}/itinerary`, undefined, owner)).json;
+  assert.deepEqual(it.reservations.map((r: any) => [r.name, r.confirmation]), [["上高地帝国ホテル", "RY12345678"], ["そば処", ""]]);
+  // Others can't touch it.
+  const other = (await call("POST", "/api/auth/register", { email: "other-booker@example.com", password: "password123", name: "他人" })).json.token;
+  assert.equal((await call("DELETE", `/api/me/trips/${trip.id}/reservations/${dinner.id}`, undefined, other)).status, 404);
+  // A shared link: what, where and when — no booking number, price, notes or booking page.
+  const token = (await call("POST", `/api/me/trips/${trip.id}/share`, undefined, owner)).json.token;
+  const shared = (await call("GET", `/api/trips/${token}`)).json.reservations[0];
+  assert.deepEqual([shared.name, shared.address, shared.confirmation, shared.priceYen, shared.note, shared.url], ["上高地帝国ホテル", "長野県松本市安曇上高地", "", null, "", ""]);
+  assert.equal((await call("PUT", `/api/me/trips/${trip.id}/reservations/${dinner.id}`, { kind: "restaurant", name: "そば処 上高地", startAt: "2027-05-20T10:00:00.000Z" }, owner)).status, 204);
+  assert.equal((await call("DELETE", `/api/me/trips/${trip.id}/reservations/${dinner.id}`, undefined, owner)).status, 204);
+  // Without a Claude key the AI reading says so.
+  const read = await call("POST", `/api/me/trips/${trip.id}/reservations/read`, { text: "【楽天トラベル】ご予約ありがとうございます。予約番号：RY12345678 宿泊施設：上高地帝国ホテル" }, owner);
+  assert.deepEqual([read.status, read.json.code], [503, "aiUnavailable"]);
+});

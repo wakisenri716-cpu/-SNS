@@ -294,6 +294,7 @@ export interface Itinerary {
   legs: TransitSuggestion[];
   transports?: TripTransport[];
   legOptions?: LegOption[];
+  reservations?: TripReservation[];
   photos?: TripPhoto[];
   // Set while a read-only link (/trip/:token) to this しおり is shared
   // (owner only; null for members).
@@ -320,6 +321,7 @@ export interface SharedTrip {
   transports?: TripTransport[];
   // The way chosen for each leg (without notes or seats).
   legOptions?: LegOption[];
+  reservations?: TripReservation[];
 }
 
 // イベント情報 (GET /events). Dates are calendar days, "YYYY-MM-DD".
@@ -447,4 +449,24 @@ export interface LocalTransit {
   issuer: { kind: "municipality" | "company"; id: string; name: string };
   /** The spot it's for, or null for the whole municipality. */
   reel: { id: string; locationName: string | null } | null;
+}
+
+/** 予約明細 in a しおり. On a shared link: no booking number, price, payment, notes or page. */
+export interface TripReservation {
+  id: string;
+  kind: "lodging" | "restaurant" | "activity" | "other";
+  name: string;
+  reelId: string | null;
+  startAt: string;
+  endAt: string | null;
+  address: string;
+  phone: string;
+  confirmation: string;
+  guests: number | null;
+  planName: string;
+  priceYen: number | null;
+  payment: "paid" | "onsite" | "";
+  bookedVia: string;
+  url: string;
+  note: string;
 }

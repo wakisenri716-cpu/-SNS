@@ -12,6 +12,7 @@ import { chooseTrips } from "../lib/trips";
 import { showToast } from "../lib/toast";
 import type { SharedTrip } from "../types";
 import TripTransports from "../components/TripTransports";
+import TripReservations from "../components/TripReservations";
 import LegOptions from "../components/LegOptions";
 import { chosenFor, legMinutesWithChoices, optionsFor } from "../lib/legOptions";
 
@@ -127,6 +128,7 @@ export default function TripPage() {
       {(trip.transports?.length ?? 0) > 0 && (
         <div className="mt-5">
           <TripTransports tripId="" startDate={trip.startDate} transports={trip.transports!} readOnly />
+          {(trip.reservations ?? []).length > 0 && <TripReservations tripId="" reservations={trip.reservations!} readOnly />}
         </div>
       )}
       {flyoverOpen && (

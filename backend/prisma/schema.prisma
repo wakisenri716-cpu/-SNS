@@ -505,6 +505,7 @@ model Trip {
   transports  TripTransport[]
   legOptions  TripLegOption[]
   photos      TripPhoto[]
+  reservations TripReservation[]
 
   @@index([userId])
 }
@@ -807,4 +808,37 @@ model AdminLog {
   createdAt DateTime @default(now())
 
   @@index([createdAt])
+}
+
+// 予約済みの予約明細: a booking the travellers made — a place to stay, a
+// restaurant, an activity — written into the しおり (typed, or read from the
+// confirmation email). Confirmation numbers, prices, notes and the booking
+// page are for the trip's members; a shared link shows only what, where and when.
+model TripReservation {
+  id           String   @id @default(cuid())
+  tripId       String
+  trip         Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  // "lodging" | "restaurant" | "activity" | "other"
+  kind         String   @default("lodging")
+  name         String
+  // The しおり stop it's for, if any (a post's id; not enforced).
+  reelId       String?
+  // Check-in / reservation time, and check-out / end (optional).
+  startAt      DateTime
+  endAt        DateTime?
+  address      String   @default("")
+  phone        String   @default("")
+  confirmation String   @default("")
+  guests       Int?
+  planName     String   @default("")
+  priceYen     Int?
+  // "paid" | "onsite" | "" (unknown)
+  payment      String   @default("")
+  // Where it was booked (楽天トラベル, じゃらん, the inn's own site, …) and the reservation page.
+  bookedVia    String   @default("")
+  url          String   @default("")
+  note         String   @default("")
+  createdAt    DateTime @default(now())
+
+  @@index([tripId, startAt])
 }

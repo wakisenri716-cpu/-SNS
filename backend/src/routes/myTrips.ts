@@ -1,3 +1,6 @@
+import { serializeReservation } from "../lib/tripReservations";
+import { readReservation } from "../services/reservationReader";
+import { logClaudeError } from "../services/claude";
 import { randomBytes } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
@@ -236,6 +239,7 @@ router.get("/:id/itinerary", async (req, res) => {
   });
   const transports = await prisma.tripTransport.findMany({ where: { tripId: trip.id, ...ACTIVE_RIDE }, orderBy: { departAt: "asc" } });
   const legOptions = await prisma.tripLegOption.findMany({ where: { tripId: trip.id }, orderBy: { createdAt: "asc" }, include: { rides: true } });
+  const reservations = await prisma.tripReservation.findMany({ where: { tripId: trip.id }, orderBy: { startAt: "asc" } });
   const photos = await prisma.tripPhoto.findMany({
     where: { tripId: trip.id },
     orderBy: [{ takenAt: "asc" }, { createdAt: "asc" }],
@@ -247,6 +251,7 @@ router.get("/:id/itinerary", async (req, res) => {
     ...(await buildItinerary(trip.id, { withOrigin: true })),
     transports: transports.map((t) => serializeTransport(t, { forMembers: true })),
     legOptions: legOptions.map((o) => serializeLegOption(o, { forMembers: true })),
+    reservations: reservations.map((r) => serializeReservation(r, { forMembers: true })),
     isOwner,
     owner: people.user,
     members: people.members.map((m) => m.user),
@@ -475,6 +480,92 @@ router.delete("/:id/transports/:transportId", async (req, res) => {
   if (count === 0) return res.status(404).json({ error: "便が見つかりません" });
   await changed(access.trip.id, req.auth!.userId);
   res.status(204).end();
+});
+
+// 予約明細 (see the TripReservation model): bookings the travellers made.
+const MAX_RESERVATIONS = 30;
+const reservationSchema = z
+  .object({
+    kind: z.enum(["lodging", "restaurant", "activity", "other"]).default("lodging"),
+    name: text(80).pipe(z.string().min(1)),
+    reelId: z.string().max(40).nullable().default(null),
+    startAt: z.coerce.date(),
+    endAt: z.coerce.date().nullable().default(null),
+    address: text(200).default(""),
+    phone: text(30).default(""),
+    confirmation: text(60).default(""),
+    guests: z.coerce.number().int().min(1).max(99).nullable().default(null),
+    planName: text(120).default(""),
+    priceYen: z.coerce.number().int().min(0).max(100_000_000).nullable().default(null),
+    payment: z.enum(["paid", "onsite", ""]).default(""),
+    bookedVia: text(60).default(""),
+    url: z
+      .string()
+      .trim()
+      .max(1000)
+      .default("")
+      .refine((v) => v === "" || /^https:\/\/\S+$/.test(v), "url"),
+    note: text(500).default(""),
+  })
+  // Ends after it starts, within a month.
+  .refine((r) => !r.endAt || (r.endAt.getTime() >= r.startAt.getTime() && r.endAt.getTime() - r.startAt.getTime() <= 31 * 24 * 3600_000), { message: "end" });
+const reservationError = (e: z.ZodError) =>
+  e.issues.some((i) => i.message === "end")
+    ? "チェックアウト（終わり）は開始より後にしてください"
+    : e.issues.some((i) => i.message === "url")
+      ? "予約ページのURLは https:// から始めてください"
+      : "名前と日時を入力してください";
+
+router.post("/:id/reservations", async (req, res) => {
+  const parsed = reservationSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: reservationError(parsed.error) });
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  if ((await prisma.tripReservation.count({ where: { tripId: access.trip.id } })) >= MAX_RESERVATIONS) {
+    return res.status(400).json({ error: `予約は${MAX_RESERVATIONS}件まで登録できます` });
+  }
+  const created = await prisma.tripReservation.create({ data: { tripId: access.trip.id, ...parsed.data } });
+  await changed(access.trip.id, req.auth!.userId);
+  res.status(201).json(serializeReservation(created, { forMembers: true }));
+});
+
+router.put("/:id/reservations/:reservationId", async (req, res) => {
+  const parsed = reservationSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: reservationError(parsed.error) });
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  const { count } = await prisma.tripReservation.updateMany({ where: { id: req.params.reservationId, tripId: access.trip.id }, data: parsed.data });
+  if (count === 0) return res.status(404).json({ error: "予約が見つかりません" });
+  await changed(access.trip.id, req.auth!.userId);
+  res.status(204).end();
+});
+
+router.delete("/:id/reservations/:reservationId", async (req, res) => {
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  const { count } = await prisma.tripReservation.deleteMany({ where: { id: req.params.reservationId, tripId: access.trip.id } });
+  if (count === 0) return res.status(404).json({ error: "予約が見つかりません" });
+  await changed(access.trip.id, req.auth!.userId);
+  res.status(204).end();
+});
+
+// 予約明細を読み取る: the AI fills the fields from a pasted confirmation (not saved).
+router.post("/:id/reservations/read", async (req, res) => {
+  const parsed = z.object({ text: z.string().trim().min(20).max(20000) }).safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "予約確認メールの文章を貼り付けてください" });
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  const quota = await checkAiQuota(req, res, "reservationRead");
+  if (quota === "refused") return;
+  if (quota === "noAi") return res.status(503).json({ code: "aiUnavailable", error: "いまはAIで読み取れません。入力欄に書き写してください" });
+  try {
+    const { usage, ...draft } = await readReservation(parsed.data.text);
+    await recordAiUse(req, "reservationRead", usage);
+    res.json(draft);
+  } catch (err) {
+    logClaudeError("reservation.read", err);
+    res.status(502).json({ error: "AIで読み取れませんでした。入力欄に書き写してください" });
+  }
 });
 
 // 旅のアルバム (see the TripPhoto model): members add photos, each placed at

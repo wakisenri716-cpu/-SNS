@@ -22,6 +22,7 @@ import OwnAiButtons from "./OwnAiButtons";
 import { tripPrompt } from "../lib/ownAi";
 import TripWeather from "./TripWeather";
 import TripTransports from "./TripTransports";
+import TripReservations from "./TripReservations";
 import LegOptions from "./LegOptions";
 import { localAt, transportsForLegs } from "../lib/transitPaste";
 import { chosenFareTotal, chosenFor, legMinutesWithChoices, optionsFor } from "../lib/legOptions";
@@ -442,6 +443,14 @@ export function ItineraryPanel({
             tripId={tripId}
             startDate={itinerary.trip.startDate}
             transports={itinerary.transports ?? []}
+            readOnly={offline}
+            onChanged={() => void load().catch(() => {})}
+          />
+          {/* 予約明細: also offline — the booking number at the front desk. */}
+          <TripReservations
+            tripId={tripId}
+            reservations={itinerary.reservations ?? []}
+            stops={itinerary.stops}
             readOnly={offline}
             onChanged={() => void load().catch(() => {})}
           />

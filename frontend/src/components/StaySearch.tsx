@@ -209,7 +209,8 @@ export default function StaySearch({
               ))}
             </ul>
           )}
-          <p className="mt-3 text-[10px] leading-relaxed text-gray-500">
+          <p className="mt-3 rounded-xl bg-jz-tint px-3 py-2 text-[11px] leading-relaxed text-jz-ink">{t("stays.afterBooking")}</p>
+          <p className="mt-2 text-[10px] leading-relaxed text-gray-500">
             {t("stays.note")}
             {result.affiliate && ` ${t("stays.affiliate")}`}
           </p>

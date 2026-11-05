@@ -32,3 +32,26 @@ test("a PDF is sent as a document block; the draft comes back trimmed, with a va
     create.mock.restore();
   }
 });
+
+test("予約明細: a pasted confirmation becomes the reservation's fields; nothing made up survives", async () => {
+  const { getClaudeClient } = await import("../services/claude");
+  const { readReservation } = await import("../services/reservationReader");
+  let sent: any = null;
+  const create = mock.method(getClaudeClient().beta.messages, "create", async (body: any) => {
+    sent = body;
+    return {
+      model: "claude-sonnet-5-5",
+      stop_reason: "end_turn",
+      usage: { input_tokens: 900, output_tokens: 200 },
+      content: [{ type: "text", text: JSON.stringify({ kind: "lodging", name: "上高地帝国ホテル", start: "2027-05-20T15:00", end: "2027-05-21 10:00", address: "長野県松本市安曇上高地", phone: "0263-95-2001", confirmation: "RY12345678", guests: "2", planName: "朝食付き", priceYen: "78000", payment: "onsite", bookedVia: "楽天トラベル", url: "http://example.com/x" }) }],
+    };
+  });
+  try {
+    const d = await readReservation("【楽天トラベル】予約確認 予約番号：RY12345678 ...");
+    assert.match(sent.messages[0].content, /^<confirmation>/);
+    assert.match(sent.system, /never invent/);
+    assert.deepEqual([d.start, d.end, d.guests, d.priceYen, d.url, d.confirmation], ["2027-05-20T15:00", "", 2, 78000, "", "RY12345678"]);
+  } finally {
+    create.mock.restore();
+  }
+});
