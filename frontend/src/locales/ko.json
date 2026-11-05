@@ -2095,6 +2095,23 @@
     "needNameDate": "이름과 일시를 입력해 주세요",
     "save": "저장",
     "saved": "예약을 일정에 넣었습니다",
-    "saveError": "저장하지 못했습니다. 다시 시도해 주세요"
+    "saveError": "저장하지 못했습니다. 다시 시도해 주세요",
+    "pending": "진행 중",
+    "pendingNote": "Jaziba에서 예약 페이지를 열어서 기록해 두었습니다. 예약되었나요?",
+    "yesBooked": "예약했어요",
+    "notBooked": "안 했어요",
+    "bookedSaved": "예약 완료로 했습니다",
+    "dropped": "일정에서 지웠습니다",
+    "askTitle": "{{name}} 예약되었나요?",
+    "askBody": "'예약하기'를 누른 시점에 일정 '{{trip}}'에 진행 중으로 넣어 두었습니다.",
+    "askNumber": "예약 번호(선택・나중에도 OK)",
+    "later": "나중에",
+    "openTrip": "일정에서 보기",
+    "recorded": "일정 '{{trip}}'에 진행 중으로 기록했습니다",
+    "sharedTitle": "예약 확인 메일을 받았습니다",
+    "toTrip": "넣을 일정",
+    "addToTrip": "일정에 예약으로 넣기",
+    "noTrip": "일정을 만들면 여기서 예약을 넣을 수 있습니다.",
+    "mergedShared": "진행 중인 예약에 예약 번호 등을 넣었습니다"
   }
 }

@@ -61,7 +61,14 @@ export default function TripReservations({
       ) : (
         <ul className="space-y-2">
           {reservations.map((r) => (
-            <ReservationCard key={r.id} r={r} readOnly={readOnly} onEdit={() => setEditing(r)} onRemove={() => void remove(r)} />
+            <ReservationCard
+              key={r.id}
+              r={r}
+              readOnly={readOnly}
+              onEdit={() => setEditing(r)}
+              onRemove={() => void remove(r)}
+              onConfirm={() => void api.patch(`/me/trips/${tripId}/reservations/${r.id}`, { status: "booked" }).then(() => onChanged?.())}
+            />
           ))}
         </ul>
       )}
@@ -81,7 +88,7 @@ export default function TripReservations({
   );
 }
 
-function ReservationCard({ r, readOnly, onEdit, onRemove }: { r: TripReservation; readOnly: boolean; onEdit: () => void; onRemove: () => void }) {
+function ReservationCard({ r, readOnly, onEdit, onRemove, onConfirm }: { r: TripReservation; readOnly: boolean; onEdit: () => void; onRemove: () => void; onConfirm: () => void }) {
   const { t, i18n } = useTranslation();
   const Icon = ICON[r.kind] ?? CalendarCheck;
   const when = (iso: string) => new Date(iso).toLocaleString(i18n.language, { month: "numeric", day: "numeric", weekday: "short", hour: "2-digit", minute: "2-digit" });
@@ -102,7 +109,10 @@ function ReservationCard({ r, readOnly, onEdit, onRemove }: { r: TripReservation
           <Icon className="h-[18px] w-[18px]" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-bold leading-snug text-jz-ink">{r.name}</p>
+          <p className="text-sm font-bold leading-snug text-jz-ink">
+            {r.status === "pending" && <span className="mr-1 rounded-full bg-amber-50 px-1.5 py-0.5 text-[10px] text-amber-700">{t("reservation.pending")}</span>}
+            {r.name}
+          </p>
           <p className="mt-0.5 text-[11px] leading-relaxed text-gray-600">
             {r.kind === "lodging" && r.endAt
               ? t("reservation.stayRange", { from: when(r.startAt), to: when(r.endAt), nights })
@@ -131,6 +141,17 @@ function ReservationCard({ r, readOnly, onEdit, onRemove }: { r: TripReservation
           <span className="min-w-0 flex-1 truncate font-mono text-sm font-bold tracking-wide text-jz-ink">{r.confirmation}</span>
           <Copy className="h-3.5 w-3.5 shrink-0 text-gray-400" />
         </button>
+      )}
+      {r.status === "pending" && !readOnly && (
+        <div className="mt-2 flex flex-wrap items-center gap-2 rounded-xl bg-amber-50 px-3 py-2 text-[11px] text-amber-800">
+          <span className="min-w-0 flex-1">{t("reservation.pendingNote")}</span>
+          <button type="button" onClick={onConfirm} className="rounded-full bg-jz-accent px-2.5 py-1 font-bold text-white">
+            {t("reservation.yesBooked")}
+          </button>
+          <button type="button" onClick={onRemove} className="rounded-full bg-white px-2.5 py-1 font-bold text-gray-700">
+            {t("reservation.notBooked")}
+          </button>
+        </div>
       )}
       {r.note && <p className="mt-2 whitespace-pre-wrap text-[11px] text-gray-600">{r.note}</p>}
       <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] font-bold">

@@ -2,6 +2,9 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { BedDouble, Coffee, ExternalLink, Loader2, MapPin, Star, UtensilsCrossed } from "lucide-react";
 import { api } from "../api/client";
+import { useAuth } from "../auth/AuthContext";
+import { recordPendingBooking } from "../lib/pendingBooking";
+import { showToast } from "../lib/toast";
 
 interface Plan {
   name: string;
@@ -20,6 +23,7 @@ interface Hotel {
   reviewCount: number;
   access: string;
   nearestStation: string;
+  address?: string;
   planListUrl: string;
   plans: Plan[];
 }
@@ -60,6 +64,7 @@ export default function StaySearch({
   linkedHotelNo?: number | null;
 }) {
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
   const [checkin, setCheckin] = useState(localDay(1));
   const [nights, setNights] = useState(1);
   const [adults, setAdults] = useState(2);
@@ -195,7 +200,28 @@ export default function StaySearch({
                               <span className="block text-[9px] font-normal text-gray-500">{t("stays.total", { nights: result.nights, adults })}</span>
                             </p>
                           )}
-                          <a href={p.reserveUrl} target="_blank" rel="noopener noreferrer sponsored" className="shrink-0 rounded-full bg-jz-accent px-3 py-1.5 text-xs font-bold text-white active:scale-95">
+                          <a
+                            href={p.reserveUrl}
+                            target="_blank"
+                            rel="noopener noreferrer sponsored"
+                            onClick={() => {
+                              // Into the しおり at once, as 手続き中 (asked about on return).
+                              if (!user) return;
+                              void recordPendingBooking({
+                                name: h.name,
+                                address: h.address ?? "",
+                                checkin,
+                                checkout: addDays(checkin, nights),
+                                adults,
+                                planName: p.name,
+                                totalYen: p.totalYen,
+                                url: h.planListUrl,
+                              })
+                                .then((trip) => trip && showToast(t("reservation.recorded", { trip })))
+                                .catch(() => {});
+                            }}
+                            className="shrink-0 rounded-full bg-jz-accent px-3 py-1.5 text-xs font-bold text-white active:scale-95"
+                          >
                             {t("stays.reserve")}
                           </a>
                         </li>

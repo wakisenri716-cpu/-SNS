@@ -1,3 +1,4 @@
+import PendingBookingPrompt from "./PendingBookingPrompt";
 import { Suspense, useEffect, useRef, useState, type ComponentType } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -368,6 +369,7 @@ export default function Layout() {
       </main>
 
       <Toaster />
+      <PendingBookingPrompt />
       <TripPickerHost />
 
       <ItineraryRail />

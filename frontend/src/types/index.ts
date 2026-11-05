@@ -455,6 +455,8 @@ export interface LocalTransit {
 export interface TripReservation {
   id: string;
   kind: "lodging" | "restaurant" | "activity" | "other";
+  /** "pending": written down when 予約へ was pressed, not yet confirmed. */
+  status: "pending" | "booked";
   name: string;
   reelId: string | null;
   startAt: string;

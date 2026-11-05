@@ -2095,6 +2095,23 @@
     "needNameDate": "请输入名称和日期时间",
     "save": "保存",
     "saved": "已将预订加入行程",
-    "saveError": "保存失败，请重试"
+    "saveError": "保存失败，请重试",
+    "pending": "办理中",
+    "pendingNote": "您从Jaziba打开了预订页面，已先行记录。预订成功了吗？",
+    "yesBooked": "已预订",
+    "notBooked": "没有预订",
+    "bookedSaved": "已设为已预订",
+    "dropped": "已从行程中删除",
+    "askTitle": "{{name}}预订成功了吗？",
+    "askBody": "点击“去预订”时，已将其作为办理中记录到行程“{{trip}}”。",
+    "askNumber": "预订号（可选，之后再填也可以）",
+    "later": "稍后",
+    "openTrip": "在行程中查看",
+    "recorded": "已作为办理中记录到行程“{{trip}}”",
+    "sharedTitle": "已收到预订确认邮件",
+    "toTrip": "加入的行程",
+    "addToTrip": "作为预订加入行程",
+    "noTrip": "创建行程后即可从这里添加预订。",
+    "mergedShared": "已为办理中的预订填入预订号等信息"
   }
 }

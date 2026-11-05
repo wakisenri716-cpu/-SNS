@@ -1877,6 +1877,19 @@ test("予約明細: bookings in the しおり, booking numbers for members only,
   assert.deepEqual([shared.name, shared.address, shared.confirmation, shared.priceYen, shared.note, shared.url], ["上高地帝国ホテル", "長野県松本市安曇上高地", "", null, "", ""]);
   assert.equal((await call("PUT", `/api/me/trips/${trip.id}/reservations/${dinner.id}`, { kind: "restaurant", name: "そば処 上高地", startAt: "2027-05-20T10:00:00.000Z" }, owner)).status, 204);
   assert.equal((await call("DELETE", `/api/me/trips/${trip.id}/reservations/${dinner.id}`, undefined, owner)).status, 204);
+  // 「予約へ」 in Jaziba writes it down at once as 手続き中; not on a shared link yet.
+  const pending = (await call("POST", `/api/me/trips/${trip.id}/reservations`, { kind: "lodging", status: "pending", name: "上高地温泉ホテル", startAt: "2027-05-21T06:00:00.000Z", endAt: "2027-05-22T01:00:00.000Z", guests: 2, priceYen: 42000, bookedVia: "楽天トラベル" }, owner)).json;
+  assert.equal(pending.status, "pending");
+  assert.equal((await call("GET", `/api/trips/${token}`)).json.reservations.some((r: any) => r.id === pending.id), false);
+  // The confirmation email (shared or pasted) fills in that one instead of adding another.
+  const confirmed = await call("POST", `/api/me/trips/${trip.id}/reservations`, { kind: "lodging", name: "上高地温泉ホテル（楽天トラベル）", startAt: "2027-05-21T06:30:00.000Z", confirmation: "RY999" }, owner);
+  assert.deepEqual([confirmed.status, confirmed.json.id, confirmed.json.status, confirmed.json.confirmation, confirmed.json.priceYen], [200, pending.id, "booked", "RY999", 42000]);
+  // Or just 「予約できた」.
+  const second = (await call("POST", `/api/me/trips/${trip.id}/reservations`, { kind: "restaurant", status: "pending", name: "山小屋カフェ", startAt: "2027-05-21T03:00:00.000Z" }, owner)).json;
+  assert.equal((await call("PATCH", `/api/me/trips/${trip.id}/reservations/${second.id}`, { status: "booked", confirmation: "C-1" }, owner)).status, 204);
+  const after = (await call("GET", `/api/me/trips/${trip.id}/itinerary`, undefined, owner)).json.reservations.find((r: any) => r.id === second.id);
+  assert.deepEqual([after.status, after.confirmation], ["booked", "C-1"]);
+
   // Without a Claude key the AI reading says so.
   const read = await call("POST", `/api/me/trips/${trip.id}/reservations/read`, { text: "【楽天トラベル】ご予約ありがとうございます。予約番号：RY12345678 宿泊施設：上高地帝国ホテル" }, owner);
   assert.deepEqual([read.status, read.json.code], [503, "aiUnavailable"]);

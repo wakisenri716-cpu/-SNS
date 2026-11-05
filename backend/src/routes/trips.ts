@@ -88,7 +88,7 @@ router.get("/:token", tripViewLimiter, optionalAuth, async (req, res) => {
       serializeLegOption(o, { forMembers: false })
     ),
     // 予約明細: what, where and when only (no booking numbers, prices or notes).
-    reservations: (await prisma.tripReservation.findMany({ where: { tripId: trip.id }, orderBy: { startAt: "asc" } })).map((r) =>
+    reservations: (await prisma.tripReservation.findMany({ where: { tripId: trip.id, status: "booked" }, orderBy: { startAt: "asc" } })).map((r) =>
       serializeReservation(r, { forMembers: false })
     ),
     savedIds,

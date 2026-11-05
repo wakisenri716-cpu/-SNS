@@ -5,6 +5,7 @@ export function serializeReservation(
   r: {
     id: string;
     kind: string;
+    status: string;
     name: string;
     reelId: string | null;
     startAt: Date;
@@ -25,6 +26,7 @@ export function serializeReservation(
   return {
     id: r.id,
     kind: r.kind,
+    status: r.status,
     name: r.name,
     reelId: r.reelId,
     startAt: r.startAt,
@@ -38,3 +40,11 @@ export function serializeReservation(
       : { confirmation: "", planName: "", priceYen: null, payment: "", url: "", note: "" }),
   };
 }
+
+/** Names compared loosely (width, spaces, brackets), for matching a confirmation to a pending booking. */
+export const sameBookingName = (a: string, b: string) => {
+  const n = (s: string) => s.normalize("NFKC").toLowerCase().replace(/[\s・()（）【】「」\[\]-]/g, "");
+  const x = n(a);
+  const y = n(b);
+  return x.length >= 2 && y.length >= 2 && (x.includes(y) || y.includes(x));
+};

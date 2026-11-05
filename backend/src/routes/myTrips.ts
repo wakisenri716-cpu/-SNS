@@ -1,4 +1,4 @@
-import { serializeReservation } from "../lib/tripReservations";
+import { sameBookingName, serializeReservation } from "../lib/tripReservations";
 import { readReservation } from "../services/reservationReader";
 import { logClaudeError } from "../services/claude";
 import { randomBytes } from "node:crypto";
@@ -487,6 +487,7 @@ const MAX_RESERVATIONS = 30;
 const reservationSchema = z
   .object({
     kind: z.enum(["lodging", "restaurant", "activity", "other"]).default("lodging"),
+    status: z.enum(["pending", "booked"]).default("booked"),
     name: text(80).pipe(z.string().min(1)),
     reelId: z.string().max(40).nullable().default(null),
     startAt: z.coerce.date(),
@@ -521,6 +522,22 @@ router.post("/:id/reservations", async (req, res) => {
   if (!parsed.success) return res.status(400).json({ error: reservationError(parsed.error) });
   const access = await accessibleTrip(req.auth!.userId, req.params.id);
   if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  // A confirmation for a booking started from Jaziba (「予約へ」): fill in that
+  // one instead of adding a second — same place, starting within a day.
+  if (parsed.data.status === "booked") {
+    const day = 24 * 3600_000;
+    const pending = await prisma.tripReservation.findMany({
+      where: { tripId: access.trip.id, status: "pending", startAt: { gte: new Date(parsed.data.startAt.getTime() - day), lte: new Date(parsed.data.startAt.getTime() + day) } },
+    });
+    const match = pending.find((p) => sameBookingName(p.name, parsed.data.name));
+    if (match) {
+      // Keep what the pending one knew when the email doesn't say.
+      const fill = Object.fromEntries(Object.entries(parsed.data).filter(([, v]) => v !== "" && v !== null)) as typeof parsed.data;
+      const updated = await prisma.tripReservation.update({ where: { id: match.id }, data: { ...fill, status: "booked" } });
+      await changed(access.trip.id, req.auth!.userId);
+      return res.status(200).json({ ...serializeReservation(updated, { forMembers: true }), merged: true });
+    }
+  }
   if ((await prisma.tripReservation.count({ where: { tripId: access.trip.id } })) >= MAX_RESERVATIONS) {
     return res.status(400).json({ error: `予約は${MAX_RESERVATIONS}件まで登録できます` });
   }
@@ -532,6 +549,18 @@ router.post("/:id/reservations", async (req, res) => {
 router.put("/:id/reservations/:reservationId", async (req, res) => {
   const parsed = reservationSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: reservationError(parsed.error) });
+  const access = await accessibleTrip(req.auth!.userId, req.params.id);
+  if (!access) return res.status(404).json({ error: "旅が見つかりません" });
+  const { count } = await prisma.tripReservation.updateMany({ where: { id: req.params.reservationId, tripId: access.trip.id }, data: parsed.data });
+  if (count === 0) return res.status(404).json({ error: "予約が見つかりません" });
+  await changed(access.trip.id, req.auth!.userId);
+  res.status(204).end();
+});
+
+// 予約できた / the booking number afterwards: just these fields.
+router.patch("/:id/reservations/:reservationId", async (req, res) => {
+  const parsed = z.object({ status: z.enum(["pending", "booked"]).optional(), confirmation: text(60).optional() }).safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
   const access = await accessibleTrip(req.auth!.userId, req.params.id);
   if (!access) return res.status(404).json({ error: "旅が見つかりません" });
   const { count } = await prisma.tripReservation.updateMany({ where: { id: req.params.reservationId, tripId: access.trip.id }, data: parsed.data });

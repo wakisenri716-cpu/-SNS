@@ -820,6 +820,9 @@ model TripReservation {
   trip         Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
   // "lodging" | "restaurant" | "activity" | "other"
   kind         String   @default("lodging")
+  // "pending": written down the moment 「予約へ」 was pressed in Jaziba, until
+  // the traveller says it went through ("booked") — or drops it.
+  status       String   @default("booked")
   name         String
   // The しおり stop it's for, if any (a post's id; not enforced).
   reelId       String?

@@ -2128,6 +2128,23 @@
     "needNameDate": "Enter the name and the date and time",
     "save": "Save",
     "saved": "Booking added to the trip plan",
-    "saveError": "Couldn't save. Please try again"
+    "saveError": "Couldn't save. Please try again",
+    "pending": "In progress",
+    "pendingNote": "Saved when you opened the booking page from Jaziba. Did the booking go through?",
+    "yesBooked": "Booked",
+    "notBooked": "Didn't book",
+    "bookedSaved": "Marked as booked",
+    "dropped": "Removed from the trip plan",
+    "askTitle": "Did you book {{name}}?",
+    "askBody": "When you pressed “Book”, we put it in your trip plan “{{trip}}” as in progress.",
+    "askNumber": "Booking number (optional, can add later)",
+    "later": "Later",
+    "openTrip": "Open trip plan",
+    "recorded": "Saved to “{{trip}}” as in progress",
+    "sharedTitle": "Booking confirmation received",
+    "toTrip": "Trip plan",
+    "addToTrip": "Add to trip plan as a booking",
+    "noTrip": "Make a trip plan to add bookings from here.",
+    "mergedShared": "Filled in the booking that was in progress"
   }
 }

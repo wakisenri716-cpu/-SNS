@@ -5,6 +5,8 @@ import { MapPin, Search, Sparkles, TrainFront } from "lucide-react";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { looksLikeRoute, parseTransitText, rideDateTimes, type ParsedRoute } from "../lib/transitPaste";
+import { guessReservation, type ReservationGuess } from "../lib/reservationPaste";
+import { localInputToIso } from "../lib/transportTiming";
 import { routeComplete, saveRoute, todayLocal } from "../lib/saveRoute";
 import { listTrips, type TripSummary } from "../lib/trips";
 import { showToast } from "../lib/toast";
@@ -40,6 +42,8 @@ export default function SharePage() {
   const [near, setNear] = useState<{ reel: Reel; km: number }[] | null>(null);
   const [photoSearch, setPhotoSearch] = useState(false);
   const [route, setRoute] = useState<ParsedRoute | null>(null);
+  // A booking confirmation (楽天トラベル, じゃらん, a restaurant…) → the しおり's 予約.
+  const [booking, setBooking] = useState<{ guess: ReservationGuess; text: string } | null>(null);
 
   // Take what the service worker kept (once: it's deleted after reading).
   useEffect(() => {
@@ -71,6 +75,9 @@ export default function SharePage() {
     const routeText = [shared.title, shared.text].join("\n");
     const parsed = looksLikeRoute(routeText) ? parseTransitText(routeText) : null;
     if (parsed) return setRoute(parsed);
+    const mail = [shared.title, shared.text, shared.url].join("\n");
+    const guess = guessReservation(mail);
+    if (guess.confirmation || (guess.name && guess.start)) return setBooking({ guess, text: mail });
     const coords = coordsInText(text);
     if (coords) return setWhere(coords);
     // Plain text (a place name, a note): search for it, without the links.
@@ -166,8 +173,9 @@ export default function SharePage() {
           )}
 
           {route && <SharedRoute route={route} />}
+          {booking && <SharedBooking guess={booking.guess} text={booking.text} />}
 
-          {!shared.photo && !where && !route && (
+          {!shared.photo && !where && !route && !booking && (
             <Link to="/search" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-jz-accent">
               <Search className="h-4 w-4" /> {t("shareIn.search")}
             </Link>
@@ -271,6 +279,128 @@ function SharedRoute({ route }: { route: ParsedRoute }) {
         </>
       )}
       <p className="mt-2 text-[10px] leading-relaxed text-gray-400">{t("shareIn.routeNote")}</p>
+    </section>
+  );
+}
+
+// A booking confirmation shared from the mail app → pick a trip → its 予約
+// (filling in the one written down when 予約へ was pressed, if it's there).
+function SharedBooking({ guess, text }: { guess: ReservationGuess; text: string }) {
+  const { t, i18n } = useTranslation();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [trips, setTrips] = useState<TripSummary[] | null>(null);
+  const [tripId, setTripId] = useState("");
+  const [g, setG] = useState(guess);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    listTrips()
+      .then((items) => {
+        setTrips(items);
+        const today = todayLocal();
+        const upcoming = items.filter((x) => x.startDate && x.startDate >= today).sort((a, b) => a.startDate!.localeCompare(b.startDate!))[0];
+        setTripId((upcoming ?? items[0])?.id ?? "");
+      })
+      .catch(() => setTrips([]));
+  }, [user]);
+
+  async function readAi() {
+    setBusy(true);
+    setError(null);
+    try {
+      const { data } = await api.post(`/me/trips/${tripId}/reservations/read`, { text });
+      setG((x) => ({ ...x, ...Object.fromEntries(Object.entries(data).filter(([, v]) => v !== "" && v !== null)) }));
+    } catch (err: any) {
+      setError(err?.response?.data?.error ?? t("reservation.readError"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function save() {
+    if (!g.name || !g.start) return setError(t("reservation.needNameDate"));
+    setBusy(true);
+    setError(null);
+    try {
+      const { data } = await api.post<{ merged?: boolean }>(`/me/trips/${tripId}/reservations`, {
+        kind: g.kind ?? "lodging",
+        name: g.name,
+        startAt: localInputToIso(g.start),
+        endAt: g.end ? localInputToIso(g.end) : null,
+        address: g.address ?? "",
+        phone: g.phone ?? "",
+        confirmation: g.confirmation ?? "",
+        guests: g.guests ?? null,
+        planName: g.planName ?? "",
+        priceYen: g.priceYen ?? null,
+        payment: g.payment ?? "",
+        bookedVia: g.bookedVia ?? "",
+        url: g.url ?? "",
+      });
+      showToast(t(data.merged ? "reservation.mergedShared" : "reservation.saved"));
+      navigate(`/itinerary/${tripId}`);
+    } catch (err: any) {
+      setError(err?.response?.data?.error ?? t("reservation.saveError"));
+      setBusy(false);
+    }
+  }
+
+  const rows: [string, string | undefined][] = [
+    [t("reservation.name"), g.name],
+    [t(g.kind === "lodging" ? "reservation.checkin" : "reservation.when"), g.start && new Date(g.start).toLocaleString(i18n.language, { month: "numeric", day: "numeric", weekday: "short", hour: "2-digit", minute: "2-digit" })],
+    [t("reservation.checkout"), g.end && new Date(g.end).toLocaleString(i18n.language, { month: "numeric", day: "numeric", weekday: "short", hour: "2-digit", minute: "2-digit" })],
+    [t("reservation.confirmation"), g.confirmation],
+    [t("reservation.plan"), g.planName],
+    [t("reservation.price"), g.priceYen != null ? `¥${g.priceYen.toLocaleString(i18n.language)}` : undefined],
+    [t("reservation.bookedVia"), g.bookedVia],
+  ];
+  return (
+    <section className="mt-6 rounded-2xl border border-gray-200 p-4">
+      <p className="text-sm font-bold text-jz-ink">{t("reservation.sharedTitle")}</p>
+      <dl className="mt-2 grid grid-cols-[7rem_1fr] gap-y-1 text-xs">
+        {rows
+          .filter(([, v]) => v)
+          .map(([k, v]) => (
+            <div key={k} className="contents">
+              <dt className="text-gray-500">{k}</dt>
+              <dd className="font-semibold text-gray-800">{v}</dd>
+            </div>
+          ))}
+      </dl>
+      {!user ? (
+        <Link to="/login" state={{ from: "/share" }} className="mt-3 inline-block rounded-full bg-jz-accent px-4 py-2 text-xs font-bold text-white">
+          {t("nav.login")}
+        </Link>
+      ) : trips && trips.length === 0 ? (
+        <p className="mt-3 text-xs text-gray-600">{t("reservation.noTrip")}</p>
+      ) : (
+        <>
+          <label className="mt-3 block text-xs font-medium text-gray-500">
+            {t("reservation.toTrip")}
+            <select value={tripId} onChange={(e) => setTripId(e.target.value)} className="mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm">
+              {(trips ?? []).map((x) => (
+                <option key={x.id} value={x.id}>
+                  {x.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          {error && <p className="mt-2 text-xs text-jz-warm-text">{error}</p>}
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button type="button" disabled={busy || !tripId || !g.name || !g.start} onClick={() => void save()} className="rounded-full bg-jz-accent px-4 py-2 text-xs font-bold text-white disabled:opacity-40">
+              {t("reservation.addToTrip")}
+            </button>
+            {(!g.name || !g.start) && (
+              <button type="button" disabled={busy || !tripId} onClick={() => void readAi()} className="rounded-full bg-gray-100 px-4 py-2 text-xs font-bold text-jz-ink disabled:opacity-40">
+                {t("reservation.readAi")}
+              </button>
+            )}
+          </div>
+        </>
+      )}
     </section>
   );
 }
