@@ -172,3 +172,26 @@ export function locatePlace(input: string): Promise<FoundPlace | null> {
     return lookupBuiltIn(input);
   });
 }
+
+// ---- Candidates for a place picker ------------------------------------------
+
+/** Stations and municipalities whose name contains the text (for 場所を選ぶ). */
+export function builtInCandidates(input: string, limit = 8): { name: string; detail: string; lat: number; lng: number; kind: "station" | "municipality" }[] {
+  const q = normalizePlace(input).replace(/駅$/, "");
+  if (!q) return [];
+  const rank = (name: string) => (name === q ? 0 : name.startsWith(q) ? 1 : 2);
+  const stations = places()
+    .stations.filter((s) => s[0].includes(q))
+    .sort((a, b) => rank(a[0]) - rank(b[0]) || b[4].length - a[4].length)
+    .slice(0, limit)
+    .map((s) => ({ name: `${s[0]}駅`, detail: s[1], lat: s[2], lng: s[3], kind: "station" as const, r: rank(s[0]) }));
+  const munis = places()
+    .municipalities.filter((m) => m[1].includes(q) || m[2].startsWith(q))
+    .sort((a, b) => rank(a[1]) - rank(b[1]))
+    .slice(0, limit)
+    .map((m) => ({ name: m[1], detail: m[0], lat: m[3], lng: m[4], kind: "municipality" as const, r: m[2].startsWith(q) ? 1 : rank(m[1]) }));
+  return [...stations, ...munis]
+    .sort((a, b) => a.r - b.r)
+    .slice(0, limit)
+    .map(({ r: _r, ...p }) => p);
+}

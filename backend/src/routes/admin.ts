@@ -304,6 +304,9 @@ const postSchema = z.object({
   caption: z.string().trim().max(2000).default(""),
   category: z.enum(REEL_CATEGORIES).default("nature"),
   locationName: z.string().trim().max(200).default(""),
+  // Chosen with 場所を選ぶ; else where the submission says it was taken.
+  locationLat: z.coerce.number().min(-90).max(90).optional(),
+  locationLng: z.coerce.number().min(-180).max(180).optional(),
 });
 router.post("/submissions/:id/post", uploadVideo.single("video"), async (req, res) => {
   const parsed = postSchema.safeParse(req.body ?? {});
@@ -320,8 +323,9 @@ router.post("/submissions/:id/post", uploadVideo.single("video"), async (req, re
       caption: parsed.data.caption || s.description,
       category: parsed.data.category,
       locationName: parsed.data.locationName || s.locationName || s.municipality.name,
-      locationLat: s.locationLat,
-      locationLng: s.locationLng,
+      ...(parsed.data.locationLat != null && parsed.data.locationLng != null
+        ? { locationLat: parsed.data.locationLat, locationLng: parsed.data.locationLng }
+        : { locationLat: s.locationLat, locationLng: s.locationLng }),
     },
   });
   await prisma.notification.create({ data: { recipientId: s.userId, type: "submissionPosted", reelId: reel.id } });

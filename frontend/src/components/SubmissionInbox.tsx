@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import PlaceField, { type PlaceValue } from "./PlaceField";
 import { Check, Film, MapPin, X } from "lucide-react";
 import { api } from "../api/client";
 import { showToast } from "../lib/toast";
@@ -186,7 +187,7 @@ function PostSheet({ submission, admin, onClose, onPosted }: { submission: Submi
   const { t } = useTranslation();
   const [caption, setCaption] = useState(submission.description);
   const [category, setCategory] = useState<ReelCategory>("nature");
-  const [locationName, setLocationName] = useState(submission.locationName);
+  const [place, setPlace] = useState<PlaceValue>({ name: submission.locationName, lat: submission.locationLat ?? null, lng: submission.locationLng ?? null });
   const [progress, setProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const isPhoto = submission.kind === "photo";
@@ -202,13 +203,13 @@ function PostSheet({ submission, admin, onClose, onPosted }: { submission: Submi
       if (isPhoto) form.append("video", await photoToVideo(submission.fileUrl, { onProgress: (p) => setProgress(p) }));
       form.append("caption", caption);
       form.append("category", category);
-      if (locationName) form.append("locationName", locationName);
-      if (submission.locationLat != null && submission.locationLng != null) {
-        form.append("locationLat", String(submission.locationLat));
-        form.append("locationLng", String(submission.locationLng));
+      if (place.name.trim()) form.append("locationName", place.name.trim());
+      if (place.lat != null && place.lng != null) {
+        form.append("locationLat", String(place.lat));
+        form.append("locationLng", String(place.lng));
       }
       if (admin) {
-        // Jaziba's introduction of the town (the place's position comes from the submission).
+        // Jaziba's introduction of the town.
         await api.post(`/admin/submissions/${submission.id}/post`, form);
         onPosted(null);
       } else {
@@ -244,10 +245,13 @@ function PostSheet({ submission, admin, onClose, onPosted }: { submission: Submi
             ))}
           </select>
         </label>
-        <label className="text-xs font-medium text-gray-500">
-          {t("reelEditor.locationLabel")}
-          <input value={locationName} onChange={(e) => setLocationName(e.target.value)} maxLength={200} className={field} />
-        </label>
+        <PlaceField
+          value={place}
+          onChange={setPlace}
+          municipalityId={submission.municipality?.id}
+          label={t("reelEditor.locationLabel")}
+          inputClassName={field.replace("mt-1 w-full ", "")}
+        />
         {progress != null && isPhoto && (
           <div aria-live="polite">
             <p className="text-[11px] font-semibold text-gray-700">{progress < 1 ? t("inbox.making", { percent: Math.round(progress * 100) }) : t("inbox.uploading")}</p>

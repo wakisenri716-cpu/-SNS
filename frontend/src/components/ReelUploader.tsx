@@ -6,6 +6,7 @@ import { api } from "../api/client";
 import { REEL_CATEGORIES, type Reel, type ReelCategory, type TravelerTag } from "../types";
 import { TravelerTagPicker } from "./TravelerTagChips";
 import { BestMonthsPicker } from "./BestMonths";
+import PlaceField, { type PlaceValue } from "./PlaceField";
 
 const inputClass =
   "rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-gray-400";
@@ -21,9 +22,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
   const [category, setCategory] = useState<ReelCategory>("nature");
   const [travelerTags, setTravelerTags] = useState<TravelerTag[]>([]);
   const [bestMonths, setBestMonths] = useState<number[]>([]);
-  const [locationName, setLocationName] = useState("");
-  const [locationLat, setLocationLat] = useState("");
-  const [locationLng, setLocationLng] = useState("");
+  const [place, setPlace] = useState<PlaceValue>({ name: "", lat: null, lng: null });
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [uploadPercent, setUploadPercent] = useState(0);
@@ -66,9 +65,11 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
       fd.append("category", category);
       fd.append("travelerTags", travelerTags.join(","));
       fd.append("bestMonths", bestMonths.join(","));
-      if (locationName) fd.append("locationName", locationName);
-      if (locationLat) fd.append("locationLat", locationLat);
-      if (locationLng) fd.append("locationLng", locationLng);
+      if (place.name.trim()) fd.append("locationName", place.name.trim());
+      if (place.lat != null && place.lng != null) {
+        fd.append("locationLat", String(place.lat));
+        fd.append("locationLng", String(place.lng));
+      }
       const { data } = await api.post("/reels", fd, {
         onUploadProgress: (e) => {
           if (e.total) setUploadPercent(Math.round((e.loaded / e.total) * 100));
@@ -78,9 +79,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
       setCaption("");
       setTravelerTags([]);
       setBestMonths([]);
-      setLocationName("");
-      setLocationLat("");
-      setLocationLng("");
+      setPlace({ name: "", lat: null, lng: null });
       setFile(null);
     } catch (err: any) {
       setError(err?.response?.data?.error ?? t("reelUploader.genericError"));
@@ -161,31 +160,7 @@ export default function ReelUploader({ onCreated }: { onCreated: (reel: Reel) =>
           <BestMonthsPicker value={bestMonths} onChange={setBestMonths} />
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-2">
-        <input
-          aria-label={t("reelUploader.locationNamePlaceholder")}
-          placeholder={t("reelUploader.locationNamePlaceholder")}
-          value={locationName}
-          onChange={(e) => setLocationName(e.target.value)}
-          className={`col-span-3 ${inputClass}`}
-        />
-        <input
-          aria-label={t("reelUploader.latPlaceholder")}
-          inputMode="decimal"
-          placeholder={t("reelUploader.latPlaceholder")}
-          value={locationLat}
-          onChange={(e) => setLocationLat(e.target.value)}
-          className={inputClass}
-        />
-        <input
-          aria-label={t("reelUploader.lngPlaceholder")}
-          inputMode="decimal"
-          placeholder={t("reelUploader.lngPlaceholder")}
-          value={locationLng}
-          onChange={(e) => setLocationLng(e.target.value)}
-          className={inputClass}
-        />
-      </div>
+      <PlaceField value={place} onChange={setPlace} inputClassName={inputClass} />
       <p className="text-xs text-gray-500">{t("reelUploader.maasNote")}</p>
       {error && <p className="text-xs text-jz-warm-text">{error}</p>}
       {submitting && (

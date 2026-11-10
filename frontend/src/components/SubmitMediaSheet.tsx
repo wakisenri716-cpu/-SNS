@@ -6,6 +6,7 @@ import { api } from "../api/client";
 import { readExifGps, readExifTakenAt } from "../lib/exifGps";
 import { resizeImageToBlob } from "../lib/resizeImage";
 import { showToast } from "../lib/toast";
+import PlaceField from "./PlaceField";
 
 const PHOTO_MAX_SIDE = 2400;
 const MAX_VIDEO_BYTES = 200 * 1024 * 1024;
@@ -29,6 +30,7 @@ export default function SubmitMediaSheet({
   const [locationName, setLocationName] = useState("");
   const [where, setWhere] = useState<{ lat: number; lng: number } | null>(null);
   const [takenAt, setTakenAt] = useState<string | null>(null);
+  const [fromPhoto, setFromPhoto] = useState(false);
   const [credit, setCredit] = useState(true);
   const [consent, setConsent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -53,11 +55,16 @@ export default function SubmitMediaSheet({
     if (!f) return;
     if (f.type.startsWith("video/") && f.size > MAX_VIDEO_BYTES) return setError(t("submit.tooBig"));
     setFile(f);
-    setWhere(null);
+    setFromPhoto(false);
     setTakenAt(null);
     if (f.type.startsWith("image/")) {
       const buf = await f.arrayBuffer();
-      setWhere(readExifGps(buf));
+      const gps = readExifGps(buf);
+      // The photo's own position, unless a place was already chosen.
+      if (gps) {
+        setWhere((prev) => prev ?? gps);
+        setFromPhoto(true);
+      }
       setTakenAt(readExifTakenAt(buf));
     }
   }
@@ -130,19 +137,26 @@ export default function SubmitMediaSheet({
               onChange={(e) => void pick(e.target.files?.[0])}
             />
           </label>
-          {file && (
+          {file && fromPhoto && (
             <p className="flex items-center gap-1 text-[11px] text-gray-500">
-              <MapPin className="h-3 w-3" /> {where ? t("submit.hasPlace") : isVideo ? t("submit.videoPlace") : t("submit.noPlace")}
+              <MapPin className="h-3 w-3" /> {t("submit.hasPlace")}
             </p>
           )}
           <label className="block text-[11px] font-semibold text-gray-500">
             {t("submit.descriptionLabel")}
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} maxLength={500} rows={3} placeholder={t("submit.descriptionPlaceholder")} className={`${field} resize-none`} />
           </label>
-          <label className="block text-[11px] font-semibold text-gray-500">
-            {t("submit.placeLabel")}
-            <input value={locationName} onChange={(e) => setLocationName(e.target.value)} maxLength={200} placeholder={t("submit.placePlaceholder")} className={field} />
-          </label>
+          <PlaceField
+            value={{ name: locationName, lat: where?.lat ?? null, lng: where?.lng ?? null }}
+            onChange={(v) => {
+              setLocationName(v.name);
+              setWhere(v.lat != null && v.lng != null ? { lat: v.lat, lng: v.lng } : null);
+            }}
+            municipalityId={municipality.id}
+            label={t("submit.placeLabel")}
+            placeholder={t("submit.placePlaceholder")}
+            inputClassName={field.replace("mt-1 w-full ", "")}
+          />
           <label className="flex items-start gap-2 rounded-2xl bg-gray-50 px-3 py-2.5 text-xs text-jz-ink">
             <input type="checkbox" checked={credit} onChange={(e) => setCredit(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[var(--color-jz-accent)]" />
             <span>{t("submit.credit")}</span>

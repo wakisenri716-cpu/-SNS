@@ -1955,3 +1955,63 @@ test("全国の非公式ページ: every municipality in Japan has a page; photo
     delete process.env.ADMIN_EMAILS;
   }
 });
+
+test("場所を選ぶ: posters find any place by name (own data as they type, OpenStreetMap on 検索)", async () => {
+  const muni = await login("demo-matsumoto@example.com");
+  assert.equal((await call("GET", "/api/places/search?q=松本城")).status, 401);
+  assert.equal((await call("GET", "/api/places/search?q=", undefined, muni)).status, 400);
+  const home = (await call("GET", "/api/places/home", undefined, muni)).json;
+  assert.equal(home.name, "長野県松本市");
+  assert.ok(home.lat > 36 && home.lat < 36.5 && home.lng > 137.5 && home.lng < 138.2);
+
+  // As you type: sights, places already posted, stations, municipalities; no outside call.
+  const asked: URL[] = [];
+  const real = globalThis.fetch;
+  const fetchMock = mock.method(globalThis, "fetch", async (input: any, init?: any) => {
+    if (!String(input).includes("nominatim")) return real(input, init);
+    const url = new URL(String(input));
+    asked.push(url);
+    assert.match(init?.headers?.["User-Agent"] ?? "", /^Jaziba\//);
+    if (url.searchParams.get("q") === "壊れた") return new Response("oops", { status: 500 });
+    return new Response(
+      JSON.stringify([
+        { lat: "36.2386", lon: "137.9690", name: "松本城", category: "historic", type: "castle", display_name: "松本城, 松本市, 長野県, 日本", address: { province: "長野県", city: "松本市" } },
+        { lat: "36.2310", lon: "137.9640", name: "中町通り", category: "highway", type: "pedestrian", display_name: "中町通り, 松本市, 長野県", address: { province: "長野県", city: "松本市" } },
+        { lat: "x", lon: "1", name: "壊れ" },
+      ])
+    );
+  });
+  try {
+    const typed = (await call("GET", `/api/places/search?q=${encodeURIComponent("松本")}`, undefined, muni)).json;
+    assert.equal(typed.osm, false);
+    assert.equal(asked.length, 0);
+    const sources = new Set(typed.items.map((p: any) => p.source));
+    assert.ok(sources.has("station") && sources.has("municipality"), [...sources].join());
+    assert.ok(typed.items.some((p: any) => p.name === "松本駅" && p.detail === "長野県"));
+    assert.ok(typed.items.every((p: any) => typeof p.lat === "number" && typeof p.lng === "number"));
+    const castle = (await call("GET", `/api/places/search?q=${encodeURIComponent("松本城")}`, undefined, muni)).json;
+    assert.ok(castle.items.some((p: any) => p.name === "松本城" && (p.source === "spot" || p.source === "post")));
+
+    // 検索: plus OpenStreetMap, nearby first, without repeating places already listed.
+    const all = (await call("GET", `/api/places/search?q=${encodeURIComponent("松本城")}&osm=1&lat=36.24&lng=137.97`, undefined, muni)).json;
+    assert.equal(all.osm, true);
+    assert.equal(asked.length, 1);
+    assert.deepEqual(
+      ["countrycodes", "accept-language", "format"].map((k) => asked[0].searchParams.get(k)),
+      ["jp", "ja", "jsonv2"]
+    );
+    assert.ok(asked[0].searchParams.get("viewbox"));
+    const osm = all.items.filter((p: any) => p.source === "osm");
+    assert.ok(osm.some((p: any) => p.name === "中町通り" && p.detail === "長野県松本市" && p.type === "highway/pedestrian"));
+    assert.equal(all.items.filter((p: any) => p.name === "松本城" && Math.abs(p.lat - 36.2386) < 0.001).length <= 1, true);
+    // Cached: the same search doesn't ask again.
+    await call("GET", `/api/places/search?q=${encodeURIComponent("松本城")}&osm=1&lat=36.24&lng=137.97`, undefined, muni);
+    assert.equal(asked.length, 1);
+    // Outside failure: own results still come back.
+    const failed = (await call("GET", `/api/places/search?q=${encodeURIComponent("壊れた")}&osm=1`, undefined, muni)).json;
+    assert.equal(failed.osmError, "failed");
+    assert.ok(Array.isArray(failed.items));
+  } finally {
+    fetchMock.mock.restore();
+  }
+});

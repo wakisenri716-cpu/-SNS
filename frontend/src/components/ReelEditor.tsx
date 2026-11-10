@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+import PlaceField, { type PlaceValue } from "./PlaceField";
 import CaptionAssist from "./CaptionAssist";
 import { api } from "../api/client";
 import { TravelerTagPicker } from "./TravelerTagChips";
@@ -25,9 +26,7 @@ export default function ReelEditor({
   const { t } = useTranslation();
   const [caption, setCaption] = useState(reel.caption);
   const [category, setCategory] = useState<ReelCategory>(reel.category);
-  const [locationName, setLocationName] = useState(reel.locationName ?? "");
-  const [lat, setLat] = useState(reel.locationLat?.toString() ?? "");
-  const [lng, setLng] = useState(reel.locationLng?.toString() ?? "");
+  const [place, setPlace] = useState<PlaceValue>({ name: reel.locationName ?? "", lat: reel.locationLat ?? null, lng: reel.locationLng ?? null });
   const [tags, setTags] = useState<TravelerTag[]>(reel.travelerTags);
   const [bestMonths, setBestMonths] = useState<number[]>(reel.bestMonths ?? []);
   const [rakutenHotel, setRakutenHotel] = useState(reel.rakutenHotel ?? null);
@@ -36,21 +35,15 @@ export default function ReelEditor({
 
   async function save(e: FormEvent) {
     e.preventDefault();
-    const latNum = lat.trim() === "" ? null : Number(lat);
-    const lngNum = lng.trim() === "" ? null : Number(lng);
-    if ((latNum === null) !== (lngNum === null) || Number.isNaN(latNum) || Number.isNaN(lngNum)) {
-      setError(t("reelEditor.coordsError"));
-      return;
-    }
     setSaving(true);
     setError(null);
     try {
       const { data } = await api.put<Reel>(`/reels/${reel.id}`, {
         caption,
         category,
-        locationName,
-        locationLat: latNum,
-        locationLng: lngNum,
+        locationName: place.name.trim(),
+        locationLat: place.lat,
+        locationLng: place.lng,
         travelerTags: tags,
         bestMonths,
       });
@@ -87,19 +80,9 @@ export default function ReelEditor({
             ))}
           </select>
         </label>
-        <div className="text-xs font-medium text-gray-500">
-          {t("reelEditor.locationLabel")}
-          <input
-            value={locationName}
-            onChange={(e) => setLocationName(e.target.value)}
-            placeholder={t("reelUploader.locationNamePlaceholder")}
-            className={`mt-1 ${inputClass}`}
-          />
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            <input value={lat} onChange={(e) => setLat(e.target.value)} placeholder={t("reelUploader.latPlaceholder")} inputMode="decimal" className={inputClass} />
-            <input value={lng} onChange={(e) => setLng(e.target.value)} placeholder={t("reelUploader.lngPlaceholder")} inputMode="decimal" className={inputClass} />
-          </div>
-          <p className="mt-1 text-[11px] font-normal leading-relaxed text-gray-500">{t("reelEditor.coordsNote")}</p>
+        <div>
+          <PlaceField value={place} onChange={setPlace} label={t("reelEditor.locationLabel")} inputClassName={inputClass} />
+          <p className="mt-1 text-[11px] leading-relaxed text-gray-500">{t("place.editorNote")}</p>
         </div>
         <div className="text-xs font-medium text-gray-500">
           {t("reelUploader.travelerTagsLabel")}
