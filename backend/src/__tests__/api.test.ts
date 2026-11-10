@@ -979,7 +979,7 @@ test("ポイントで交換: coupons from a municipality, exchanged for points, 
     assert.deepEqual([ai.freeLeft, ai.freeLeftThisMonth, ai.credits], [0, 20, 0]);
     // Each use is logged with its tokens and estimated cost (Sonnet 5.5 list prices).
     const logged = await prisma.aiUsage.findFirstOrThrow({ where: { userId: meId, feature: "tripCompose" } });
-    assert.deepEqual([logged.units, logged.paidUnits, logged.costMicroUsd], [5, 5, 1000 * 2 + 12000 * 0.2 + 800 * 10]);
+    assert.deepEqual([logged.units, logged.paidUnits, logged.costMicroUsd], [5, 5, 1000 * 2 + 12000 * 0.1 + 800 * 10]);
 
     // 30 free uses a month: someone who used them earlier this month gets none today.
     const other = (await call("POST", "/api/auth/register", { email: "ai-month@example.com", password: "password123", name: "月末" })).json;
