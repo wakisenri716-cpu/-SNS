@@ -1279,6 +1279,7 @@
     "website": "Official website",
     "officeLabel": "Starting point: {{name}} (the municipal office)",
     "notice": "{{name}} hasn't joined Jaziba yet. Jaziba made this page from public data (code4fukui/localgovjp) for the name, office location, official website and slogan, and from generally known information for the main sights. The posts are introductions by Jaziba's editors, and their videos are illustrations. Please check the official website for the latest information.",
+    "noticeBasic": "{{name}} hasn't joined Jaziba yet. Jaziba made this page from public data (code4fukui/localgovjp) for the name, office location, official website and slogan. Its posts are photos and videos sent in by travelers, reviewed and introduced by the Jaziba team. Please check the official website for the latest information.",
     "forMunicipality": "For municipalities: contact us to join or correct this page",
     "spotsSource": "A list Jaziba made from generally known information. Positions of mountains, lakes, passes and highlands were made by editing the GSI \"Gazetteer of Japan\" (approximate, to about 1.5 km).",
     "spotsCount": "{{count}} main sights"
@@ -1537,12 +1538,16 @@
     "placePlaceholder": "e.g. Kappa Bridge, Kamikochi",
     "credit": "Show my name as the contributor when it is posted",
     "consent": "I took this myself and agree that {{name}} and Jaziba may use it in posts (anyone recognizable in it has agreed)",
+    "consentListing": "I took this myself and agree that Jaziba may use it in its posts introducing {{name}} (anyone recognizable in it has agreed)",
     "note": "Photos are shrunk on this device before sending, removing location and other attached data. You can withdraw one under review from My page.",
     "send": "Send",
     "sending": "Sending…",
     "sent": "Sent to {{name}}. You will hear the result on My page and in notifications",
     "viewMine": "See on My page",
-    "error": "Couldn't send. Please try again"
+    "error": "Couldn't send. Please try again",
+    "introListing": "Send your own photos and videos of {{name}}. {{name}} hasn't joined Jaziba yet, so the Jaziba team reviews them. If approved you get 100 points, and they may be used in Jaziba's introduction posts.",
+    "sentListing": "Sent. The Jaziba team will review it; you'll find the result on My page and in notifications",
+    "ctaSubListing": "{{points}} points if the Jaziba team approves it. It may be used to introduce {{name}}"
   },
   "submissions": {
     "mineHeading": "Photos & videos you offered",
@@ -1600,7 +1605,9 @@
     "cantMake": "This browser can't make a video from a photo. Open this in a recent Chrome or Safari",
     "postButton": "Post",
     "posted": "Posted. The contributor has been told",
-    "postError": "Couldn't post"
+    "postError": "Couldn't post",
+    "adminIntro": "Photos and videos travelers sent to municipalities that haven't joined (unofficial pages). Approving gives the traveler {{points}} points. Posting shows it as Jaziba's introduction on that page and in the feed (with the contributor's name if they asked).",
+    "adminPosted": "Posted as Jaziba's introduction"
   },
   "aiLimit": {
     "signedIn": "You've used this month's or today's free AI. Exchange points for AI tickets, or upgrade to Plus to keep going.",
@@ -1863,7 +1870,8 @@
       "users": "Users",
       "reports": "Reports",
       "logs": "Activity log",
-      "approvals": "Approvals"
+      "approvals": "Approvals",
+      "listingSubmissions": "Submissions (unofficial)"
     },
     "role": {
       "USER": "Traveler",
@@ -1901,7 +1909,9 @@
       "recent": "Recent actions",
       "allLogs": "See the full log",
       "signupsTotal": "{{count}} in total",
-      "pendingApprovals": "Sign-ups awaiting approval"
+      "pendingApprovals": "Sign-ups awaiting approval",
+      "pendingListingSubmissions": "Submissions to unofficial pages",
+      "listingPages": "{{count}} unofficial pages"
     },
     "inquiries": {
       "sub": "Messages from the contact form.",
@@ -1942,7 +1952,9 @@
       "restore": "Lift suspension",
       "suspendReason": "Suspend {{name}}. Reason (kept in the log)",
       "suspended": "Suspended",
-      "restored": "Suspension lifted"
+      "restored": "Suspension lifted",
+      "listing": "Unofficial page",
+      "showListings": "Unofficial pages"
     },
     "reports": {
       "sub": "Comments other users reported. Three reports hide a comment automatically.",
@@ -1971,7 +1983,10 @@
       "inquiryDone": "Inquiry done",
       "inquiryOpen": "Inquiry reopened",
       "approve": "Sign-up approved",
-      "reject": "Sign-up not approved"
+      "reject": "Sign-up not approved",
+      "approveSubmission": "Submission approved",
+      "rejectSubmission": "Submission passed",
+      "postSubmission": "Submission posted"
     },
     "signedInAs": "Signed in as {{email}}",
     "hintNotConfigured": "No admin email is set on the server yet. Save ADMIN_EMAILS under Environment in Render, then run Manual Deploy (or restart) for it to take effect.",

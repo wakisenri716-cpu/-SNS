@@ -1,4 +1,5 @@
 import { locatePlace } from "../services/placeLookup";
+import { sendJsonGzipped } from "../lib/gzipJson";
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma";
@@ -91,7 +92,7 @@ export const tourismSpotsOrder = { tourismSpots: { orderBy: { createdAt: "asc" a
 export const municipalityDetailInclude = { ...municipalityCountInclude, ...tourismSpotsOrder };
 
 // List all municipalities (for directory / search)
-router.get("/", async (_req, res) => {
+router.get("/", async (req, res) => {
   // Joined municipalities first, then the listings (in code order: cities, then towns and villages).
   const list = await prisma.municipality.findMany({
     // Accounts still waiting for 登録の承認 aren't listed.
@@ -99,7 +100,28 @@ router.get("/", async (_req, res) => {
     orderBy: [{ listing: "asc" }, { lgCode: "asc" }, { createdAt: "desc" }],
     include: municipalityCountInclude,
   });
-  res.json(list.map((m) => serializeMunicipality(m)));
+  // A summary per town: with every municipality in Japan listed, the full
+  // profile (links, info texts) would make this a megabytes-long answer.
+  sendJsonGzipped(
+    req,
+    res,
+    list.map((m) => {
+      const full = serializeMunicipality(m);
+      return {
+        id: full.id,
+        name: full.name,
+        prefecture: full.prefecture,
+        kana: full.kana,
+        description: full.description.slice(0, 120),
+        avatarUrl: full.avatarUrl,
+        listing: full.listing,
+        officeName: full.officeName,
+        followerCount: full.followerCount,
+        tourismSpotCount: full.tourismSpotCount,
+        createdAt: full.createdAt,
+      };
+    })
+  );
 });
 
 // Public profile view. optionalAuth + per-reel likes so the reels array matches

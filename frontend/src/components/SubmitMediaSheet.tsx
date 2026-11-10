@@ -19,7 +19,7 @@ export default function SubmitMediaSheet({
   municipality,
   onClose,
 }: {
-  municipality: { id: string; name: string };
+  municipality: { id: string; name: string; listing?: boolean };
   onClose: () => void;
 }) {
   const { t } = useTranslation();
@@ -82,7 +82,7 @@ export default function SubmitMediaSheet({
       form.append("credit", credit ? "1" : "0");
       form.append("consent", "1");
       await api.post("/submissions", form);
-      showToast(t("submit.sent", { name: municipality.name }), { label: t("submit.viewMine"), to: "/mypage" });
+      showToast(t(municipality.listing ? "submit.sentListing" : "submit.sent", { name: municipality.name }), { label: t("submit.viewMine"), to: "/mypage" });
       onClose();
     } catch (err: any) {
       setError(err?.response?.data?.error ?? t("submit.error"));
@@ -108,7 +108,7 @@ export default function SubmitMediaSheet({
           </button>
         </div>
         <div className="flex-1 space-y-3 overflow-y-auto px-5 py-4">
-          <p className="text-xs leading-relaxed text-gray-600">{t("submit.intro", { name: municipality.name })}</p>
+          <p className="text-xs leading-relaxed text-gray-600">{t(municipality.listing ? "submit.introListing" : "submit.intro", { name: municipality.name })}</p>
           <label className="block cursor-pointer overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 text-center hover:border-jz-accent/40">
             {preview ? (
               isVideo ? (
@@ -149,7 +149,7 @@ export default function SubmitMediaSheet({
           </label>
           <label className="flex items-start gap-2 rounded-2xl bg-jz-tint px-3 py-2.5 text-xs font-semibold text-jz-ink">
             <input type="checkbox" required checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[var(--color-jz-accent)]" />
-            <span>{t("submit.consent", { name: municipality.name })}</span>
+            <span>{t(municipality.listing ? "submit.consentListing" : "submit.consent", { name: municipality.name })}</span>
           </label>
           <p className="text-[11px] leading-relaxed text-gray-500">{t("submit.note")}</p>
           {error && <p className="text-xs text-jz-warm-text">{error}</p>}

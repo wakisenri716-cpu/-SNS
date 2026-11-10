@@ -4,6 +4,7 @@ import path from "path";
 import bcrypt from "bcryptjs";
 import { prisma } from "../prisma";
 import { NAGANO_MUNICIPALITIES, type ListingMunicipality, type ListingSpot } from "../data/naganoMunicipalities";
+import { JAPAN_MUNICIPALITIES } from "../data/japanMunicipalities";
 
 const PREFECTURE = "長野県";
 
@@ -23,6 +24,61 @@ const PREFECTURE = "長野県";
 export async function syncMunicipalityListings() {
   await syncPages();
   await syncEditorialPosts();
+  await syncNationwide();
+}
+
+// 全国の市区町村を「非公式」で掲載: every other municipality in Japan gets a
+// listing page too (name, reading, office position, official site and
+// catchphrase from src/data/japanMunicipalities.ts) — no sights or Jaziba
+// introductions, just a page travelers can find, plan access to and offer
+// photos for (approved by the operator, as nobody runs the page). Created in
+// bulk; a municipality that already has a page (joined, or Nagano's) is only
+// given the public fields it lacks.
+async function syncNationwide() {
+  const codes = JAPAN_MUNICIPALITIES.map((r) => r[0]);
+  if ((await prisma.municipality.count({ where: { lgCode: { in: codes } } })) === codes.length) return;
+  const pages = await prisma.municipality.findMany({ select: { id: true, lgCode: true, name: true, prefecture: true, kana: true, websiteUrl: true, officeLat: true, officeLng: true } });
+  const byCode = new Set(pages.map((p) => p.lgCode).filter(Boolean));
+  const byName = new Map(pages.filter((p) => !p.lgCode).map((p) => [`${p.prefecture}|${p.name}`, p]));
+  const toCreate = [];
+  for (const [lgCode, prefecture, name, kana, lat, lng, url, catchphrase] of JAPAN_MUNICIPALITIES) {
+    if (byCode.has(lgCode)) continue;
+    const existing = byName.get(`${prefecture}|${name}`);
+    if (existing) {
+      await prisma.municipality.update({
+        where: { id: existing.id },
+        data: { lgCode, kana: existing.kana || kana, websiteUrl: existing.websiteUrl || url, officeLat: existing.officeLat ?? lat, officeLng: existing.officeLng ?? lng },
+      });
+      continue;
+    }
+    toCreate.push({ lgCode, prefecture, name, kana, lat, lng, url, catchphrase, userId: crypto.randomUUID() });
+  }
+  if (toCreate.length === 0) return;
+  // One random, discarded password for all: nobody can sign in to a listing.
+  const passwordHash = await bcrypt.hash(crypto.randomBytes(32).toString("base64url"), 4);
+  for (let i = 0; i < toCreate.length; i += 400) {
+    const chunk = toCreate.slice(i, i + 400);
+    await prisma.$transaction([
+      prisma.user.createMany({
+        data: chunk.map((m) => ({ id: m.userId, email: `listing-${m.lgCode}@listing.jaziba.invalid`, passwordHash, name: m.name, role: "MUNICIPALITY" })),
+      }),
+      prisma.municipality.createMany({
+        data: chunk.map((m) => ({
+          userId: m.userId,
+          name: m.name,
+          prefecture: m.prefecture,
+          description: m.catchphrase,
+          kana: m.kana,
+          websiteUrl: m.url,
+          lgCode: m.lgCode,
+          officeLat: m.lat,
+          officeLng: m.lng,
+          listing: true,
+        })),
+      }),
+    ]);
+  }
+  console.log(`[listings] Added ${toCreate.length} unofficial municipality pages nationwide`);
 }
 
 async function syncPages() {

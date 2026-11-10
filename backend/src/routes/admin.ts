@@ -7,6 +7,11 @@ import { sendPush } from "../lib/push";
 import { PLANS, PlanGrantError, activePlan, grantPlan, type PlanId } from "../lib/plans";
 import { aiSpend } from "../lib/aiQuota";
 import { todayInJapan } from "./events";
+import { serialize as serializeSubmission } from "./submissions";
+import { POINTS_PER_SUBMISSION } from "../lib/points";
+import { uploadVideo } from "../middleware/upload";
+import { announceNewPost } from "../lib/presence";
+import { REEL_CATEGORIES } from "../types";
 
 // 管理者サイト (/admin) API: for the operator only (ADMIN_EMAILS). Every
 // change is written to the AdminLog.
@@ -23,16 +28,19 @@ router.get("/me", (req, res) => res.json({ admin: true, name: req.admin!.name })
 router.get("/overview", async (_req, res) => {
   const now = new Date();
   const since14 = new Date(now.getTime() - 14 * DAY);
+  const people = { NOT: { municipality: { listing: true } } };
   const [roles, newUsers7d, suspended, recentSignups, reels, comments, visits30d, pendingSubmissions, inquiriesOpen, reported, plans, ai, logs, pendingApprovals] =
     await Promise.all([
-      prisma.user.groupBy({ by: ["role"], _count: true }),
-      prisma.user.count({ where: { createdAt: { gte: new Date(now.getTime() - 7 * DAY) } } }),
+      // Unofficial listing pages (nobody signs in to them) aren't counted as accounts.
+      prisma.user.groupBy({ by: ["role"], where: people, _count: true }),
+      prisma.user.count({ where: { ...people, createdAt: { gte: new Date(now.getTime() - 7 * DAY) } } }),
       prisma.user.count({ where: { suspendedAt: { not: null } } }),
-      prisma.user.findMany({ where: { createdAt: { gte: since14 } }, select: { createdAt: true } }),
+      prisma.user.findMany({ where: { ...people, createdAt: { gte: since14 } }, select: { createdAt: true } }),
       prisma.reel.count(),
       prisma.comment.count(),
       prisma.visit.count({ where: { createdAt: { gte: new Date(now.getTime() - 30 * DAY) } } }),
-      prisma.submission.count({ where: { status: "pending" } }),
+      // The towns' own review queue; the unofficial pages' queue is the operator's (below).
+      prisma.submission.count({ where: { status: "pending", municipality: { listing: false } } }),
       prisma.inquiry.count({ where: { handledAt: null } }),
       prisma.comment.count({ where: { reports: { some: {} } } }),
       prisma.planSubscription.findMany({ select: { plan: true, status: true, source: true, currentPeriodEnd: true, userId: true } }),
@@ -40,6 +48,10 @@ router.get("/overview", async (_req, res) => {
       prisma.adminLog.findMany({ orderBy: { createdAt: "desc" }, take: 8 }),
       prisma.user.count({ where: { approval: "pending" } }),
     ]);
+  const [listingPages, pendingListingSubmissions] = await Promise.all([
+    prisma.municipality.count({ where: { listing: true } }),
+    prisma.submission.count({ where: { status: "pending", municipality: { listing: true } } }),
+  ]);
 
   // Sign-ups per day for the last 14 days (Japan time).
   const days = Array.from({ length: 14 }, (_, i) => jstDay(new Date(now.getTime() - (13 - i) * DAY)));
@@ -63,7 +75,8 @@ router.get("/overview", async (_req, res) => {
       signupsByDay: days.map((d) => ({ day: d, count: perDay.get(d)! })),
     },
     content: { reels, comments, visits30d },
-    todo: { pendingSubmissions, inquiriesOpen, reportedComments: reported, pendingApprovals },
+    todo: { pendingSubmissions, inquiriesOpen, reportedComments: reported, pendingApprovals, pendingListingSubmissions },
+    listingPages,
     plans: { plus: count("plus"), business: count("business"), municipalityPro: count("municipalityPro"), monthlyYen },
     ai,
     recentLogs: logs,
@@ -113,6 +126,7 @@ router.get("/users", async (req, res) => {
   const role = typeof req.query.role === "string" && ["USER", "MUNICIPALITY", "COMPANY"].includes(req.query.role) ? req.query.role : undefined;
   const page = Math.max(0, Number(req.query.page) || 0);
   const where = {
+    ...(req.query.listings === "1" ? { municipality: { listing: true } } : { NOT: { municipality: { listing: true } } }),
     ...(role ? { role } : {}),
     ...(req.query.suspended === "1" ? { suspendedAt: { not: null } } : {}),
     ...(q ? { OR: [{ name: { contains: q } }, { email: { contains: q } }, { municipality: { name: { contains: q } } }, { company: { name: { contains: q } } }] } : {}),
@@ -131,7 +145,7 @@ router.get("/users", async (req, res) => {
         role: true,
         createdAt: true,
         suspendedAt: true,
-        municipality: { select: { id: true, name: true, prefecture: true } },
+        municipality: { select: { id: true, name: true, prefecture: true, listing: true } },
         company: { select: { id: true, name: true, municipality: { select: { name: true } } } },
         planSubscription: true,
         _count: { select: { comments: true, visits: true, submissions: true } },
@@ -234,6 +248,87 @@ router.post("/approvals/:userId", async (req, res) => {
   await logAdmin(req, parsed.data.decision, user.id, `${user.name}${parsed.data.note ? `：${parsed.data.note}` : ""}`);
   void sendPush([user.id], { type: "accountReviewed", approved: approval === "approved", path: user.role === "MUNICIPALITY" ? "/dashboard" : "/company-dashboard" });
   res.status(204).end();
+});
+
+// ---- 非公式ページへの提供素材 --------------------------------------------------------
+
+// Photos and videos travelers offered to an unofficial (listing) page: nobody
+// runs those pages, so the operator approves them (the contributor earns
+// points as usual) and can post them as Jaziba's introduction of the town.
+const SUB_STATUSES = ["pending", "approved", "posted", "rejected"] as const;
+const listingSubmission = { municipality: { listing: true } } as const;
+const subInclude = { user: { select: { id: true, name: true } }, municipality: { select: { id: true, name: true, prefecture: true } } } as const;
+
+router.get("/submissions", async (req, res) => {
+  const status = SUB_STATUSES.includes(req.query.status as (typeof SUB_STATUSES)[number]) ? (req.query.status as (typeof SUB_STATUSES)[number]) : "pending";
+  const where =
+    status === "posted"
+      ? { ...listingSubmission, reelId: { not: null } }
+      : status === "approved"
+        ? { ...listingSubmission, status: "approved", reelId: null }
+        : { ...listingSubmission, status };
+  const [rows, pending, approved] = await Promise.all([
+    prisma.submission.findMany({ where, orderBy: { createdAt: status === "pending" ? "asc" : "desc" }, take: 100, include: subInclude }),
+    prisma.submission.count({ where: { ...listingSubmission, status: "pending" } }),
+    prisma.submission.count({ where: { ...listingSubmission, status: "approved", reelId: null } }),
+  ]);
+  res.json({ items: rows.map((r) => serializeSubmission(r, { forReviewer: true })), counts: { pending, approved }, pointsPerApproval: POINTS_PER_SUBMISSION });
+});
+
+async function reviewListingSubmission(id: string, approved: boolean, note: string) {
+  // Only pending ones; conditional, so a double click can't award twice.
+  const { count } = await prisma.submission.updateMany({
+    where: { id, status: "pending", ...listingSubmission },
+    data: { status: approved ? "approved" : "rejected", reviewNote: approved ? "" : note, reviewedAt: new Date() },
+  });
+  if (count === 0) return null;
+  const s = await prisma.submission.findUniqueOrThrow({ where: { id }, include: subInclude });
+  void sendPush([s.userId], { type: "submissionReviewed", approved, municipality: s.municipality.name, points: POINTS_PER_SUBMISSION, submissionId: s.id });
+  return s;
+}
+
+for (const [path, approved] of [["approve", true], ["reject", false]] as const) {
+  router.post(`/submissions/:id/${path}`, async (req, res) => {
+    const note = z.object({ note: z.string().trim().max(300).default("") }).safeParse(req.body ?? {});
+    const s = await reviewListingSubmission(req.params.id, approved, note.success ? note.data.note : "");
+    if (!s) return res.status(404).json({ error: "審査待ちの提供が見つかりません" });
+    await logAdmin(req, approved ? "approveSubmission" : "rejectSubmission", s.id, `${s.municipality.prefecture}${s.municipality.name}・${s.user.name}`);
+    res.json(serializeSubmission(s, { forReviewer: true }));
+  });
+}
+
+// Post an approved one as Jaziba's introduction of the town (editorial,
+// crediting the contributor if they asked). A photo comes as the video made
+// from it on the operator's device, like a municipality's own posting.
+const postSchema = z.object({
+  caption: z.string().trim().max(2000).default(""),
+  category: z.enum(REEL_CATEGORIES).default("nature"),
+  locationName: z.string().trim().max(200).default(""),
+});
+router.post("/submissions/:id/post", uploadVideo.single("video"), async (req, res) => {
+  const parsed = postSchema.safeParse(req.body ?? {});
+  if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
+  const s = await prisma.submission.findFirst({ where: { id: req.params.id, status: "approved", reelId: null, ...listingSubmission }, include: subInclude });
+  if (!s) return res.status(404).json({ error: "投稿できる提供素材が見つかりません" });
+  if (s.kind === "photo" && !req.file) return res.status(400).json({ error: "写真から作った動画がありません" });
+  const reel = await prisma.reel.create({
+    data: {
+      municipalityId: s.municipality.id,
+      videoUrl: req.file ? `/uploads/${req.file.filename}` : s.fileUrl,
+      submission: { connect: { id: s.id } },
+      editorial: true,
+      caption: parsed.data.caption || s.description,
+      category: parsed.data.category,
+      locationName: parsed.data.locationName || s.locationName || s.municipality.name,
+      locationLat: s.locationLat,
+      locationLng: s.locationLng,
+    },
+  });
+  await prisma.notification.create({ data: { recipientId: s.userId, type: "submissionPosted", reelId: reel.id } });
+  void sendPush([s.userId], { type: "submissionPosted", municipality: s.municipality.name, place: reel.locationName || reel.caption.slice(0, 40), reelId: reel.id });
+  announceNewPost(reel.id);
+  await logAdmin(req, "postSubmission", reel.id, `${s.municipality.prefecture}${s.municipality.name}・${s.user.name}`);
+  res.status(201).json({ reelId: reel.id });
 });
 
 // ---- 通報されたコメント ----------------------------------------------------------

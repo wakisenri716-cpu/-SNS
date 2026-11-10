@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { AlertTriangle, ArrowLeft, Ban, BadgeCheck, Building2, ChartColumn, Flag, Gem, Inbox, ListChecks, Loader2, Mail, Search, ShieldCheck, Trash2, UserCheck, Users } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Ban, BadgeCheck, Building2, ChartColumn, Flag, Gem, ImagePlus, Inbox, ListChecks, Loader2, Mail, Search, ShieldCheck, Trash2, UserCheck, Users } from "lucide-react";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import JazibaLogo from "../components/JazibaLogo";
 import { showToast } from "../lib/toast";
+import SubmissionInbox from "../components/SubmissionInbox";
 
 // 管理者サイト: the operator's own console, apart from the app's menus. Only
 // accounts in the server's ADMIN_EMAILS get in (the API checks every call).
@@ -13,6 +14,7 @@ const SECTIONS = [
   { key: "", icon: ChartColumn, label: "admin.nav.overview" },
   { key: "approvals", icon: UserCheck, label: "admin.nav.approvals", badge: "pendingApprovals" },
   { key: "inquiries", icon: Inbox, label: "admin.nav.inquiries", badge: "inquiriesOpen" },
+  { key: "listingSubmissions", icon: ImagePlus, label: "admin.nav.listingSubmissions", badge: "pendingListingSubmissions" },
   { key: "users", icon: Users, label: "admin.nav.users" },
   { key: "reports", icon: Flag, label: "admin.nav.reports", badge: "reportedComments" },
   { key: "logs", icon: ListChecks, label: "admin.nav.logs" },
@@ -24,7 +26,8 @@ const yen = (microUsd: number) => Math.round((microUsd / 1_000_000) * USD_JPY);
 interface Overview {
   users: { byRole: Record<string, number>; total: number; new7d: number; suspended: number; signupsByDay: { day: string; count: number }[] };
   content: { reels: number; comments: number; visits30d: number };
-  todo: { pendingSubmissions: number; inquiriesOpen: number; reportedComments: number; pendingApprovals: number };
+  todo: { pendingSubmissions: number; inquiriesOpen: number; reportedComments: number; pendingApprovals: number; pendingListingSubmissions: number };
+  listingPages: number;
   plans: { plus: number; business: number; municipalityPro: number; monthlyYen: number };
   ai: {
     todayMicroUsd: number;
@@ -168,6 +171,12 @@ export default function AdminPage() {
         {section === "" && <OverviewSection data={overview} />}
         {section === "approvals" && <ApprovalsSection onChange={loadOverview} />}
         {section === "inquiries" && <InquiriesSection onChange={loadOverview} />}
+        {section === "listingSubmissions" && (
+          <>
+            <Heading>{t("admin.nav.listingSubmissions")}</Heading>
+            <SubmissionInbox admin onCountsChange={loadOverview} />
+          </>
+        )}
         {section === "users" && <UsersSection />}
         {section === "reports" && <ReportsSection onChange={loadOverview} />}
         {section === "logs" && <LogsSection />}
@@ -232,11 +241,17 @@ function OverviewSection({ data }: { data: Overview | null }) {
         <Tile label={t("admin.overview.aiMonth")} value={`¥${n(yen(data.ai.monthMicroUsd))}`} note={t("admin.overview.aiToday", { yen: n(yen(data.ai.todayMicroUsd)) })} />
       </div>
 
-      <div className="mt-3 grid gap-3 lg:grid-cols-4">
+      <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-5">
         <Tile label={t("admin.overview.pendingApprovals")} value={n(data.todo.pendingApprovals)} to="/admin/approvals" />
         <Tile label={t("admin.overview.inquiriesOpen")} value={n(data.todo.inquiriesOpen)} to="/admin/inquiries" />
         <Tile label={t("admin.overview.reported")} value={n(data.todo.reportedComments)} to="/admin/reports" />
         <Tile label={t("admin.overview.pendingSubmissions")} value={n(data.todo.pendingSubmissions)} note={t("admin.overview.pendingNote")} />
+        <Tile
+          label={t("admin.overview.pendingListingSubmissions")}
+          value={n(data.todo.pendingListingSubmissions)}
+          note={t("admin.overview.listingPages", { count: data.listingPages })}
+          to="/admin/listingSubmissions"
+        />
       </div>
 
       <div className="mt-3 grid gap-3 lg:grid-cols-2">
@@ -412,6 +427,9 @@ const ACTION_LABEL: Record<string, string> = {
   inquiryOpen: "admin.log.inquiryOpen",
   approve: "admin.log.approve",
   reject: "admin.log.reject",
+  approveSubmission: "admin.log.approveSubmission",
+  rejectSubmission: "admin.log.rejectSubmission",
+  postSubmission: "admin.log.postSubmission",
 };
 
 function LogList({ logs }: { logs: Log[] }) {
@@ -652,7 +670,7 @@ interface AdminUser {
   createdAt: string;
   suspendedAt: string | null;
   isAdmin: boolean;
-  municipality: { id: string; name: string; prefecture: string } | null;
+  municipality: { id: string; name: string; prefecture: string; listing?: boolean } | null;
   company: { id: string; name: string; municipality: { name: string } } | null;
   plan: { plan: string; status: string; source: string; currentPeriodEnd: string | null; active: boolean } | null;
   _count: { comments: number; visits: number; submissions: number };
@@ -672,6 +690,7 @@ function UsersSection() {
       const params = new URLSearchParams({ page: String(page) });
       if (query.trim()) params.set("q", query.trim());
       if (role === "suspended") params.set("suspended", "1");
+      else if (role === "listings") params.set("listings", "1");
       else if (role) params.set("role", role);
       const { data: res } = await api.get(`/admin/users?${params}`);
       setData((prev) => (page > 0 && prev ? { ...res, items: [...prev.items, ...res.items] } : res));
@@ -711,6 +730,7 @@ function UsersSection() {
             ["MUNICIPALITY", t("admin.role.MUNICIPALITY")],
             ["COMPANY", t("admin.role.COMPANY")],
             ["suspended", t("admin.overview.suspended")],
+            ["listings", t("admin.users.showListings")],
           ]}
         />
       </div>
@@ -768,6 +788,7 @@ function UserRow({ user: u, open, onToggle, onChanged }: { user: AdminUser; open
           <p className="flex flex-wrap items-center gap-1.5 text-sm font-bold text-jz-ink">
             {u.name}
             <Badge>{t(`admin.role.${u.role}`)}</Badge>
+            {u.municipality?.listing && <Badge>{t("admin.users.listing")}</Badge>}
             {u.isAdmin && <Badge tone="accent">{t("admin.users.admin")}</Badge>}
             {u.plan?.active && <Badge tone="accent">{t(`plans.name.${u.plan.plan}`)}</Badge>}
             {u.suspendedAt && <Badge tone="warn">{t("admin.overview.suspended")}</Badge>}

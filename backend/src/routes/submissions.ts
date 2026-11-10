@@ -34,7 +34,7 @@ type Row = Awaited<ReturnType<typeof prisma.submission.findFirstOrThrow>> & {
   municipality?: { id: string; name: string; prefecture: string };
 };
 
-function serialize(s: Row, { forReviewer }: { forReviewer: boolean }) {
+export function serialize(s: Row, { forReviewer }: { forReviewer: boolean }) {
   return {
     id: s.id,
     kind: s.kind,

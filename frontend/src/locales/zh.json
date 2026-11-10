@@ -1253,6 +1253,7 @@
     "website": "官方网站",
     "officeLabel": "起点：{{name}}（政府办公楼的位置）",
     "notice": "{{name}}尚未加入Jaziba。本页面的市町村名、政府办公楼位置、官方网站和宣传口号来自公开数据（code4fukui/localgovjp），主要景点由Jaziba根据公开的一般信息整理。帖子为Jaziba编辑部的介绍，影像为示意图。最新信息请以官方网站为准。",
+    "noticeBasic": "{{name}}尚未加入Jaziba。本页面的市町村名、政府办公楼位置、官方网站和宣传口号来自公开数据（code4fukui/localgovjp）。帖子是旅行者提供、经Jaziba运营方确认后介绍的照片和视频。最新信息请以官方网站为准。",
     "forMunicipality": "地方政府相关人员：如需加入或修改内容，请联系我们",
     "spotsSource": "这是Jaziba根据一般公开信息整理的列表。山、湖、山口和高原的位置根据日本国土地理院《地名集日本》编辑而成（约1.5公里精度的大致位置）。",
     "spotsCount": "主要景点{{count}}处"
@@ -1506,12 +1507,16 @@
     "placePlaceholder": "例：上高地 河童桥",
     "credit": "发布时显示我的名字作为提供者",
     "consent": "这是我本人拍摄的，同意{{name}}和Jaziba用于发布和介绍（如有人物入镜，已获得其同意）",
+    "consentListing": "这是我本人拍摄的，同意Jaziba用于介绍{{name}}的帖子（如有人物入镜，已获得其同意）",
     "note": "照片在发送前会在此设备上缩小，并删除位置等附加数据。审核中的可在我的页面撤回。",
     "send": "发送",
     "sending": "发送中…",
     "sent": "已发送给{{name}}。审核结果将通过我的页面和通知告知",
     "viewMine": "在我的页面查看",
-    "error": "发送失败，请重试"
+    "error": "发送失败，请重试",
+    "introListing": "可以发送您拍摄的{{name}}的照片和视频。{{name}}尚未加入Jaziba，因此由Jaziba运营方确认。获得批准即可获得100积分，并可能用于Jaziba的介绍帖子。",
+    "sentListing": "已发送。Jaziba运营方确认后，结果将在我的页面和通知中告知",
+    "ctaSubListing": "Jaziba运营方批准后可获得{{points}}积分，可能用于介绍{{name}}"
   },
   "submissions": {
     "mineHeading": "我提供的照片・视频",
@@ -1568,7 +1573,9 @@
     "cantMake": "此浏览器无法用照片制作视频，请用最新版Chrome或Safari打开",
     "postButton": "发布",
     "posted": "已发布，并已通知提供者",
-    "postError": "发布失败"
+    "postError": "发布失败",
+    "adminIntro": "旅行者发送给尚未加入的地方政府（非官方页面）的照片和视频。批准后旅行者获得{{points}}积分。发布后将作为“Jaziba介绍”显示在该页面和动态中（如提供者希望，会附上姓名）。",
+    "adminPosted": "已作为Jaziba的介绍帖子发布"
   },
   "aiLimit": {
     "signedIn": "本月或今天的免费AI次数已用完。可用积分兑换AI券，或升级到Plus继续使用。",
@@ -1830,7 +1837,8 @@
       "users": "用户",
       "reports": "举报",
       "logs": "操作记录",
-      "approvals": "注册审核"
+      "approvals": "注册审核",
+      "listingSubmissions": "提供素材（非官方）"
     },
     "role": {
       "USER": "旅行者",
@@ -1868,7 +1876,9 @@
       "recent": "最近的操作",
       "allLogs": "查看全部记录",
       "signupsTotal": "合计 {{count}}人",
-      "pendingApprovals": "待审核的注册"
+      "pendingApprovals": "待审核的注册",
+      "pendingListingSubmissions": "提供素材（非官方页面）",
+      "listingPages": "非官方页面 {{count}}个"
     },
     "inquiries": {
       "sub": "通过咨询表单收到的内容。",
@@ -1909,7 +1919,9 @@
       "restore": "解除停用",
       "suspendReason": "将停用{{name}}。原因（会保留记录）",
       "suspended": "已停用",
-      "restored": "已解除停用"
+      "restored": "已解除停用",
+      "listing": "非官方页面",
+      "showListings": "非官方页面"
     },
     "reports": {
       "sub": "其他用户举报的评论。累计3次举报将自动隐藏。",
@@ -1938,7 +1950,10 @@
       "inquiryDone": "咨询已处理",
       "inquiryOpen": "咨询改回未处理",
       "approve": "批准注册",
-      "reject": "不批准注册"
+      "reject": "不批准注册",
+      "approveSubmission": "批准提供素材",
+      "rejectSubmission": "未采用提供素材",
+      "postSubmission": "发布提供素材"
     },
     "signedInAs": "当前登录：{{email}}",
     "hintNotConfigured": "服务器上尚未设置管理员邮箱。在Render的“Environment”中保存ADMIN_EMAILS后，执行Manual Deploy（或重启）即可生效。",

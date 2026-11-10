@@ -17,7 +17,18 @@ type View = (typeof VIEWS)[number];
 // see) doesn't. An approved one can then be posted — a video as sent, a
 // photo turned into a short vertical clip on this device first — and the
 // post credits the traveler by name if they asked.
-export default function SubmissionInbox({ onCountsChange, onPosted }: { onCountsChange?: (pending: number) => void; onPosted?: (reel: Reel) => void }) {
+// `admin`: the operator's inbox for unofficial (listing) pages, which nobody
+// runs (admin site) — same screens, the admin API, posts become Jaziba's
+// introductions of the town.
+export default function SubmissionInbox({
+  onCountsChange,
+  onPosted,
+  admin = false,
+}: {
+  onCountsChange?: (pending: number) => void;
+  onPosted?: (reel: Reel) => void;
+  admin?: boolean;
+}) {
   const { t, i18n } = useTranslation();
   const [view, setView] = useState<View>("pending");
   const [items, setItems] = useState<Submission[] | null>(null);
@@ -28,12 +39,12 @@ export default function SubmissionInbox({ onCountsChange, onPosted }: { onCounts
   const [posting, setPosting] = useState<Submission | null>(null);
 
   const load = useCallback(async () => {
-    const { data } = await api.get<{ items: Submission[]; counts: { pending: number; approved: number }; pointsPerApproval: number }>("/submissions/inbox", { params: { status: view } });
+    const { data } = await api.get<{ items: Submission[]; counts: { pending: number; approved: number }; pointsPerApproval: number }>(admin ? "/admin/submissions" : "/submissions/inbox", { params: { status: view } });
     setItems(data.items);
     setCounts(data.counts);
     setPoints(data.pointsPerApproval);
     onCountsChange?.(data.counts.pending);
-  }, [view, onCountsChange]);
+  }, [view, onCountsChange, admin]);
 
   useEffect(() => {
     setItems(null);
@@ -41,13 +52,13 @@ export default function SubmissionInbox({ onCountsChange, onPosted }: { onCounts
   }, [load]);
 
   async function approve(s: Submission) {
-    await api.post(`/submissions/${s.id}/approve`);
+    await api.post(admin ? `/admin/submissions/${s.id}/approve` : `/submissions/${s.id}/approve`);
     showToast(t("inbox.approved", { name: s.contributor?.name ?? "", points }));
     void load();
   }
   async function reject(e: FormEvent, s: Submission) {
     e.preventDefault();
-    await api.post(`/submissions/${s.id}/reject`, { note });
+    await api.post(admin ? `/admin/submissions/${s.id}/reject` : `/submissions/${s.id}/reject`, { note });
     setRejecting(null);
     setNote("");
     void load();
@@ -55,7 +66,7 @@ export default function SubmissionInbox({ onCountsChange, onPosted }: { onCounts
 
   return (
     <div className="p-3 lg:p-4">
-      <p className="mb-3 rounded-2xl bg-jz-tint px-4 py-3 text-xs leading-relaxed text-jz-ink">{t("inbox.intro", { points })}</p>
+      <p className="mb-3 rounded-2xl bg-jz-tint px-4 py-3 text-xs leading-relaxed text-jz-ink">{t(admin ? "inbox.adminIntro" : "inbox.intro", { points })}</p>
       <div className="mb-3 flex flex-wrap gap-1.5" role="tablist">
         {VIEWS.map((v) => (
           <button
@@ -89,6 +100,12 @@ export default function SubmissionInbox({ onCountsChange, onPosted }: { onCounts
               </div>
               <div className="space-y-1 p-3 text-xs">
                 <p className="flex flex-wrap items-center gap-1.5">
+                  {admin && s.municipality && (
+                    <span className="rounded-full bg-jz-tint px-2 py-0.5 text-[11px] font-bold text-jz-accent">
+                      {s.municipality.prefecture}
+                      {s.municipality.name}
+                    </span>
+                  )}
                   <span className="font-bold text-gray-900">{s.contributor?.name}</span>
                   <StatusBadge s={s} />
                   <span className="text-[11px] text-gray-500">{t(s.kind === "video" ? "inbox.video" : "inbox.photo")}</span>
@@ -151,11 +168,12 @@ export default function SubmissionInbox({ onCountsChange, onPosted }: { onCounts
       {posting && (
         <PostSheet
           submission={posting}
+          admin={admin}
           onClose={() => setPosting(null)}
           onPosted={(reel) => {
             setPosting(null);
-            showToast(t("inbox.posted"));
-            onPosted?.(reel);
+            showToast(t(admin ? "inbox.adminPosted" : "inbox.posted"));
+            if (reel) onPosted?.(reel);
             void load();
           }}
         />
@@ -164,7 +182,7 @@ export default function SubmissionInbox({ onCountsChange, onPosted }: { onCounts
   );
 }
 
-function PostSheet({ submission, onClose, onPosted }: { submission: Submission; onClose: () => void; onPosted: (reel: Reel) => void }) {
+function PostSheet({ submission, admin, onClose, onPosted }: { submission: Submission; admin: boolean; onClose: () => void; onPosted: (reel: Reel | null) => void }) {
   const { t } = useTranslation();
   const [caption, setCaption] = useState(submission.description);
   const [category, setCategory] = useState<ReelCategory>("nature");
@@ -180,7 +198,7 @@ function PostSheet({ submission, onClose, onPosted }: { submission: Submission; 
     setProgress(0);
     try {
       const form = new FormData();
-      form.append("submissionId", submission.id);
+      if (!admin) form.append("submissionId", submission.id);
       if (isPhoto) form.append("video", await photoToVideo(submission.fileUrl, { onProgress: (p) => setProgress(p) }));
       form.append("caption", caption);
       form.append("category", category);
@@ -189,8 +207,14 @@ function PostSheet({ submission, onClose, onPosted }: { submission: Submission; 
         form.append("locationLat", String(submission.locationLat));
         form.append("locationLng", String(submission.locationLng));
       }
-      const { data } = await api.post<Reel>("/reels", form);
-      onPosted(data);
+      if (admin) {
+        // Jaziba's introduction of the town (the place's position comes from the submission).
+        await api.post(`/admin/submissions/${submission.id}/post`, form);
+        onPosted(null);
+      } else {
+        const { data } = await api.post<Reel>("/reels", form);
+        onPosted(data);
+      }
     } catch (err: any) {
       setError(err?.response?.data?.error && typeof err.response.data.error === "string" ? err.response.data.error : t("inbox.postError"));
       setProgress(null);

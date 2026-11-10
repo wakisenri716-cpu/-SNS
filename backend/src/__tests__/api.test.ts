@@ -1894,3 +1894,64 @@ test("予約明細: bookings in the しおり, booking numbers for members only,
   const read = await call("POST", `/api/me/trips/${trip.id}/reservations/read`, { text: "【楽天トラベル】ご予約ありがとうございます。予約番号：RY12345678 宿泊施設：上高地帝国ホテル" }, owner);
   assert.deepEqual([read.status, read.json.code], [503, "aiUnavailable"]);
 });
+
+test("全国の非公式ページ: every municipality in Japan has a page; photos offered to one are approved and posted by the operator", async () => {
+  // Pages nationwide, unofficial, nobody can sign in.
+  const all = (await call("GET", "/api/municipalities")).json;
+  assert.ok(all.length >= 1741);
+  const sapporo = all.find((m: any) => m.name === "札幌市" && m.prefecture === "北海道");
+  const chiyoda = all.find((m: any) => m.name === "千代田区");
+  assert.ok(sapporo?.listing && chiyoda?.listing);
+  assert.equal(all.some((m: any) => m.name.includes(" ")), false, "no wards of designated cities");
+  assert.equal((await call("POST", "/api/auth/login", { email: "listing-011002@listing.jaziba.invalid", password: "password123" })).status, 401);
+  assert.ok((await call("GET", `/api/search?q=${encodeURIComponent("さっぽろし")}`)).json.municipalities.some((m: any) => m.name === "札幌市"));
+
+  process.env.ADMIN_EMAILS = "ops2@example.com";
+  try {
+    const ops = (await call("POST", "/api/auth/register", { email: "ops2@example.com", password: "password123", name: "運営2" })).json.token;
+    // Not counted as accounts, and not in the user list unless asked.
+    const overview = (await call("GET", "/api/admin/overview", undefined, ops)).json;
+    assert.ok(overview.listingPages >= 1741 - 10);
+    assert.ok((overview.users.byRole.MUNICIPALITY ?? 0) < 100);
+    assert.equal((await call("GET", "/api/admin/users?q=listing-011002", undefined, ops)).json.total, 0);
+    assert.equal((await call("GET", "/api/admin/users?q=listing-011002&listings=1", undefined, ops)).json.total, 1);
+
+    // A traveler offers a photo of Sapporo.
+    const me = (await call("POST", "/api/auth/register", { email: "sapporo-fan@example.com", password: "password123", name: "札幌好き" })).json.token;
+    const jpeg = Buffer.from("/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==", "base64");
+    const offer = (kind: "photo" | "video") => {
+      const form = new FormData();
+      form.append("file", new Blob([kind === "photo" ? jpeg : Buffer.from("webm")], { type: kind === "photo" ? "image/jpeg" : "video/webm" }), kind === "photo" ? "p.jpg" : "v.webm");
+      form.append("municipalityId", sapporo.id);
+      form.append("description", "雪の大通公園");
+      form.append("locationName", "大通公園");
+      form.append("consent", "1");
+      return fetch(`${base}/api/submissions`, { method: "POST", headers: { Authorization: `Bearer ${me}` }, body: form }).then((r) => r.json());
+    };
+    const video = await offer("video");
+    const photo = await offer("photo");
+    const inbox = (await call("GET", "/api/admin/submissions", undefined, ops)).json;
+    assert.deepEqual(inbox.items.map((i: any) => [i.id, i.municipality.name, i.contributor.name]).slice(-2), [[video.id, "札幌市", "札幌好き"], [photo.id, "札幌市", "札幌好き"]]);
+    assert.ok(overview.todo.pendingListingSubmissions >= 0);
+    // Others can't review.
+    assert.equal((await call("POST", `/api/admin/submissions/${video.id}/approve`, undefined, me)).status, 403);
+
+    assert.equal((await call("POST", `/api/admin/submissions/${video.id}/approve`, undefined, ops)).status, 200);
+    assert.equal((await call("POST", `/api/admin/submissions/${video.id}/approve`, undefined, ops)).status, 404, "once");
+    assert.equal((await call("POST", `/api/admin/submissions/${photo.id}/reject`, { note: "ぶれています" }, ops)).status, 200);
+    assert.equal((await call("GET", "/api/points", undefined, me)).json.points, 100);
+
+    // Posted as Jaziba's introduction of the town, crediting the contributor.
+    const posted = await call("POST", `/api/admin/submissions/${video.id}/post`, { caption: "雪の大通公園", category: "nature" }, ops);
+    assert.equal(posted.status, 201);
+    const page = (await call("GET", `/api/municipalities/${sapporo.id}`)).json;
+    const reel = page.reels.find((r: any) => r.id === posted.json.reelId);
+    assert.deepEqual([reel.editorial, reel.contributedBy, reel.locationName], [true, "札幌好き", "大通公園"]);
+    assert.equal((await call("GET", "/api/admin/submissions?status=posted", undefined, ops)).json.items[0].reelId, posted.json.reelId);
+    // A municipality can't take it over through its own inbox.
+    const muni = await login("demo-matsumoto@example.com");
+    assert.equal((await call("POST", `/api/submissions/${photo.id}/approve`, undefined, muni)).status, 404);
+  } finally {
+    delete process.env.ADMIN_EMAILS;
+  }
+});

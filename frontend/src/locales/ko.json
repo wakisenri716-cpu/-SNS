@@ -1253,6 +1253,7 @@
     "website": "공식 사이트",
     "officeLabel": "출발점: {{name}}(관공서 위치)",
     "notice": "{{name}}은(는) 아직 Jaziba에 참여하지 않았어요. 이 페이지의 시정촌 이름·관공서 위치·공식 사이트·슬로건은 공개 데이터(code4fukui/localgovjp)에서, 주요 관광지는 Jaziba가 일반적으로 알려진 정보로 만들었어요. 게시물은 Jaziba 편집부의 소개이며 영상은 이미지예요. 최신 정보는 공식 사이트에서 확인해 주세요.",
+    "noticeBasic": "{{name}}은(는) 아직 Jaziba에 참여하지 않았어요. 이 페이지의 시정촌 이름·관공서 위치·공식 사이트·슬로건은 공개 데이터(code4fukui/localgovjp)에서 만들었어요. 게시물은 여행자가 제공한 사진·동영상을 Jaziba 운영자가 확인해 소개하는 것이에요. 최신 정보는 공식 사이트에서 확인해 주세요.",
     "forMunicipality": "지자체 담당자분께: 참여·내용 수정 문의는 여기로",
     "spotsSource": "Jaziba가 일반적으로 알려진 정보로 만든 목록이에요. 산·호수·고개·고원의 위치는 일본 국토지리원 「지명집 일본」을 편집해 만들었어요(약 1.5km 단위의 대략적인 위치).",
     "spotsCount": "주요 관광지 {{count}}곳"
@@ -1506,12 +1507,16 @@
     "placePlaceholder": "예: 가미코치 갓파바시",
     "credit": "게시될 때 내 이름을 \"제공\"으로 싣기",
     "consent": "직접 촬영한 것이며, {{name}}과(와) Jaziba가 게시・소개에 사용하는 것에 동의합니다 (사람이 찍혀 있다면 그 사람의 동의를 받았습니다)",
+    "consentListing": "직접 촬영한 것이며, Jaziba가 {{name}} 소개 게시물에 사용하는 것에 동의합니다 (사람이 찍혀 있다면 그 사람의 동의를 받았습니다)",
     "note": "사진은 보내기 전에 이 기기에서 줄이고 위치 등 부가 데이터를 지웁니다. 심사 중인 것은 마이페이지에서 철회할 수 있습니다.",
     "send": "보내기",
     "sending": "보내는 중…",
     "sent": "{{name}}에 보냈습니다. 심사 결과는 마이페이지와 알림으로 알려 드립니다",
     "viewMine": "마이페이지에서 보기",
-    "error": "보내지 못했습니다. 다시 시도해 주세요"
+    "error": "보내지 못했습니다. 다시 시도해 주세요",
+    "introListing": "직접 찍은 {{name}}의 사진・동영상을 보낼 수 있습니다. {{name}}은(는) 아직 Jaziba에 참여하지 않아 Jaziba 운영자가 확인합니다. 승인되면 100포인트를 받고 Jaziba의 소개 게시물에 사용될 수 있습니다.",
+    "sentListing": "보냈습니다. Jaziba 운영자가 확인한 결과를 마이페이지와 알림으로 알려 드립니다",
+    "ctaSubListing": "Jaziba 운영자가 승인하면 {{points}}포인트. {{name}} 소개 게시물에 사용될 수 있습니다"
   },
   "submissions": {
     "mineHeading": "제공한 사진・동영상",
@@ -1568,7 +1573,9 @@
     "cantMake": "이 브라우저에서는 사진으로 동영상을 만들 수 없습니다. 최신 Chrome이나 Safari로 열어 주세요",
     "postButton": "게시",
     "posted": "게시했습니다. 제공자에게도 알렸습니다",
-    "postError": "게시하지 못했습니다"
+    "postError": "게시하지 못했습니다",
+    "adminIntro": "아직 참여하지 않은 지자체(비공식 페이지)에 여행자가 보낸 사진・동영상입니다. 승인하면 여행자에게 {{points}}포인트. 게시하면 'Jaziba 소개'로 해당 페이지와 피드에 나옵니다(원하면 제공자 이름 포함).",
+    "adminPosted": "Jaziba 소개 게시물로 공개했습니다"
   },
   "aiLimit": {
     "signedIn": "이번 달 또는 오늘의 무료 AI를 모두 사용했습니다. 포인트로 AI 티켓을 교환하거나 플러스로 업그레이드하면 계속 사용할 수 있습니다.",
@@ -1830,7 +1837,8 @@
       "users": "사용자",
       "reports": "신고",
       "logs": "작업 기록",
-      "approvals": "가입 승인"
+      "approvals": "가입 승인",
+      "listingSubmissions": "제공 소재(비공식)"
     },
     "role": {
       "USER": "여행자",
@@ -1868,7 +1876,9 @@
       "recent": "최근 작업",
       "allLogs": "모든 기록 보기",
       "signupsTotal": "합계 {{count}}명",
-      "pendingApprovals": "승인 대기 가입"
+      "pendingApprovals": "승인 대기 가입",
+      "pendingListingSubmissions": "제공 소재(비공식 페이지)",
+      "listingPages": "비공식 페이지 {{count}}개"
     },
     "inquiries": {
       "sub": "문의 양식으로 받은 내용입니다.",
@@ -1909,7 +1919,9 @@
       "restore": "이용 정지 해제",
       "suspendReason": "{{name}} 님을 이용 정지합니다. 사유(기록에 남습니다)",
       "suspended": "이용 정지했습니다",
-      "restored": "이용 정지를 해제했습니다"
+      "restored": "이용 정지를 해제했습니다",
+      "listing": "비공식 페이지",
+      "showListings": "비공식 페이지"
     },
     "reports": {
       "sub": "다른 사용자가 신고한 댓글입니다. 3건이 되면 자동으로 숨겨집니다.",
@@ -1938,7 +1950,10 @@
       "inquiryDone": "문의 처리 완료",
       "inquiryOpen": "문의 미처리로 변경",
       "approve": "가입 승인",
-      "reject": "가입 미승인"
+      "reject": "가입 미승인",
+      "approveSubmission": "제공 소재 승인",
+      "rejectSubmission": "제공 소재 보류",
+      "postSubmission": "제공 소재 게시"
     },
     "signedInAs": "로그인 중: {{email}}",
     "hintNotConfigured": "서버에 관리자 이메일이 아직 설정되지 않았습니다. Render의 'Environment'에 ADMIN_EMAILS를 저장한 후 Manual Deploy(또는 재시작)를 하면 반영됩니다.",
