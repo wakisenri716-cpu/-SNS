@@ -106,3 +106,74 @@ function run_(send) {
   SpreadsheetApp.getUi().alert(`${send ? '送信' : '下書き作成'}：${done}件` +
     `（今日のGmail残り送信数：${MailApp.getRemainingDailyQuota()}）`);
 }
+
+/* ───────── 返信に「自治体」ラベルを付ける ───────── */
+
+const REPLY_LABEL = '自治体';
+const SHEET_ID_KEY = 'jazibaSheetId';
+
+/**
+ * 一度だけ実行してください。10分ごとに受信箱を見て、
+ * 送信リストの自治体（メールアドレスのドメインが同じ相手）から届いたメールに
+ * 「自治体」ラベルを付け、シートの「返信」列に日時を入れます。
+ */
+function 自動ラベルを有効にする() {
+  PropertiesService.getScriptProperties()
+    .setProperty(SHEET_ID_KEY, SpreadsheetApp.getActiveSpreadsheet().getId());
+  ScriptApp.getProjectTriggers()
+    .filter((t) => t.getHandlerFunction() === '返信にラベルを付ける')
+    .forEach((t) => ScriptApp.deleteTrigger(t));
+  ScriptApp.newTrigger('返信にラベルを付ける').timeBased().everyMinutes(10).create();
+  返信にラベルを付ける();
+  SpreadsheetApp.getUi().alert('有効にしました。10分ごとに返信を確認して「自治体」ラベルを付けます。');
+}
+
+function 自動ラベルを止める() {
+  ScriptApp.getProjectTriggers()
+    .filter((t) => t.getHandlerFunction() === '返信にラベルを付ける')
+    .forEach((t) => ScriptApp.deleteTrigger(t));
+}
+
+function 返信にラベルを付ける() {
+  const id = PropertiesService.getScriptProperties().getProperty(SHEET_ID_KEY);
+  const sheet = id ? SpreadsheetApp.openById(id).getSheets()[0] : SpreadsheetApp.getActiveSheet();
+  const values = sheet.getDataRange().getValues();
+  const header = values[0];
+  const cMail = header.indexOf('メールアドレス');
+  const cState = header.indexOf('送信状態');
+  let cReply = header.indexOf('返信');
+  if (cReply < 0) {
+    cReply = header.length;
+    sheet.getRange(1, cReply + 1).setValue('返信');
+  }
+
+  // メールアドレスのドメイン → 行番号（シートの「返信」列に印を付けるため）
+  const domainRows = {};
+  for (let r = 1; r < values.length; r++) {
+    const email = String(values[r][cMail]).trim().toLowerCase();
+    if (!email.includes('@')) continue;
+    const domain = email.split('@')[1];
+    (domainRows[domain] = domainRows[domain] || []).push(r);
+  }
+
+  const label = GmailApp.getUserLabelByName(REPLY_LABEL) || GmailApp.createLabel(REPLY_LABEL);
+  const stamp = Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyy-MM-dd HH:mm');
+
+  // 案内メール（件名に Jaziba とデモ版）への、自分以外からのメール
+  const query = `subject:(Jaziba デモ版) -from:me -from:mailer-daemon -from:postmaster -label:${REPLY_LABEL}`;
+  GmailApp.search(query, 0, 100).forEach((thread) => {
+    thread.addLabel(label);
+    thread.getMessages().forEach((m) => {
+      const from = m.getFrom().toLowerCase();
+      Object.keys(domainRows).forEach((d) => {
+        if (!from.includes('@' + d) && !from.includes('.' + d)) return;
+        domainRows[d].forEach((r) => {
+          if (!String(values[r][cReply] || '')) {
+            sheet.getRange(r + 1, cReply + 1).setValue(`返信あり ${stamp}`);
+            values[r][cReply] = 'x';
+          }
+        });
+      });
+    });
+  });
+}
