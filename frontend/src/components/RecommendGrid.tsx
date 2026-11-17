@@ -149,21 +149,22 @@ export default function RecommendGrid({
   }, [running, rotation]);
 
   return (
-    <section aria-label={t("grid.label")} className="pt-1">
+    <section aria-label={t("grid.label")} className="relative">
+      {/* Stop / resume the changing squares: a small button over the top right square. */}
       {rotation.size > GRID_LAYOUT.length && (
-        <div className="flex justify-end px-2 pb-1">
-          <button
-            type="button"
-            onClick={() => setPaused((p) => !p)}
-            aria-pressed={paused}
-            aria-label={t(paused ? "grid.resume" : "grid.pause")}
-            title={t(paused ? "grid.resume" : "grid.pause")}
-            className="flex h-7 w-7 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100"
-          >
-            {paused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setPaused((p) => !p)}
+          aria-pressed={paused}
+          aria-label={t(paused ? "grid.resume" : "grid.pause")}
+          title={t(paused ? "grid.resume" : "grid.pause")}
+          className="absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm hover:bg-black/55"
+        >
+          {paused ? <Play className="h-3.5 w-3.5 fill-white" /> : <Pause className="h-3.5 w-3.5 fill-white" />}
+        </button>
       )}
+      {/* Each block fills the screen between the tabs (53px top bar + 49px
+          tabs) and the 50px bottom bar. */}
       <div className="space-y-[2px]">
         {blocks.map((cells, b) => {
           const block = cells.flatMap((c) => (c ? [c.item] : []));
@@ -174,7 +175,7 @@ export default function RecommendGrid({
                 blockEls.current[b] = el;
               }}
               data-block={b}
-              className="grid h-[calc(100svh-53px-11.5rem)] min-h-[420px] grid-cols-3 grid-rows-3 gap-[2px] md:h-[calc(100svh-7rem)] md:max-h-[860px]"
+              className="grid h-[calc(100svh-152px-env(safe-area-inset-bottom))] min-h-[420px] grid-cols-3 grid-rows-3 gap-[2px] md:h-[calc(100svh-3.5rem)] md:max-h-[860px]"
             >
               {cells.map((cell, i) => (
                 <li key={i} className="min-h-0">

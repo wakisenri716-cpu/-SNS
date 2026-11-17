@@ -244,7 +244,7 @@ export default function Layout() {
           bottom tab bar (below). */}
       <header
         style={{ viewTransitionName: "top-bar" }}
-        className="sticky top-0 z-40 flex h-[53px] items-center justify-between border-b border-gray-100 bg-white/80 px-4 backdrop-blur-xl backdrop-saturate-150 md:hidden"
+        className="sticky top-0 z-40 flex h-[53px] items-center justify-between border-b border-gray-200 bg-white px-4 md:hidden"
       >
         <NavLink to="/" aria-label={t("brand.name")}>
           <JazibaLogo className="h-8 w-auto" />
@@ -320,7 +320,7 @@ export default function Layout() {
       )}
 
       {/* pb on phones keeps content clear of the bottom tab bar. */}
-      <main className="min-w-0 flex-1 pb-28 md:pb-0">
+      <main className="min-w-0 flex-1 pb-[calc(50px+env(safe-area-inset-bottom))] md:pb-0">
         <Suspense
           fallback={
             <div className="flex justify-center p-16" role="status" aria-label={t("feed.loading")}>
@@ -357,25 +357,19 @@ export default function Layout() {
 // Which tab a path belongs to ("/" only for the home itself).
 const tabIndexOf = (tabs: { to: string }[], path: string) => tabs.findIndex((tab) => (tab.to === "/" ? path === "/" : path === tab.to || path.startsWith(`${tab.to}/`)));
 
-// The floating tab bar on phones: liquid glass, with a lens-like pill that
-// glides to the tab you're on. Switching tabs slides the page left or right
-// the way you moved (View Transitions; the bar itself stays put).
+// The tab bar on phones, like Instagram's: a flat white bar along the bottom
+// edge with a hairline on top; the current tab's icon is drawn bolder.
+// Switching tabs slides the page left or right the way you moved (View
+// Transitions; the bar itself stays put).
 function TabBar({ tabs, label }: { tabs: NavEntry[]; label: string }) {
   const location = useLocation();
   const active = tabIndexOf(tabs, location.pathname);
   return (
     <nav
       aria-label={label}
-      className="liquid-glass fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-1/2 z-40 flex h-16 w-[min(calc(100%-2rem),420px)] -translate-x-1/2 items-center rounded-full px-1.5 md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 flex h-[calc(50px+env(safe-area-inset-bottom))] items-start border-t border-gray-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden"
       style={{ viewTransitionName: "tab-bar" }}
     >
-      {active >= 0 && (
-        <span
-          aria-hidden
-          className="tab-pill pointer-events-none absolute inset-y-1.5 left-1.5 rounded-full"
-          style={{ width: `calc((100% - 0.75rem) / ${tabs.length})`, transform: `translateX(${active * 100}%)` }}
-        />
-      )}
       {tabs.map(({ to, label: tabLabel, icon: IconC, badge = 0 }, i) => (
         <NavLink
           key={to}
@@ -386,18 +380,12 @@ function TabBar({ tabs, label }: { tabs: NavEntry[]; label: string }) {
           onClick={() => {
             document.documentElement.dataset.navDir = active < 0 || i === active ? "" : i > active ? "forward" : "back";
           }}
-          className={({ isActive }) =>
-            `relative z-[1] flex h-12 flex-1 flex-col items-center justify-center rounded-full transition-[color,transform] duration-300 active:scale-90 ${isActive ? "text-jz-ink" : "text-gray-500"}`
-          }
+          className={({ isActive }) => `relative flex h-[50px] flex-1 items-center justify-center active:opacity-60 ${isActive ? "text-jz-ink" : "text-gray-700"}`}
         >
           {({ isActive }) => (
             <>
-              <IconC className={`h-[25px] w-[25px] transition-transform duration-300 ${isActive ? "scale-105" : ""}`} strokeWidth={isActive ? 2.4 : 1.7} />
-              <span
-                className={`mt-1 h-1.5 w-1.5 rounded-full bg-jz-ink transition-all duration-300 ${isActive ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
-                aria-hidden
-              />
-              {badge > 0 && <Badge count={badge} className="absolute left-1/2 top-1 ml-1.5" />}
+              <IconC className="h-6 w-6" strokeWidth={isActive ? 2.6 : 1.75} />
+              {badge > 0 && <Badge count={badge} className="absolute left-1/2 top-1.5 ml-1.5" />}
             </>
           )}
         </NavLink>

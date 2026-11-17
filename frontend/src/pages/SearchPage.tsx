@@ -3,10 +3,11 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ChevronRight, History, MapPinned, Mic, Search as SearchIcon } from "lucide-react";
 import { clearRecentlyViewed, getRecentlyViewed, type RecentItem } from "../lib/recentlyViewed";
+import Avatar from "../components/Avatar";
 import ConciergeButton from "../components/ConciergeButton";
 import { useSpeechInput } from "../lib/useSpeechInput";
 import { api } from "../api/client";
-import { TravelerTagChips, TravelerTagPicker } from "../components/TravelerTagChips";
+import { TravelerTagPicker } from "../components/TravelerTagChips";
 import type { Municipality, Reel, TravelerTag } from "../types";
 
 interface RecommendItem {
@@ -53,24 +54,17 @@ export default function SearchPage() {
   }, [q, tags, searching]);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6">
+    <div className="mx-auto max-w-3xl px-4 py-3 md:py-6">
       <h1 className="sr-only">{t("nav.search")}</h1>
-      <ConciergeButton className="mb-4" />
-      <Link
-        to="/areas"
-        className="mb-4 flex items-center gap-3 rounded-2xl bg-gray-50 px-4 py-3 text-sm font-semibold text-jz-ink transition hover:bg-gray-100"
-      >
-        <MapPinned className="h-5 w-5 text-jz-accent" />
-        <span className="flex-1">{t("areas.heading")}</span>
-        <ChevronRight className="h-4 w-4 text-gray-500" />
-      </Link>
+      {/* Like Instagram's search: one plain grey field on top. */}
       <div className="relative">
-        <SearchIcon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+        <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder={speech.listening ? t("concierge.listening") : t("search.placeholder")}
-          className="w-full rounded-full bg-gray-100 py-3 pl-10 pr-12 text-sm text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-jz-accent/30"
+          aria-label={t("search.placeholder")}
+          className="h-9 w-full rounded-lg bg-gray-100 pl-9 pr-10 text-sm text-gray-900 placeholder-gray-500 outline-none focus:ring-1 focus:ring-gray-300"
         />
         {speech.supported && (
           <button
@@ -78,7 +72,7 @@ export default function SearchPage() {
             onClick={speech.listening ? speech.stop : speech.start}
             aria-label={speech.listening ? t("concierge.stopVoice") : t("concierge.voice")}
             aria-pressed={speech.listening}
-            className={`absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full transition ${
+            className={`absolute right-1 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full transition ${
               speech.listening ? "bg-jz-accent text-white" : "text-gray-500 hover:bg-gray-200"
             }`}
           >
@@ -87,7 +81,13 @@ export default function SearchPage() {
           </button>
         )}
       </div>
-      <div className="mt-3">
+      <ConciergeButton className="mt-2" />
+      <Link to="/areas" className="mt-1 flex items-center gap-2 py-2 text-sm font-semibold text-jz-ink active:opacity-60">
+        <MapPinned className="h-4 w-4" />
+        <span className="flex-1">{t("areas.heading")}</span>
+        <ChevronRight className="h-4 w-4 text-gray-500" />
+      </Link>
+      <div className="mt-1">
         <p className="mb-1.5 text-xs font-semibold text-gray-500">{t("search.tagFilterLabel")}</p>
         <TravelerTagPicker value={tags} onChange={setTags} />
       </div>
@@ -97,39 +97,37 @@ export default function SearchPage() {
           {municipalities.length > 0 && (
             <div>
               <h2 className="mb-2 text-xs font-semibold text-gray-500">{t("search.municipalitiesHeading")}</h2>
-              <div className="flex flex-col gap-2">
+              <ul>
                 {municipalities.map((m) => (
-                  <Link
-                    key={m.id}
-                    to={`/municipalities/${m.id}`}
-                    className="rounded-2xl border border-gray-200/80 bg-white p-3 text-sm text-gray-800 hover:bg-gray-50"
-                  >
-                    {m.name}（{m.prefecture}）
-                    {m.listing && <span className="ml-1.5 rounded-full bg-gray-100 px-1.5 py-px text-px10 font-semibold text-gray-500">{t("listing.badge")}</span>}
-                  </Link>
+                  <li key={m.id}>
+                    <Link to={`/municipalities/${m.id}`} className="flex items-center gap-3 py-2 active:opacity-60">
+                      <Avatar name={m.name} src={m.avatarUrl} size={44} />
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-semibold text-jz-ink">
+                          {m.name}
+                          {m.listing && <span className="ml-1.5 rounded bg-gray-100 px-1.5 py-px text-px10 font-semibold text-gray-500">{t("listing.badge")}</span>}
+                        </span>
+                        <span className="block truncate text-px13 text-gray-500">{m.prefecture}</span>
+                      </span>
+                    </Link>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           )}
           {reels.length > 0 && (
             <div>
               <h2 className="mb-2 text-xs font-semibold text-gray-500">{t("search.postsHeading")}</h2>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <div className="-mx-4 grid grid-cols-3 gap-[2px] md:mx-0">
                 {reels.map((r) => (
                   <Link
                     key={r.id}
                     to={`/reels/${r.id}/access`}
                     state={{ reel: r }}
-                    className="block overflow-hidden rounded-2xl border border-gray-200/80 bg-white hover:border-gray-300"
+                    aria-label={`${r.locationName || r.caption.slice(0, 30)}・${r.municipality.name}`}
+                    className="on-media block aspect-[3/4] overflow-hidden bg-gray-100 active:opacity-80"
                   >
-                    <video src={r.videoUrl} className="aspect-video w-full bg-gray-200 object-cover" muted />
-                    <div className="flex flex-col gap-1 p-2">
-                      <p className="truncate text-xs font-semibold text-gray-900">{r.locationName || r.caption}</p>
-                      <p className="truncate text-px11 text-gray-500">
-                        {r.municipality.name} · {t(`category.${r.category}`)}
-                      </p>
-                      <TravelerTagChips tags={r.travelerTags} />
-                    </div>
+                    <video src={`${r.videoUrl}#t=0.5`} className="h-full w-full object-cover" muted playsInline preload="metadata" />
                   </Link>
                 ))}
               </div>
@@ -164,7 +162,7 @@ export default function SearchPage() {
             <div className="scrollbar-none -mx-4 flex gap-2.5 overflow-x-auto px-4 pb-1">
               {recent.map((r) => (
                 <Link key={r.id} to={`/reels/${r.id}/access`} className="w-28 shrink-0">
-                  <span className="on-media block aspect-[4/5] overflow-hidden rounded-2xl bg-gray-100">
+                  <span className="on-media block aspect-[4/5] overflow-hidden rounded-md bg-gray-100">
                     <video src={`${r.videoUrl}#t=0.1`} className="h-full w-full object-cover" muted playsInline preload="metadata" />
                   </span>
                   <span className="mt-1 block truncate text-xs font-semibold text-jz-ink">{r.place}</span>
@@ -176,13 +174,15 @@ export default function SearchPage() {
         )}
         <div className="mt-6">
           <h2 className="mb-2 text-xs font-semibold text-gray-500">{t("search.recommendHeading")}</h2>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          <div className="-mx-4 grid grid-cols-3 gap-[2px] md:mx-0">
             {recommend.map((r) => (
-              <Link key={r.id} to={`/municipalities/${r.municipality.id}`} className="relative block">
-                <video src={r.videoUrl} className="aspect-video w-full rounded-lg bg-gray-200 object-cover" muted />
-                <span className="absolute bottom-1.5 left-1.5 rounded bg-black/60 px-1.5 py-0.5 text-px10 text-white">
-                  {r.municipality.name}
-                </span>
+              <Link
+                key={r.id}
+                to={`/municipalities/${r.municipality.id}`}
+                aria-label={r.municipality.name}
+                className="on-media block aspect-[3/4] overflow-hidden bg-gray-100 active:opacity-80"
+              >
+                <video src={`${r.videoUrl}#t=0.5`} className="h-full w-full object-cover" muted playsInline preload="metadata" />
               </Link>
             ))}
           </div>

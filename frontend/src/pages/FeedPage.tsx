@@ -267,21 +267,22 @@ export default function FeedPage() {
       )}
       <WelcomeIntro />
 
-      <h1 className="px-4 pt-5 text-px24 font-extrabold leading-tight tracking-tight text-jz-ink md:px-0 md:pt-8">{t("feed.heroTitle")}</h1>
-      <div className="px-3 pt-3 md:px-0">
+      {/* No big headline (like Instagram); kept for screen readers. */}
+      <h1 className="sr-only">{t("feed.heroTitle")}</h1>
+      <div className="px-4 pt-3 md:px-0 md:pt-6">
         <ConciergeButton />
       </div>
       {stories.length > 0 && (
-        <nav aria-label={t("feed.storiesLabel")} className="scrollbar-none flex gap-4 overflow-x-auto px-4 pb-2 pt-3 md:px-0">
+        <nav aria-label={t("feed.storiesLabel")} className="scrollbar-none flex gap-3 overflow-x-auto px-3 pb-1 pt-3 md:px-0">
           {stories.map((sg, idx) => (
             <button
               key={sg.municipality.id}
               type="button"
               onClick={() => setStoryView({ groups: stories, start: idx })}
-              className="flex w-[72px] shrink-0 flex-col items-center gap-1.5 transition active:scale-95"
+              className="flex w-[70px] shrink-0 flex-col items-center gap-1 active:opacity-70"
             >
               <Avatar name={sg.municipality.name} src={sg.municipality.avatarUrl} size={62} ring seen={isGroupSeen(sg)} />
-              <span className={`w-full truncate text-center text-xs ${isGroupSeen(sg) ? "text-gray-500" : "text-gray-900"}`}>
+              <span className={`w-full truncate text-center text-px11 ${isGroupSeen(sg) ? "text-gray-500" : "text-gray-900"}`}>
                 {sg.municipality.name}
               </span>
             </button>
@@ -291,14 +292,14 @@ export default function FeedPage() {
 
       <UpcomingEvents />
 
-      <div className="sticky top-[var(--header-offset,53px)] z-30 bg-white/80 backdrop-blur-xl backdrop-saturate-150 md:top-0">
-        <div className="scrollbar-none flex gap-2 overflow-x-auto px-4 py-2.5">
+      <div className="sticky top-[var(--header-offset,53px)] z-30 border-b border-gray-200 bg-white md:top-0">
+        <div className="scrollbar-none flex gap-1.5 overflow-x-auto px-3 py-2">
           {[...CATEGORY_TABS, ...(token ? SPECIAL_TABS : [])].map((c) => (
             <button
               key={c}
               onClick={() => setTab(c)}
               aria-pressed={tab === c}
-              className={`shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-semibold transition active:scale-95 ${
+              className={`shrink-0 whitespace-nowrap rounded-lg px-3 py-1.5 text-px13 font-semibold active:opacity-70 ${
                 tab === c ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900 hover:bg-gray-200"
               }`}
             >
@@ -311,15 +312,13 @@ export default function FeedPage() {
       {tab === "all" && user?.role === "USER" && !loading && (
         <Link
           to="/settings#travel-style"
-          className="mx-3 mt-3 flex items-center gap-3 rounded-2xl bg-jz-tint px-4 py-3 text-xs text-jz-ink transition active:scale-[0.99] md:mx-0"
+          className="flex items-center gap-2 px-4 py-2 text-px11 text-gray-500 active:opacity-70 md:px-0"
         >
-          <Sparkles className="h-4 w-4 shrink-0 text-jz-accent" />
-          <span className="min-w-0 flex-1 leading-relaxed">
-            {personalized ? t("feed.personalizedNote") : t("feed.personalizeCta")}
-          </span>
-          <span className="flex shrink-0 items-center font-bold text-jz-accent">
+          <Sparkles className="h-3.5 w-3.5 shrink-0" />
+          <span className="min-w-0 flex-1 truncate">{personalized ? t("feed.personalizedNote") : t("feed.personalizeCta")}</span>
+          <span className="flex shrink-0 items-center font-semibold text-jz-ink">
             {personalized ? t("feed.personalizedChange") : t("feed.personalizeSet")}
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-3.5 w-3.5" />
           </span>
         </Link>
       )}
