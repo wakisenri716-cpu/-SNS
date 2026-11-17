@@ -15,11 +15,18 @@ const TIER_CHIP: Record<Tier, string> = {
   hidden: "bg-white/90 text-jz-ink",
 };
 
-// おすすめ 9マス: nine posts on one screen — 2 定番, 3 注目 and 4 穴場 towns —
-// one square at a time changing to another post from the same pool. Pauses
-// with the button, off screen, in a background tab, while a post is open,
-// and starts paused with reduced motion. Without tiers (saved, following,
-// nearby) it rotates through the list as it comes.
+// A long scroll stops adding blocks here (posts repeat well before).
+const MAX_BLOCKS = 60;
+
+const idsOf = (blocks: (Cell<Reel> | null)[][]) => new Set(blocks.flatMap((cells) => cells.flatMap((c) => (c ? [c.item.id] : []))));
+
+// おすすめ 9マス: nine posts per screen — 2 定番, 3 注目 and 4 穴場 towns —
+// and another nine below as you scroll, on and on. In each block on screen
+// one square at a time changes to another post from the same pool. Pauses
+// with the button, in a background tab, while a post is open, and starts
+// paused with reduced motion; blocks off screen don't change, and ones far
+// away don't load their stills. Without tiers (saved, following, nearby) it
+// goes through the list as it comes.
 export default function RecommendGrid({
   pools,
   tiered,
@@ -30,61 +37,116 @@ export default function RecommendGrid({
   tiered: boolean;
   /** False while a post is open over the grid. */
   active: boolean;
-  /** The post tapped, and the nine on screen (for swiping in the viewer). */
-  onOpen: (reel: Reel, onScreen: Reel[]) => void;
+  /** The post tapped, and the nine of its block (for swiping in the viewer). */
+  onOpen: (reel: Reel, block: Reel[]) => void;
 }) {
   const { t } = useTranslation();
   const rotation = useMemo(() => new GridRotation(pools), [pools]);
-  // The nine on screen, started over when the pools change (tab change, refresh).
-  const [state, setState] = useState(() => ({ rotation, cells: rotation.fill() }));
-  if (state.rotation !== rotation) setState({ rotation, cells: rotation.fill() });
-  const cells = state.cells;
+  // The blocks, started over when the pools change (tab change, refresh).
+  const [state, setState] = useState(() => ({ rotation, blocks: [rotation.fill()] }));
+  if (state.rotation !== rotation) setState({ rotation, blocks: [rotation.fill()] });
+  const blocks = state.blocks;
   const reducedMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   const [paused, setPaused] = useState(!!reducedMotion);
-  const [visible, setVisible] = useState(true);
   const [pageShown, setPageShown] = useState(() => typeof document === "undefined" || !document.hidden);
-  const rootRef = useRef<HTMLDivElement>(null);
+  // Blocks on screen (they change) and near it (they load their stills).
+  const [visible, setVisible] = useState<Set<number>>(() => new Set([0]));
+  const [near, setNear] = useState<Set<number>>(() => new Set([0]));
+  const visibleRef = useRef(visible);
+  const blockEls = useRef<(HTMLUListElement | null)[]>([]);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  // Per block: the order its squares change in, and where it is.
+  const orders = useRef(new Map<number, { order: number[]; step: number }>());
 
   useEffect(() => {
-    const el = rootRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), { threshold: 0.2 });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+    visibleRef.current = visible;
+  }, [visible]);
+  useEffect(() => {
+    orders.current.clear();
+  }, [rotation]);
+
   useEffect(() => {
     const onChange = () => setPageShown(!document.hidden);
     document.addEventListener("visibilitychange", onChange);
     return () => document.removeEventListener("visibilitychange", onChange);
   }, []);
 
-  const running = !paused && visible && pageShown && active && rotation.size > GRID_LAYOUT.length;
+  // Which blocks are on screen / near it.
+  useEffect(() => {
+    const watch = (setter: typeof setVisible, options: IntersectionObserverInit) => {
+      const observer = new IntersectionObserver((entries) => {
+        setter((prev) => {
+          const next = new Set(prev);
+          for (const e of entries) {
+            const i = Number((e.target as HTMLElement).dataset.block);
+            if (e.isIntersecting) next.add(i);
+            else next.delete(i);
+          }
+          return next;
+        });
+      }, options);
+      for (const el of blockEls.current.slice(0, blocks.length)) if (el) observer.observe(el);
+      return observer;
+    };
+    const onScreen = watch(setVisible, { threshold: 0.15 });
+    const nearby = watch(setNear, { rootMargin: "150% 0px" });
+    return () => {
+      onScreen.disconnect();
+      nearby.disconnect();
+    };
+  }, [blocks.length]);
+
+  // Scrolled near the end: another nine below.
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || blocks.length >= MAX_BLOCKS || rotation.size === 0) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setState((prev) => (prev.rotation !== rotation || prev.blocks.length >= MAX_BLOCKS ? prev : { rotation, blocks: [...prev.blocks, rotation.fillBlock(idsOf(prev.blocks))] }));
+      },
+      { rootMargin: "100% 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [blocks.length, rotation]);
+
+  const running = !paused && pageShown && active && visible.size > 0 && rotation.size > GRID_LAYOUT.length;
   useEffect(() => {
     if (!running) return;
-    let order = swapOrder(GRID_LAYOUT.length);
-    let step = 0;
-    const timer = setInterval(() => {
-      if (step >= order.length) {
-        order = swapOrder(GRID_LAYOUT.length);
-        step = 0;
+    const nextSquare = (block: number) => {
+      let o = orders.current.get(block);
+      if (!o || o.step >= o.order.length) {
+        o = { order: swapOrder(GRID_LAYOUT.length), step: 0 };
+        orders.current.set(block, o);
       }
-      const index = order[step++];
+      return o.order[o.step++];
+    };
+    const timer = setInterval(() => {
       setState((prev) => {
         if (prev.rotation !== rotation) return prev;
-        const onScreen = new Set(prev.cells.flatMap((c) => (c ? [c.item.id] : [])));
-        const next = rotation.take(GRID_LAYOUT[index], onScreen);
-        if (!next) return prev;
-        const copy = [...prev.cells];
-        copy[index] = next;
-        return { rotation, cells: copy };
+        const everywhere = idsOf(prev.blocks);
+        let changed = false;
+        const blocks = prev.blocks.map((cells, b) => {
+          if (!visibleRef.current.has(b)) return cells;
+          const index = nextSquare(b);
+          const own = new Set(cells.flatMap((c) => (c ? [c.item.id] : [])));
+          const next = rotation.take(GRID_LAYOUT[index], everywhere, own);
+          if (!next) return cells;
+          everywhere.add(next.item.id);
+          changed = true;
+          const copy = [...cells];
+          copy[index] = next;
+          return copy;
+        });
+        return changed ? { rotation, blocks } : prev;
       });
     }, SWAP_MS);
     return () => clearInterval(timer);
   }, [running, rotation]);
 
-  const shown = cells.flatMap((c) => (c ? [c.item] : []));
   return (
-    <section ref={rootRef} aria-label={t("grid.label")} className="px-1 pt-2 md:px-0">
+    <section aria-label={t("grid.label")} className="px-1 pt-2 md:px-0">
       <div className="flex items-center gap-2 px-2 pb-1.5">
         <p className="min-w-0 flex-1 truncate text-[11px] text-gray-500">{tiered ? t("grid.note") : t("grid.notePlain")}</p>
         {rotation.size > GRID_LAYOUT.length && (
@@ -100,17 +162,32 @@ export default function RecommendGrid({
           </button>
         )}
       </div>
-      <ul className="grid h-[calc(100dvh-var(--header-offset,53px)-11.5rem)] min-h-[420px] grid-cols-3 grid-rows-3 gap-1 md:h-[calc(100dvh-7rem)] md:max-h-[860px]">
-        {cells.map((cell, i) => (
-          <li key={i} className="min-h-0">
-            {cell ? (
-              <GridSquare cell={cell} tiered={tiered} drift={!reducedMotion} onOpen={(reel) => onOpen(reel, shown)} />
-            ) : (
-              <div className="h-full w-full rounded-lg bg-gray-100" aria-hidden />
-            )}
-          </li>
-        ))}
-      </ul>
+      <div className="space-y-1">
+        {blocks.map((cells, b) => {
+          const block = cells.flatMap((c) => (c ? [c.item] : []));
+          return (
+            <ul
+              key={b}
+              ref={(el) => {
+                blockEls.current[b] = el;
+              }}
+              data-block={b}
+              className="grid h-[calc(100dvh-var(--header-offset,53px)-11.5rem)] min-h-[420px] grid-cols-3 grid-rows-3 gap-1 md:h-[calc(100dvh-7rem)] md:max-h-[860px]"
+            >
+              {cells.map((cell, i) => (
+                <li key={i} className="min-h-0">
+                  {cell && near.has(b) ? (
+                    <GridSquare cell={cell} tiered={tiered} drift={!reducedMotion} onOpen={(reel) => onOpen(reel, block)} />
+                  ) : (
+                    <div className="h-full w-full rounded-lg bg-gray-100" aria-hidden />
+                  )}
+                </li>
+              ))}
+            </ul>
+          );
+        })}
+      </div>
+      <div ref={sentinelRef} aria-hidden />
     </section>
   );
 }

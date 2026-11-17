@@ -118,7 +118,7 @@ router.get("/", optionalAuth, async (req, res) => {
 // is a weighted shuffle (newer and more liked posts come up more often),
 // interleaved town by town so one town doesn't fill a pool.
 const GRID_CANDIDATES = 400;
-const GRID_POOL = 30;
+const GRID_POOL = 60;
 router.get("/grid", optionalAuth, async (req, res) => {
   const category =
     typeof req.query.category === "string" && (REEL_CATEGORIES as readonly string[]).includes(req.query.category) ? req.query.category : undefined;

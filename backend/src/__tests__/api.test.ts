@@ -2026,7 +2026,7 @@ test("おすすめ 9マス: posts in 定番・注目・穴場 pools by how well 
 
   const grid = (await call("GET", "/api/reels/grid")).json;
   for (const [key, tier] of [["famous", 1], ["middle", 2], ["hidden", 3]] as const) {
-    assert.ok(Array.isArray(grid[key]) && grid[key].length > 0 && grid[key].length <= 30, key);
+    assert.ok(Array.isArray(grid[key]) && grid[key].length > 0 && grid[key].length <= 60, key);
     assert.ok(grid[key].every((r: any) => r.fameTier === tier && r.videoUrl), key);
   }
   assert.ok(grid.famous.some((r: any) => r.municipality.name === "松本市"));

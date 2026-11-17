@@ -47,3 +47,15 @@ test("a small pool borrows from the nearest one", () => {
 test("swapOrder: every square once", () => {
   assert.deepEqual([...swapOrder(9)].sort((a, b) => a - b), [0, 1, 2, 3, 4, 5, 6, 7, 8]);
 });
+
+test("fillBlock: more blocks keep the 2・3・4 mix, repeating a pool's posts only once it runs out", () => {
+  const rotation = new GridRotation({ famous: posts("f", 3), middle: posts("m", 6), hidden: posts("h", 20) });
+  const first = rotation.fill();
+  const firstIds = new Set(first.map((c) => c!.item.id));
+  const second = rotation.fillBlock(firstIds);
+  // Still 2 定番 (repeated: there are only 3), 3 注目 (fresh), 4 穴場 (fresh).
+  assert.deepEqual(second.map((c) => c!.tier), [...GRID_LAYOUT]);
+  assert.equal(new Set(second.map((c) => c!.item.id)).size, 9, "nothing twice in one block");
+  assert.ok(second.filter((c) => c!.tier !== "famous").every((c) => !firstIds.has(c!.item.id)));
+  assert.equal(second.filter((c) => c!.tier === "famous" && firstIds.has(c!.item.id)).length, 1);
+});
