@@ -2186,12 +2186,8 @@
   },
   "grid": {
     "label": "추천 9칸",
-    "note": "대표 2・주목 3・숨은 명소 4곳 지자체의 게시물을 하나씩 바꿔 가며 표시",
-    "notePlain": "게시물을 하나씩 바꿔 가며 표시",
     "pause": "자동 전환 멈추기",
     "resume": "자동 전환 다시 시작",
-    "pauseShort": "멈춤",
-    "resumeShort": "재생",
     "viewLabel": "보기 전환",
     "viewGrid": "9칸으로 보기",
     "viewList": "하나씩 보기",

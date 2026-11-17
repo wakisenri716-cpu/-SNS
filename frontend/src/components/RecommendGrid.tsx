@@ -1,19 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pause, Play } from "lucide-react";
-import { GRID_LAYOUT, GridRotation, swapOrder, type Cell, type Pools, type Tier } from "../lib/gridRotation";
+import { GRID_LAYOUT, GridRotation, swapOrder, type Cell, type Pools } from "../lib/gridRotation";
 import type { Reel } from "../types";
 
 // How often one square changes (each square changes about every 9 × this).
 const SWAP_MS = 2600;
 // A new post that won't load in time is shown anyway.
 const LOAD_TIMEOUT_MS = 4000;
-
-const TIER_CHIP: Record<Tier, string> = {
-  famous: "bg-jz-warm text-white",
-  middle: "bg-jz-accent text-white",
-  hidden: "bg-white/90 text-jz-ink",
-};
 
 // A long scroll stops adding blocks here (posts repeat well before).
 const MAX_BLOCKS = 60;
@@ -29,12 +23,10 @@ const idsOf = (blocks: (Cell<Reel> | null)[][]) => new Set(blocks.flatMap((cells
 // goes through the list as it comes.
 export default function RecommendGrid({
   pools,
-  tiered,
   active,
   onOpen,
 }: {
   pools: Pools<Reel>;
-  tiered: boolean;
   /** False while a post is open over the grid. */
   active: boolean;
   /** The post tapped, and the nine of its block (for swiping in the viewer). */
@@ -146,23 +138,22 @@ export default function RecommendGrid({
   }, [running, rotation]);
 
   return (
-    <section aria-label={t("grid.label")} className="px-1 pt-2 md:px-0">
-      <div className="flex items-center gap-2 px-2 pb-1.5">
-        <p className="min-w-0 flex-1 truncate text-[11px] text-gray-500">{tiered ? t("grid.note") : t("grid.notePlain")}</p>
-        {rotation.size > GRID_LAYOUT.length && (
+    <section aria-label={t("grid.label")} className="pt-1">
+      {rotation.size > GRID_LAYOUT.length && (
+        <div className="flex justify-end px-2 pb-1">
           <button
             type="button"
             onClick={() => setPaused((p) => !p)}
             aria-pressed={paused}
             aria-label={t(paused ? "grid.resume" : "grid.pause")}
-            className="flex h-7 shrink-0 items-center gap-1 rounded-full bg-gray-100 px-2.5 text-[11px] font-semibold text-gray-700 hover:bg-gray-200"
+            title={t(paused ? "grid.resume" : "grid.pause")}
+            className="flex h-7 w-7 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100"
           >
             {paused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
-            {t(paused ? "grid.resumeShort" : "grid.pauseShort")}
           </button>
-        )}
-      </div>
-      <div className="space-y-1">
+        </div>
+      )}
+      <div className="space-y-[2px]">
         {blocks.map((cells, b) => {
           const block = cells.flatMap((c) => (c ? [c.item] : []));
           return (
@@ -172,14 +163,14 @@ export default function RecommendGrid({
                 blockEls.current[b] = el;
               }}
               data-block={b}
-              className="grid h-[calc(100dvh-var(--header-offset,53px)-11.5rem)] min-h-[420px] grid-cols-3 grid-rows-3 gap-1 md:h-[calc(100dvh-7rem)] md:max-h-[860px]"
+              className="grid h-[calc(100dvh-var(--header-offset,53px)-11.5rem)] min-h-[420px] grid-cols-3 grid-rows-3 gap-[2px] md:h-[calc(100dvh-7rem)] md:max-h-[860px]"
             >
               {cells.map((cell, i) => (
                 <li key={i} className="min-h-0">
                   {cell && near.has(b) ? (
-                    <GridSquare cell={cell} tiered={tiered} drift={!reducedMotion} onOpen={(reel) => onOpen(reel, block)} />
+                    <GridSquare cell={cell} drift={!reducedMotion} onOpen={(reel) => onOpen(reel, block)} />
                   ) : (
-                    <div className="h-full w-full rounded-lg bg-gray-100" aria-hidden />
+                    <div className="h-full w-full bg-gray-100" aria-hidden />
                   )}
                 </li>
               ))}
@@ -193,7 +184,7 @@ export default function RecommendGrid({
 }
 
 // One square: the post's still, cross-fading to the next once it has loaded.
-function GridSquare({ cell, tiered, drift, onOpen }: { cell: Cell<Reel>; tiered: boolean; drift: boolean; onOpen: (reel: Reel) => void }) {
+function GridSquare({ cell, drift, onOpen }: { cell: Cell<Reel>; drift: boolean; onOpen: (reel: Reel) => void }) {
   const { t } = useTranslation();
   const [current, setCurrent] = useState(cell);
   const [incoming, setIncoming] = useState<Cell<Reel> | null>(null);
@@ -226,18 +217,13 @@ function GridSquare({ cell, tiered, drift, onOpen }: { cell: Cell<Reel>; tiered:
     <button
       type="button"
       onClick={() => onOpen(reel)}
-      aria-label={`${place}・${reel.municipality.name}${tiered ? `・${t(`grid.tier.${current.tier}`)}` : ""}`}
-      className="on-media relative block h-full w-full overflow-hidden rounded-lg bg-gray-200 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-jz-accent"
+      aria-label={`${place}・${reel.municipality.name}`}
+      className="on-media relative block h-full w-full overflow-hidden bg-gray-200 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-jz-accent"
     >
       <Still reel={reel} drift={drift} />
       {incoming && (
         <span className={`absolute inset-0 transition-opacity duration-700 ${ready ? "opacity-100" : "opacity-0"}`}>
           <Still reel={incoming.item} drift={drift} onLoaded={() => setReady(true)} />
-        </span>
-      )}
-      {tiered && (
-        <span className={`absolute left-1.5 top-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold shadow-sm ${TIER_CHIP[current.tier]}`}>
-          {t(`grid.tier.${current.tier}`)}
         </span>
       )}
       <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-2 pb-1.5 pt-6">

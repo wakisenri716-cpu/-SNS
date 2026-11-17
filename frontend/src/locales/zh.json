@@ -2186,12 +2186,8 @@
   },
   "grid": {
     "label": "推荐 9宫格",
-    "note": "经典2・关注3・小众4个市町村的帖子，逐个轮换显示",
-    "notePlain": "帖子逐个轮换显示",
     "pause": "停止自动轮换",
     "resume": "恢复自动轮换",
-    "pauseShort": "暂停",
-    "resumeShort": "继续",
     "viewLabel": "切换显示",
     "viewGrid": "9宫格显示",
     "viewList": "逐条显示",

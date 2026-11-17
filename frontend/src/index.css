@@ -35,9 +35,10 @@
   --animate-page-in: page-in 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
   --animate-viewer-in: viewer-in 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
   --animate-ring-spin: ring-spin 6s linear infinite;
-  /* Outfit (the wordmark's typeface) for Latin letters and numbers, Noto
-     Sans JP for Japanese. */
-  --font-sans: "Outfit", "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", system-ui, "Segoe UI", Roboto, sans-serif;
+  /* Like Instagram: each device's own system font (San Francisco and
+     Hiragino on Apple, Roboto and Noto on Android, Segoe UI and Yu Gothic
+     on Windows) — nothing to download. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Noto Sans JP", "Noto Sans CJK JP", Meiryo, sans-serif;
 }
 
 html,

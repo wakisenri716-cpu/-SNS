@@ -435,15 +435,15 @@ export default function FeedPage() {
       {view === "grid" && (isTieredTab(tab) ? gridPools : !loading) ? (
         (isTieredTab(tab) ? gridPools!.famous.length + gridPools!.middle.length + gridPools!.hidden.length : reels.length) > 0 ? (
           <div className="pb-4">
-            <RecommendGrid pools={isTieredTab(tab) ? gridPools! : plainPools} tiered={isTieredTab(tab)} active={!openReelId && !storyView} onOpen={openFromGrid} />
+            <RecommendGrid pools={isTieredTab(tab) ? gridPools! : plainPools} active={!openReelId && !storyView} onOpen={openFromGrid} />
           </div>
         ) : (
           <p className="px-6 py-16 text-center text-sm text-gray-500">{emptyMessage()}</p>
         )
       ) : view === "grid" ? (
-        <div className="grid grid-cols-3 gap-1 px-1 pt-8" aria-hidden>
+        <div className="grid grid-cols-3 gap-[2px] pt-9" aria-hidden>
           {Array.from({ length: 9 }, (_, i) => (
-            <div key={i} className="skeleton aspect-[3/5] rounded-lg" />
+            <div key={i} className="skeleton aspect-[3/5]" />
           ))}
         </div>
       ) : loading ? (
