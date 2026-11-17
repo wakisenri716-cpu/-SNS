@@ -291,7 +291,7 @@ export default function FeedPage() {
 
       <UpcomingEvents />
 
-      <div className="sticky top-[var(--header-offset,53px)] z-30 bg-white/80 backdrop-blur-xl backdrop-saturate-150 transition-[top] duration-300 md:top-0">
+      <div className="sticky top-[var(--header-offset,53px)] z-30 bg-white/80 backdrop-blur-xl backdrop-saturate-150 md:top-0">
         <div className="scrollbar-none flex gap-2 overflow-x-auto px-4 py-2.5">
           {[...CATEGORY_TABS, ...(token ? SPECIAL_TABS : [])].map((c) => (
             <button

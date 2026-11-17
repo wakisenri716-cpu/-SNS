@@ -1,5 +1,5 @@
 import PendingBookingPrompt from "./PendingBookingPrompt";
-import { Suspense, useEffect, useRef, useState, type ComponentType } from "react";
+import { Suspense, useEffect, useState, type ComponentType } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -205,28 +205,6 @@ function AccountChip() {
   );
 }
 
-// Phones: hide the top bar while scrolling down through content and bring it
-// back on any upward scroll, like Instagram. Sticky bars below it follow via
-// the --header-offset CSS variable.
-function useHideOnScroll() {
-  const [hidden, setHidden] = useState(false);
-  const lastY = useRef(0);
-  useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY;
-      if (Math.abs(y - lastY.current) < 6) return;
-      setHidden(y > lastY.current && y > 80);
-      lastY.current = y;
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-  useEffect(() => {
-    document.documentElement.style.setProperty("--header-offset", hidden ? "0px" : "53px");
-  }, [hidden]);
-  return hidden;
-}
-
 export default function Layout() {
   const { t } = useTranslation();
   const { user, municipality, company } = useAuth();
@@ -249,7 +227,6 @@ export default function Layout() {
   const isTraveler = useIsTraveler();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const headerHidden = useHideOnScroll();
 
   useEffect(() => setMenuOpen(false), [location.pathname]);
 
@@ -262,12 +239,12 @@ export default function Layout() {
 
   return (
     <div className="flex min-h-screen w-full flex-col text-gray-900 md:flex-row">
-      {/* Phones: frosted top bar + bottom tab bar (below). */}
+      {/* Phones: frosted top bar (always shown: nothing slides or shrinks
+          while scrolling; the bars below it sit at --header-offset, 53px) +
+          bottom tab bar (below). */}
       <header
         style={{ viewTransitionName: "top-bar" }}
-        className={`sticky top-0 z-40 flex h-[53px] items-center justify-between border-b border-gray-100 bg-white/80 px-4 backdrop-blur-xl backdrop-saturate-150 transition-transform duration-300 md:hidden ${
-          headerHidden ? "-translate-y-full" : ""
-        }`}
+        className="sticky top-0 z-40 flex h-[53px] items-center justify-between border-b border-gray-100 bg-white/80 px-4 backdrop-blur-xl backdrop-saturate-150 md:hidden"
       >
         <NavLink to="/" aria-label={t("brand.name")}>
           <JazibaLogo className="h-8 w-auto" />

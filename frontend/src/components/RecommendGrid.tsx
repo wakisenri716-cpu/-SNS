@@ -194,7 +194,9 @@ export default function RecommendGrid({
   );
 }
 
-// One square: the post's still, cross-fading to the next once it has loaded.
+// One square: the post's still, no text on it (like Instagram); the place
+// and town are its label for screen readers. Cross-fades to the next post
+// once it has loaded.
 function GridSquare({ cell, onOpen }: { cell: Cell<Reel>; onOpen: (reel: Reel) => void }) {
   const { t } = useTranslation();
   const [current, setCurrent] = useState(cell);
@@ -228,7 +230,7 @@ function GridSquare({ cell, onOpen }: { cell: Cell<Reel>; onOpen: (reel: Reel) =
     <button
       type="button"
       onClick={() => onOpen(reel)}
-      aria-label={`${place}・${reel.municipality.name}`}
+      aria-label={`${place}・${reel.municipality.name}${reel.editorial ? `・${t("grid.editorial")}` : ""}`}
       className="on-media relative block h-full w-full overflow-hidden bg-gray-200 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-jz-accent"
     >
       <Still reel={reel} />
@@ -237,14 +239,6 @@ function GridSquare({ cell, onOpen }: { cell: Cell<Reel>; onOpen: (reel: Reel) =
           <Still reel={incoming.item} onLoaded={() => setReady(true)} />
         </span>
       )}
-      <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-2 pb-1.5 pt-6">
-        <span className="block truncate text-px10 font-bold leading-tight text-white">{place}</span>
-        <span className="block truncate text-px9 leading-tight text-white/80">
-          {reel.municipality.prefecture}
-          {reel.municipality.name}
-          {reel.editorial && `・${t("grid.editorial")}`}
-        </span>
-      </span>
     </button>
   );
 }
