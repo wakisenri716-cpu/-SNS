@@ -1,4 +1,5 @@
 import { PENDING_APPROVAL, isUnapproved } from "../lib/admin";
+import { fameTierOf, type FameTier } from "../lib/fameTier";
 import { randomBytes } from "node:crypto";
 import { locatePlace } from "../services/placeLookup";
 import { Request, Response, Router } from "express";
@@ -109,6 +110,71 @@ router.get("/", optionalAuth, async (req, res) => {
   const items = await Promise.all(reels.map((r) => serializeReel(r, viewerStateFor(r, followed))));
   const nextCursor = reels.length === take ? reels[reels.length - 1].id : null;
   res.json({ items, nextCursor, personalized: false });
+});
+
+// おすすめ 9マス: posts in three pools by how well known their town is
+// (lib/fameTier.ts) — the grid shows 2 定番, 3 注目 and 4 穴場 at a time and
+// keeps swapping each square for another post from the same pool. Each pool
+// is a weighted shuffle (newer and more liked posts come up more often),
+// interleaved town by town so one town doesn't fill a pool.
+const GRID_CANDIDATES = 400;
+const GRID_POOL = 30;
+router.get("/grid", optionalAuth, async (req, res) => {
+  const category =
+    typeof req.query.category === "string" && (REEL_CATEGORIES as readonly string[]).includes(req.query.category) ? req.query.category : undefined;
+  const where = {
+    ...(category ? { category } : {}),
+    ...(req.query.season === "now" ? inSeasonWhere(monthInJapan()) : {}),
+  };
+  const [reels, followed] = await Promise.all([
+    prisma.reel.findMany({
+      take: GRID_CANDIDATES,
+      where,
+      orderBy: { createdAt: "desc" },
+      include: {
+        ...reelInclude,
+        likes: req.auth ? { where: { userId: req.auth.userId }, select: { id: true } } : false,
+        saves: req.auth ? { where: { userId: req.auth.userId }, select: { id: true } } : false,
+      },
+    }),
+    getFollowedIds(req.auth?.userId),
+  ]);
+  const towns = await prisma.municipality.findMany({
+    where: { id: { in: [...new Set(reels.map((r) => r.municipalityId))] } },
+    select: { id: true, name: true, prefecture: true, fameTier: true },
+  });
+  const tierOf = new Map(towns.map((m) => [m.id, fameTierOf(m)]));
+
+  const now = Date.now();
+  const pools: Record<FameTier, typeof reels> = { 1: [], 2: [], 3: [] };
+  for (const r of reels) pools[tierOf.get(r.municipalityId) ?? 3].push(r);
+  const pick = (list: typeof reels) => {
+    // Weighted random order (Efraimidis–Spirakis): weight grows with likes and recency.
+    const keyed = list.map((r) => {
+      const ageDays = (now - r.createdAt.getTime()) / 86_400_000;
+      const weight = (1 + Math.log1p(r._count?.likes ?? 0)) * (1 + 2 / (1 + ageDays / 30));
+      return { r, key: Math.random() ** (1 / weight) };
+    });
+    keyed.sort((a, b) => b.key - a.key);
+    // Town by town: the first of each town, then the second of each, …
+    const byTown = new Map<string, typeof reels>();
+    for (const { r } of keyed) byTown.set(r.municipalityId, [...(byTown.get(r.municipalityId) ?? []), r]);
+    const out: typeof reels = [];
+    for (let round = 0; out.length < GRID_POOL; round++) {
+      let added = false;
+      for (const list of byTown.values())
+        if (list[round] && out.length < GRID_POOL) {
+          out.push(list[round]);
+          added = true;
+        }
+      if (!added) break;
+    }
+    return out;
+  };
+  const serialize = (list: typeof reels, tier: FameTier) =>
+    Promise.all(list.map(async (r) => ({ ...(await serializeReel(r, viewerStateFor(r, followed))), fameTier: tier })));
+  const [famous, middle, hidden] = await Promise.all(([1, 2, 3] as const).map((tier) => serialize(pick(pools[tier]), tier)));
+  res.json({ famous, middle, hidden });
 });
 
 function openEventStream(res: Response) {

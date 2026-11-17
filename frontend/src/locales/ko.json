@@ -1921,7 +1921,11 @@
       "suspended": "이용 정지했습니다",
       "restored": "이용 정지를 해제했습니다",
       "listing": "비공식 페이지",
-      "showListings": "비공식 페이지"
+      "showListings": "비공식 페이지",
+      "fameTier": "추천 9칸 구분",
+      "fameTierAuto": "자동{{tier}}",
+      "fameTierSaved": "구분을 바꿨어요",
+      "fameTierNote": "자동: 주요 관광지 목록(운영자의 기준)은 대표, 그 밖의 시・구는 주목, 정・촌은 숨은 명소."
     },
     "reports": {
       "sub": "다른 사용자가 신고한 댓글입니다. 3건이 되면 자동으로 숨겨집니다.",
@@ -1953,7 +1957,8 @@
       "reject": "가입 미승인",
       "approveSubmission": "제공 소재 승인",
       "rejectSubmission": "제공 소재 보류",
-      "postSubmission": "제공 소재 게시"
+      "postSubmission": "제공 소재 게시",
+      "fameTier": "추천 구분 변경"
     },
     "signedInAs": "로그인 중: {{email}}",
     "hintNotConfigured": "서버에 관리자 이메일이 아직 설정되지 않았습니다. Render의 'Environment'에 ADMIN_EMAILS를 저장한 후 Manual Deploy(또는 재시작)를 하면 반영됩니다.",
@@ -2177,6 +2182,24 @@
       "building": "건물",
       "waterway": "강・폭포",
       "boundary": "지역"
+    }
+  },
+  "grid": {
+    "label": "추천 9칸",
+    "note": "대표 2・주목 3・숨은 명소 4곳 지자체의 게시물을 하나씩 바꿔 가며 표시",
+    "notePlain": "게시물을 하나씩 바꿔 가며 표시",
+    "pause": "자동 전환 멈추기",
+    "resume": "자동 전환 다시 시작",
+    "pauseShort": "멈춤",
+    "resumeShort": "재생",
+    "viewLabel": "보기 전환",
+    "viewGrid": "9칸으로 보기",
+    "viewList": "하나씩 보기",
+    "editorial": "Jaziba의 소개",
+    "tier": {
+      "famous": "대표",
+      "middle": "주목",
+      "hidden": "숨은 명소"
     }
   }
 }

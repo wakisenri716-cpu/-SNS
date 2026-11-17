@@ -1954,7 +1954,11 @@
       "suspended": "Suspended",
       "restored": "Suspension lifted",
       "listing": "Unofficial page",
-      "showListings": "Unofficial pages"
+      "showListings": "Unofficial pages",
+      "fameTier": "Tier in the 9-square picks",
+      "fameTierAuto": "Automatic {{tier}}",
+      "fameTierSaved": "Tier changed",
+      "fameTierNote": "Automatic: towns on the list of major destinations (Jaziba's rough judgement) are Classic, other cities and wards Rising, towns and villages Hidden gem."
     },
     "reports": {
       "sub": "Comments other users reported. Three reports hide a comment automatically.",
@@ -1986,7 +1990,8 @@
       "reject": "Sign-up not approved",
       "approveSubmission": "Submission approved",
       "rejectSubmission": "Submission passed",
-      "postSubmission": "Submission posted"
+      "postSubmission": "Submission posted",
+      "fameTier": "Changed a pick tier"
     },
     "signedInAs": "Signed in as {{email}}",
     "hintNotConfigured": "No admin email is set on the server yet. Save ADMIN_EMAILS under Environment in Render, then run Manual Deploy (or restart) for it to take effect.",
@@ -2210,6 +2215,24 @@
       "building": "Building",
       "waterway": "River / waterfall",
       "boundary": "Area"
+    }
+  },
+  "grid": {
+    "label": "Picks in 9 squares",
+    "note": "2 well-known, 3 rising and 4 hidden-gem towns, changing one by one",
+    "notePlain": "Posts changing one by one",
+    "pause": "Stop changing automatically",
+    "resume": "Resume changing automatically",
+    "pauseShort": "Pause",
+    "resumeShort": "Play",
+    "viewLabel": "View",
+    "viewGrid": "9-square view",
+    "viewList": "One by one",
+    "editorial": "Jaziba's intro",
+    "tier": {
+      "famous": "Classic",
+      "middle": "Rising",
+      "hidden": "Hidden gem"
     }
   }
 }

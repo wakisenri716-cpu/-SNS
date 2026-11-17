@@ -2015,3 +2015,43 @@ test("場所を選ぶ: posters find any place by name (own data as they type, Op
     fetchMock.mock.restore();
   }
 });
+
+test("おすすめ 9マス: posts in 定番・注目・穴場 pools by how well known the town is; the operator can move a town", async () => {
+  const { defaultFameTier } = await import("../lib/fameTier");
+  assert.equal(defaultFameTier({ prefecture: "長野県", name: "松本市" }), 1);
+  assert.equal(defaultFameTier({ prefecture: "長野県", name: "長野市" }), 2);
+  assert.equal(defaultFameTier({ prefecture: "東京都", name: "台東区" }), 1);
+  assert.equal(defaultFameTier({ prefecture: "東京都", name: "練馬区" }), 2);
+  assert.equal(defaultFameTier({ prefecture: "長野県", name: "小布施町" }), 3);
+
+  const grid = (await call("GET", "/api/reels/grid")).json;
+  for (const [key, tier] of [["famous", 1], ["middle", 2], ["hidden", 3]] as const) {
+    assert.ok(Array.isArray(grid[key]) && grid[key].length > 0 && grid[key].length <= 30, key);
+    assert.ok(grid[key].every((r: any) => r.fameTier === tier && r.videoUrl), key);
+  }
+  assert.ok(grid.famous.some((r: any) => r.municipality.name === "松本市"));
+  assert.ok(grid.hidden.every((r: any) => /[町村]$/.test(r.municipality.name)));
+  // Town by town: the pool's first posts come from different towns.
+  const firstTowns = grid.hidden.slice(0, 5).map((r: any) => r.municipality.id);
+  assert.equal(new Set(firstTowns).size, firstTowns.length);
+  const nature = (await call("GET", "/api/reels/grid?category=nature")).json;
+  assert.ok([...nature.famous, ...nature.middle, ...nature.hidden].every((r: any) => r.category === "nature"));
+
+  process.env.ADMIN_EMAILS = "ops3@example.com";
+  try {
+    const ops = (await call("POST", "/api/auth/register", { email: "ops3@example.com", password: "password123", name: "運営3" })).json.token;
+    const matsumoto = grid.famous.find((r: any) => r.municipality.name === "松本市").municipality.id;
+    assert.equal((await call("PUT", `/api/admin/municipalities/${matsumoto}/fame-tier`, { tier: 3 })).status, 401);
+    assert.equal((await call("PUT", `/api/admin/municipalities/${matsumoto}/fame-tier`, { tier: 4 }, ops)).status, 400);
+    assert.deepEqual((await call("PUT", `/api/admin/municipalities/${matsumoto}/fame-tier`, { tier: 3 }, ops)).json, { fameTier: 3, fameTierSet: true });
+    const moved = (await call("GET", "/api/reels/grid")).json;
+    assert.ok(moved.hidden.some((r: any) => r.municipality.id === matsumoto));
+    assert.equal(moved.famous.some((r: any) => r.municipality.id === matsumoto), false);
+    const users = (await call("GET", `/api/admin/users?q=${encodeURIComponent("松本市")}`, undefined, ops)).json;
+    const row = users.items.find((u: any) => u.municipality?.id === matsumoto);
+    assert.deepEqual([row.municipality.fameTier, row.municipality.fameTierSet], [3, true]);
+    assert.deepEqual((await call("PUT", `/api/admin/municipalities/${matsumoto}/fame-tier`, { tier: null }, ops)).json, { fameTier: 1, fameTierSet: false });
+  } finally {
+    delete process.env.ADMIN_EMAILS;
+  }
+});

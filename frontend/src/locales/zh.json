@@ -1921,7 +1921,11 @@
       "suspended": "已停用",
       "restored": "已解除停用",
       "listing": "非官方页面",
-      "showListings": "非官方页面"
+      "showListings": "非官方页面",
+      "fameTier": "推荐9宫格的分类",
+      "fameTierAuto": "自动{{tier}}",
+      "fameTierSaved": "已更改分类",
+      "fameTierNote": "自动：主要观光地列表（运营方的大致判断）为经典，其他市・区为关注，町・村为小众。"
     },
     "reports": {
       "sub": "其他用户举报的评论。累计3次举报将自动隐藏。",
@@ -1953,7 +1957,8 @@
       "reject": "不批准注册",
       "approveSubmission": "批准提供素材",
       "rejectSubmission": "未采用提供素材",
-      "postSubmission": "发布提供素材"
+      "postSubmission": "发布提供素材",
+      "fameTier": "更改推荐分类"
     },
     "signedInAs": "当前登录：{{email}}",
     "hintNotConfigured": "服务器上尚未设置管理员邮箱。在Render的“Environment”中保存ADMIN_EMAILS后，执行Manual Deploy（或重启）即可生效。",
@@ -2177,6 +2182,24 @@
       "building": "建筑",
       "waterway": "河流・瀑布",
       "boundary": "地区"
+    }
+  },
+  "grid": {
+    "label": "推荐 9宫格",
+    "note": "经典2・关注3・小众4个市町村的帖子，逐个轮换显示",
+    "notePlain": "帖子逐个轮换显示",
+    "pause": "停止自动轮换",
+    "resume": "恢复自动轮换",
+    "pauseShort": "暂停",
+    "resumeShort": "继续",
+    "viewLabel": "切换显示",
+    "viewGrid": "9宫格显示",
+    "viewList": "逐条显示",
+    "editorial": "Jaziba的介绍",
+    "tier": {
+      "famous": "经典",
+      "middle": "关注",
+      "hidden": "小众"
     }
   }
 }

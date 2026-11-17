@@ -430,6 +430,7 @@ const ACTION_LABEL: Record<string, string> = {
   approveSubmission: "admin.log.approveSubmission",
   rejectSubmission: "admin.log.rejectSubmission",
   postSubmission: "admin.log.postSubmission",
+  fameTier: "admin.log.fameTier",
 };
 
 function LogList({ logs }: { logs: Log[] }) {
@@ -670,7 +671,7 @@ interface AdminUser {
   createdAt: string;
   suspendedAt: string | null;
   isAdmin: boolean;
-  municipality: { id: string; name: string; prefecture: string; listing?: boolean } | null;
+  municipality: { id: string; name: string; prefecture: string; listing?: boolean; fameTier?: 1 | 2 | 3; fameTierSet?: boolean } | null;
   company: { id: string; name: string; municipality: { name: string } } | null;
   plan: { plan: string; status: string; source: string; currentPeriodEnd: string | null; active: boolean } | null;
   _count: { comments: number; visits: number; submissions: number };
@@ -681,23 +682,24 @@ const PLAN_FOR_ROLE: Record<AdminUser["role"], string> = { USER: "plus", COMPANY
 function UsersSection() {
   const { t } = useTranslation();
   const [q, setQ] = useState("");
+  // The search in force (the box can be edited without searching yet).
+  const [searched, setSearched] = useState("");
   const [role, setRole] = useState("");
   const [data, setData] = useState<{ total: number; items: AdminUser[]; page: number; pageSize: number } | null>(null);
   const [open, setOpen] = useState<string | null>(null);
 
   const load = useCallback(
-    async (page = 0, query = q) => {
+    async (page = 0) => {
       const params = new URLSearchParams({ page: String(page) });
-      if (query.trim()) params.set("q", query.trim());
+      if (searched.trim()) params.set("q", searched.trim());
       if (role === "suspended") params.set("suspended", "1");
       else if (role === "listings") params.set("listings", "1");
       else if (role) params.set("role", role);
       const { data: res } = await api.get(`/admin/users?${params}`);
       setData((prev) => (page > 0 && prev ? { ...res, items: [...prev.items, ...res.items] } : res));
     },
-    // The query is passed in on search; the role chips reload at once.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [role]
+    // Reloads at once for a new search or role chip, and keeps both after an action.
+    [role, searched]
   );
   useEffect(() => {
     void load(0);
@@ -705,7 +707,8 @@ function UsersSection() {
 
   function search(e: FormEvent) {
     e.preventDefault();
-    void load(0, q);
+    if (q === searched) void load(0);
+    else setSearched(q);
   }
 
   return (
@@ -818,6 +821,28 @@ function UserRow({ user: u, open, onToggle, onChanged }: { user: AdminUser; open
                 : t("admin.users.noPlan")}
             </span>
           </div>
+          {u.municipality?.fameTier && (
+            <label className="flex flex-wrap items-center gap-2">
+              <span className="font-semibold text-jz-ink">{t("admin.users.fameTier")}</span>
+              <select
+                value={u.municipality.fameTierSet ? String(u.municipality.fameTier) : "auto"}
+                disabled={busy}
+                onChange={(e) =>
+                  void run(
+                    () => api.put(`/admin/municipalities/${u.municipality!.id}/fame-tier`, { tier: e.target.value === "auto" ? null : Number(e.target.value) }),
+                    t("admin.users.fameTierSaved")
+                  )
+                }
+                className="rounded-lg border border-gray-300 bg-white px-2 py-1"
+              >
+                <option value="auto">{t("admin.users.fameTierAuto", { tier: u.municipality.fameTierSet ? "" : t(`grid.tier.${["", "famous", "middle", "hidden"][u.municipality.fameTier]}`) })}</option>
+                <option value="1">{t("grid.tier.famous")}</option>
+                <option value="2">{t("grid.tier.middle")}</option>
+                <option value="3">{t("grid.tier.hidden")}</option>
+              </select>
+              <span className="w-full text-[11px] text-gray-500">{t("admin.users.fameTierNote")}</span>
+            </label>
+          )}
           {u.plan?.source !== "stripe" || !u.plan.active ? (
             <div className="flex flex-wrap items-center gap-2">
               <select value={months} onChange={(e) => setMonths(Number(e.target.value))} aria-label={t("admin.users.months")} className="rounded-lg border border-gray-300 bg-white px-2 py-1">

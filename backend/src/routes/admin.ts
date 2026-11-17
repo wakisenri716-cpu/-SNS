@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { fameTierOf } from "../lib/fameTier";
 import { z } from "zod";
 import { prisma } from "../prisma";
 import { requireAuth } from "../middleware/auth";
@@ -145,7 +146,7 @@ router.get("/users", async (req, res) => {
         role: true,
         createdAt: true,
         suspendedAt: true,
-        municipality: { select: { id: true, name: true, prefecture: true, listing: true } },
+        municipality: { select: { id: true, name: true, prefecture: true, listing: true, fameTier: true } },
         company: { select: { id: true, name: true, municipality: { select: { name: true } } } },
         planSubscription: true,
         _count: { select: { comments: true, visits: true, submissions: true } },
@@ -155,6 +156,8 @@ router.get("/users", async (req, res) => {
   const items = await Promise.all(
     rows.map(async (u) => ({
       ...u,
+      // fameTier: the one in force; fameTierSet: whether the operator chose it.
+      municipality: u.municipality ? { ...u.municipality, fameTier: fameTierOf(u.municipality), fameTierSet: u.municipality.fameTier != null } : null,
       isAdmin: isAdminEmail(u.email),
       plan: u.planSubscription
         ? { ...u.planSubscription, active: (await activePlan(u.id)) === u.planSubscription.plan }
@@ -175,6 +178,18 @@ router.post("/users/:id/suspend", async (req, res) => {
   setSuspended(user.id, parsed.data.suspended);
   await logAdmin(req, parsed.data.suspended ? "suspend" : "unsuspend", user.id, `${user.name}${parsed.data.reason ? `：${parsed.data.reason}` : ""}`);
   res.status(204).end();
+});
+
+// おすすめ 9マス: set a town's tier (1 定番 / 2 注目 / 3 穴場), or null to go back to the automatic one.
+router.put("/municipalities/:id/fame-tier", async (req, res) => {
+  const parsed = z.object({ tier: z.union([z.literal(1), z.literal(2), z.literal(3), z.null()]) }).safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "入力内容を確認してください" });
+  const m = await prisma.municipality.findUnique({ where: { id: req.params.id }, select: { id: true, name: true, prefecture: true } });
+  if (!m) return res.status(404).json({ error: "自治体が見つかりません" });
+  await prisma.municipality.update({ where: { id: m.id }, data: { fameTier: parsed.data.tier } });
+  const tier = fameTierOf({ ...m, fameTier: parsed.data.tier });
+  await logAdmin(req, "fameTier", m.id, `${m.prefecture}${m.name}：${["", "定番", "注目", "穴場"][tier]}${parsed.data.tier == null ? "（自動）" : ""}`);
+  res.json({ fameTier: tier, fameTierSet: parsed.data.tier != null });
 });
 
 router.post("/users/:id/plan", async (req, res) => {

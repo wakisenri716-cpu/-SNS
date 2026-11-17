@@ -112,6 +112,9 @@ model Municipality {
   // A page Jaziba made from public data for a municipality that hasn't
   // joined: no one can sign in to it, and the profile says so.
   listing            Boolean  @default(false)
+  // おすすめ 9マス: how well known the town is (1 定番 / 2 注目 / 3 穴場), set by
+  // the operator; empty means worked out from the name (lib/fameTier.ts).
+  fameTier           Int?
   createdAt          DateTime @default(now())
 
   reels        Reel[]
