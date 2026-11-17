@@ -125,15 +125,6 @@ body {
   to { background-position: -50% 0; }
 }
 
-/* おすすめ 9マス: a slow drift on each square's still (none with reduced motion, below). */
-@keyframes grid-drift {
-  from { transform: scale(1.02) translate3d(0, 0, 0); }
-  to { transform: scale(1.12) translate3d(-2%, -2%, 0); }
-}
-.grid-drift {
-  animation: grid-drift 14s ease-in-out infinite alternate;
-}
-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

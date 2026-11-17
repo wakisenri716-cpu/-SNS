@@ -103,6 +103,16 @@ export default function RecommendGrid({
     return () => observer.disconnect();
   }, [blocks.length, rotation]);
 
+  // Squares wait while the page is being scrolled, so nothing fades mid-swipe.
+  const lastScroll = useRef(0);
+  useEffect(() => {
+    const onScroll = () => {
+      lastScroll.current = Date.now();
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const running = !paused && pageShown && active && visible.size > 0 && rotation.size > GRID_LAYOUT.length;
   useEffect(() => {
     if (!running) return;
@@ -115,6 +125,7 @@ export default function RecommendGrid({
       return o.order[o.step++];
     };
     const timer = setInterval(() => {
+      if (Date.now() - lastScroll.current < 1200) return;
       setState((prev) => {
         if (prev.rotation !== rotation) return prev;
         const everywhere = idsOf(prev.blocks);
@@ -163,12 +174,12 @@ export default function RecommendGrid({
                 blockEls.current[b] = el;
               }}
               data-block={b}
-              className="grid h-[calc(100dvh-var(--header-offset,53px)-11.5rem)] min-h-[420px] grid-cols-3 grid-rows-3 gap-[2px] md:h-[calc(100dvh-7rem)] md:max-h-[860px]"
+              className="grid h-[calc(100svh-53px-11.5rem)] min-h-[420px] grid-cols-3 grid-rows-3 gap-[2px] md:h-[calc(100svh-7rem)] md:max-h-[860px]"
             >
               {cells.map((cell, i) => (
                 <li key={i} className="min-h-0">
                   {cell && near.has(b) ? (
-                    <GridSquare cell={cell} drift={!reducedMotion} onOpen={(reel) => onOpen(reel, block)} />
+                    <GridSquare cell={cell} onOpen={(reel) => onOpen(reel, block)} />
                   ) : (
                     <div className="h-full w-full bg-gray-100" aria-hidden />
                   )}
@@ -184,7 +195,7 @@ export default function RecommendGrid({
 }
 
 // One square: the post's still, cross-fading to the next once it has loaded.
-function GridSquare({ cell, drift, onOpen }: { cell: Cell<Reel>; drift: boolean; onOpen: (reel: Reel) => void }) {
+function GridSquare({ cell, onOpen }: { cell: Cell<Reel>; onOpen: (reel: Reel) => void }) {
   const { t } = useTranslation();
   const [current, setCurrent] = useState(cell);
   const [incoming, setIncoming] = useState<Cell<Reel> | null>(null);
@@ -220,10 +231,10 @@ function GridSquare({ cell, drift, onOpen }: { cell: Cell<Reel>; drift: boolean;
       aria-label={`${place}・${reel.municipality.name}`}
       className="on-media relative block h-full w-full overflow-hidden bg-gray-200 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-jz-accent"
     >
-      <Still reel={reel} drift={drift} />
+      <Still reel={reel} />
       {incoming && (
         <span className={`absolute inset-0 transition-opacity duration-700 ${ready ? "opacity-100" : "opacity-0"}`}>
-          <Still reel={incoming.item} drift={drift} onLoaded={() => setReady(true)} />
+          <Still reel={incoming.item} onLoaded={() => setReady(true)} />
         </span>
       )}
       <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-2 pb-1.5 pt-6">
@@ -238,7 +249,7 @@ function GridSquare({ cell, drift, onOpen }: { cell: Cell<Reel>; drift: boolean;
   );
 }
 
-function Still({ reel, drift, onLoaded }: { reel: Reel; drift: boolean; onLoaded?: () => void }) {
+function Still({ reel, onLoaded }: { reel: Reel; onLoaded?: () => void }) {
   // #t=0.5 makes browsers paint a frame as a still; only the start of the file is fetched.
   return (
     <video
@@ -250,7 +261,7 @@ function Still({ reel, drift, onLoaded }: { reel: Reel; drift: boolean; onLoaded
       onLoadedData={onLoaded}
       aria-hidden
       tabIndex={-1}
-      className={`pointer-events-none absolute inset-0 h-full w-full object-cover ${drift ? "grid-drift" : ""}`}
+      className="pointer-events-none absolute inset-0 h-full w-full object-cover"
     />
   );
 }
