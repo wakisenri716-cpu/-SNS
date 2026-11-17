@@ -49,16 +49,16 @@ export default function MySubmissions() {
                 <StatusBadge s={s} />
               </p>
               {s.description && <p className="mt-0.5 line-clamp-2 text-gray-600">{s.description}</p>}
-              <p className="mt-0.5 text-[11px] text-gray-500">{new Date(s.createdAt).toLocaleDateString(i18n.language)}</p>
-              {s.status === "rejected" && s.reviewNote && <p className="mt-1 rounded-lg bg-gray-50 px-2 py-1 text-[11px] text-gray-600">{t("submissions.reason", { note: s.reviewNote })}</p>}
+              <p className="mt-0.5 text-px11 text-gray-500">{new Date(s.createdAt).toLocaleDateString(i18n.language)}</p>
+              {s.status === "rejected" && s.reviewNote && <p className="mt-1 rounded-lg bg-gray-50 px-2 py-1 text-px11 text-gray-600">{t("submissions.reason", { note: s.reviewNote })}</p>}
               <div className="mt-1.5 flex gap-2">
                 {s.reelId && (
-                  <Link to={`/reels/${s.reelId}/access`} className="text-[11px] font-bold text-jz-accent">
+                  <Link to={`/reels/${s.reelId}/access`} className="text-px11 font-bold text-jz-accent">
                     {t("submissions.viewPost")}
                   </Link>
                 )}
                 {s.status === "pending" && (
-                  <button type="button" onClick={() => void withdraw(s)} className="text-[11px] font-semibold text-gray-500 hover:text-jz-warm-text">
+                  <button type="button" onClick={() => void withdraw(s)} className="text-px11 font-semibold text-gray-500 hover:text-jz-warm-text">
                     {t("submissions.withdraw")}
                   </button>
                 )}

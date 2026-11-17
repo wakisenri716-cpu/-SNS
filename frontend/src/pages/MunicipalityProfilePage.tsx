@@ -199,7 +199,7 @@ export default function MunicipalityProfilePage() {
             <h1 className="flex items-center gap-1.5 text-xl text-gray-900">
               {municipality.name}
               {municipality.listing ? (
-                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">{t("listing.badge")}</span>
+                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-px11 font-semibold text-gray-600">{t("listing.badge")}</span>
               ) : (
                 <BadgeCheck className="h-5 w-5 fill-jz-accent text-white" aria-label={t("municipalityProfile.officialBadge")} />
               )}
@@ -282,7 +282,7 @@ export default function MunicipalityProfilePage() {
           </span>
           <span className="min-w-0 flex-1">
             <span className="block text-sm font-bold text-jz-ink">{t("submit.cta")}</span>
-            <span className="block text-[11px] leading-relaxed text-gray-500">{t(municipality.listing ? "submit.ctaSubListing" : "submit.ctaSub", { name: municipality.name, points: 100 })}</span>
+            <span className="block text-px11 leading-relaxed text-gray-500">{t(municipality.listing ? "submit.ctaSubListing" : "submit.ctaSub", { name: municipality.name, points: 100 })}</span>
           </span>
           {token ? (
             <button type="button" onClick={() => setSubmitOpen(true)} className="shrink-0 rounded-full bg-jz-accent px-3.5 py-2 text-xs font-bold text-white active:scale-95">
@@ -317,7 +317,7 @@ export default function MunicipalityProfilePage() {
             key={key}
             onClick={() => setTab(key)}
             aria-pressed={tab === key}
-            className={`-mt-px flex min-w-[4.25rem] flex-1 shrink-0 flex-col items-center gap-1 whitespace-nowrap border-t px-1.5 py-2.5 text-[11px] font-semibold md:flex-none md:flex-row md:gap-1.5 md:py-4 md:text-xs md:tracking-wider ${
+            className={`-mt-px flex min-w-[4.25rem] flex-1 shrink-0 flex-col items-center gap-1 whitespace-nowrap border-t px-1.5 py-2.5 text-px11 font-semibold md:flex-none md:flex-row md:gap-1.5 md:py-4 md:text-xs md:tracking-wider ${
               tab === key ? "border-jz-accent text-jz-ink" : "border-transparent text-gray-500 hover:text-gray-600"
             }`}
           >
@@ -341,7 +341,7 @@ export default function MunicipalityProfilePage() {
       ) : tab === "tourismInfo" ? (
         <div className="border-b border-gray-200 p-4 lg:p-6">
           {municipality.listing && municipality.tourismSpots.length > 0 && (
-            <p className="mb-4 text-[11px] leading-relaxed text-gray-500">{t("listing.spotsSource")}</p>
+            <p className="mb-4 text-px11 leading-relaxed text-gray-500">{t("listing.spotsSource")}</p>
           )}
           {municipality.tourismSpots.length === 0 ? (
             <p className="text-sm text-gray-500">{t("municipalityProfile.noSpots")}</p>

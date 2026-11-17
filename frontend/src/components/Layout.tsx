@@ -54,7 +54,7 @@ function Badge({ count, className = "" }: { count: number; className?: string })
   if (count <= 0) return null;
   return (
     <span
-      className={`min-w-5 rounded-full bg-jz-accent px-1.5 text-center text-[11px] font-bold leading-5 text-white ${className}`}
+      className={`min-w-5 rounded-full bg-jz-accent px-1.5 text-center text-px11 font-bold leading-5 text-white ${className}`}
     >
       {count > 99 ? "99+" : count}
     </span>
@@ -66,7 +66,7 @@ function SideNavItem({ to, label, icon: IconC, badge = 0, className = "" }: Omit
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `group flex items-center gap-4 rounded-lg p-3 text-[15px] text-gray-900 transition-colors hover:bg-gray-100 ${
+        `group flex items-center gap-4 rounded-lg p-3 text-px15 text-gray-900 transition-colors hover:bg-gray-100 ${
           isActive ? "font-bold" : "font-normal"
         } ${className}`
       }
@@ -139,7 +139,7 @@ function SecondaryNav() {
         <button
           type="button"
           onClick={() => logout()}
-          className="flex items-center gap-4 rounded-lg p-3 text-[15px] text-gray-900 hover:bg-gray-100"
+          className="flex items-center gap-4 rounded-lg p-3 text-px15 text-gray-900 hover:bg-gray-100"
         >
           <LogOut className="h-6 w-6" strokeWidth={1.8} />
           {t("nav.logout")}
@@ -157,7 +157,7 @@ function ThemeToggle() {
     <button
       type="button"
       onClick={() => setThemePref(dark ? "light" : "dark")}
-      className="flex items-center gap-4 rounded-lg p-3 text-[15px] text-gray-900 hover:bg-gray-100"
+      className="flex items-center gap-4 rounded-lg p-3 text-px15 text-gray-900 hover:bg-gray-100"
     >
       <Icon className="h-6 w-6" strokeWidth={1.8} />
       {dark ? t("nav.lightMode") : t("nav.darkMode")}
@@ -172,7 +172,7 @@ function InstallButton() {
     <button
       type="button"
       onClick={() => void promptInstall()}
-      className="flex items-center gap-4 rounded-lg p-3 text-[15px] font-semibold text-jz-accent hover:bg-gray-100"
+      className="flex items-center gap-4 rounded-lg p-3 text-px15 font-semibold text-jz-accent hover:bg-gray-100"
     >
       <MonitorDown className="h-6 w-6" strokeWidth={1.8} />
       {t("nav.installApp")}

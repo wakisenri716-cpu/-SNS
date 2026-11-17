@@ -30,7 +30,7 @@ export default function CaptionAssist({ value, onChange }: { value: string; onCh
       {state.kind === "done" ? (
         <>
           <p className="mt-1.5 whitespace-pre-wrap rounded-lg bg-white p-2 text-gray-900">{state.text}</p>
-          <p className="mt-1 text-[10px] text-gray-500">{t("captionAssist.note")}</p>
+          <p className="mt-1 text-px10 text-gray-500">{t("captionAssist.note")}</p>
           <div className="mt-1.5 flex gap-1.5">
             <button
               type="button"
@@ -38,11 +38,11 @@ export default function CaptionAssist({ value, onChange }: { value: string; onCh
                 onChange(state.text);
                 setState({ kind: "idle" });
               }}
-              className="rounded-full bg-jz-accent px-3 py-1 text-[11px] font-bold text-white"
+              className="rounded-full bg-jz-accent px-3 py-1 text-px11 font-bold text-white"
             >
               {t("captionAssist.use")}
             </button>
-            <button type="button" onClick={() => setState({ kind: "idle" })} className="rounded-full px-3 py-1 text-[11px] font-semibold text-gray-600">
+            <button type="button" onClick={() => setState({ kind: "idle" })} className="rounded-full px-3 py-1 text-px11 font-semibold text-gray-600">
               {t("captionAssist.discard")}
             </button>
           </div>
@@ -55,17 +55,17 @@ export default function CaptionAssist({ value, onChange }: { value: string; onCh
               type="button"
               disabled={!value.trim() || state.kind === "working"}
               onClick={() => void run(s)}
-              className="rounded-full bg-white px-3 py-1 text-[11px] font-bold text-jz-ink ring-1 ring-gray-200 disabled:opacity-50"
+              className="rounded-full bg-white px-3 py-1 text-px11 font-bold text-jz-ink ring-1 ring-gray-200 disabled:opacity-50"
             >
               {t(`captionAssist.style.${s}`)}
             </button>
           ))}
           {state.kind === "working" && (
-            <span className="self-center text-[11px] text-gray-600">
+            <span className="self-center text-px11 text-gray-600">
               {state.progress != null && state.progress < 1 ? t("commentSummary.downloading", { percent: Math.round(state.progress * 100) }) : t("captionAssist.working")}
             </span>
           )}
-          {state.kind === "failed" && <span className="self-center text-[11px] text-jz-warm-text">{t("captionAssist.failed")}</span>}
+          {state.kind === "failed" && <span className="self-center text-px11 text-jz-warm-text">{t("captionAssist.failed")}</span>}
         </div>
       )}
     </div>

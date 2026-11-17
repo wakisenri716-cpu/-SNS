@@ -70,14 +70,14 @@ export default function ItineraryLegRow({
           </span>
         )}
         {!chosen && leg.isMock && (
-          <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500">
+          <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-px10 font-medium text-gray-500">
             {t("municipalityProfile.mockData")}
           </span>
         )}
       </p>
-      {hint && <p className={`mt-0.5 text-[11px] font-semibold ${hint.early ? "text-amber-700" : "text-gray-500"}`}>{hint.text}</p>}
+      {hint && <p className={`mt-0.5 text-px11 font-semibold ${hint.early ? "text-amber-700" : "text-gray-500"}`}>{hint.text}</p>}
       {showLinks && (
-        <p className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px]">
+        <p className="mt-1 flex flex-wrap items-center gap-1.5 text-px11">
           <span className="text-gray-500">{t("transit.timetable")}</span>
           <a
             href={googleTransitUrl(origin, destination)}
@@ -98,7 +98,7 @@ export default function ItineraryLegRow({
         </p>
       )}
       {saved.map((tr) => (
-        <p key={tr.id} className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-emerald-700">
+        <p key={tr.id} className="mt-1 flex items-center gap-1 text-px11 font-semibold text-emerald-700">
           <Check className="h-3 w-3 shrink-0" />
           <span className="truncate tabular-nums">
             {t("transit.savedRide", { depart: clock(tr.departAt, i18n.language), arrive: clock(tr.arriveAt, i18n.language), name: tr.name })}
@@ -113,7 +113,7 @@ export default function ItineraryLegRow({
 export function DayDivider({ day }: { day: number }) {
   const { t } = useTranslation();
   return (
-    <p className="mb-1 mt-4 flex items-center gap-2 text-[11px] font-bold tracking-wide text-jz-accent first:mt-0">
+    <p className="mb-1 mt-4 flex items-center gap-2 text-px11 font-bold tracking-wide text-jz-accent first:mt-0">
       <span className="flex w-7 justify-center">
         <span className="h-1.5 w-1.5 rounded-full bg-jz-accent" />
       </span>

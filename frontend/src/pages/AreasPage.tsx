@@ -108,7 +108,7 @@ export default function AreasPage() {
                             <span className="flex items-center gap-1.5 truncate text-sm font-bold text-jz-ink">
                               {m.name}
                               {m.listing && (
-                                <span className="shrink-0 rounded-full bg-gray-100 px-1.5 py-px text-[10px] font-semibold text-gray-500">{t("listing.badge")}</span>
+                                <span className="shrink-0 rounded-full bg-gray-100 px-1.5 py-px text-px10 font-semibold text-gray-500">{t("listing.badge")}</span>
                               )}
                             </span>
                             <span className="block truncate text-xs text-gray-500">

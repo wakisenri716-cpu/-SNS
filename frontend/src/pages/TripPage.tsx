@@ -174,7 +174,7 @@ export default function TripPage() {
                       </span>
                       <span className="min-w-0 flex-1 py-0.5">
                         <span className="block truncate text-sm font-bold text-jz-ink">{stop.locationName || stop.caption}</span>
-                        <span className="mt-0.5 flex items-center gap-1 truncate text-[11px] text-gray-500">
+                        <span className="mt-0.5 flex items-center gap-1 truncate text-px11 text-gray-500">
                           <MapPin className="h-3 w-3 shrink-0" />
                           {stop.municipality.name}・{stop.municipality.prefecture}
                         </span>
@@ -185,7 +185,7 @@ export default function TripPage() {
                             depart: formatClock(times[i].leave, t, day),
                           })}
                         </span>
-                        {overnight[i] && <span className="mt-1 block text-[11px] font-semibold text-jz-accent">{t("itinerary.overnight")}</span>}
+                        {overnight[i] && <span className="mt-1 block text-px11 font-semibold text-jz-accent">{t("itinerary.overnight")}</span>}
                       </span>
                     </Link>
                     {canCopy && (
@@ -246,8 +246,8 @@ export default function TripPage() {
           <span className="tabular-nums">{t("itinerary.finish", { time: formatClock(times[times.length - 1].leave, t, times[times.length - 1].day) })}</span>
         </p>
       )}
-      <p className="mt-4 text-[11px] leading-relaxed text-gray-500">{t("trip.timeNote", { time: trip.startTime })}</p>
-      <p className="mt-1 text-[11px] leading-relaxed text-gray-500">{t("itinerary.disclaimer")}</p>
+      <p className="mt-4 text-px11 leading-relaxed text-gray-500">{t("trip.timeNote", { time: trip.startTime })}</p>
+      <p className="mt-1 text-px11 leading-relaxed text-gray-500">{t("itinerary.disclaimer")}</p>
 
       {canCopy && unsaved.length > 0 && (
         <div className="fixed inset-x-0 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-30 flex justify-center px-4 md:bottom-6">

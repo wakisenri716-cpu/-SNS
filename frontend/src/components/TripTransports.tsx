@@ -62,13 +62,13 @@ export default function TripTransports({
       <div className="mb-2 flex items-center gap-2">
         <h3 className="flex-1 text-xs font-semibold text-gray-500">{t("transport.heading")}</h3>
         {!readOnly && (
-          <button type="button" onClick={() => setEditing("new")} className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-bold text-jz-ink">
+          <button type="button" onClick={() => setEditing("new")} className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-px11 font-bold text-jz-ink">
             <Plus className="h-3.5 w-3.5" /> {t("transport.add")}
           </button>
         )}
       </div>
       {!readOnly && transports.length > 0 && push && push !== "unsupported" && (
-        <p className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-xl bg-gray-50 px-3 py-2 text-[11px] leading-relaxed text-gray-600">
+        <p className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-xl bg-gray-50 px-3 py-2 text-px11 leading-relaxed text-gray-600">
           <BellRing className="h-3.5 w-3.5 shrink-0 text-jz-accent" />
           <span className="min-w-0 flex-1">{t("transport.pushNote")}</span>
           {push === "off" && (
@@ -86,7 +86,7 @@ export default function TripTransports({
         </p>
       )}
       {transports.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-gray-200 p-3 text-[11px] leading-relaxed text-gray-500">{t("transport.empty")}</p>
+        <p className="rounded-2xl border border-dashed border-gray-200 p-3 text-px11 leading-relaxed text-gray-500">{t("transport.empty")}</p>
       ) : (
         <ul className="space-y-2">
           {transports.map((tr) => {
@@ -102,20 +102,20 @@ export default function TripTransports({
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-bold text-jz-ink">
                       {tr.name}
-                      {tr.operator && <span className="ml-1.5 text-[11px] font-normal text-gray-500">{tr.operator}</span>}
+                      {tr.operator && <span className="ml-1.5 text-px11 font-normal text-gray-500">{tr.operator}</span>}
                     </p>
                     <p className="mt-0.5 text-xs tabular-nums text-jz-ink">
                       {new Date(tr.departAt).toLocaleDateString(i18n.language, { month: "numeric", day: "numeric", weekday: "short" })}{" "}
                       <b>{clock(tr.departAt, i18n.language)}</b> {tr.fromName} → <b>{clock(tr.arriveAt, i18n.language)}</b> {tr.toName}
                     </p>
                     {(tr.departPlatform || tr.seat) && (
-                      <p className="mt-1 flex flex-wrap gap-1 text-[11px]">
+                      <p className="mt-1 flex flex-wrap gap-1 text-px11">
                         {tr.departPlatform && <span className="rounded-full bg-white px-2 py-0.5 font-semibold text-jz-ink ring-1 ring-gray-200">{tr.departPlatform}</span>}
                         {tr.seat && <span className="rounded-full bg-white px-2 py-0.5 font-semibold text-jz-ink ring-1 ring-gray-200">{t("transport.seatValue", { seat: tr.seat })}</span>}
                       </p>
                     )}
                     {(phase === "soon" || phase === "enroute") && (
-                      <p className="mt-1 text-[11px] font-bold text-jz-accent">
+                      <p className="mt-1 text-px11 font-bold text-jz-accent">
                         {phase === "soon" ? t("transport.departsIn", { minutes: left.h * 60 + left.m }) : t("transport.enroute")}
                       </p>
                     )}
@@ -132,10 +132,10 @@ export default function TripTransports({
                   )}
                 </div>
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                  <button type="button" onClick={() => setRiding(tr.id)} className="inline-flex items-center gap-1 rounded-full bg-jz-accent px-3 py-1 text-[11px] font-bold text-white active:scale-95">
+                  <button type="button" onClick={() => setRiding(tr.id)} className="inline-flex items-center gap-1 rounded-full bg-jz-accent px-3 py-1 text-px11 font-bold text-white active:scale-95">
                     <Radio className="h-3.5 w-3.5" /> {t("transport.rideMode")}
                   </button>
-                  <a href={statusUrl(tr.kind, tr.name, tr.operator)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-[11px] font-semibold text-jz-ink hover:bg-gray-200">
+                  <a href={statusUrl(tr.kind, tr.name, tr.operator)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-px11 font-semibold text-jz-ink hover:bg-gray-200">
                     {t("transport.status")} <ExternalLink className="h-3 w-3" />
                   </a>
                 </div>
@@ -221,7 +221,7 @@ function TransportForm({
   }
 
   const field = "mt-1 w-full rounded-xl bg-gray-100 px-3 py-2 text-sm text-jz-ink outline-none focus:ring-2 focus:ring-jz-accent/30";
-  const label = "block text-[11px] font-semibold text-gray-500";
+  const label = "block text-px11 font-semibold text-gray-500";
   const placeholders = { plane: "JL123", train: t("transport.trainExample"), bus: t("transport.busExample"), ferry: "", other: "" };
 
   return createPortal(
@@ -235,7 +235,7 @@ function TransportForm({
         className="animate-sheet-in flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-[28px] bg-white md:rounded-[28px]"
       >
         <div className="flex items-center gap-3 border-b border-gray-100 px-5 py-4">
-          <h2 className="flex-1 text-[15px] font-bold text-jz-ink">{existing ? t("transport.editTitle") : t("transport.addTitle")}</h2>
+          <h2 className="flex-1 text-px15 font-bold text-jz-ink">{existing ? t("transport.editTitle") : t("transport.addTitle")}</h2>
           <button type="button" onClick={onClose} aria-label={t("reelViewer.closeLabel")} className="flex h-9 w-9 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100">
             <X className="h-5 w-5" />
           </button>
@@ -329,7 +329,7 @@ function TransportForm({
             {t("transport.noteLabel")}
             <textarea value={form.note} onChange={set("note")} maxLength={300} rows={2} className={`${field} resize-none`} />
           </label>
-          <p className="text-[11px] leading-relaxed text-gray-500">{t("transport.formNote")}</p>
+          <p className="text-px11 leading-relaxed text-gray-500">{t("transport.formNote")}</p>
           {error && <p className="text-xs text-jz-warm-text">{error}</p>}
         </div>
         <div className="border-t border-gray-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">

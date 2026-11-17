@@ -159,10 +159,10 @@ export default function StaySearch({
                     )}
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-bold leading-snug text-jz-ink">
-                        {linkedHotelNo === h.id && <span className="mr-1 rounded-full bg-jz-tint px-1.5 py-0.5 text-[10px] text-jz-accent">{t("stays.thisPost")}</span>}
+                        {linkedHotelNo === h.id && <span className="mr-1 rounded-full bg-jz-tint px-1.5 py-0.5 text-px10 text-jz-accent">{t("stays.thisPost")}</span>}
                         {h.name}
                       </p>
-                      <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[11px] text-gray-500">
+                      <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-px11 text-gray-500">
                         {h.reviewAverage != null && (
                           <span className="inline-flex items-center gap-0.5 font-semibold text-gray-700">
                             <Star className="h-3 w-3 fill-jz-warm text-jz-warm" /> {h.reviewAverage.toFixed(1)}
@@ -171,7 +171,7 @@ export default function StaySearch({
                         )}
                         {h.minChargeYen != null && <span>{t("stays.from", { price: yen(h.minChargeYen) })}</span>}
                       </p>
-                      {h.access && <p className="mt-0.5 line-clamp-2 text-[11px] text-gray-500">{h.access}</p>}
+                      {h.access && <p className="mt-0.5 line-clamp-2 text-px11 text-gray-500">{h.access}</p>}
                     </div>
                   </div>
                   {h.plans.length > 0 && (
@@ -180,7 +180,7 @@ export default function StaySearch({
                         <li key={p.reserveUrl} className="flex items-center gap-2 px-3 py-2">
                           <div className="min-w-0 flex-1">
                             <p className="truncate text-xs font-semibold text-gray-800">{p.name}</p>
-                            <p className="flex items-center gap-1.5 text-[10px] text-gray-500">
+                            <p className="flex items-center gap-1.5 text-px10 text-gray-500">
                               {p.roomName && <span className="truncate">{p.roomName}</span>}
                               {p.breakfast && (
                                 <span className="inline-flex items-center gap-0.5">
@@ -197,7 +197,7 @@ export default function StaySearch({
                           {p.totalYen != null && (
                             <p className="shrink-0 text-right text-sm font-black tabular-nums text-jz-ink">
                               {yen(p.totalYen)}
-                              <span className="block text-[9px] font-normal text-gray-500">{t("stays.total", { nights: result.nights, adults })}</span>
+                              <span className="block text-px9 font-normal text-gray-500">{t("stays.total", { nights: result.nights, adults })}</span>
                             </p>
                           )}
                           <a
@@ -228,19 +228,19 @@ export default function StaySearch({
                       ))}
                     </ul>
                   )}
-                  <a href={h.planListUrl} target="_blank" rel="noopener noreferrer sponsored" className="flex items-center justify-center gap-1 border-t border-gray-100 py-2 text-[11px] font-semibold text-gray-600 hover:bg-gray-50">
+                  <a href={h.planListUrl} target="_blank" rel="noopener noreferrer sponsored" className="flex items-center justify-center gap-1 border-t border-gray-100 py-2 text-px11 font-semibold text-gray-600 hover:bg-gray-50">
                     {t("stays.allPlans")} <ExternalLink className="h-3 w-3" />
                   </a>
                 </li>
               ))}
             </ul>
           )}
-          <p className="mt-3 rounded-xl bg-jz-tint px-3 py-2 text-[11px] leading-relaxed text-jz-ink">{t("stays.afterBooking")}</p>
-          <p className="mt-2 text-[10px] leading-relaxed text-gray-500">
+          <p className="mt-3 rounded-xl bg-jz-tint px-3 py-2 text-px11 leading-relaxed text-jz-ink">{t("stays.afterBooking")}</p>
+          <p className="mt-2 text-px10 leading-relaxed text-gray-500">
             {t("stays.note")}
             {result.affiliate && ` ${t("stays.affiliate")}`}
           </p>
-          <a href="https://webservice.rakuten.co.jp/" target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-[10px] text-gray-400 hover:underline">
+          <a href="https://webservice.rakuten.co.jp/" target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-px10 text-gray-400 hover:underline">
             Supported by Rakuten Developers
           </a>
         </>

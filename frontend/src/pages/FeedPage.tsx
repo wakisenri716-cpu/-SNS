@@ -349,7 +349,7 @@ export default function FeedPage() {
           <span />
           <span />
         </div>
-      <h1 className="px-4 pt-5 text-[26px] font-extrabold leading-tight tracking-tight text-jz-ink md:px-0 md:pt-8">
+      <h1 className="px-4 pt-5 text-px24 font-extrabold leading-tight tracking-tight text-jz-ink md:px-0 md:pt-8">
         {t("feed.heroTitle")}
         <span className="ml-1 inline-block h-2.5 w-2.5 rounded-full bg-jz-warm align-baseline" aria-hidden />
       </h1>

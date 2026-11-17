@@ -29,7 +29,7 @@ export default function TranslatedCaption({ reelId, caption }: { reelId: string;
           <TranslateButtonLabel tr={tr} />
         </button>
       )}
-      {tr.showing && <p className="mt-0.5 text-[11px] text-gray-500">{tr.by === "claude" ? t("translation.byClaude") : t("translation.byDevice")}</p>}
+      {tr.showing && <p className="mt-0.5 text-px11 text-gray-500">{tr.by === "claude" ? t("translation.byClaude") : t("translation.byDevice")}</p>}
     </div>
   );
 }

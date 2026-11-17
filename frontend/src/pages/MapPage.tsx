@@ -163,7 +163,7 @@ export default function MapPage() {
             type="button"
             onClick={() => setFilter(c)}
             aria-pressed={filter === c}
-            className={`shrink-0 rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition active:scale-95 ${
+            className={`shrink-0 rounded-full px-3.5 py-1.5 text-px13 font-semibold transition active:scale-95 ${
               filter === c ? "bg-jz-ink text-white" : "glass text-jz-ink"
             }`}
           >
@@ -205,7 +205,7 @@ export default function MapPage() {
           <div className="flex min-w-0 flex-1 flex-col py-1">
             <div className="flex items-start gap-2">
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[15px] font-bold text-jz-ink">{selected.locationName || selected.municipality.name}</p>
+                <p className="truncate text-px15 font-bold text-jz-ink">{selected.locationName || selected.municipality.name}</p>
                 <Link to={`/municipalities/${selected.municipality.id}`} className="block truncate text-xs text-gray-500 hover:underline">
                   {selected.municipality.name}・{selected.municipality.prefecture}
                 </Link>

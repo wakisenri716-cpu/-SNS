@@ -75,7 +75,7 @@ export default function VisitStampCard({ reelId, place, hasTag = false }: { reel
         )}
         {message && <p className="mt-2 text-xs text-jz-warm-text">{message}</p>}
         {!visitedAt && hasTag && (
-          <p className="mt-2 flex items-start gap-1 text-[11px] leading-relaxed text-gray-600">
+          <p className="mt-2 flex items-start gap-1 text-px11 leading-relaxed text-gray-600">
             <Nfc className="mt-0.5 h-3.5 w-3.5 shrink-0 text-jz-accent" /> {t("stamps.hasTag")}
           </p>
         )}

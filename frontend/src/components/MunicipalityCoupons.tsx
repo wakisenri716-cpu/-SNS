@@ -25,7 +25,7 @@ export default function MunicipalityCoupons({ municipalityId }: { municipalityId
       <div className="scrollbar-none -mx-4 mt-2 flex gap-2.5 overflow-x-auto px-4 pb-1 md:mx-0 md:px-0">
         {items.slice(0, 10).map((c) => (
           <Link key={c.id} to="/points" className="w-52 shrink-0 rounded-2xl border border-dashed border-jz-accent/50 bg-jz-tint p-3 hover:bg-jz-tint/70">
-            <p className="truncate text-[11px] text-gray-600">{c.issuer.name}</p>
+            <p className="truncate text-px11 text-gray-600">{c.issuer.name}</p>
             <p className="line-clamp-2 text-sm font-bold text-jz-ink">{c.title}</p>
             <p className="mt-1 text-xs font-black tabular-nums text-jz-accent">{t("myPage.pointsValue", { points: c.pointsCost })}</p>
           </Link>

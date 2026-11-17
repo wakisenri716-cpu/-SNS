@@ -37,7 +37,7 @@ export default function CommentSummary({ bodies }: { bodies: string[] }) {
             <Sparkles className="h-3.5 w-3.5 text-jz-accent" /> {t("commentSummary.heading", { count: bodies.length })}
           </p>
           <p className="mt-1.5 whitespace-pre-wrap text-xs leading-relaxed text-jz-ink">{state.text}</p>
-          <p className="mt-1.5 text-[10px] text-gray-500">{t("commentSummary.note")}</p>
+          <p className="mt-1.5 text-px10 text-gray-500">{t("commentSummary.note")}</p>
         </>
       ) : (
         <button type="button" onClick={() => void run()} disabled={state.kind === "working"} className="flex w-full items-center gap-2 text-left disabled:opacity-70">
@@ -50,7 +50,7 @@ export default function CommentSummary({ bodies }: { bodies: string[] }) {
                   : t("commentSummary.working")
                 : t("commentSummary.button")}
             </span>
-            <span className="block text-[11px] text-gray-600">{state.kind === "failed" ? t("commentSummary.failed") : t("commentSummary.sub")}</span>
+            <span className="block text-px11 text-gray-600">{state.kind === "failed" ? t("commentSummary.failed") : t("commentSummary.sub")}</span>
           </span>
         </button>
       )}

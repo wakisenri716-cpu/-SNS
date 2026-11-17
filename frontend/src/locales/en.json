@@ -418,7 +418,15 @@
     },
     "followNotificationDisclaimer": "Notifications appear in the app (the bell icon). Turn on push notifications below to get them on this device too (email isn't supported yet).",
     "notifyNewPostLabel": "New posts from accounts you follow",
-    "notifyNewPostDescription": "Let me know when a municipality or business I follow posts"
+    "notifyNewPostDescription": "Let me know when a municipality or business I follow posts",
+    "textSizeHeading": "Text size",
+    "textSize": {
+      "small": "Small",
+      "normal": "Default",
+      "large": "Large",
+      "xlarge": "Extra large"
+    },
+    "textSizeNote": "The size of all text in the app. Saved on this device only."
   },
   "privacyPolicy": {
     "title": "Privacy Policy",

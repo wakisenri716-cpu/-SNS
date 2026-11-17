@@ -49,7 +49,7 @@ export default function LiveReactions({ reelId }: { reelId: string }) {
   return (
     <>
       {viewers != null && viewers >= 2 && (
-        <span className="glass-dark animate-fade-in pointer-events-none absolute left-3 top-[max(0.75rem,env(safe-area-inset-top))] z-20 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold text-white">
+        <span className="glass-dark animate-fade-in pointer-events-none absolute left-3 top-[max(0.75rem,env(safe-area-inset-top))] z-20 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-px11 font-bold text-white">
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-jz-warm opacity-75 motion-reduce:hidden" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-jz-warm" />

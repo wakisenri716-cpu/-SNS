@@ -67,7 +67,7 @@ export default function PasteRoute({
       <p className="flex items-center gap-1.5 text-xs font-bold text-jz-ink">
         <ScanText className="h-4 w-4 text-jz-accent" /> {t("transport.paste.title")}
       </p>
-      <p className="mt-1 text-[11px] leading-relaxed text-gray-600">{t("transport.paste.hint")}</p>
+      <p className="mt-1 text-px11 leading-relaxed text-gray-600">{t("transport.paste.hint")}</p>
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
@@ -83,17 +83,17 @@ export default function PasteRoute({
       />
       <div className="mt-1.5 flex flex-wrap gap-1.5">
         {canReadClipboard && (
-          <button type="button" onClick={() => void fromClipboard()} className="inline-flex items-center gap-1 rounded-full bg-jz-ink px-3 py-1.5 text-[11px] font-bold text-white">
+          <button type="button" onClick={() => void fromClipboard()} className="inline-flex items-center gap-1 rounded-full bg-jz-ink px-3 py-1.5 text-px11 font-bold text-white">
             <ClipboardPaste className="h-3.5 w-3.5" /> {t("transport.paste.fromClipboard")}
           </button>
         )}
-        <button type="button" disabled={!text.trim()} onClick={() => read(text)} className="rounded-full bg-white px-3 py-1.5 text-[11px] font-bold text-jz-ink ring-1 ring-gray-200 disabled:opacity-40">
+        <button type="button" disabled={!text.trim()} onClick={() => read(text)} className="rounded-full bg-white px-3 py-1.5 text-px11 font-bold text-jz-ink ring-1 ring-gray-200 disabled:opacity-40">
           {t("transport.paste.read")}
         </button>
       </div>
-      {status === "failed" && <p className="mt-2 text-[11px] font-semibold text-jz-warm-text">{t("transport.paste.failed")}</p>}
+      {status === "failed" && <p className="mt-2 text-px11 font-semibold text-jz-warm-text">{t("transport.paste.failed")}</p>}
       {status === "read" && route && (
-        <div className="mt-2 text-[11px] leading-relaxed text-gray-700" aria-live="polite">
+        <div className="mt-2 text-px11 leading-relaxed text-gray-700" aria-live="polite">
           <p className="font-semibold text-emerald-700">{t("transport.paste.readOk", { count: route.rides.length })}</p>
           {route.rides.length > 1 && showRides && (
             <>

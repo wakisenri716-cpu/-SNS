@@ -9,11 +9,11 @@ export default function OriginFoundNote({ found, className = "" }: { found: Orig
   const { t } = useTranslation();
   if (found === undefined) return null;
   return (
-    <p className={`flex items-start gap-1 text-[11px] leading-relaxed ${found ? "text-gray-500" : "text-amber-700"} ${className}`}>
+    <p className={`flex items-start gap-1 text-px11 leading-relaxed ${found ? "text-gray-500" : "text-amber-700"} ${className}`}>
       <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
       <span>
         {found ? t("origin.foundAs", { label: found.label, where: t(`origin.kind.${found.kind}`) }) : t("origin.notFound")}
-        {found && found.kind !== "google" && <span className="block text-[10px] text-gray-400">{t(`origin.credit.${found.kind}`)}</span>}
+        {found && found.kind !== "google" && <span className="block text-px10 text-gray-400">{t(`origin.credit.${found.kind}`)}</span>}
       </span>
     </p>
   );

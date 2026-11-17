@@ -77,7 +77,7 @@ export default function PointsPage() {
           <div className="min-w-0 flex-1">
             <p className="text-xs font-semibold text-white/70">{t("points.balance")}</p>
             <p className="text-4xl font-black tabular-nums">{t("myPage.pointsValue", { points: summary.points })}</p>
-            <p className="mt-1 text-[11px] text-white/60">{t("points.earnedSpent", { earned: summary.earned, spent: summary.spent })}</p>
+            <p className="mt-1 text-px11 text-white/60">{t("points.earnedSpent", { earned: summary.earned, spent: summary.spent })}</p>
           </div>
           <span className="h-14 w-14 shrink-0 rounded-full bg-jz-warm" aria-hidden />
         </div>
@@ -89,7 +89,7 @@ export default function PointsPage() {
           </Link>
         </p>
       )}
-      <p className="mt-2 text-[11px] leading-relaxed text-gray-500">{t("points.howToEarn")}</p>
+      <p className="mt-2 text-px11 leading-relaxed text-gray-500">{t("points.howToEarn")}</p>
 
       <div className="mt-5 flex gap-1.5" role="tablist">
         {(["coupons", "ai", ...(traveler ? (["mine"] as const) : [])] as Tab[]).map((k) => (
@@ -102,7 +102,7 @@ export default function PointsPage() {
             className={`rounded-full px-3.5 py-1.5 text-xs font-bold ${tab === k ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600"}`}
           >
             {t(`points.tab.${k}`)}
-            {k === "mine" && unused > 0 && <span className="ml-1 rounded-full bg-jz-warm px-1.5 text-[10px] text-white">{unused}</span>}
+            {k === "mine" && unused > 0 && <span className="ml-1 rounded-full bg-jz-warm px-1.5 text-px10 text-white">{unused}</span>}
           </button>
         ))}
       </div>
@@ -123,13 +123,13 @@ export default function PointsPage() {
                     <Store className="h-5 w-5" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[11px] text-gray-500">
+                    <p className="text-px11 text-gray-500">
                       {c.issuer.name}
                       {c.issuer.kind === "company" && `・${c.municipality.name}`}
                     </p>
                     <p className="text-sm font-bold text-jz-ink">{c.title}</p>
                     {c.description && <p className="mt-0.5 text-xs text-gray-600">{c.description}</p>}
-                    <p className="mt-1 text-[11px] text-gray-500">
+                    <p className="mt-1 text-px11 text-gray-500">
                       {[
                         c.validUntil && t("points.validUntil", { date: c.validUntil.replace(/-/g, "/") }),
                         c.remaining != null && t("points.remaining", { count: c.remaining }),
@@ -146,12 +146,12 @@ export default function PointsPage() {
                         type="button"
                         disabled={short || maxed || busy === c.id}
                         onClick={() => void exchange(c)}
-                        className="rounded-full bg-jz-accent px-3 py-1.5 text-[11px] font-bold text-white disabled:bg-gray-200 disabled:text-gray-500"
+                        className="rounded-full bg-jz-accent px-3 py-1.5 text-px11 font-bold text-white disabled:bg-gray-200 disabled:text-gray-500"
                       >
                         {maxed ? t("points.have") : short ? t("points.short") : t("points.exchange")}
                       </button>
                     ) : !token ? (
-                      <Link to="/login" state={{ from: "/points" }} className="text-[11px] font-bold text-jz-accent">
+                      <Link to="/login" state={{ from: "/points" }} className="text-px11 font-bold text-jz-accent">
                         {t("points.login")}
                       </Link>
                     ) : null}
@@ -187,7 +187,7 @@ export default function PointsPage() {
             <Link to="/plans" className="flex items-center gap-3 rounded-2xl bg-jz-ink p-3 text-white active:scale-[0.99]">
               <Gem className="h-6 w-6 shrink-0 text-jz-accent" />
               <p className="min-w-0 flex-1 text-sm font-bold">{t("points.planCta", { count: 300 })}</p>
-              <span className="shrink-0 rounded-full bg-white px-3 py-1.5 text-[11px] font-bold text-jz-ink">{t("points.planCtaButton")}</span>
+              <span className="shrink-0 rounded-full bg-white px-3 py-1.5 text-px11 font-bold text-jz-ink">{t("points.planCtaButton")}</span>
             </Link>
           )}
           {summary &&
@@ -199,13 +199,13 @@ export default function PointsPage() {
                   type="button"
                   disabled={summary.points < p.points || busy === p.id}
                   onClick={() => void buyTickets(p.id, p.points, p.credits)}
-                  className="rounded-full bg-jz-accent px-3 py-1.5 text-[11px] font-bold text-white disabled:bg-gray-200 disabled:text-gray-500"
+                  className="rounded-full bg-jz-accent px-3 py-1.5 text-px11 font-bold text-white disabled:bg-gray-200 disabled:text-gray-500"
                 >
                   {t("points.packButton", { points: p.points })}
                 </button>
               </div>
             ))}
-          <p className="text-[11px] leading-relaxed text-gray-500">{t("points.aiNote")}</p>
+          <p className="text-px11 leading-relaxed text-gray-500">{t("points.aiNote")}</p>
         </section>
       )}
 
@@ -251,7 +251,7 @@ function HeldCoupon({ r, lang, onUsed }: { r: CouponRedemption; lang: string; on
 
   return (
     <li className={`rounded-3xl border p-4 ${r.usedAt ? "border-gray-200 bg-gray-50" : "border-jz-accent/40"}`}>
-      <p className="text-[11px] text-gray-500">{r.coupon.issuer.name}</p>
+      <p className="text-px11 text-gray-500">{r.coupon.issuer.name}</p>
       <p className="text-base font-extrabold text-jz-ink">{r.coupon.title}</p>
       {r.coupon.terms && <p className="mt-0.5 text-xs text-gray-600">{r.coupon.terms}</p>}
       {r.usedAt ? (
@@ -263,9 +263,9 @@ function HeldCoupon({ r, lang, onUsed }: { r: CouponRedemption; lang: string; on
         <div className="mt-3 flex items-center gap-4">
           {qr && <img src={qr} alt={t("points.qrAlt")} className="h-28 w-28 rounded-xl border border-gray-200" />}
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] text-gray-500">{t("points.code")}</p>
+            <p className="text-px11 text-gray-500">{t("points.code")}</p>
             <p className="font-mono text-2xl font-black tracking-widest text-jz-ink">{r.code}</p>
-            {r.coupon.validUntil && <p className="mt-0.5 text-[11px] text-gray-500">{t("points.validUntil", { date: r.coupon.validUntil.replace(/-/g, "/") })}</p>}
+            {r.coupon.validUntil && <p className="mt-0.5 text-px11 text-gray-500">{t("points.validUntil", { date: r.coupon.validUntil.replace(/-/g, "/") })}</p>}
             <button
               type="button"
               disabled={expired}

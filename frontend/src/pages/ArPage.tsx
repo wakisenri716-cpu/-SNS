@@ -93,11 +93,11 @@ export default function ArPage() {
         <button
           type="button"
           onClick={() => void sensors.start()}
-          className="mt-8 inline-flex items-center gap-2 rounded-full bg-jz-accent px-7 py-3.5 text-[15px] font-bold text-white shadow-lg active:scale-95"
+          className="mt-8 inline-flex items-center gap-2 rounded-full bg-jz-accent px-7 py-3.5 text-px15 font-bold text-white shadow-lg active:scale-95"
         >
           <Camera className="h-5 w-5" /> {t("ar.start")}
         </button>
-        <p className="mt-4 max-w-sm text-[11px] leading-relaxed text-white/60">{t("ar.privacy")}</p>
+        <p className="mt-4 max-w-sm text-px11 leading-relaxed text-white/60">{t("ar.privacy")}</p>
         <Link to="/map" className="mt-6 text-xs font-semibold text-white/70 underline underline-offset-2">
           {t("ar.backToMap")}
         </Link>
@@ -148,12 +148,12 @@ export default function ArPage() {
           <X className="h-5 w-5" />
         </button>
         <div className="glass-dark rounded-2xl px-3 py-1.5 text-center">
-          <p className="text-[15px] font-extrabold tabular-nums">
+          <p className="text-px15 font-extrabold tabular-nums">
             {t(`compass.dir.${POINTS[compassPoint(heading)]}`)} {Math.round(heading)}°
           </p>
-          <p className="text-[10px] text-white/70">{hasCompass ? t("ar.facing") : t("ar.dragHint")}</p>
+          <p className="text-px10 text-white/70">{hasCompass ? t("ar.facing") : t("ar.dragHint")}</p>
         </div>
-        <div className="glass-dark flex flex-col overflow-hidden rounded-2xl text-[11px] font-bold" role="group" aria-label={t("ar.range")}>
+        <div className="glass-dark flex flex-col overflow-hidden rounded-2xl text-px11 font-bold" role="group" aria-label={t("ar.range")}>
           {RANGES.map((km) => (
             <button
               key={km}
@@ -191,7 +191,7 @@ export default function ArPage() {
 }
 
 function Notice({ children }: { children: React.ReactNode }) {
-  return <p className="glass-dark max-w-sm rounded-full px-3.5 py-1.5 text-center text-[11px] leading-snug">{children}</p>;
+  return <p className="glass-dark max-w-sm rounded-full px-3.5 py-1.5 text-center text-px11 leading-snug">{children}</p>;
 }
 
 function SpotLabel({ p, onSelect, selected }: { p: Projected<Spot>; onSelect: () => void; selected: boolean }) {
@@ -217,8 +217,8 @@ function SpotLabel({ p, onSelect, selected }: { p: Projected<Spot>; onSelect: ()
           )}
         </span>
         <span className="max-w-[9rem] text-left">
-          <span className="block truncate text-[13px] font-bold">{name}</span>
-          <span className="block text-[11px] font-semibold text-white/80">{formatDistance(p.km)}</span>
+          <span className="block truncate text-px13 font-bold">{name}</span>
+          <span className="block text-px11 font-semibold text-white/80">{formatDistance(p.km)}</span>
         </span>
       </span>
       <span className="h-5 w-px bg-white/70" aria-hidden />
@@ -281,7 +281,7 @@ function SpotCard({ spot, p, onClose }: { spot: Spot; p: Projected<Spot> | null;
       </Link>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-start gap-2">
-          <p className="min-w-0 flex-1 truncate text-[15px] font-bold">{name}</p>
+          <p className="min-w-0 flex-1 truncate text-px15 font-bold">{name}</p>
           <button type="button" onClick={onClose} aria-label={t("ar.closeCard")} className="-mr-1 rounded-full p-1 text-gray-400 hover:bg-gray-100">
             <X className="h-4 w-4" />
           </button>

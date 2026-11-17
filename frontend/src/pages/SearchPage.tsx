@@ -105,7 +105,7 @@ export default function SearchPage() {
                     className="rounded-2xl border border-gray-200/80 bg-white p-3 text-sm text-gray-800 hover:bg-gray-50"
                   >
                     {m.name}（{m.prefecture}）
-                    {m.listing && <span className="ml-1.5 rounded-full bg-gray-100 px-1.5 py-px text-[10px] font-semibold text-gray-500">{t("listing.badge")}</span>}
+                    {m.listing && <span className="ml-1.5 rounded-full bg-gray-100 px-1.5 py-px text-px10 font-semibold text-gray-500">{t("listing.badge")}</span>}
                   </Link>
                 ))}
               </div>
@@ -125,7 +125,7 @@ export default function SearchPage() {
                     <video src={r.videoUrl} className="aspect-video w-full bg-gray-200 object-cover" muted />
                     <div className="flex flex-col gap-1 p-2">
                       <p className="truncate text-xs font-semibold text-gray-900">{r.locationName || r.caption}</p>
-                      <p className="truncate text-[11px] text-gray-500">
+                      <p className="truncate text-px11 text-gray-500">
                         {r.municipality.name} · {t(`category.${r.category}`)}
                       </p>
                       <TravelerTagChips tags={r.travelerTags} />
@@ -156,7 +156,7 @@ export default function SearchPage() {
                   clearRecentlyViewed();
                   setRecent([]);
                 }}
-                className="text-[11px] font-semibold text-gray-500 hover:text-jz-ink"
+                className="text-px11 font-semibold text-gray-500 hover:text-jz-ink"
               >
                 {t("search.recentClear")}
               </button>
@@ -168,7 +168,7 @@ export default function SearchPage() {
                     <video src={`${r.videoUrl}#t=0.1`} className="h-full w-full object-cover" muted playsInline preload="metadata" />
                   </span>
                   <span className="mt-1 block truncate text-xs font-semibold text-jz-ink">{r.place}</span>
-                  <span className="block truncate text-[11px] text-gray-500">{r.municipality}</span>
+                  <span className="block truncate text-px11 text-gray-500">{r.municipality}</span>
                 </Link>
               ))}
             </div>
@@ -180,7 +180,7 @@ export default function SearchPage() {
             {recommend.map((r) => (
               <Link key={r.id} to={`/municipalities/${r.municipality.id}`} className="relative block">
                 <video src={r.videoUrl} className="aspect-video w-full rounded-lg bg-gray-200 object-cover" muted />
-                <span className="absolute bottom-1.5 left-1.5 rounded bg-black/60 px-1.5 py-0.5 text-[10px] text-white">
+                <span className="absolute bottom-1.5 left-1.5 rounded bg-black/60 px-1.5 py-0.5 text-px10 text-white">
                   {r.municipality.name}
                 </span>
               </Link>

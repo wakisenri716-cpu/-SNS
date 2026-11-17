@@ -47,7 +47,7 @@ export default function ReportedComments() {
         {items.map((c) => (
           <li key={c.id} className="rounded-2xl border border-gray-200 bg-white p-3">
             <p className="whitespace-pre-wrap break-words text-sm text-gray-800">{c.body}</p>
-            <p className="mt-1.5 text-[11px] text-gray-500">
+            <p className="mt-1.5 text-px11 text-gray-500">
               {c.authorName}・
               <Link to={`/reels/${c.reel.id}/access`} className="hover:underline">
                 {c.reel.title}

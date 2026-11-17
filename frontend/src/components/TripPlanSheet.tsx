@@ -93,7 +93,7 @@ export default function TripPlanSheet({
           <span className="ai-orb flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white">
             <Sparkles className="h-4 w-4" />
           </span>
-          <h2 className="flex-1 text-[15px] font-bold text-jz-ink">{t("tripPlan.title")}</h2>
+          <h2 className="flex-1 text-px15 font-bold text-jz-ink">{t("tripPlan.title")}</h2>
           <button
             type="button"
             onClick={onClose}
@@ -134,7 +134,7 @@ export default function TripPlanSheet({
             </>
           ) : (
             <>
-              <p className="text-[11px] font-semibold text-gray-500">{plan.mode === "ai" ? t("tripPlan.byAi") : t("tripPlan.byAuto")}</p>
+              <p className="text-px11 font-semibold text-gray-500">{plan.mode === "ai" ? t("tripPlan.byAi") : t("tripPlan.byAuto")}</p>
               {plan.summary && <p className="mt-2 text-sm leading-relaxed text-jz-ink">{plan.summary}</p>}
               <ol className="mt-4 space-y-3">
                 {plan.stops.map((s, i) => {

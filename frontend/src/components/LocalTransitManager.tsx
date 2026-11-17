@@ -183,11 +183,11 @@ export default function LocalTransitManager({ reels }: { reels: Reel[] }) {
                   <span className="min-w-0 flex-1 truncate">{file.name}</span>
                 </div>
               )}
-              <p className="mt-1 text-[11px] text-gray-500">{t("localTransit.fileHint")}</p>
+              <p className="mt-1 text-px11 text-gray-500">{t("localTransit.fileHint")}</p>
             </div>
           )}
           {limit && <AiLimitNotice signedIn={limit.signedIn} plan={limit.plan} />}
-          {aiDrafted && <p className="rounded-xl bg-amber-50 p-2.5 text-[11px] font-semibold leading-relaxed text-amber-800">{t("localTransit.checkAi")}</p>}
+          {aiDrafted && <p className="rounded-xl bg-amber-50 p-2.5 text-px11 font-semibold leading-relaxed text-amber-800">{t("localTransit.checkAi")}</p>}
 
           <label className={label}>
             {t("localTransit.titleLabel")}
@@ -243,7 +243,7 @@ export default function LocalTransitManager({ reels }: { reels: Reel[] }) {
               </span>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-bold text-jz-ink">{item.title}</p>
-                <p className="text-[11px] text-gray-500">
+                <p className="text-px11 text-gray-500">
                   {item.reel?.locationName ?? t("localTransit.allSpots")}
                   {item.validUntil && `・${t("localTransit.until", { date: item.validUntil.replace(/-/g, "/") })}`}
                 </p>

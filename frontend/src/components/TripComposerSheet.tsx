@@ -143,7 +143,7 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
           <span className="ai-orb flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white">
             <Sparkles className="h-4 w-4" />
           </span>
-          <h2 className="flex-1 text-[15px] font-bold text-jz-ink">{t("composer.title")}</h2>
+          <h2 className="flex-1 text-px15 font-bold text-jz-ink">{t("composer.title")}</h2>
           <button
             type="button"
             onClick={onClose}
@@ -220,13 +220,13 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
                   </button>
                 ))}
               </div>
-              {ai === false && <p className="mt-4 rounded-2xl bg-gray-50 p-3 text-[11px] leading-relaxed text-gray-500">{t("composer.keywordNote")}</p>}
+              {ai === false && <p className="mt-4 rounded-2xl bg-gray-50 p-3 text-px11 leading-relaxed text-gray-500">{t("composer.keywordNote")}</p>}
             </>
           ) : draft.stops.length === 0 ? (
             <p className="text-sm leading-relaxed text-gray-600">{draft.summary ?? t("composer.noMatch")}</p>
           ) : (
             <>
-              <p className="text-[11px] font-semibold text-gray-500">{draft.mode === "ai" ? t("composer.byAi") : t("composer.byKeyword")}</p>
+              <p className="text-px11 font-semibold text-gray-500">{draft.mode === "ai" ? t("composer.byAi") : t("composer.byKeyword")}</p>
               <label className="mt-3 block text-xs font-semibold text-gray-500" htmlFor="composer-name">
                 {t("tripPicker.nameLabel")}
               </label>
@@ -239,7 +239,7 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
               />
               {draft.summary && <p className="mt-3 text-sm leading-relaxed text-jz-ink">{draft.summary}</p>}
               {draft.requestedDays > shownDays && (
-                <p className="mt-3 rounded-2xl bg-amber-50 p-3 text-[11px] leading-relaxed text-amber-800">
+                <p className="mt-3 rounded-2xl bg-amber-50 p-3 text-px11 leading-relaxed text-amber-800">
                   {t("composer.fewerDays", { requested: draft.requestedDays, count: shownDays })}
                 </p>
               )}
@@ -255,7 +255,7 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
                   </ol>
                 </section>
               ))}
-              <p className="mt-4 text-[11px] leading-relaxed text-gray-500">{t("composer.afterNote")}</p>
+              <p className="mt-4 text-px11 leading-relaxed text-gray-500">{t("composer.afterNote")}</p>
             </>
           )}
           {error && <p className="mt-4 text-xs text-jz-warm-text">{error}</p>}
@@ -264,7 +264,7 @@ export default function TripComposerSheet({ onClose }: { onClose: () => void }) 
 
         {/* 1回でいくら: what a trip made by the AI counts for, and what's left. */}
         {ai && !draft && (
-          <p className="border-t border-gray-100 px-4 pt-3 text-center text-[11px] text-gray-500">
+          <p className="border-t border-gray-100 px-4 pt-3 text-center text-px11 text-gray-500">
             {t("composer.cost", { units: allowance?.units.tripCompose ?? 5 })}
             {allowance && ` ${t("composer.costLeft", { month: allowance.freeLeftThisMonth, today: allowance.freeLeft, credits: allowance.credits })}`}
           </p>
@@ -328,7 +328,7 @@ function ComposedStopRow({ stop, index, onRemove }: { stop: ComposedStop; index:
       </span>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-bold text-jz-ink">{place}</p>
-        <p className="mt-0.5 flex items-center gap-1 text-[11px] text-gray-500">
+        <p className="mt-0.5 flex items-center gap-1 text-px11 text-gray-500">
           {reel.municipality.name}・{t(`category.${reel.category}`)}
           {reel.category !== "lodging" && (
             <>

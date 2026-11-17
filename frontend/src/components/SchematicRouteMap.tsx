@@ -53,7 +53,7 @@ export default function SchematicRouteMap({
           </g>
         ))}
       </svg>
-      <p className="mt-1 text-[10px] text-gray-500">{t(captionKey)}</p>
+      <p className="mt-1 text-px10 text-gray-500">{t(captionKey)}</p>
     </div>
   );
 }

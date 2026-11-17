@@ -98,15 +98,15 @@ export default function FeedPost({
         <div className="glass-dark absolute left-3 top-3 flex max-w-[calc(100%-1.5rem)] items-center gap-2 rounded-full py-1 pl-1 pr-1.5 text-white">
           <Link to={`/municipalities/${reel.municipality.id}`} className="flex min-w-0 items-center gap-2">
             <Avatar name={reel.municipality.name} src={reel.municipality.avatarUrl} size={28} />
-            <span className="truncate text-[13px] font-semibold">{poster.name}</span>
+            <span className="truncate text-px13 font-semibold">{poster.name}</span>
           </Link>
           {poster.isFollowing ? (
-            <span className="pr-1.5 text-[11px] text-white/70">{t("reelViewer.following")}</span>
+            <span className="pr-1.5 text-px11 text-white/70">{t("reelViewer.following")}</span>
           ) : (
             <button
               type="button"
               onClick={() => onToggleFollow(reel)}
-              className="shrink-0 rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-jz-ink transition active:scale-95"
+              className="shrink-0 rounded-full bg-white px-2.5 py-1 text-px11 font-bold text-jz-ink transition active:scale-95"
             >
               {t("reelViewer.follow")}
             </button>
@@ -121,7 +121,7 @@ export default function FeedPost({
                 {reel.editorial && <EditorialBadge />}
                 {reel.contributedBy != null && <ContributorBadge name={reel.contributedBy} />}
                 {(liveCount ?? 0) > 0 && (
-                  <span className="animate-fade-in inline-flex items-center gap-1 rounded-full bg-black/45 px-2.5 py-0.5 text-[11px] font-semibold text-white backdrop-blur">
+                  <span className="animate-fade-in inline-flex items-center gap-1 rounded-full bg-black/45 px-2.5 py-0.5 text-px11 font-semibold text-white backdrop-blur">
                     <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-jz-warm" />
                     {t("live.viewers", { count: liveCount })}
                   </span>
@@ -130,7 +130,7 @@ export default function FeedPost({
               </div>
             )}
             {reel.locationName && (
-              <p className="flex items-center gap-1 truncate text-[15px] font-bold drop-shadow">
+              <p className="flex items-center gap-1 truncate text-px15 font-bold drop-shadow">
                 <MapPin className="h-4 w-4 shrink-0" />
                 <span className="truncate">{reel.locationName}</span>
               </p>
@@ -144,7 +144,7 @@ export default function FeedPost({
             <Link
               to={`/reels/${reel.id}/access`}
               state={{ reel }}
-              className="pointer-events-auto flex shrink-0 items-center gap-1.5 rounded-full bg-jz-accent px-3.5 py-2 text-[13px] font-bold text-white shadow-[0_6px_20px_-6px_rgba(14,127,127,0.8)] transition hover:bg-jz-accent-dark active:scale-95"
+              className="pointer-events-auto flex shrink-0 items-center gap-1.5 rounded-full bg-jz-accent px-3.5 py-2 text-px13 font-bold text-white shadow-[0_6px_20px_-6px_rgba(14,127,127,0.8)] transition hover:bg-jz-accent-dark active:scale-95"
             >
               <Navigation className="h-3.5 w-3.5 fill-white" /> {t("feed.directions")}
             </Link>
@@ -200,7 +200,7 @@ export default function FeedPost({
             type="button"
             onClick={() => setStayOpen(true)}
             aria-label={reel.rakutenHotel ? t("stays.bookButton") : t("stays.nearButton")}
-            className={`flex items-center gap-1 rounded-full px-2.5 py-1.5 text-[13px] font-bold transition active:scale-90 ${
+            className={`flex items-center gap-1 rounded-full px-2.5 py-1.5 text-px13 font-bold transition active:scale-90 ${
               reel.rakutenHotel ? "bg-jz-tint text-jz-accent" : "text-jz-ink hover:bg-gray-100"
             }`}
           >
@@ -216,7 +216,7 @@ export default function FeedPost({
           }}
           aria-label={t("reelViewer.saveLabel")}
           aria-pressed={reel.savedByMe}
-          className={`ml-auto flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] font-bold transition active:scale-95 ${
+          className={`ml-auto flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-px13 font-bold transition active:scale-95 ${
             reel.savedByMe ? "bg-jz-ink text-white" : "bg-gray-100 text-jz-ink hover:bg-gray-200"
           }`}
         >

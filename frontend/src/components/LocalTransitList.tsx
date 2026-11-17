@@ -33,7 +33,7 @@ export default function LocalTransitList({ reelId, municipalityId, className = "
       <h2 id="local-transit-heading" className="flex items-center gap-1.5 text-sm font-bold text-jz-ink">
         <BusFront className="h-4 w-4 text-jz-accent" /> {t("localTransit.heading")}
       </h2>
-      <p className="mt-0.5 text-[11px] text-gray-500">{t("localTransit.sub")}</p>
+      <p className="mt-0.5 text-px11 text-gray-500">{t("localTransit.sub")}</p>
       <ul className="mt-2 space-y-2.5">
         {items.map((item) => (
           <TransitCard key={item.id} item={item} showSpot={!reelId} />
@@ -61,7 +61,7 @@ function TransitCard({ item, showSpot }: { item: LocalTransit; showSpot: boolean
       ) : (
         <>
           <p className="text-sm font-bold text-jz-ink">{item.title}</p>
-          {item.body && <p className="mt-1 whitespace-pre-wrap text-[13px] leading-relaxed text-gray-700">{item.body}</p>}
+          {item.body && <p className="mt-1 whitespace-pre-wrap text-px13 leading-relaxed text-gray-700">{item.body}</p>}
         </>
       )}
       {tr.available && (
@@ -69,7 +69,7 @@ function TransitCard({ item, showSpot }: { item: LocalTransit; showSpot: boolean
           type="button"
           onClick={() => void tr.toggle()}
           disabled={tr.status === "loading"}
-          className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-gray-500 hover:text-jz-ink"
+          className="mt-1 inline-flex items-center gap-1 text-px11 font-semibold text-gray-500 hover:text-jz-ink"
         >
           <Languages className="h-3 w-3" />
           <TranslateButtonLabel tr={tr} />
@@ -92,7 +92,7 @@ function TransitCard({ item, showSpot }: { item: LocalTransit; showSpot: boolean
           <span className="shrink-0 text-jz-accent">{t("localTransit.openPdf")}</span>
         </a>
       )}
-      <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] text-gray-500">
+      <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-px10 text-gray-500">
         <span>{t("localTransit.by", { name: item.issuer.name })}</span>
         {showSpot && item.reel && <span>・{item.reel.locationName}</span>}
         {item.validUntil && <span>・{t("localTransit.until", { date: item.validUntil.replace(/-/g, "/") })}</span>}
@@ -103,7 +103,7 @@ function TransitCard({ item, showSpot }: { item: LocalTransit; showSpot: boolean
           </a>
         )}
       </p>
-      {item.aiDrafted && <p className="mt-1 text-[10px] text-gray-400">{t("localTransit.aiDrafted")}</p>}
+      {item.aiDrafted && <p className="mt-1 text-px10 text-gray-400">{t("localTransit.aiDrafted")}</p>}
     </li>
   );
 }

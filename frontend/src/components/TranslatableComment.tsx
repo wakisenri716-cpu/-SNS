@@ -21,7 +21,7 @@ export default function TranslatableComment({ reelId, commentId, body }: { reelI
           type="button"
           onClick={() => void tr.toggle()}
           disabled={tr.status === "loading"}
-          className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-gray-500 hover:text-jz-ink"
+          className="mt-0.5 inline-flex items-center gap-1 text-px11 font-semibold text-gray-500 hover:text-jz-ink"
         >
           <Languages className="h-3 w-3" />
           <TranslateButtonLabel tr={tr} />

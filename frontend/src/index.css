@@ -9,6 +9,23 @@
    the dot after headings, stamps. Yellow and blue join for decoration
    (gradients, story rings) only, never behind text. */
 @theme {
+  /* Text a step smaller than Tailwind's defaults, closer to Instagram
+     (12→11, 14→13, 16→15px …), times the 文字の大きさ setting
+     (--jz-text-scale, lib/textSize.ts); spacing stays as it is. The
+     text-pxN sizes are the screens' fixed sizes, scaled the same way. */
+  --text-xs: calc(0.6875rem * var(--jz-text-scale, 1));
+  --text-sm: calc(0.8125rem * var(--jz-text-scale, 1));
+  --text-base: calc(0.9375rem * var(--jz-text-scale, 1));
+  --text-lg: calc(1.0625rem * var(--jz-text-scale, 1));
+  --text-xl: calc(1.1875rem * var(--jz-text-scale, 1));
+  --text-2xl: calc(1.375rem * var(--jz-text-scale, 1));
+  --text-3xl: calc(1.75rem * var(--jz-text-scale, 1));
+  --text-px9: calc(9px * var(--jz-text-scale, 1));
+  --text-px10: calc(10px * var(--jz-text-scale, 1));
+  --text-px11: calc(11px * var(--jz-text-scale, 1));
+  --text-px13: calc(13px * var(--jz-text-scale, 1));
+  --text-px15: calc(15px * var(--jz-text-scale, 1));
+  --text-px24: calc(24px * var(--jz-text-scale, 1));
   --color-jz-brand-teal: #14a3a3;
   --color-jz-brand-orange: #f26b38;
   --color-jz-brand-yellow: #f6c343;
@@ -417,7 +434,7 @@ p, li {
   background: #c2481c;
   padding: 1px 6px;
   color: #fff;
-  font-size: 10px;
+  font-size: calc(10px * var(--jz-text-scale, 1));
   font-weight: 800;
   white-space: nowrap;
 }
@@ -439,7 +456,7 @@ p, li {
   border: 2px solid #fff;
   background: #0e7f7f;
   color: #fff;
-  font-size: 13px;
+  font-size: calc(13px * var(--jz-text-scale, 1));
   font-weight: 800;
   box-shadow: 0 6px 18px -4px rgba(14, 127, 127, 0.7);
   transition: transform 0.4s cubic-bezier(0.3, 1.4, 0.5, 1);

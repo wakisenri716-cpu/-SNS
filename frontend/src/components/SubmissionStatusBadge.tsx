@@ -11,5 +11,5 @@ export default function StatusBadge({ s }: { s: Pick<Submission, "status" | "ree
       : s.status === "rejected"
         ? ["bg-gray-100 text-gray-600", t("submissions.status.rejected")]
         : ["bg-amber-50 text-amber-800", t("submissions.status.pending")];
-  return <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${cls}`}>{label}</span>;
+  return <span className={`rounded-full px-2 py-0.5 text-px10 font-bold ${cls}`}>{label}</span>;
 }

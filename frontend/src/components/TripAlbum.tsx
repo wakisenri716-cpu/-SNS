@@ -87,7 +87,7 @@ export default function TripAlbum({
               type="button"
               onClick={() => input.current?.click()}
               disabled={!!progress}
-              className="inline-flex items-center gap-1 rounded-full bg-jz-accent px-3 py-1.5 text-[11px] font-bold text-white disabled:opacity-60"
+              className="inline-flex items-center gap-1 rounded-full bg-jz-accent px-3 py-1.5 text-px11 font-bold text-white disabled:opacity-60"
             >
               <ImagePlus className="h-3.5 w-3.5" /> {progress ? t("album.uploading", progress) : t("album.add")}
             </button>
@@ -107,11 +107,11 @@ export default function TripAlbum({
         )}
       </div>
       {photos.length === 0 ? (
-        <p className="mt-2 text-[11px] leading-relaxed text-gray-500">{t("album.empty")}</p>
+        <p className="mt-2 text-px11 leading-relaxed text-gray-500">{t("album.empty")}</p>
       ) : (
         groups.map((g) => (
           <div key={g.key} className="mt-3">
-            <p className="mb-1.5 flex items-center gap-1 text-[11px] font-bold text-jz-ink">
+            <p className="mb-1.5 flex items-center gap-1 text-px11 font-bold text-jz-ink">
               {g.key !== "other" && <MapPin className="h-3 w-3 text-jz-accent" />}
               {g.title}
               <span className="font-normal text-gray-500">{t("album.count", { count: g.photos.length })}</span>
@@ -132,7 +132,7 @@ export default function TripAlbum({
           </div>
         ))
       )}
-      <p className="mt-2 text-[10px] leading-relaxed text-gray-400">{t("album.privacy")}</p>
+      <p className="mt-2 text-px10 leading-relaxed text-gray-400">{t("album.privacy")}</p>
       {open != null && ordered[open] && (
         <Lightbox
           photos={ordered}

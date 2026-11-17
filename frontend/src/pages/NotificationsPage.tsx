@@ -84,7 +84,7 @@ export default function NotificationsPage() {
                 {n.commentBody && (
                   <p className="mt-1 line-clamp-2 whitespace-pre-wrap text-xs text-gray-600">「{n.commentBody}」</p>
                 )}
-                <p className="mt-1 text-[11px] text-gray-500">{new Date(n.createdAt).toLocaleString(i18n.language)}</p>
+                <p className="mt-1 text-px11 text-gray-500">{new Date(n.createdAt).toLocaleString(i18n.language)}</p>
                 </span>
                 {(n.type === "newPost" || n.type === "submissionPosted") && (
                   <video

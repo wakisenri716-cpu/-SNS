@@ -103,11 +103,11 @@ export default function TravelReportSection({
         <p className="mt-3 text-xs text-gray-500">{t("travelReport.noReports")}</p>
       )}
       {(reports?.hiddenCount ?? 0) > 0 && (
-        <p className="mt-1.5 text-[11px] text-gray-500">{t("travelReport.hiddenCount", { count: reports!.hiddenCount })}</p>
+        <p className="mt-1.5 text-px11 text-gray-500">{t("travelReport.hiddenCount", { count: reports!.hiddenCount })}</p>
       )}
       {(reports?.mine.length ?? 0) > 0 && (
         <div className="mt-3 rounded-lg bg-gray-50 px-3 py-2">
-          <p className="text-[11px] font-semibold text-gray-500">{t("travelReport.mineHeading")}</p>
+          <p className="text-px11 font-semibold text-gray-500">{t("travelReport.mineHeading")}</p>
           <ul className="mt-1 flex flex-col gap-0.5">
             {reports!.mine.map((m) => (
               <li key={m.mode} className="text-xs text-gray-600">
@@ -139,7 +139,7 @@ export default function TravelReportSection({
                 placeholder={t("accessPlanner.originPlaceholder")}
                 className="w-full rounded-xl border border-gray-300 bg-white p-2 text-sm text-gray-900 outline-none focus:border-gray-400"
               />
-              <span className="text-[11px] leading-relaxed text-amber-700">{t("travelReport.originPrivacyNote")}</span>
+              <span className="text-px11 leading-relaxed text-amber-700">{t("travelReport.originPrivacyNote")}</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {MODES.map((m) => (
@@ -196,7 +196,7 @@ export default function TravelReportSection({
             {error && <p className="text-xs text-jz-warm-text">{error}</p>}
           </form>
         )}
-        <p className="mt-3 text-[11px] leading-relaxed text-gray-500">{t("travelReport.disclaimer")}</p>
+        <p className="mt-3 text-px11 leading-relaxed text-gray-500">{t("travelReport.disclaimer")}</p>
       </div>
     </div>
   );

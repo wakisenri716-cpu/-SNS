@@ -98,16 +98,16 @@ export default function TripCollab({
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm text-jz-ink">
                 {person.name}
-                {person.id === user?.id && <span className="ml-1 text-[11px] text-gray-500">{t("collab.you")}</span>}
+                {person.id === user?.id && <span className="ml-1 text-px11 text-gray-500">{t("collab.you")}</span>}
               </span>
               {located.has(person.id) && (
-                <span className="flex items-center gap-1 truncate text-[11px] font-semibold text-emerald-700">
+                <span className="flex items-center gap-1 truncate text-px11 font-semibold text-emerald-700">
                   <MapPin className="h-3 w-3 shrink-0" />
                   {whereIs(located.get(person.id)!)}・{relativeTime(new Date(located.get(person.id)!.at).toISOString(), i18n.language)}
                 </span>
               )}
             </span>
-            <span className="text-[11px] text-gray-500">{i === 0 ? t("collab.owner") : online.has(person.id) ? t("collab.online") : ""}</span>
+            <span className="text-px11 text-gray-500">{i === 0 ? t("collab.owner") : online.has(person.id) ? t("collab.online") : ""}</span>
             {i > 0 && (itinerary.isOwner || person.id === user?.id) && (
               <button
                 type="button"
@@ -133,7 +133,7 @@ export default function TripCollab({
           >
             <Navigation className="h-3.5 w-3.5" /> {share.sharing ? t("collab.stopSharingLocation") : t("collab.shareLocation")}
           </button>
-          <p className="mt-1.5 text-[11px] leading-relaxed text-gray-500">
+          <p className="mt-1.5 text-px11 leading-relaxed text-gray-500">
             {share.error ? t("compass.noLocation") : share.sharing ? t("collab.sharingNote") : t("collab.shareNote")}
           </p>
         </div>
@@ -155,7 +155,7 @@ export default function TripCollab({
           )}
         </div>
       ) : null}
-      <p className="mt-2 text-[11px] leading-relaxed text-gray-500">
+      <p className="mt-2 text-px11 leading-relaxed text-gray-500">
         {itinerary.isOwner ? t("collab.ownerNote") : t("collab.memberNote", { name: itinerary.owner.name })}
       </p>
     </section>

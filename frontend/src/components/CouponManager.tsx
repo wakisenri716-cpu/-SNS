@@ -213,7 +213,7 @@ export default function CouponManager() {
               <div className="min-w-0 flex-1 text-xs">
                 <p className="text-sm font-bold text-gray-900">
                   {c.title}
-                  {!c.open && <span className="ml-1.5 rounded-full bg-gray-200 px-2 py-0.5 text-[10px] font-semibold text-gray-600">{c.active ? t("coupons.ended") : t("coupons.stopped")}</span>}
+                  {!c.open && <span className="ml-1.5 rounded-full bg-gray-200 px-2 py-0.5 text-px10 font-semibold text-gray-600">{c.active ? t("coupons.ended") : t("coupons.stopped")}</span>}
                 </p>
                 <p className="mt-0.5 text-gray-600">
                   {[
@@ -226,7 +226,7 @@ export default function CouponManager() {
                     .join("・")}
                 </p>
               </div>
-              <button type="button" onClick={() => void toggle(c)} className="shrink-0 rounded-full bg-gray-100 px-3 py-1.5 text-[11px] font-bold text-gray-700 hover:bg-gray-200">
+              <button type="button" onClick={() => void toggle(c)} className="shrink-0 rounded-full bg-gray-100 px-3 py-1.5 text-px11 font-bold text-gray-700 hover:bg-gray-200">
                 {c.active ? t("coupons.stop") : t("coupons.restart")}
               </button>
             </li>
@@ -243,7 +243,7 @@ function PlanLimitNote({ message }: { message: string }) {
     <div className="rounded-2xl bg-jz-tint p-3 text-xs leading-relaxed text-jz-ink" role="status">
       <p className="font-semibold">{message}</p>
       <p className="mt-0.5">{t("coupons.planLimit")}</p>
-      <Link to="/plans" className="mt-2 inline-flex items-center gap-1 rounded-full bg-jz-ink px-3 py-1.5 text-[11px] font-bold text-white">
+      <Link to="/plans" className="mt-2 inline-flex items-center gap-1 rounded-full bg-jz-ink px-3 py-1.5 text-px11 font-bold text-white">
         <Gem className="h-3.5 w-3.5" /> {t("coupons.planLimitLink")}
       </Link>
     </div>

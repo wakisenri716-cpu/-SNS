@@ -12,7 +12,7 @@ export function EventDateBadge({ date, lang, small = false }: { date: string; la
   const d = new Date(`${date}T00:00:00`);
   return (
     <span className={`flex shrink-0 flex-col items-center justify-center overflow-hidden rounded-2xl bg-white ring-1 ring-gray-200 ${small ? "h-12 w-12" : "h-14 w-14"}`}>
-      <span className="w-full bg-jz-accent py-0.5 text-center text-[10px] font-bold text-white">
+      <span className="w-full bg-jz-accent py-0.5 text-center text-px10 font-bold text-white">
         {d.toLocaleDateString(lang, { month: "short" })}
       </span>
       <span className={`font-extrabold tabular-nums text-jz-ink ${small ? "text-lg" : "text-xl"}`}>{d.getDate()}</span>

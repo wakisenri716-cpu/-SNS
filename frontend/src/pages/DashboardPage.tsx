@@ -100,7 +100,7 @@ function CoordsFields({
         <input value={lat} onChange={(e) => onLat(e.target.value)} placeholder={t("reelUploader.latPlaceholder")} inputMode="decimal" className={cls} />
         <input value={lng} onChange={(e) => onLng(e.target.value)} placeholder={t("reelUploader.lngPlaceholder")} inputMode="decimal" className={cls} />
       </div>
-      <p className="mt-1 text-[11px] leading-relaxed text-gray-500">{t("dashboard.spotCoordsNote")}</p>
+      <p className="mt-1 text-px11 leading-relaxed text-gray-500">{t("dashboard.spotCoordsNote")}</p>
     </div>
   );
 }
@@ -235,7 +235,7 @@ function TourismSpotsEditor({ initialSpots }: { initialSpots: TourismSpot[] }) {
                 <p className="text-sm font-bold text-gray-900">
                   {spot.name}
                   <span
-                    className={`ml-2 rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                    className={`ml-2 rounded-full px-2 py-0.5 text-px10 font-medium ${
                       spot.locationLat != null ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-500"
                     }`}
                   >
@@ -395,7 +395,7 @@ function PostsGrid({
         <div key={reel.id} className="group relative overflow-hidden rounded-lg">
           <video src={reel.videoUrl} className="aspect-square w-full bg-gray-200 object-cover" muted />
           {reel.postedByCompany && (
-            <p className="absolute inset-x-0 bottom-0 truncate bg-black/50 px-1.5 py-0.5 text-[10px] text-white">
+            <p className="absolute inset-x-0 bottom-0 truncate bg-black/50 px-1.5 py-0.5 text-px10 text-white">
               {t("dashboard.postedBy", { name: reel.postedByCompany.name })}
             </p>
           )}
@@ -511,7 +511,7 @@ export default function DashboardPage() {
             ) : (
               municipality.name.slice(0, 1)
             )}
-            <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 text-[10px] text-white opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">
+            <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 text-px10 text-white opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">
               {t("dashboard.avatarChange")}
             </span>
             <input

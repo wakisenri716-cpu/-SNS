@@ -79,8 +79,8 @@ export default function SubmissionInbox({
             className={`rounded-full px-3 py-1 text-xs font-semibold ${view === v ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600"}`}
           >
             {t(`inbox.view.${v}`)}
-            {v === "pending" && counts.pending > 0 && <span className="ml-1 rounded-full bg-jz-warm px-1.5 text-[10px] text-white">{counts.pending}</span>}
-            {v === "approved" && counts.approved > 0 && <span className="ml-1 text-[10px]">{counts.approved}</span>}
+            {v === "pending" && counts.pending > 0 && <span className="ml-1 rounded-full bg-jz-warm px-1.5 text-px10 text-white">{counts.pending}</span>}
+            {v === "approved" && counts.approved > 0 && <span className="ml-1 text-px10">{counts.approved}</span>}
           </button>
         ))}
       </div>
@@ -102,22 +102,22 @@ export default function SubmissionInbox({
               <div className="space-y-1 p-3 text-xs">
                 <p className="flex flex-wrap items-center gap-1.5">
                   {admin && s.municipality && (
-                    <span className="rounded-full bg-jz-tint px-2 py-0.5 text-[11px] font-bold text-jz-accent">
+                    <span className="rounded-full bg-jz-tint px-2 py-0.5 text-px11 font-bold text-jz-accent">
                       {s.municipality.prefecture}
                       {s.municipality.name}
                     </span>
                   )}
                   <span className="font-bold text-gray-900">{s.contributor?.name}</span>
                   <StatusBadge s={s} />
-                  <span className="text-[11px] text-gray-500">{t(s.kind === "video" ? "inbox.video" : "inbox.photo")}</span>
+                  <span className="text-px11 text-gray-500">{t(s.kind === "video" ? "inbox.video" : "inbox.photo")}</span>
                 </p>
                 {s.description && <p className="whitespace-pre-wrap text-gray-700">{s.description}</p>}
                 {(s.locationName || s.locationLat != null) && (
-                  <p className="flex items-center gap-1 text-[11px] text-gray-500">
+                  <p className="flex items-center gap-1 text-px11 text-gray-500">
                     <MapPin className="h-3 w-3" /> {s.locationName || t("inbox.hasCoords")}
                   </p>
                 )}
-                <p className="text-[11px] text-gray-500">
+                <p className="text-px11 text-gray-500">
                   {[
                     t("inbox.sentAt", { date: new Date(s.createdAt).toLocaleDateString(i18n.language) }),
                     s.takenAt && t("inbox.takenAt", { date: new Date(s.takenAt).toLocaleDateString(i18n.language) }),
@@ -126,38 +126,38 @@ export default function SubmissionInbox({
                     .filter(Boolean)
                     .join("・")}
                 </p>
-                {s.status === "rejected" && s.reviewNote && <p className="text-[11px] text-gray-500">{t("submissions.reason", { note: s.reviewNote })}</p>}
+                {s.status === "rejected" && s.reviewNote && <p className="text-px11 text-gray-500">{t("submissions.reason", { note: s.reviewNote })}</p>}
 
                 {s.status === "pending" &&
                   (rejecting === s.id ? (
                     <form onSubmit={(e) => void reject(e, s)} className="mt-2 space-y-1.5">
                       <textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={300} rows={2} placeholder={t("inbox.notePlaceholder")} aria-label={t("inbox.noteLabel")} className="w-full resize-none rounded-xl bg-gray-100 px-3 py-2 text-xs outline-none" />
                       <div className="flex gap-1.5">
-                        <button type="submit" className="rounded-full bg-gray-900 px-3 py-1.5 text-[11px] font-bold text-white">
+                        <button type="submit" className="rounded-full bg-gray-900 px-3 py-1.5 text-px11 font-bold text-white">
                           {t("inbox.rejectConfirm")}
                         </button>
-                        <button type="button" onClick={() => setRejecting(null)} className="rounded-full px-3 py-1.5 text-[11px] font-semibold text-gray-500">
+                        <button type="button" onClick={() => setRejecting(null)} className="rounded-full px-3 py-1.5 text-px11 font-semibold text-gray-500">
                           {t("dashboard.cancel")}
                         </button>
                       </div>
                     </form>
                   ) : (
                     <div className="mt-2 flex flex-wrap gap-1.5">
-                      <button type="button" onClick={() => void approve(s)} className="inline-flex items-center gap-1 rounded-full bg-jz-accent px-3 py-1.5 text-[11px] font-bold text-white active:scale-95">
+                      <button type="button" onClick={() => void approve(s)} className="inline-flex items-center gap-1 rounded-full bg-jz-accent px-3 py-1.5 text-px11 font-bold text-white active:scale-95">
                         <Check className="h-3.5 w-3.5" /> {t("inbox.approve", { points })}
                       </button>
-                      <button type="button" onClick={() => setRejecting(s.id)} className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1.5 text-[11px] font-bold text-gray-700">
+                      <button type="button" onClick={() => setRejecting(s.id)} className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1.5 text-px11 font-bold text-gray-700">
                         <X className="h-3.5 w-3.5" /> {t("inbox.reject")}
                       </button>
                     </div>
                   ))}
                 {s.status === "approved" && !s.reelId && (
-                  <button type="button" onClick={() => setPosting(s)} className="mt-2 inline-flex items-center gap-1 rounded-full bg-jz-accent px-3 py-1.5 text-[11px] font-bold text-white active:scale-95">
+                  <button type="button" onClick={() => setPosting(s)} className="mt-2 inline-flex items-center gap-1 rounded-full bg-jz-accent px-3 py-1.5 text-px11 font-bold text-white active:scale-95">
                     <Film className="h-3.5 w-3.5" /> {t("inbox.post")}
                   </button>
                 )}
                 {s.reelId && (
-                  <Link to={`/reels/${s.reelId}/access`} className="mt-1 inline-block text-[11px] font-bold text-jz-accent">
+                  <Link to={`/reels/${s.reelId}/access`} className="mt-1 inline-block text-px11 font-bold text-jz-accent">
                     {t("submissions.viewPost")}
                   </Link>
                 )}
@@ -227,7 +227,7 @@ function PostSheet({ submission, admin, onClose, onPosted }: { submission: Submi
     <div className="fixed inset-0 z-[65] flex items-center justify-center bg-black/40 p-4" onClick={progress == null ? onClose : undefined}>
       <form role="dialog" aria-modal="true" aria-label={t("inbox.postTitle")} onSubmit={submit} onClick={(e) => e.stopPropagation()} className="flex max-h-full w-full max-w-md flex-col gap-3 overflow-y-auto rounded-xl bg-white p-5 shadow-xl">
         <h3 className="text-sm font-bold text-gray-900">{t("inbox.postTitle")}</h3>
-        <p className="text-[11px] leading-relaxed text-gray-500">
+        <p className="text-px11 leading-relaxed text-gray-500">
           {submission.credit ? t("inbox.postCredit", { name: submission.contributor?.name ?? "" }) : t("inbox.postAnonymous")}
           {isPhoto && ` ${t("inbox.photoNote")}`}
         </p>
@@ -254,7 +254,7 @@ function PostSheet({ submission, admin, onClose, onPosted }: { submission: Submi
         />
         {progress != null && isPhoto && (
           <div aria-live="polite">
-            <p className="text-[11px] font-semibold text-gray-700">{progress < 1 ? t("inbox.making", { percent: Math.round(progress * 100) }) : t("inbox.uploading")}</p>
+            <p className="text-px11 font-semibold text-gray-700">{progress < 1 ? t("inbox.making", { percent: Math.round(progress * 100) }) : t("inbox.uploading")}</p>
             <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-gray-100">
               <div className="h-full rounded-full bg-jz-accent transition-[width]" style={{ width: `${progress * 100}%` }} />
             </div>

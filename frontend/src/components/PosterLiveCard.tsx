@@ -38,7 +38,7 @@ export default function PosterLiveCard() {
   if (!data) return null;
   return (
     <section className="on-media mx-3 mt-3 rounded-3xl bg-jz-ink p-4 text-white lg:mx-4" aria-live="polite" aria-label={t("posterLive.label")}>
-      <p className="flex items-center gap-1.5 text-[11px] font-extrabold tracking-[0.2em] text-white/80">
+      <p className="flex items-center gap-1.5 text-px11 font-extrabold tracking-[0.2em] text-white/80">
         <span className="relative flex h-2 w-2">
           <span className={`absolute inline-flex h-full w-full rounded-full bg-jz-accent opacity-75 motion-reduce:hidden ${data.total > 0 ? "animate-ping" : ""}`} />
           <span className={`relative inline-flex h-2 w-2 rounded-full ${data.total > 0 ? "bg-jz-accent" : "bg-white/40"}`} />
@@ -54,14 +54,14 @@ export default function PosterLiveCard() {
             <li key={item.id} className="w-24 shrink-0">
               <span className="relative block aspect-[4/5] overflow-hidden rounded-2xl bg-white/10">
                 <video src={`${item.videoUrl}#t=0.1`} className="h-full w-full object-cover" muted playsInline preload="metadata" />
-                <span className="absolute left-1.5 top-1.5 rounded-full bg-jz-accent px-1.5 py-0.5 text-[10px] font-bold">👀 {item.viewers}</span>
+                <span className="absolute left-1.5 top-1.5 rounded-full bg-jz-accent px-1.5 py-0.5 text-px10 font-bold">👀 {item.viewers}</span>
               </span>
-              <span className="mt-1 block truncate text-[11px] text-white/80">{item.place}</span>
+              <span className="mt-1 block truncate text-px11 text-white/80">{item.place}</span>
             </li>
           ))}
         </ul>
       )}
-      <p className="mt-2 text-[10px] text-white/50">{t("posterLive.note")}</p>
+      <p className="mt-2 text-px10 text-white/50">{t("posterLive.note")}</p>
     </section>
   );
 }

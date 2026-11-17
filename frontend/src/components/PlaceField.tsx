@@ -52,7 +52,7 @@ export default function PlaceField({
           {t("place.open")}
         </button>
       </div>
-      <p className={`mt-1 flex flex-wrap items-center gap-x-1.5 text-[11px] font-normal ${located ? "text-jz-accent" : "text-gray-500"}`}>
+      <p className={`mt-1 flex flex-wrap items-center gap-x-1.5 text-px11 font-normal ${located ? "text-jz-accent" : "text-gray-500"}`}>
         <MapPin className="h-3 w-3" />
         {located ? t("place.hasCoords") : t("place.noCoords")}
         {located && (

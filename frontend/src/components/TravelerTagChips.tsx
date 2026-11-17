@@ -10,7 +10,7 @@ export function TravelerTagChips({ tags, dark = false }: { tags: TravelerTag[]; 
       {tags.map((tag) => (
         <span
           key={tag}
-          className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+          className={`rounded-full px-2.5 py-0.5 text-px11 font-medium ${
             dark ? "bg-white/15 text-white ring-1 ring-white/30" : "text-gray-700 ring-1 ring-gray-300"
           }`}
         >

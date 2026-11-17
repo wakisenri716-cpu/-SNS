@@ -264,7 +264,7 @@ function buildSlides(r: Recap): Slide[] {
             <ul className="mt-6 space-y-2">
               {r.stamps.places.map((p, i) => (
                 <li key={p.id} className="animate-page-in flex items-center gap-3" style={{ animationDelay: `${300 + i * 120}ms`, animationFillMode: "both" }}>
-                  <span className="flex h-10 w-10 shrink-0 rotate-[-8deg] items-center justify-center rounded-full border-2 border-white text-[9px] font-black">JAZIBA</span>
+                  <span className="flex h-10 w-10 shrink-0 rotate-[-8deg] items-center justify-center rounded-full border-2 border-white text-px9 font-black">JAZIBA</span>
                   <span className="min-w-0">
                     <span className="block truncate font-bold">{p.name}</span>
                     <span className="block text-xs text-white/75">
@@ -324,7 +324,7 @@ function buildSlides(r: Recap): Slide[] {
                   className={`w-full origin-bottom rounded-t-md ${i + 1 === r.busiestMonth ? "bg-white" : "bg-white/40"}`}
                   style={{ height: `${(n / max) * 100}%`, minHeight: n > 0 ? 4 : 1, animation: `recap-grow 700ms ${i * 50}ms both cubic-bezier(.2,.8,.2,1)` }}
                 />
-                <span className="text-[10px] text-white/75">{i + 1}</span>
+                <span className="text-px10 text-white/75">{i + 1}</span>
               </div>
             ))}
           </div>
@@ -348,7 +348,7 @@ function buildSlides(r: Recap): Slide[] {
           ].map(([n, label]) => (
             <div key={String(label)} className="rounded-2xl bg-white/10 px-3 py-3">
               <dd className="text-3xl font-black tabular-nums">{n}</dd>
-              <dt className="text-[11px] text-white/70">{label}</dt>
+              <dt className="text-px11 text-white/70">{label}</dt>
             </div>
           ))}
         </dl>

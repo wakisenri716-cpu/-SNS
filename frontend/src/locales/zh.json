@@ -414,7 +414,15 @@
     },
     "followNotificationDisclaimer": "通知显示在应用内（铃铛图标）。开启下方的「推送通知」后，也会推送到此设备（暂不支持邮件）。",
     "notifyNewPostLabel": "关注对象的新帖子",
-    "notifyNewPostDescription": "关注的自治体或企业发布新帖子时通知我"
+    "notifyNewPostDescription": "关注的自治体或企业发布新帖子时通知我",
+    "textSizeHeading": "文字大小",
+    "textSize": {
+      "small": "小",
+      "normal": "标准",
+      "large": "大",
+      "xlarge": "特大"
+    },
+    "textSizeNote": "整个应用的文字大小。仅保存在此设备上。"
   },
   "privacyPolicy": {
     "title": "隐私政策",

@@ -249,7 +249,7 @@ export default function PlacePickerSheet({
         className="animate-sheet-in flex h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-[28px] bg-white md:h-[85dvh] md:rounded-[28px]"
       >
         <div className="flex items-center gap-3 border-b border-gray-100 px-5 py-3">
-          <h2 className="flex-1 text-[15px] font-bold text-jz-ink">{t("place.title")}</h2>
+          <h2 className="flex-1 text-px15 font-bold text-jz-ink">{t("place.title")}</h2>
           <button
             type="button"
             onClick={onClose}
@@ -279,7 +279,7 @@ export default function PlacePickerSheet({
             {t("place.search")}
           </button>
         </form>
-        <p className="px-5 pt-1.5 text-[11px] leading-relaxed text-gray-500">{t("place.hint")}</p>
+        <p className="px-5 pt-1.5 text-px11 leading-relaxed text-gray-500">{t("place.hint")}</p>
 
         <div className="max-h-[32%] min-h-0 shrink-0 overflow-y-auto px-2 pt-1" aria-live="polite">
           {loading && (
@@ -303,7 +303,7 @@ export default function PlacePickerSheet({
                       <Icon className="h-4 w-4 shrink-0 text-jz-accent" />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-semibold text-jz-ink">{p.name}</span>
-                        <span className="block truncate text-[11px] text-gray-500">
+                        <span className="block truncate text-px11 text-gray-500">
                           {[t(p.source === "osm" ? osmClassKey(p.type) : `place.source.${p.source}`), p.detail].filter(Boolean).join("・")}
                         </span>
                       </span>
@@ -327,7 +327,7 @@ export default function PlacePickerSheet({
             </button>
           )}
           {osm.error && <p className="px-3 py-1 text-xs text-jz-warm-text">{t(osm.error === "busy" ? "place.osmBusy" : "place.osmFailed")}</p>}
-          {osm.searched && !osm.error && <p className="px-3 pb-1 text-[10px] text-gray-400">{t("place.credit")}</p>}
+          {osm.searched && !osm.error && <p className="px-3 pb-1 text-px10 text-gray-400">{t("place.credit")}</p>}
         </div>
 
         <div className="relative min-h-0 flex-1 border-t border-gray-100">
@@ -340,7 +340,7 @@ export default function PlacePickerSheet({
           >
             {locating ? <Loader2 className="h-4 w-4 animate-spin" /> : <LocateFixed className="h-4 w-4" />}
           </button>
-          <p className="pointer-events-none absolute left-3 top-3 max-w-[70%] rounded-full bg-white/90 px-3 py-1 text-[11px] font-semibold text-gray-600 shadow-sm">
+          <p className="pointer-events-none absolute left-3 top-3 max-w-[70%] rounded-full bg-white/90 px-3 py-1 text-px11 font-semibold text-gray-600 shadow-sm">
             {t("place.tapHint")}
           </p>
         </div>
@@ -348,7 +348,7 @@ export default function PlacePickerSheet({
         <div className="border-t border-gray-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
           {selected ? (
             <div className="mb-3">
-              <label className="block text-[11px] font-semibold text-gray-500">
+              <label className="block text-px11 font-semibold text-gray-500">
                 {t("place.nameLabel")}
                 <input
                   value={selected.name}
@@ -358,7 +358,7 @@ export default function PlacePickerSheet({
                   className="mt-1 w-full rounded-xl bg-gray-100 px-3 py-2 text-sm text-jz-ink outline-none focus:ring-2 focus:ring-jz-accent/30"
                 />
               </label>
-              <p className="mt-1 text-[11px] text-gray-500">{[selected.detail, `${selected.lat.toFixed(5)}, ${selected.lng.toFixed(5)}`].filter(Boolean).join("・")}</p>
+              <p className="mt-1 text-px11 text-gray-500">{[selected.detail, `${selected.lat.toFixed(5)}, ${selected.lng.toFixed(5)}`].filter(Boolean).join("・")}</p>
             </div>
           ) : (
             <p className="mb-3 text-xs text-gray-500">{t("place.noneYet")}</p>

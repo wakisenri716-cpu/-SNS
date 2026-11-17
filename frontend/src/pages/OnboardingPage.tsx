@@ -37,7 +37,7 @@ export default function OnboardingPage() {
   }
 
   const chip = (selected: boolean) =>
-    `flex items-center justify-between gap-2 rounded-2xl px-4 py-3.5 text-left text-[15px] font-semibold transition active:scale-[0.98] ${
+    `flex items-center justify-between gap-2 rounded-2xl px-4 py-3.5 text-left text-px15 font-semibold transition active:scale-[0.98] ${
       selected ? "bg-jz-ink text-white" : "bg-gray-100 text-jz-ink hover:bg-gray-200"
     }`;
 

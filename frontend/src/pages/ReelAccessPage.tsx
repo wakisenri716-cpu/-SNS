@@ -161,7 +161,7 @@ function ModeCard({
       className={`relative rounded-lg border bg-white p-4 ${recommended ? "border-gray-900 md:col-span-2" : "border-gray-200"}`}
     >
       {recommended && (
-        <span className="absolute left-0 top-0 rounded-br-lg rounded-tl-lg bg-gray-900 px-2.5 py-0.5 text-[10px] font-bold text-white">
+        <span className="absolute left-0 top-0 rounded-br-lg rounded-tl-lg bg-gray-900 px-2.5 py-0.5 text-px10 font-bold text-white">
           {t("reelAccessPage.recommendedBadge")}
         </span>
       )}
@@ -189,23 +189,23 @@ function ModeCard({
 
       <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
         {tags.map((key) => (
-          <span key={key} className="rounded bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-500">
+          <span key={key} className="rounded bg-gray-100 px-2 py-0.5 text-px11 font-medium text-gray-500">
             {t(key)}
           </span>
         ))}
         {estimate.isReal ? (
-          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
+          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-px11 font-medium text-emerald-700">
             {t("municipalityProfile.realData")}
           </span>
         ) : (
-          <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-500">
+          <span className="rounded-full bg-gray-100 px-2 py-0.5 text-px11 font-medium text-gray-500">
             {t("municipalityProfile.mockData")}
           </span>
         )}
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="ml-auto text-[11px] font-semibold text-gray-500 underline decoration-gray-300 hover:text-gray-700"
+          className="ml-auto text-px11 font-semibold text-gray-500 underline decoration-gray-300 hover:text-gray-700"
         >
           {expanded ? t("reelAccessPage.expandLess") : t("reelAccessPage.expandMore")}
         </button>
@@ -358,7 +358,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
       >
         <AutoplayVideo src={reel.videoUrl} className="h-full w-full object-cover opacity-90" videoRef={heroVideo} />
         {liveViewers != null && liveViewers >= 2 && (
-          <span className="glass-dark animate-fade-in absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold text-white" aria-live="polite">
+          <span className="glass-dark animate-fade-in absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-px11 font-bold text-white" aria-live="polite">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-jz-warm opacity-75 motion-reduce:hidden" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-jz-warm" />
@@ -368,7 +368,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
         )}
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 to-transparent p-3 lg:p-5">
           <span className="mb-1 flex flex-wrap items-center gap-1 self-start">
-            <span className="rounded bg-white/90 px-2 py-0.5 text-[10px] font-bold text-gray-800">{t(`category.${reel.category}`)}</span>
+            <span className="rounded bg-white/90 px-2 py-0.5 text-px10 font-bold text-gray-800">{t(`category.${reel.category}`)}</span>
             {reel.editorial && <EditorialBadge />}
             {reel.contributedBy != null && <ContributorBadge name={reel.contributedBy} />}
           </span>
@@ -468,7 +468,7 @@ function ReelAccessPageInner({ id }: { id: string | undefined }) {
               )}
             />
           ))}
-          <p className="px-1 text-[11px] leading-relaxed text-gray-500 md:col-span-2">
+          <p className="px-1 text-px11 leading-relaxed text-gray-500 md:col-span-2">
             {t("reelAccessPage.estimateDisclaimer")}
           </p>
         </div>

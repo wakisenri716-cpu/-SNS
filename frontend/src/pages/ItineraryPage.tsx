@@ -91,7 +91,7 @@ function TripList() {
           <Sparkles className="h-5 w-5" />
         </span>
         <span className="min-w-0">
-          <span className="block text-[15px] font-extrabold">{t("composer.entry")}</span>
+          <span className="block text-px15 font-extrabold">{t("composer.entry")}</span>
           <span className="mt-0.5 block text-xs text-white/85">{t("composer.entrySub")}</span>
         </span>
       </button>
@@ -163,11 +163,11 @@ function TripList() {
                   )}
                   <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-3 pt-10 text-white">
                     <span className="block truncate text-sm font-extrabold">{trip.name}</span>
-                    <span className="block text-[11px] text-white/80">
+                    <span className="block text-px11 text-white/80">
                       {[trip.startDate?.replace(/-/g, "/"), t("tripPicker.count", { count: trip.count })].filter(Boolean).join("・")}
                     </span>
                     {(trip.people > 1 || !trip.isOwner) && (
-                      <span className="mt-0.5 block truncate text-[11px] font-semibold text-white">
+                      <span className="mt-0.5 block truncate text-px11 font-semibold text-white">
                         👥 {trip.isOwner ? t("collab.peopleCount", { count: trip.people }) : t("collab.ownersTrip", { name: trip.ownerName })}
                       </span>
                     )}

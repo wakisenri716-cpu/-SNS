@@ -32,7 +32,7 @@ export default function ShareButton({
       <button type="button" onClick={share} aria-label={copied ? t("share.copied") : t("share.label")} className="relative">
         <Send className="h-[26px] w-[26px] text-gray-900 hover:text-gray-500" strokeWidth={1.8} />
         {copied && (
-          <span className="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-[11px] text-white">
+          <span className="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-px11 text-white">
             {t("share.copied")}
           </span>
         )}

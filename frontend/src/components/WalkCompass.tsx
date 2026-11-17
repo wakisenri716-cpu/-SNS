@@ -34,7 +34,7 @@ export default function WalkCompass({ lat, lng, place }: { lat: number; lng: num
           </span>
           <span className="min-w-0">
             <span className="block text-sm font-bold text-jz-ink">{t("compass.start")}</span>
-            <span className="block text-[11px] text-gray-500">{t("compass.startHint")}</span>
+            <span className="block text-px11 text-gray-500">{t("compass.startHint")}</span>
           </span>
         </button>
         {compass.error && <p className="mt-2 text-xs text-jz-warm-text">{t("compass.noLocation")}</p>}
@@ -66,11 +66,11 @@ export default function WalkCompass({ lat, lng, place }: { lat: number; lng: num
       >
         <X className="h-4 w-4" />
       </button>
-      <p className="text-[11px] font-semibold tracking-wide text-white/60">{t("compass.heading", { place })}</p>
+      <p className="text-px11 font-semibold tracking-wide text-white/60">{t("compass.heading", { place })}</p>
       <div className="mt-3 flex items-center gap-5">
         <div className="relative h-28 w-28 shrink-0 rounded-full border border-white/15 bg-white/5">
           {compass.heading == null && (
-            <span className="absolute left-1/2 top-1 -translate-x-1/2 text-[10px] font-bold text-white/50">N</span>
+            <span className="absolute left-1/2 top-1 -translate-x-1/2 text-px10 font-bold text-white/50">N</span>
           )}
           <span
             className="absolute inset-0 flex items-center justify-center transition-transform duration-300 ease-out"
@@ -96,13 +96,13 @@ export default function WalkCompass({ lat, lng, place }: { lat: number; lng: num
                 {compass.heading == null && ` ・ ${t("compass.noHeading")}`}
               </p>
               {here && here.accuracy > 80 && (
-                <p className="mt-1 text-[11px] text-amber-300">{t("compass.lowAccuracy", { meters: Math.round(here.accuracy) })}</p>
+                <p className="mt-1 text-px11 text-amber-300">{t("compass.lowAccuracy", { meters: Math.round(here.accuracy) })}</p>
               )}
             </>
           )}
         </div>
       </div>
-      <p className="mt-4 text-[10px] leading-relaxed text-white/50">{t("compass.note")}</p>
+      <p className="mt-4 text-px10 leading-relaxed text-white/50">{t("compass.note")}</p>
     </section>
   );
 }

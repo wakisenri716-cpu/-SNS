@@ -414,7 +414,15 @@
     },
     "followNotificationDisclaimer": "お知らせはアプリ内（ベルのアイコン）に届きます。下の「プッシュ通知」をオンにすると、この端末にも届きます（メールには未対応です）。",
     "notifyNewPostLabel": "フォロー中の新着投稿",
-    "notifyNewPostDescription": "フォローしている自治体・企業が投稿したときにお知らせします"
+    "notifyNewPostDescription": "フォローしている自治体・企業が投稿したときにお知らせします",
+    "textSizeHeading": "文字の大きさ",
+    "textSize": {
+      "small": "小",
+      "normal": "標準",
+      "large": "大",
+      "xlarge": "特大"
+    },
+    "textSizeNote": "アプリ全体の文字の大きさです。この端末にだけ保存されます。"
   },
   "privacyPolicy": {
     "title": "プライバシーポリシー",

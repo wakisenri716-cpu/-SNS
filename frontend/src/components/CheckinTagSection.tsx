@@ -86,15 +86,15 @@ export default function CheckinTagSection({ reelId, placeName }: { reelId: strin
   }
 
   if (token === undefined) return <div className="skeleton h-16 rounded-xl" />;
-  const button = "inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1.5 text-[11px] font-bold text-gray-900 hover:bg-gray-200 disabled:opacity-50";
+  const button = "inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1.5 text-px11 font-bold text-gray-900 hover:bg-gray-200 disabled:opacity-50";
   return (
     <section className="rounded-xl border border-gray-200 p-3 text-xs text-gray-600" aria-label={t("checkinTag.heading")}>
       <p className="flex items-center gap-1.5 font-bold text-gray-900">
         <Nfc className="h-4 w-4 text-jz-accent" /> {t("checkinTag.heading")}
       </p>
-      <p className="mt-1 text-[11px] leading-relaxed text-gray-500">{t("checkinTag.intro")}</p>
+      <p className="mt-1 text-px11 leading-relaxed text-gray-500">{t("checkinTag.intro")}</p>
       {!token ? (
-        <button type="button" disabled={busy} onClick={() => void make()} className="mt-2 rounded-full bg-gray-900 px-3 py-1.5 text-[11px] font-bold text-white disabled:opacity-50">
+        <button type="button" disabled={busy} onClick={() => void make()} className="mt-2 rounded-full bg-gray-900 px-3 py-1.5 text-px11 font-bold text-white disabled:opacity-50">
           {t("checkinTag.make")}
         </button>
       ) : (
@@ -102,7 +102,7 @@ export default function CheckinTagSection({ reelId, placeName }: { reelId: strin
           <div className="mt-2 flex gap-3">
             {qr && <img src={qr} alt={t("checkinTag.qrAlt", { name: placeName })} className="h-28 w-28 shrink-0 rounded-lg border border-gray-200" />}
             <div className="min-w-0 flex-1 space-y-1.5">
-              <p className="break-all rounded-lg bg-gray-50 px-2 py-1 font-mono text-[10px] text-gray-700">{url}</p>
+              <p className="break-all rounded-lg bg-gray-50 px-2 py-1 font-mono text-px10 text-gray-700">{url}</p>
               <div className="flex flex-wrap gap-1.5">
                 {ndefSupported() && (
                   <button type="button" onClick={() => void writeTag()} disabled={writing === "waiting"} className={`${button} bg-jz-accent text-white hover:bg-jz-accent-dark`}>
@@ -121,11 +121,11 @@ export default function CheckinTagSection({ reelId, placeName }: { reelId: strin
             </div>
           </div>
           {writing !== "idle" && (
-            <p className={`mt-2 text-[11px] font-semibold ${writing === "failed" ? "text-jz-warm-text" : writing === "done" ? "text-emerald-700" : "text-gray-700"}`} aria-live="polite">
+            <p className={`mt-2 text-px11 font-semibold ${writing === "failed" ? "text-jz-warm-text" : writing === "done" ? "text-emerald-700" : "text-gray-700"}`} aria-live="polite">
               {t(`checkinTag.writing.${writing}`)}
             </p>
           )}
-          {!ndefSupported() && <p className="mt-2 text-[11px] leading-relaxed text-gray-500">{t("checkinTag.noWebNfc")}</p>}
+          {!ndefSupported() && <p className="mt-2 text-px11 leading-relaxed text-gray-500">{t("checkinTag.noWebNfc")}</p>}
           <div className="mt-2 flex flex-wrap gap-1.5">
             <button type="button" disabled={busy} onClick={() => void make()} className={button}>
               <RefreshCw className="h-3.5 w-3.5" /> {t("checkinTag.remake")}
@@ -134,7 +134,7 @@ export default function CheckinTagSection({ reelId, placeName }: { reelId: strin
               <Trash2 className="h-3.5 w-3.5" /> {t("checkinTag.remove")}
             </button>
           </div>
-          <p className="mt-2 text-[10px] leading-relaxed text-gray-400">{t("checkinTag.note")}</p>
+          <p className="mt-2 text-px10 leading-relaxed text-gray-400">{t("checkinTag.note")}</p>
         </>
       )}
     </section>

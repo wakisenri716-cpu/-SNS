@@ -74,7 +74,7 @@ function PickCard({ pick, onSave }: { pick: Pick; onSave: (reel: Reel) => void }
         <video src={`${reel.videoUrl}#t=0.1`} className="h-full w-full object-cover" muted playsInline preload="metadata" />
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3 pt-10 text-white">
           <p className="truncate text-sm font-bold">{reel.locationName || reel.municipality.name}</p>
-          <p className="truncate text-[11px] text-white/75">
+          <p className="truncate text-px11 text-white/75">
             {reel.municipality.name}・{reel.municipality.prefecture}
           </p>
         </div>
@@ -84,7 +84,7 @@ function PickCard({ pick, onSave }: { pick: Pick; onSave: (reel: Reel) => void }
         <Link
           to={`/reels/${reel.id}/access#local-transit-heading`}
           state={{ reel }}
-          className="mx-3 mt-1.5 inline-flex items-center gap-1 rounded-full bg-jz-tint px-2 py-0.5 text-[10px] font-bold text-jz-accent"
+          className="mx-3 mt-1.5 inline-flex items-center gap-1 rounded-full bg-jz-tint px-2 py-0.5 text-px10 font-bold text-jz-accent"
         >
           <BusFront className="h-3 w-3" /> {t("concierge.localTransit")}
         </Link>
@@ -295,8 +295,8 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
             <Sparkles className="h-4 w-4" />
           </span>
           <div className="min-w-0 flex-1">
-            <h2 className="text-[15px] font-bold text-jz-ink">{t("concierge.title")}</h2>
-            <p className="truncate text-[11px] text-gray-500">
+            <h2 className="text-px15 font-bold text-jz-ink">{t("concierge.title")}</h2>
+            <p className="truncate text-px11 text-gray-500">
               {aiEnabled == null ? "" : aiEnabled ? t("concierge.modeAi") : t("concierge.modeKeyword")}
             </p>
           </div>
@@ -335,7 +335,7 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
         </div>
 
         {talk && (
-          <p className="animate-fade-in flex items-center gap-2 bg-jz-tint px-5 py-2 text-[11px] font-semibold text-jz-ink" role="status">
+          <p className="animate-fade-in flex items-center gap-2 bg-jz-tint px-5 py-2 text-px11 font-semibold text-jz-ink" role="status">
             <AudioLines className={`h-3.5 w-3.5 text-jz-accent ${speech.listening ? "animate-pulse" : ""}`} /> {t("concierge.talkOn")}
           </p>
         )}
@@ -351,7 +351,7 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
                     key={key}
                     type="button"
                     onClick={() => void ask(t(`concierge.${key}`))}
-                    className="rounded-full border border-gray-200 px-3.5 py-2 text-left text-[13px] text-jz-ink transition hover:bg-gray-50 active:scale-95"
+                    className="rounded-full border border-gray-200 px-3.5 py-2 text-left text-px13 text-jz-ink transition hover:bg-gray-50 active:scale-95"
                   >
                     {t(`concierge.${key}`)}
                   </button>
@@ -391,7 +391,7 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
                       ))}
                     </div>
                   )}
-                  {turn.mode === "keyword" && <p className="px-1 text-[11px] text-gray-500">{t("concierge.keywordNote")}</p>}
+                  {turn.mode === "keyword" && <p className="px-1 text-px11 text-gray-500">{t("concierge.keywordNote")}</p>}
                 </>
               )}
             </div>
@@ -400,7 +400,7 @@ export default function ConciergeSheet({ onClose, initialPhoto }: { onClose: () 
         </div>
 
         {turns.length === 1 && turns[0].picks && turns[0].picks.length > 0 && !busy && (
-          <p className="animate-fade-in px-5 pb-1 text-[11px] text-gray-500">{t("concierge.followUpHint")}</p>
+          <p className="animate-fade-in px-5 pb-1 text-px11 text-gray-500">{t("concierge.followUpHint")}</p>
         )}
         <form onSubmit={submit} className="flex items-center gap-2 border-t border-gray-100 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           <input

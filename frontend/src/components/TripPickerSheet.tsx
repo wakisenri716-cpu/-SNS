@@ -98,8 +98,8 @@ function TripPickerSheet({ request, onClose }: { request: TripPickerRequest; onC
       >
         <div className="flex items-center gap-3 border-b border-gray-100 px-5 py-4">
           <div className="min-w-0 flex-1">
-            <h2 className="text-[15px] font-bold text-jz-ink">{single ? t("tripPicker.title") : t("tripPicker.titleMany", { count: request.reelIds.length })}</h2>
-            <p className="truncate text-[11px] text-gray-500">{request.title}</p>
+            <h2 className="text-px15 font-bold text-jz-ink">{single ? t("tripPicker.title") : t("tripPicker.titleMany", { count: request.reelIds.length })}</h2>
+            <p className="truncate text-px11 text-gray-500">{request.title}</p>
           </div>
           <button type="button" onClick={close} aria-label={t("reelViewer.closeLabel")} className="flex h-9 w-9 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100">
             <X className="h-5 w-5" />
@@ -123,7 +123,7 @@ function TripPickerSheet({ request, onClose }: { request: TripPickerRequest; onC
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-bold text-jz-ink">{trip.name}</span>
-                    <span className="block text-[11px] text-gray-500">
+                    <span className="block text-px11 text-gray-500">
                       {[
                         trip.startDate?.replace(/-/g, "/"),
                         t("tripPicker.count", { count: trip.count }),

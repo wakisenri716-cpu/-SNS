@@ -227,8 +227,8 @@ function GridSquare({ cell, drift, onOpen }: { cell: Cell<Reel>; drift: boolean;
         </span>
       )}
       <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-2 pb-1.5 pt-6">
-        <span className="block truncate text-[11px] font-bold leading-tight text-white">{place}</span>
-        <span className="block truncate text-[10px] leading-tight text-white/80">
+        <span className="block truncate text-px10 font-bold leading-tight text-white">{place}</span>
+        <span className="block truncate text-px9 leading-tight text-white/80">
           {reel.municipality.prefecture}
           {reel.municipality.name}
           {reel.editorial && `・${t("grid.editorial")}`}

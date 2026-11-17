@@ -123,13 +123,13 @@ export default function CommentsSheet({
                 <li key={c.id} className="text-sm">
                   <div className="flex items-baseline gap-2">
                     <span className="font-semibold text-gray-900">{c.user.name}</span>
-                    <span className="text-[11px] text-gray-500">{new Date(c.createdAt).toLocaleDateString(i18n.language)}</span>
-                    {c.hidden && <span className="rounded-full bg-jz-tint px-2 py-0.5 text-[10px] font-semibold text-jz-accent">{t("comments.hiddenBadge")}</span>}
+                    <span className="text-px11 text-gray-500">{new Date(c.createdAt).toLocaleDateString(i18n.language)}</span>
+                    {c.hidden && <span className="rounded-full bg-jz-tint px-2 py-0.5 text-px10 font-semibold text-jz-accent">{t("comments.hiddenBadge")}</span>}
                     {c.canDelete && (
                       <button
                         type="button"
                         onClick={() => remove(c.id)}
-                        className="ml-auto text-[11px] text-gray-500 hover:text-jz-accent"
+                        className="ml-auto text-px11 text-gray-500 hover:text-jz-accent"
                       >
                         {t("comments.delete")}
                       </button>
@@ -140,7 +140,7 @@ export default function CommentsSheet({
                         onClick={() => setReportingId(reportingId === c.id ? null : c.id)}
                         disabled={c.reportedByMe}
                         aria-expanded={reportingId === c.id}
-                        className="ml-auto inline-flex items-center gap-0.5 text-[11px] text-gray-500 hover:text-gray-700 disabled:hover:text-gray-500"
+                        className="ml-auto inline-flex items-center gap-0.5 text-px11 text-gray-500 hover:text-gray-700 disabled:hover:text-gray-500"
                       >
                         <Flag className="h-3 w-3" /> {c.reportedByMe ? t("comments.reportedLabel") : t("comments.report")}
                       </button>
@@ -149,13 +149,13 @@ export default function CommentsSheet({
                   <TranslatableComment reelId={reelId} commentId={c.id} body={c.body} />
                   {reportingId === c.id && (
                     <div className="mt-2 flex flex-wrap items-center gap-1.5 rounded-xl bg-gray-50 p-2">
-                      <span className="text-[11px] text-gray-500">{t("comments.reportWhy")}</span>
+                      <span className="text-px11 text-gray-500">{t("comments.reportWhy")}</span>
                       {(["spam", "abuse", "other"] as const).map((reason) => (
                         <button
                           key={reason}
                           type="button"
                           onClick={() => void report(c.id, reason)}
-                          className="rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100"
+                          className="rounded-full bg-white px-2.5 py-1 text-px11 font-semibold text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100"
                         >
                           {t(`comments.reason.${reason}`)}
                         </button>

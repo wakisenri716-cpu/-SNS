@@ -6,7 +6,7 @@ import { Camera } from "lucide-react";
 export default function ContributorBadge({ name, className = "" }: { name: string; className?: string }) {
   const { t } = useTranslation();
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-0.5 text-[11px] font-semibold text-white backdrop-blur ${className}`}>
+    <span className={`inline-flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-0.5 text-px11 font-semibold text-white backdrop-blur ${className}`}>
       <Camera className="h-3 w-3" />
       {name ? t("submissions.creditBadge", { name }) : t("submissions.creditAnonymous")}
     </span>

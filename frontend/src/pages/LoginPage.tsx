@@ -132,7 +132,7 @@ export default function LoginPage() {
         <button type="button" onClick={declineOffer} className="mt-2 w-full rounded-full py-2.5 text-sm font-semibold text-gray-500 hover:bg-gray-50">
           {t("passkey.offerLater")}
         </button>
-        <p className="mt-3 text-[11px] leading-relaxed text-gray-500">{t("passkey.privacyNote")}</p>
+        <p className="mt-3 text-px11 leading-relaxed text-gray-500">{t("passkey.privacyNote")}</p>
       </div>
     );
   }
@@ -173,7 +173,7 @@ export default function LoginPage() {
       </form>
       {passkeysSupported() && (
         <>
-          <div className="my-4 flex items-center gap-3 text-[11px] text-gray-400">
+          <div className="my-4 flex items-center gap-3 text-px11 text-gray-400">
             <span className="h-px flex-1 bg-gray-200" />
             {t("passkey.or")}
             <span className="h-px flex-1 bg-gray-200" />

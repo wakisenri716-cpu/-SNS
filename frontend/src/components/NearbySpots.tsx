@@ -78,7 +78,7 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
             >
               <div className="on-media relative aspect-square w-full bg-gray-900">
                 <AutoplayVideo src={item.videoUrl} className="h-full w-full object-cover" />
-                <span className="absolute bottom-1 right-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                <span className="absolute bottom-1 right-1 rounded bg-black/60 px-1.5 py-0.5 text-px10 font-medium text-white">
                   {distanceLabel(item.distanceMeters)}
                 </span>
               </div>
@@ -86,7 +86,7 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
                 <p className="truncate text-xs font-semibold text-gray-900">
                   {item.locationName || item.municipality.name}
                 </p>
-                <p className="truncate text-[11px] text-gray-500">{t(`category.${item.category}`)}</p>
+                <p className="truncate text-px11 text-gray-500">{t(`category.${item.category}`)}</p>
               </div>
             </Link>
           ))}
@@ -105,9 +105,9 @@ export default function NearbySpots({ reelId }: { reelId: string }) {
               >
                 <div className="flex items-baseline gap-2">
                   <p className="flex min-w-0 flex-1 items-center gap-1 truncate text-sm font-semibold text-gray-900"><MapPin className="h-3.5 w-3.5 shrink-0 text-gray-500" />{spot.name}</p>
-                  <span className="shrink-0 text-[11px] text-gray-500">{distanceLabel(spot.distanceMeters)}</span>
+                  <span className="shrink-0 text-px11 text-gray-500">{distanceLabel(spot.distanceMeters)}</span>
                 </div>
-                <p className="text-[11px] text-gray-500">{spot.municipality.name}</p>
+                <p className="text-px11 text-gray-500">{spot.municipality.name}</p>
                 {spot.description && <p className="mt-1 line-clamp-2 text-xs text-gray-600">{spot.description}</p>}
               </Link>
             ))}

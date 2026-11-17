@@ -152,10 +152,10 @@ export default function PlansPage() {
         })
       )}
 
-      <p className="mt-6 flex gap-2 text-[11px] leading-relaxed text-gray-500">
+      <p className="mt-6 flex gap-2 text-px11 leading-relaxed text-gray-500">
         <CreditCard className="h-4 w-4 shrink-0" /> {t("plans.note")}
       </p>
-      <Link to="/legal/commerce" className="mt-2 inline-block text-[11px] font-semibold text-gray-600 underline">
+      <Link to="/legal/commerce" className="mt-2 inline-block text-px11 font-semibold text-gray-600 underline">
         {t("plans.commerceLink")}
       </Link>
     </div>
@@ -189,11 +189,11 @@ function PlanCard({
       <div className="relative flex items-center gap-2">
         <p className="text-lg font-extrabold">{name}</p>
         {badge && (
-          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${featured ? "bg-jz-warm text-white" : "bg-gray-100 text-gray-600"}`}>{badge}</span>
+          <span className={`rounded-full px-2 py-0.5 text-px10 font-bold ${featured ? "bg-jz-warm text-white" : "bg-gray-100 text-gray-600"}`}>{badge}</span>
         )}
       </div>
       <p className="relative mt-1 text-2xl font-black tabular-nums">{price}</p>
-      <ul className="relative mt-4 flex-1 space-y-2 text-[13px] leading-snug">
+      <ul className="relative mt-4 flex-1 space-y-2 text-px13 leading-snug">
         {features.map((f) => (
           <li key={f} className="flex gap-2">
             <Check className={`mt-0.5 h-4 w-4 shrink-0 ${featured ? "text-jz-accent" : "text-gray-400"}`} strokeWidth={3} />
@@ -201,7 +201,7 @@ function PlanCard({
           </li>
         ))}
       </ul>
-      {status && <p className={`relative mt-4 text-[11px] font-semibold ${featured ? "text-white/70" : "text-gray-500"}`}>{status}</p>}
+      {status && <p className={`relative mt-4 text-px11 font-semibold ${featured ? "text-white/70" : "text-gray-500"}`}>{status}</p>}
       {children && <div className="relative mt-4">{children}</div>}
     </div>
   );

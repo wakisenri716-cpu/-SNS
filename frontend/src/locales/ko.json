@@ -414,7 +414,15 @@
     },
     "followNotificationDisclaimer": "알림은 앱 안(종 아이콘)으로 와요. 아래 「푸시 알림」을 켜면 이 기기로도 와요(이메일은 아직 지원하지 않아요).",
     "notifyNewPostLabel": "팔로우 중인 계정의 새 게시물",
-    "notifyNewPostDescription": "팔로우한 지자체·기업이 게시물을 올리면 알려 드려요"
+    "notifyNewPostDescription": "팔로우한 지자체·기업이 게시물을 올리면 알려 드려요",
+    "textSizeHeading": "글자 크기",
+    "textSize": {
+      "small": "작게",
+      "normal": "기본",
+      "large": "크게",
+      "xlarge": "아주 크게"
+    },
+    "textSizeNote": "앱 전체의 글자 크기예요. 이 기기에만 저장돼요."
   },
   "privacyPolicy": {
     "title": "개인정보 처리방침",

@@ -82,14 +82,14 @@ export default function ReelEditor({
         </label>
         <div>
           <PlaceField value={place} onChange={setPlace} label={t("reelEditor.locationLabel")} inputClassName={inputClass} />
-          <p className="mt-1 text-[11px] leading-relaxed text-gray-500">{t("place.editorNote")}</p>
+          <p className="mt-1 text-px11 leading-relaxed text-gray-500">{t("place.editorNote")}</p>
         </div>
         <div className="text-xs font-medium text-gray-500">
           {t("reelUploader.travelerTagsLabel")}
           <div className="mt-1">
             <TravelerTagPicker value={tags} onChange={setTags} />
           </div>
-          <p className="mt-1 text-[11px] font-normal leading-relaxed text-gray-500">{t("reelEditor.tagsNote")}</p>
+          <p className="mt-1 text-px11 font-normal leading-relaxed text-gray-500">{t("reelEditor.tagsNote")}</p>
         </div>
         <div className="text-xs font-medium text-gray-500">
           {t("season.pickerLabel")}

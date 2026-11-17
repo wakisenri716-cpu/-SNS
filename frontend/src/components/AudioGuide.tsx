@@ -91,7 +91,7 @@ export default function AudioGuide({ reel }: { reel: Reel }) {
         <span className="block text-sm font-bold text-jz-ink">
           {preparing ? t("audioGuide.preparing") : speaking ? t("audioGuide.stop") : t("audioGuide.start")}
         </span>
-        <span className="block text-[11px] text-gray-500">{readsJapanese ? t("audioGuide.japaneseOnly") : t("audioGuide.hint")}</span>
+        <span className="block text-px11 text-gray-500">{readsJapanese ? t("audioGuide.japaneseOnly") : t("audioGuide.hint")}</span>
       </span>
       {speaking && (
         <span className="flex h-5 items-end gap-0.5" aria-hidden>

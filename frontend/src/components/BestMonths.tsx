@@ -34,7 +34,7 @@ export function SeasonBadge({ months, dark = false }: { months: number[]; dark?:
   const now = isInSeason(months);
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-px11 font-semibold ${
         now
           ? "bg-jz-accent text-white"
           : dark

@@ -324,7 +324,7 @@ export function ItineraryPanel({
                 .join("・")}
             </p>
             {othersHere.length > 0 && (
-              <p className="animate-fade-in mt-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700" aria-live="polite">
+              <p className="animate-fade-in mt-1.5 flex items-center gap-1.5 text-px11 font-semibold text-emerald-700" aria-live="polite">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75 motion-reduce:hidden" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
@@ -348,7 +348,7 @@ export function ItineraryPanel({
         </div>
       )}
       {offline && (
-        <p className="mt-3 flex items-center gap-2 rounded-xl bg-amber-50 px-3 py-2 text-[11px] leading-relaxed text-amber-800">
+        <p className="mt-3 flex items-center gap-2 rounded-xl bg-amber-50 px-3 py-2 text-px11 leading-relaxed text-amber-800">
           <WifiOff className="h-3.5 w-3.5 shrink-0" /> {t("itinerary.offlineCopy")}
         </p>
       )}
@@ -417,7 +417,7 @@ export function ItineraryPanel({
                 </span>
                 <span className="min-w-0">
                   <span className="block text-sm font-bold text-jz-ink">{t("tripPlan.title")}</span>
-                  <span className="block truncate text-[11px] text-gray-500">{t("tripPlan.buttonHint")}</span>
+                  <span className="block truncate text-px11 text-gray-500">{t("tripPlan.buttonHint")}</span>
                 </span>
               </span>
             </button>
@@ -534,7 +534,7 @@ export function ItineraryPanel({
                 </>
               )}
               {itinerary.originLabel && !itinerary.originLocated && (
-                <p className="my-1.5 ml-9 text-[11px] leading-relaxed text-amber-700">{t("itinerary.originNotLocated")}</p>
+                <p className="my-1.5 ml-9 text-px11 leading-relaxed text-amber-700">{t("itinerary.originNotLocated")}</p>
               )}
 
               <div ref={dragger.containerRef}>
@@ -613,14 +613,14 @@ export function ItineraryPanel({
                           })}
                         </p>
                         {overnight[i] ? (
-                          <p className="mt-1 text-[11px] font-semibold text-jz-accent">{t("itinerary.overnight")}</p>
+                          <p className="mt-1 text-px11 font-semibold text-jz-accent">{t("itinerary.overnight")}</p>
                         ) : (
-                          <label className="mt-1 flex items-center gap-1.5 text-[11px] text-gray-500">
+                          <label className="mt-1 flex items-center gap-1.5 text-px11 text-gray-500">
                             {t("itinerary.stayLabel")}
                             <select
                               value={stop.stayMinutes}
                               onChange={(e) => setStay(stop.id, Number(e.target.value))}
-                              className="rounded border border-gray-200 bg-white px-1 py-0.5 text-[11px] text-gray-700"
+                              className="rounded border border-gray-200 bg-white px-1 py-0.5 text-px11 text-gray-700"
                             >
                               {[...new Set([...STAY_OPTIONS, stop.stayMinutes])]
                                 .sort((a, b) => a - b)
@@ -690,7 +690,7 @@ export function ItineraryPanel({
             )}
           </div>
           {itinerary.shareToken && (
-            <p className="mt-1.5 text-[11px] leading-relaxed text-gray-500">{t("itinerary.sharingNote")}</p>
+            <p className="mt-1.5 text-px11 leading-relaxed text-gray-500">{t("itinerary.sharingNote")}</p>
           )}
           <div className="mt-2 flex flex-wrap items-center gap-2">
             {calendarDate == null ? (
@@ -778,7 +778,7 @@ export function ItineraryPanel({
             onChanged={() => void load().catch(() => {})}
           />
           {!offline && <TripCollab itinerary={itinerary} here={here} locations={locations} onChange={() => void load()} onLeft={onDeleted} />}
-          <p className="mt-3 text-[11px] leading-relaxed text-gray-500">{t("itinerary.disclaimer")}</p>
+          <p className="mt-3 text-px11 leading-relaxed text-gray-500">{t("itinerary.disclaimer")}</p>
         </div>
       )}
     </>

@@ -230,7 +230,7 @@ export default function TransitModeView({ transports, startId, onClose }: { tran
             </button>
           </div>
         )}
-        <p className="text-center text-[10px] text-white/50">{t("transit.timesNote")}</p>
+        <p className="text-center text-px10 text-white/50">{t("transit.timesNote")}</p>
       </div>
       {pipWindow &&
         createPortal(
@@ -238,14 +238,14 @@ export default function TransitModeView({ transports, startId, onClose }: { tran
             <p className="flex items-center gap-1.5 truncate text-xs font-semibold text-white/75">
               <Icon className="h-4 w-4 shrink-0" /> {tr.name}
             </p>
-            <p className="text-[11px] text-white/70">
+            <p className="text-px11 text-white/70">
               {phase === "arrived" ? t("transit.arrived") : phase === "enroute" ? t("transit.untilArrival", { place: tr.toName }) : t("transit.untilDeparture")}
             </p>
             {phase !== "arrived" && <p className="text-4xl font-black tabular-nums">{big(phase === "enroute" ? arr : dep)}</p>}
             <div className="h-1.5 overflow-hidden rounded-full bg-white/15">
               <div className="h-full rounded-full bg-jz-accent" style={{ width: `${progress * 100}%` }} />
             </div>
-            <p className="truncate text-[11px] tabular-nums text-white/70">
+            <p className="truncate text-px11 tabular-nums text-white/70">
               {clock(tr.departAt, i18n.language)} {tr.fromName}
               {tr.departPlatform && ` (${tr.departPlatform})`} → {clock(tr.arriveAt, i18n.language)} {tr.toName}
             </p>

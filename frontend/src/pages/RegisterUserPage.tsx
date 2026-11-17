@@ -100,7 +100,7 @@ export default function RegisterUserPage() {
             ))}
           </select>
           {nationalityAutoSuggested && (
-            <span className="mt-1 block text-[11px] text-gray-500">{t("registerUser.nationalityAutoSuggested")}</span>
+            <span className="mt-1 block text-px11 text-gray-500">{t("registerUser.nationalityAutoSuggested")}</span>
           )}
         </label>
         <input

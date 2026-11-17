@@ -152,7 +152,7 @@ export default function MyPage() {
               {stats.map((s) => (
                 <div key={s.label}>
                   <dd className="text-lg font-extrabold tabular-nums text-jz-ink">{s.value ?? "–"}</dd>
-                  <dt className="text-[11px] text-gray-500">{s.label}</dt>
+                  <dt className="text-px11 text-gray-500">{s.label}</dt>
                 </div>
               ))}
             </dl>
@@ -174,7 +174,7 @@ export default function MyPage() {
               />
             </div>
             {prefectures.length > 0 && (
-              <p className="mt-1.5 truncate text-[11px] text-gray-500">{prefectures.join("・")}</p>
+              <p className="mt-1.5 truncate text-px11 text-gray-500">{prefectures.join("・")}</p>
             )}
           </div>
         )}
@@ -183,7 +183,7 @@ export default function MyPage() {
           <Sparkles className="h-5 w-5 shrink-0" />
           <span className="min-w-0 flex-1">
             <span className="block text-sm font-extrabold">{t("recap.entry", { year: new Date().getFullYear() })}</span>
-            <span className="block truncate text-[11px] text-white/85">{t("recap.entrySub")}</span>
+            <span className="block truncate text-px11 text-white/85">{t("recap.entrySub")}</span>
           </span>
           <ChevronRight className="h-5 w-5 shrink-0" />
         </Link>
@@ -238,7 +238,7 @@ export default function MyPage() {
               {(stamps ?? []).map((s) => (
                 <Link key={s.reel.id} to={`/reels/${s.reel.id}/access`} className="flex w-24 shrink-0 flex-col items-center gap-1.5 text-center">
                   <Stamp place={s.reel.locationName} date={formatStampDate(s.visitedAt)} size={92} />
-                  <span className="w-full truncate text-[11px] text-gray-500">{s.reel.municipality.name}</span>
+                  <span className="w-full truncate text-px11 text-gray-500">{s.reel.municipality.name}</span>
                 </Link>
               ))}
             </div>
@@ -294,7 +294,7 @@ export default function MyPage() {
             </ul>
           ))}
       </div>
-      <p className="mt-8 px-4 text-center text-[11px] text-gray-500 md:px-0">{t("myPage.viewOnlyNotice")}</p>
+      <p className="mt-8 px-4 text-center text-px11 text-gray-500 md:px-0">{t("myPage.viewOnlyNotice")}</p>
     </div>
   );
 }

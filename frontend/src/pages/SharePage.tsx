@@ -132,7 +132,7 @@ export default function SharePage() {
               <Sparkles className="h-5 w-5 shrink-0" />
               <span>
                 <span className="block text-sm font-extrabold">{t("shareIn.similar")}</span>
-                <span className="block text-[11px] text-white/85">{t("shareIn.similarSub")}</span>
+                <span className="block text-px11 text-white/85">{t("shareIn.similarSub")}</span>
               </span>
             </button>
           )}
@@ -230,7 +230,7 @@ function SharedRoute({ route }: { route: ParsedRoute }) {
       <h2 className="flex items-center gap-1.5 text-sm font-bold text-jz-ink">
         <TrainFront className="h-4 w-4 text-jz-accent" /> {t("shareIn.routeTitle")}
       </h2>
-      <p className="mt-1 text-[11px] text-gray-500">
+      <p className="mt-1 text-px11 text-gray-500">
         {new Date(`${date}T00:00`).toLocaleDateString(i18n.language, { month: "numeric", day: "numeric", weekday: "short" })}
         {route.date == null && ` ・${t(trip?.startDate ? "shareIn.routeNoDate" : "shareIn.routeToday")}`}
       </p>
@@ -239,7 +239,7 @@ function SharedRoute({ route }: { route: ParsedRoute }) {
           <li key={i} className="rounded-2xl bg-gray-50 px-3 py-2 text-xs tabular-nums text-jz-ink">
             <b>{times[i].departAt.slice(11)}</b> {r.fromName || "?"} → <b>{r.arrive ? times[i].arriveAt.slice(11) : "?"}</b> {r.toName || "?"}
             {(r.name || r.departPlatform) && (
-              <span className="mt-0.5 block text-[11px] text-gray-500">{[r.name, r.departPlatform].filter(Boolean).join("・")}</span>
+              <span className="mt-0.5 block text-px11 text-gray-500">{[r.name, r.departPlatform].filter(Boolean).join("・")}</span>
             )}
           </li>
         ))}
@@ -259,7 +259,7 @@ function SharedRoute({ route }: { route: ParsedRoute }) {
         </p>
       ) : (
         <>
-          <label className="mt-3 block text-[11px] font-semibold text-gray-500">
+          <label className="mt-3 block text-px11 font-semibold text-gray-500">
             {t("shareIn.routeTrip")}
             <select value={tripId} onChange={(e) => setTripId(e.target.value)} className="mt-1 w-full rounded-xl bg-gray-100 px-3 py-2 text-sm text-jz-ink">
               {trips.map((x) => (
@@ -278,7 +278,7 @@ function SharedRoute({ route }: { route: ParsedRoute }) {
           )}
         </>
       )}
-      <p className="mt-2 text-[10px] leading-relaxed text-gray-400">{t("shareIn.routeNote")}</p>
+      <p className="mt-2 text-px10 leading-relaxed text-gray-400">{t("shareIn.routeNote")}</p>
     </section>
   );
 }

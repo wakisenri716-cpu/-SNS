@@ -158,7 +158,7 @@ export default function AdminPage() {
               >
                 <s.icon className="h-4 w-4" />
                 {t(s.label)}
-                {count > 0 && <span className="rounded-full bg-jz-warm px-1.5 text-[10px] font-bold text-white">{count}</span>}
+                {count > 0 && <span className="rounded-full bg-jz-warm px-1.5 text-px10 font-bold text-white">{count}</span>}
               </NavLink>
             );
           })}
@@ -197,9 +197,9 @@ function Heading({ children, sub }: { children: ReactNode; sub?: string }) {
 function Tile({ label, value, note, to }: { label: string; value: string; note?: string; to?: string }) {
   const body = (
     <>
-      <p className="text-[11px] font-semibold text-gray-500">{label}</p>
+      <p className="text-px11 font-semibold text-gray-500">{label}</p>
       <p className="mt-1 text-2xl font-black tabular-nums text-jz-ink">{value}</p>
-      {note && <p className="mt-0.5 text-[11px] text-gray-500">{note}</p>}
+      {note && <p className="mt-0.5 text-px11 text-gray-500">{note}</p>}
     </>
   );
   const cls = "block rounded-2xl border border-gray-200 bg-white p-4";
@@ -272,7 +272,7 @@ function OverviewSection({ data }: { data: Overview | null }) {
             <div className={`h-full rounded-full ${aiShare >= 0.9 ? "bg-jz-warm" : "bg-jz-accent"}`} style={{ width: `${aiShare * 100}%` }} />
           </div>
           <table className="mt-3 w-full text-left text-xs">
-            <thead className="text-[11px] text-gray-500">
+            <thead className="text-px11 text-gray-500">
               <tr>
                 <th className="py-1 font-semibold">{t("admin.overview.feature")}</th>
                 <th className="py-1 text-right font-semibold">{t("admin.overview.requests")}</th>
@@ -297,7 +297,7 @@ function OverviewSection({ data }: { data: Overview | null }) {
               )}
             </tbody>
           </table>
-          <p className="mt-2 text-[10px] text-gray-400">{t("admin.overview.aiNote", { rate: USD_JPY })}</p>
+          <p className="mt-2 text-px10 text-gray-400">{t("admin.overview.aiNote", { rate: USD_JPY })}</p>
         </section>
       </div>
 
@@ -362,7 +362,7 @@ function Integrations() {
           );
         })}
       </ul>
-      <p className="mt-2 text-[10px] leading-relaxed text-gray-400">{t("admin.integrations.note")}</p>
+      <p className="mt-2 text-px10 leading-relaxed text-gray-400">{t("admin.integrations.note")}</p>
     </section>
   );
 }
@@ -377,7 +377,7 @@ function SignupsChart({ days }: { days: { day: string; count: number }[] }) {
     <section className="rounded-2xl border border-gray-200 bg-white p-4">
       <div className="flex items-baseline justify-between">
         <h2 className="text-sm font-bold text-jz-ink">{t("admin.overview.signups")}</h2>
-        <span className="text-[11px] text-gray-500">{t("admin.overview.signupsTotal", { count: days.reduce((sum, d) => sum + d.count, 0) })}</span>
+        <span className="text-px11 text-gray-500">{t("admin.overview.signupsTotal", { count: days.reduce((sum, d) => sum + d.count, 0) })}</span>
       </div>
       <div className="relative mt-3">
         <div className="flex h-32 items-end gap-[2px] border-b border-gray-200" role="list">
@@ -402,13 +402,13 @@ function SignupsChart({ days }: { days: { day: string; count: number }[] }) {
         </div>
         {hover != null && (
           <div
-            className="pointer-events-none absolute -top-2 z-10 -translate-x-1/2 -translate-y-full rounded-lg bg-jz-ink px-2 py-1 text-[11px] font-semibold text-white shadow"
+            className="pointer-events-none absolute -top-2 z-10 -translate-x-1/2 -translate-y-full rounded-lg bg-jz-ink px-2 py-1 text-px11 font-semibold text-white shadow"
             style={{ left: `${((hover + 0.5) / days.length) * 100}%` }}
           >
             {t("admin.overview.signupsOn", { day: label(days[hover].day), count: days[hover].count })}
           </div>
         )}
-        <div className="mt-1 flex justify-between text-[10px] text-gray-400">
+        <div className="mt-1 flex justify-between text-px10 text-gray-400">
           <span>{label(days[0].day)}</span>
           <span>{label(days[days.length - 1].day)}</span>
         </div>
@@ -538,7 +538,7 @@ function ApprovalsSection({ onChange }: { onChange: () => void }) {
                   <Building2 className="h-4 w-4 text-jz-accent" />
                   <p className="text-base font-extrabold text-jz-ink">{org}</p>
                   <Badge>{t(`admin.role.${a.role}`)}</Badge>
-                  <span className="ml-auto text-[11px] tabular-nums text-gray-400">{t("admin.approvals.registeredAt", { date: new Date(a.createdAt).toLocaleString() })}</span>
+                  <span className="ml-auto text-px11 tabular-nums text-gray-400">{t("admin.approvals.registeredAt", { date: new Date(a.createdAt).toLocaleString() })}</span>
                 </div>
                 {a.company && (
                   <p className="mt-0.5 text-xs text-gray-600">{t("admin.approvals.under", { municipality: `${a.company.municipality.prefecture}${a.company.municipality.name}` })}</p>
@@ -560,7 +560,7 @@ function ApprovalsSection({ onChange }: { onChange: () => void }) {
                   </dd>
                 </dl>
                 {a.sameName.length > 0 && (
-                  <p className="mt-2 flex gap-1.5 rounded-xl bg-orange-50 p-2 text-[11px] leading-relaxed text-jz-warm-text">
+                  <p className="mt-2 flex gap-1.5 rounded-xl bg-orange-50 p-2 text-px11 leading-relaxed text-jz-warm-text">
                     <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
                     {t("admin.approvals.sameName", {
                       list: a.sameName.map((m) => t(m.listing ? "admin.approvals.sameListing" : m.approved ? "admin.approvals.sameApproved" : "admin.approvals.samePending")).join("・"),
@@ -568,12 +568,12 @@ function ApprovalsSection({ onChange }: { onChange: () => void }) {
                   </p>
                 )}
                 {status !== "pending" && (
-                  <p className="mt-2 text-[11px] text-gray-500">
+                  <p className="mt-2 text-px11 text-gray-500">
                     {t("admin.approvals.decidedAt", { date: a.reviewedAt ? new Date(a.reviewedAt).toLocaleString() : "—" })}
                     {a.approvalNote && `・${a.approvalNote}`}
                   </p>
                 )}
-                {status === "pending" && <p className="mt-2 text-[11px] leading-relaxed text-gray-500">{t("admin.approvals.howToCheck")}</p>}
+                {status === "pending" && <p className="mt-2 text-px11 leading-relaxed text-gray-500">{t("admin.approvals.howToCheck")}</p>}
                 <div className="mt-3 flex flex-wrap gap-2 text-xs">
                   {a.approval !== "approved" && (
                     <button type="button" disabled={busy === a.id} onClick={() => void decide(a, "approve")} className="rounded-full bg-jz-accent px-4 py-1.5 font-bold text-white disabled:opacity-50">
@@ -639,7 +639,7 @@ function InquiriesSection({ onChange }: { onChange: () => void }) {
               <div className="flex flex-wrap items-baseline gap-x-2">
                 <p className="text-sm font-bold text-jz-ink">{i.name}</p>
                 <p className="text-xs text-gray-500">{i.email}</p>
-                <p className="ml-auto text-[11px] tabular-nums text-gray-400">{new Date(i.createdAt).toLocaleString()}</p>
+                <p className="ml-auto text-px11 tabular-nums text-gray-400">{new Date(i.createdAt).toLocaleString()}</p>
               </div>
               <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-gray-800">{i.message}</p>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -743,7 +743,7 @@ function UsersSection() {
         <Empty>{t("admin.users.none")}</Empty>
       ) : (
         <>
-          <p className="mt-3 text-[11px] text-gray-500">{t("admin.users.count", { count: data.total })}</p>
+          <p className="mt-3 text-px11 text-gray-500">{t("admin.users.count", { count: data.total })}</p>
           <ul className="mt-1 divide-y divide-gray-100 overflow-hidden rounded-2xl border border-gray-200 bg-white">
             {data.items.map((u) => (
               <UserRow key={u.id} user={u} open={open === u.id} onToggle={() => setOpen(open === u.id ? null : u.id)} onChanged={() => void load(0)} />
@@ -801,7 +801,7 @@ function UserRow({ user: u, open, onToggle, onChanged }: { user: AdminUser; open
             {org && `・${org}`}
           </p>
         </div>
-        <span className="shrink-0 text-[11px] tabular-nums text-gray-400">{new Date(u.createdAt).toLocaleDateString()}</span>
+        <span className="shrink-0 text-px11 tabular-nums text-gray-400">{new Date(u.createdAt).toLocaleDateString()}</span>
       </button>
       {open && (
         <div className="space-y-3 bg-gray-50 px-4 py-3 text-xs">
@@ -840,7 +840,7 @@ function UserRow({ user: u, open, onToggle, onChanged }: { user: AdminUser; open
                 <option value="2">{t("grid.tier.middle")}</option>
                 <option value="3">{t("grid.tier.hidden")}</option>
               </select>
-              <span className="w-full text-[11px] text-gray-500">{t("admin.users.fameTierNote")}</span>
+              <span className="w-full text-px11 text-gray-500">{t("admin.users.fameTierNote")}</span>
             </label>
           )}
           {u.plan?.source !== "stripe" || !u.plan.active ? (
@@ -938,10 +938,10 @@ function ReportsSection({ onChange }: { onChange: () => void }) {
                   .map((r) => (
                     <Badge key={r}>{`${t(`admin.reports.reason.${r}`)} ${c.reasons[r]}`}</Badge>
                   ))}
-                <span className="ml-auto text-[11px] text-gray-400">{new Date(c.createdAt).toLocaleString()}</span>
+                <span className="ml-auto text-px11 text-gray-400">{new Date(c.createdAt).toLocaleString()}</span>
               </p>
               <p className="mt-2 whitespace-pre-wrap text-sm text-gray-800">{c.body}</p>
-              <p className="mt-1 text-[11px] text-gray-500">
+              <p className="mt-1 text-px11 text-gray-500">
                 {t("admin.reports.by", { name: c.user.name })}・
                 <button type="button" onClick={() => navigate(`/reels/${c.reel.id}/access`)} className="font-semibold text-jz-accent hover:underline">
                   {c.reel.locationName || c.reel.municipality.name}
@@ -1001,7 +1001,7 @@ function Chips<T extends string>({ value, onChange, options }: { value: T; onCha
 
 function Badge({ children, tone = "plain" }: { children: ReactNode; tone?: "plain" | "accent" | "warn" }) {
   const cls = tone === "accent" ? "bg-jz-tint text-jz-accent" : tone === "warn" ? "bg-orange-50 text-jz-warm-text" : "bg-gray-100 text-gray-600";
-  return <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${cls}`}>{children}</span>;
+  return <span className={`rounded-full px-1.5 py-0.5 text-px10 font-bold ${cls}`}>{children}</span>;
 }
 
 function Empty({ children }: { children: ReactNode }) {

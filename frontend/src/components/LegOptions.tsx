@@ -76,17 +76,17 @@ export default function LegOptions({
                       {t(`legOption.mode.${o.mode}`)}
                       {o.title && <span className="ml-1.5 font-semibold">{o.title}</span>}
                     </p>
-                    <p className="mt-0.5 text-[11px] tabular-nums text-gray-600">
+                    <p className="mt-0.5 text-px11 tabular-nums text-gray-600">
                       {[min != null && duration(min), o.fareYen != null && t("legOption.fare", { yen: o.fareYen.toLocaleString(i18n.language) })].filter(Boolean).join("・") ||
                         t("legOption.noDetails")}
                     </p>
                     {o.rides.map((r) => (
-                      <p key={r.id} className="mt-0.5 truncate text-[11px] tabular-nums text-jz-ink">
+                      <p key={r.id} className="mt-0.5 truncate text-px11 tabular-nums text-jz-ink">
                         <b>{clock(r.departAt, i18n.language)}</b> {r.fromName} → <b>{clock(r.arriveAt, i18n.language)}</b> {r.toName}
                         <span className="ml-1 text-gray-500">{[r.name, r.departPlatform].filter(Boolean).join("・")}</span>
                       </p>
                     ))}
-                    {o.note && <p className="mt-0.5 whitespace-pre-wrap text-[11px] text-gray-500">{o.note}</p>}
+                    {o.note && <p className="mt-0.5 whitespace-pre-wrap text-px11 text-gray-500">{o.note}</p>}
                   </div>
                   {!readOnly && (
                     <div className="flex shrink-0 gap-0.5">
@@ -104,7 +104,7 @@ export default function LegOptions({
                     type="button"
                     onClick={() => void choose(o)}
                     aria-pressed={o.chosen}
-                    className={`mt-2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-bold active:scale-95 ${
+                    className={`mt-2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-px11 font-bold active:scale-95 ${
                       o.chosen ? "bg-jz-accent text-white" : "bg-white text-jz-ink ring-1 ring-gray-300"
                     }`}
                   >
@@ -121,7 +121,7 @@ export default function LegOptions({
         <button
           type="button"
           onClick={() => setEditing("new")}
-          className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-bold text-jz-ink hover:bg-gray-200"
+          className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-px11 font-bold text-jz-ink hover:bg-gray-200"
         >
           <Plus className="h-3.5 w-3.5" /> {options.length === 0 ? t("legOption.addFirst") : t("legOption.addAnother")}
         </button>
@@ -247,7 +247,7 @@ function LegOptionForm({
 
   const field = "mt-1 w-full rounded-xl bg-gray-100 px-3 py-2 text-sm text-jz-ink outline-none focus:ring-2 focus:ring-jz-accent/30";
   const small = "mt-0.5 w-full rounded-lg bg-white px-2 py-1.5 text-xs text-jz-ink outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-jz-accent/30";
-  const label = "block text-[11px] font-semibold text-gray-500";
+  const label = "block text-px11 font-semibold text-gray-500";
   const heading = existing ? t("legOption.editTitle") : t("legOption.addTitle");
 
   return createPortal(
@@ -262,8 +262,8 @@ function LegOptionForm({
       >
         <div className="flex items-center gap-3 border-b border-gray-100 px-5 py-4">
           <div className="min-w-0 flex-1">
-            <h2 className="text-[15px] font-bold text-jz-ink">{heading}</h2>
-            <p className="truncate text-[11px] text-gray-500">
+            <h2 className="text-px15 font-bold text-jz-ink">{heading}</h2>
+            <p className="truncate text-px11 text-gray-500">
               {leg.fromName} → {leg.toName}
             </p>
           </div>
@@ -312,11 +312,11 @@ function LegOptionForm({
               <input type="text" inputMode="numeric" value={fare} onChange={(e) => setFare(e.target.value)} maxLength={10} placeholder="2,500" className={field} />
             </label>
           </div>
-          {fromRides != null && minutes.trim() === "" && <p className="-mt-1 text-[11px] text-gray-500">{t("legOption.minutesFromRides", { duration: duration(fromRides) })}</p>}
+          {fromRides != null && minutes.trim() === "" && <p className="-mt-1 text-px11 text-gray-500">{t("legOption.minutesFromRides", { duration: duration(fromRides) })}</p>}
 
           {hasRides && (
             <div className="space-y-2">
-              <p className="text-[11px] font-semibold text-gray-500">{t("legOption.ridesLabel")}</p>
+              <p className="text-px11 font-semibold text-gray-500">{t("legOption.ridesLabel")}</p>
               <PasteRoute
                 day={(rides[0]?.departAt || leg.departLocal).slice(0, 10)}
                 showRides={false}
@@ -343,7 +343,7 @@ function LegOptionForm({
               />
               {rides.map((r, i) => (
                 <fieldset key={r.key} className="rounded-2xl border border-gray-200 p-2.5">
-                  <legend className="px-1 text-[11px] font-bold text-jz-ink">{t("legOption.rideN", { n: i + 1 })}</legend>
+                  <legend className="px-1 text-px11 font-bold text-jz-ink">{t("legOption.rideN", { n: i + 1 })}</legend>
                   <div className="grid grid-cols-2 gap-2">
                     <label className={`${label} col-span-2`}>
                       {t("transport.nameLabel")}
@@ -374,7 +374,7 @@ function LegOptionForm({
                       <input value={r.arrivePlatform} onChange={(e) => setRide(r.key, { arrivePlatform: e.target.value })} maxLength={30} className={small} />
                     </label>
                   </div>
-                  <button type="button" onClick={() => setRides((list) => list.filter((x) => x.key !== r.key))} className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-gray-500 hover:text-jz-accent">
+                  <button type="button" onClick={() => setRides((list) => list.filter((x) => x.key !== r.key))} className="mt-2 inline-flex items-center gap-1 text-px11 font-semibold text-gray-500 hover:text-jz-accent">
                     <Trash2 className="h-3 w-3" /> {t("legOption.removeRide")}
                   </button>
                 </fieldset>
@@ -383,11 +383,11 @@ function LegOptionForm({
                 type="button"
                 disabled={rides.length >= 10}
                 onClick={() => setRides((list) => [...list, blankRide(list.at(-1))])}
-                className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1.5 text-[11px] font-bold text-jz-ink disabled:opacity-40"
+                className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1.5 text-px11 font-bold text-jz-ink disabled:opacity-40"
               >
                 <Plus className="h-3.5 w-3.5" /> {t("legOption.addRide")}
               </button>
-              <p className="text-[11px] leading-relaxed text-gray-500">{t("legOption.ridesNote")}</p>
+              <p className="text-px11 leading-relaxed text-gray-500">{t("legOption.ridesNote")}</p>
             </div>
           )}
 
@@ -399,7 +399,7 @@ function LegOptionForm({
             <input type="checkbox" checked={chosen} onChange={(e) => setChosen(e.target.checked)} className="h-4 w-4 accent-[var(--color-jz-accent)]" />
             {t("legOption.chooseThis")}
           </label>
-          <p className="text-[11px] leading-relaxed text-gray-500">{t("legOption.chooseNote")}</p>
+          <p className="text-px11 leading-relaxed text-gray-500">{t("legOption.chooseNote")}</p>
           {error && <p className="text-xs text-jz-warm-text">{error}</p>}
         </div>
         <div className="border-t border-gray-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">

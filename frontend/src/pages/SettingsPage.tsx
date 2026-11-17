@@ -5,6 +5,7 @@ import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { isDataSaverEnabled, setDataSaverEnabled } from "../components/AutoplayVideo";
 import { setThemePref, useThemePref, type ThemePref } from "../lib/theme";
+import { TEXT_SCALE, TEXT_SIZES, setTextSizePref, useTextSizePref } from "../lib/textSize";
 import { disablePush, enablePush, getPushState, type PushState } from "../lib/push";
 import { showToast } from "../lib/toast";
 import { Fingerprint, Monitor, Moon, Sun, Trash2 } from "lucide-react";
@@ -50,7 +51,7 @@ function AvatarSection() {
         ) : (
           label
         )}
-        <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 text-[10px] text-white opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">
+        <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 text-px10 text-white opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">
           {uploading ? "..." : t("settings.avatarChange")}
         </span>
         <input
@@ -480,6 +481,37 @@ function AppearanceSection() {
   );
 }
 
+// 文字の大きさ: every text in the app, on this device.
+function TextSizeSection() {
+  const { t } = useTranslation();
+  const pref = useTextSizePref();
+  return (
+    <section className="border-b border-gray-200 p-4 lg:p-6">
+      <h2 className="mb-2 text-sm font-semibold text-gray-600">{t("settings.textSizeHeading")}</h2>
+      <div className="flex gap-1 rounded-full bg-gray-100 p-1 lg:max-w-md" role="radiogroup" aria-label={t("settings.textSizeHeading")}>
+        {TEXT_SIZES.map((size) => (
+          <button
+            key={size}
+            role="radio"
+            aria-checked={pref === size}
+            onClick={() => setTextSizePref(size)}
+            className={`flex flex-1 flex-col items-center justify-center rounded-full py-1.5 font-semibold transition ${
+              pref === size ? "bg-white text-gray-900 shadow-[0_1px_4px_rgba(0,0,0,0.12)]" : "text-gray-500"
+            }`}
+          >
+            {/* The あ shows each size at a fixed scale, whatever is chosen now. */}
+            <span aria-hidden style={{ fontSize: `${15 * TEXT_SCALE[size]}px`, lineHeight: 1.2 }}>
+              あ
+            </span>
+            <span style={{ fontSize: "11px" }}>{t(`settings.textSize.${size}`)}</span>
+          </button>
+        ))}
+      </div>
+      <p className="mt-2 text-xs text-gray-500">{t("settings.textSizeNote")}</p>
+    </section>
+  );
+}
+
 const LANGUAGE_LABELS: Record<SupportedLanguage, string> = {
   ja: "日本語",
   en: "English",
@@ -565,9 +597,9 @@ function PasskeySection() {
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold text-jz-ink">
                   {p.name || t("passkey.unnamed")}
-                  {p.backedUp && <span className="ml-1.5 text-[11px] font-normal text-gray-500">{t("passkey.synced")}</span>}
+                  {p.backedUp && <span className="ml-1.5 text-px11 font-normal text-gray-500">{t("passkey.synced")}</span>}
                 </span>
-                <span className="block text-[11px] text-gray-500">
+                <span className="block text-px11 text-gray-500">
                   {p.lastUsedAt ? t("passkey.lastUsed", { when: relativeTime(p.lastUsedAt, i18n.language) }) : t("passkey.neverUsed")}
                 </span>
               </span>
@@ -772,6 +804,7 @@ export default function SettingsPage() {
       )}
 
       <AppearanceSection />
+      <TextSizeSection />
       <DataSaverSection />
       <LanguageSection />
 

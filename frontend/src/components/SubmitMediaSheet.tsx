@@ -109,7 +109,7 @@ export default function SubmitMediaSheet({
         className="animate-sheet-in flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-[28px] bg-white md:rounded-[28px]"
       >
         <div className="flex items-center gap-3 border-b border-gray-100 px-5 py-4">
-          <h2 className="flex-1 text-[15px] font-bold text-jz-ink">{t("submit.title", { name: municipality.name })}</h2>
+          <h2 className="flex-1 text-px15 font-bold text-jz-ink">{t("submit.title", { name: municipality.name })}</h2>
           <button type="button" onClick={onClose} aria-label={t("reelViewer.closeLabel")} className="flex h-9 w-9 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100">
             <X className="h-5 w-5" />
           </button>
@@ -138,11 +138,11 @@ export default function SubmitMediaSheet({
             />
           </label>
           {file && fromPhoto && (
-            <p className="flex items-center gap-1 text-[11px] text-gray-500">
+            <p className="flex items-center gap-1 text-px11 text-gray-500">
               <MapPin className="h-3 w-3" /> {t("submit.hasPlace")}
             </p>
           )}
-          <label className="block text-[11px] font-semibold text-gray-500">
+          <label className="block text-px11 font-semibold text-gray-500">
             {t("submit.descriptionLabel")}
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} maxLength={500} rows={3} placeholder={t("submit.descriptionPlaceholder")} className={`${field} resize-none`} />
           </label>
@@ -165,7 +165,7 @@ export default function SubmitMediaSheet({
             <input type="checkbox" required checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[var(--color-jz-accent)]" />
             <span>{t(municipality.listing ? "submit.consentListing" : "submit.consent", { name: municipality.name })}</span>
           </label>
-          <p className="text-[11px] leading-relaxed text-gray-500">{t("submit.note")}</p>
+          <p className="text-px11 leading-relaxed text-gray-500">{t("submit.note")}</p>
           {error && <p className="text-xs text-jz-warm-text">{error}</p>}
         </div>
         <div className="border-t border-gray-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">

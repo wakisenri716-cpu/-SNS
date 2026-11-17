@@ -58,7 +58,7 @@ export default function PendingBookingPrompt() {
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-bold text-jz-ink">{t("reservation.askTitle", { name: pending.name })}</p>
-          <p className="mt-0.5 text-[11px] leading-relaxed text-gray-500">{t("reservation.askBody", { trip: pending.tripName })}</p>
+          <p className="mt-0.5 text-px11 leading-relaxed text-gray-500">{t("reservation.askBody", { trip: pending.tripName })}</p>
         </div>
         <button type="button" onClick={() => setPending(null)} aria-label={t("reservation.later")} className="rounded-full p-1 text-gray-400 hover:bg-gray-100">
           <X className="h-4 w-4" />
@@ -79,7 +79,7 @@ export default function PendingBookingPrompt() {
           {t("reservation.notBooked")}
         </button>
       </div>
-      <Link to={`/itinerary/${pending.tripId}`} onClick={() => setPending(null)} className="mt-2 block text-center text-[11px] font-semibold text-gray-500 hover:underline">
+      <Link to={`/itinerary/${pending.tripId}`} onClick={() => setPending(null)} className="mt-2 block text-center text-px11 font-semibold text-gray-500 hover:underline">
         {t("reservation.openTrip")}
       </Link>
     </div>

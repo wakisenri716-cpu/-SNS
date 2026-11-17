@@ -191,7 +191,7 @@ export default function TripFlyover({ stops, onClose }: { stops: FlyoverStop[]; 
             <>
               <video key={current.id} src={current.videoUrl} className="h-20 w-16 shrink-0 rounded-2xl object-cover" muted playsInline autoPlay loop />
               <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-semibold text-white/60">
+                <p className="text-px11 font-semibold text-white/60">
                   {t("flyover.stopOf", { n: step + 1, total: stops.length })}
                 </p>
                 <p className="truncate text-base font-extrabold">{current.name}</p>

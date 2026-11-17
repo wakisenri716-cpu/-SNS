@@ -61,10 +61,10 @@ export default function StaySheet({ reel, onClose }: { reel: Reel; onClose: () =
               )}
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-bold text-jz-ink">
-                  {near.linked?.no === h.id && <span className="mr-1 rounded-full bg-jz-tint px-1.5 py-0.5 text-[10px] text-jz-accent">{t("stays.thisPost")}</span>}
+                  {near.linked?.no === h.id && <span className="mr-1 rounded-full bg-jz-tint px-1.5 py-0.5 text-px10 text-jz-accent">{t("stays.thisPost")}</span>}
                   {h.name}
                 </p>
-                <p className="flex flex-wrap items-center gap-x-2 text-[11px] text-gray-500">
+                <p className="flex flex-wrap items-center gap-x-2 text-px11 text-gray-500">
                   {h.reviewAverage != null && (
                     <span className="inline-flex items-center gap-0.5 font-semibold text-gray-700">
                       <Star className="h-3 w-3 fill-jz-warm text-jz-warm" /> {h.reviewAverage.toFixed(1)}
@@ -72,7 +72,7 @@ export default function StaySheet({ reel, onClose }: { reel: Reel; onClose: () =
                   )}
                   {h.minChargeYen != null && <span>{t("stays.from", { price: `¥${h.minChargeYen.toLocaleString(i18n.language)}` })}</span>}
                 </p>
-                {h.access && <p className="truncate text-[11px] text-gray-500">{h.access}</p>}
+                {h.access && <p className="truncate text-px11 text-gray-500">{h.access}</p>}
               </div>
               <a href={h.planListUrl} target="_blank" rel="noopener noreferrer sponsored" aria-label={t("stays.allPlans")} className="shrink-0 rounded-full p-2 text-gray-500 hover:bg-gray-100">
                 <ExternalLink className="h-4 w-4" />
@@ -80,9 +80,9 @@ export default function StaySheet({ reel, onClose }: { reel: Reel; onClose: () =
             </li>
           ))}
         </ul>
-        <p className="mt-2 text-[11px] text-gray-500">{t("stays.pickDates")}</p>
-        {near.affiliate && <p className="mt-1 text-[10px] text-gray-500">{t("stays.affiliate")}</p>}
-        <a href="https://webservice.rakuten.co.jp/" target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-[10px] text-gray-400 hover:underline">
+        <p className="mt-2 text-px11 text-gray-500">{t("stays.pickDates")}</p>
+        {near.affiliate && <p className="mt-1 text-px10 text-gray-500">{t("stays.affiliate")}</p>}
+        <a href="https://webservice.rakuten.co.jp/" target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-px10 text-gray-400 hover:underline">
           Supported by Rakuten Developers
         </a>
       </div>

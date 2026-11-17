@@ -7,7 +7,7 @@ import { showToast } from "../lib/toast";
 // with `prompt` written in (see lib/ownAi.ts), or copy / share it to any AI app.
 export default function OwnAiButtons({ prompt, className = "" }: { prompt: string; className?: string }) {
   const { t } = useTranslation();
-  const chip = "inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-[11px] font-bold text-jz-ink hover:bg-gray-50 active:scale-95";
+  const chip = "inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-px11 font-bold text-jz-ink hover:bg-gray-50 active:scale-95";
   const canShare = typeof navigator !== "undefined" && "share" in navigator;
   async function copy() {
     try {
@@ -35,7 +35,7 @@ export default function OwnAiButtons({ prompt, className = "" }: { prompt: strin
           </button>
         )}
       </div>
-      <p className="mt-2 text-[10px] leading-relaxed text-gray-500">{t("ownAi.note")}</p>
+      <p className="mt-2 text-px10 leading-relaxed text-gray-500">{t("ownAi.note")}</p>
     </div>
   );
 }

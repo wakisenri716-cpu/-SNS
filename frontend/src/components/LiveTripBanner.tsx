@@ -61,7 +61,7 @@ export default function LiveTripBanner({
         <Navigation className="h-4 w-4 shrink-0 text-jz-accent" />
         <span className="min-w-0">
           <span className="block text-sm font-bold text-jz-ink">{t("liveTrip.start")}</span>
-          <span className="block text-[11px] text-gray-500">{t("liveTrip.startHint")}</span>
+          <span className="block text-px11 text-gray-500">{t("liveTrip.startHint")}</span>
         </span>
       </button>
     );
@@ -83,7 +83,7 @@ export default function LiveTripBanner({
 
   return (
     <section className="on-media mb-4 rounded-3xl bg-jz-ink p-4 text-white" aria-live="polite" aria-label={t("liveTrip.label")}>
-      <p className="flex items-center gap-1.5 text-[11px] font-bold tracking-wide text-white/70">
+      <p className="flex items-center gap-1.5 text-px11 font-bold tracking-wide text-white/70">
         <span className="relative flex h-2 w-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-jz-warm opacity-75 motion-reduce:hidden" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-jz-warm" />

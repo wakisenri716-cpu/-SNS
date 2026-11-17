@@ -192,7 +192,7 @@ export default function InsightsPage() {
                   ))
                 )}
                 {tripPlanning.hiddenCount > 0 && (
-                  <p className="text-[11px] text-gray-500">{t("insights.originsHidden", { count: tripPlanning.hiddenCount })}</p>
+                  <p className="text-px11 text-gray-500">{t("insights.originsHidden", { count: tripPlanning.hiddenCount })}</p>
                 )}
               </div>
             </section>

@@ -54,10 +54,10 @@ export default function TripWeather({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, window_]);
 
-  if (!startDate) return <p className="mb-3 text-[11px] text-gray-500">{t("weather.needDate")}</p>;
+  if (!startDate) return <p className="mb-3 text-px11 text-gray-500">{t("weather.needDate")}</p>;
   if (window_ === "past" || dayStarts.length === 0) return null;
-  if (window_ === "tooFar") return <p className="mb-3 text-[11px] text-gray-500">{t("weather.tooFar")}</p>;
-  if (failed) return <p className="mb-3 text-[11px] text-gray-500">{t("weather.unavailable")}</p>;
+  if (window_ === "tooFar") return <p className="mb-3 text-px11 text-gray-500">{t("weather.tooFar")}</p>;
+  if (failed) return <p className="mb-3 text-px11 text-gray-500">{t("weather.unavailable")}</p>;
   if (!forecasts || forecasts.key !== key) return <div className="skeleton mb-3 h-14 rounded-2xl" />;
 
   const multiDay = dayStarts.length > 1;
@@ -73,7 +73,7 @@ export default function TripWeather({
           const date = addDays(startDate, day);
           return (
             <div key={day} className="min-w-[7.5rem] shrink-0 rounded-2xl bg-gradient-to-br from-sky-50 to-white px-3 py-2 ring-1 ring-sky-100">
-              <p className="text-[11px] font-semibold text-gray-500">
+              <p className="text-px11 font-semibold text-gray-500">
                 {multiDay && `${t("itinerary.dayLabel", { day: day + 1 })}・`}
                 {new Date(`${date}T00:00:00`).toLocaleDateString(i18n.language, { month: "numeric", day: "numeric", weekday: "short" })}
               </p>
@@ -86,14 +86,14 @@ export default function TripWeather({
                     {f.tMax ?? "–"}°<span className="font-normal text-gray-400">/{f.tMin ?? "–"}°</span>
                   </span>
                   {f.pop != null && (
-                    <span className="ml-auto flex items-center gap-0.5 text-[11px] font-semibold text-sky-700">
+                    <span className="ml-auto flex items-center gap-0.5 text-px11 font-semibold text-sky-700">
                       <Umbrella className="h-3 w-3" />
                       {f.pop}%
                     </span>
                   )}
                 </p>
               ) : (
-                <p className="mt-1 text-[11px] text-gray-400">{t("weather.noForecast")}</p>
+                <p className="mt-1 text-px11 text-gray-400">{t("weather.noForecast")}</p>
               )}
             </div>
           );
@@ -110,7 +110,7 @@ export default function TripWeather({
           onAdd={onAdd ? (reelId) => onAdd(reelId, day) : undefined}
         />
       ))}
-      <p className="mt-1 text-right text-[10px] text-gray-400">
+      <p className="mt-1 text-right text-px10 text-gray-400">
         {t("weather.credit")}{" "}
         <a href="https://open-meteo.com/" target="_blank" rel="noreferrer" className="underline">
           Open-Meteo.com
@@ -179,10 +179,10 @@ function WetDayOptions({
       {options == null ? (
         <div className="skeleton mt-2 h-10 rounded-xl" />
       ) : options.length === 0 ? (
-        <p className="mt-1 text-[11px] text-sky-800">{t("weather.noIndoor")}</p>
+        <p className="mt-1 text-px11 text-sky-800">{t("weather.noIndoor")}</p>
       ) : (
         <>
-          <p className="mt-1 text-[11px] text-sky-800">{t("weather.indoorIntro")}</p>
+          <p className="mt-1 text-px11 text-sky-800">{t("weather.indoorIntro")}</p>
           <ul className="mt-2 space-y-1.5">
             {options.map((o) => {
               const name = o.reel.locationName || o.reel.municipality.name;
@@ -197,7 +197,7 @@ function WetDayOptions({
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-xs font-bold text-jz-ink">{name}</span>
-                    <span className="block truncate text-[10px] text-gray-500">
+                    <span className="block truncate text-px10 text-gray-500">
                       {o.why.restaurant ? t("weather.whyRestaurant") : t("weather.whyWord", { word: o.why.word })}・{formatDistance(o.km)}
                     </span>
                   </span>
