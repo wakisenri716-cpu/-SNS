@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import TermsConsent from "../components/TermsConsent";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { NATIONALITIES } from "../types";
@@ -117,6 +118,7 @@ export default function RegisterUserPage() {
             {typeof error === "string" ? error : t("registerUser.invalidInput")}
           </p>
         )}
+        <TermsConsent />
         <button
           type="submit"
           disabled={submitting}

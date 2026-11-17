@@ -58,6 +58,7 @@ const JoinTripPage = lazy(() => import("./pages/JoinTripPage"));
 const MyPage = lazy(() => import("./pages/MyPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
+const TermsPage = lazy(() => import("./pages/TermsPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
 const InsightsPage = lazy(() => import("./pages/InsightsPage"));
 const ReelAccessPage = lazy(() => import("./pages/ReelAccessPage"));
@@ -141,6 +142,7 @@ function App() {
           }
         />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/legal/terms" element={<TermsPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route
           path="/mypage"

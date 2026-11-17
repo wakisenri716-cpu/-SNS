@@ -812,6 +812,9 @@ export default function SettingsPage() {
       {user && <PasswordSection />}
 
       <div className="flex flex-col items-start gap-2 border-b border-gray-200 p-4 lg:p-6">
+        <button onClick={() => navigate("/legal/terms")} className="text-sm font-medium text-gray-900 hover:underline">
+          {t("terms.settingsLink")}
+        </button>
         <button
           onClick={() => navigate("/privacy-policy")}
           className="text-sm font-medium text-gray-900 hover:underline"

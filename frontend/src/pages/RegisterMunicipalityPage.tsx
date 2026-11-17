@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import TermsConsent from "../components/TermsConsent";
 import { PREFECTURES } from "../lib/regions";
 import { useAuth } from "../auth/AuthContext";
 
@@ -85,6 +86,7 @@ export default function RegisterMunicipalityPage() {
         />
         <p className="rounded-xl bg-jz-tint p-3 text-xs leading-relaxed text-jz-ink">{t("approval.registerNote")}</p>
         {error && <p className="text-sm text-jz-warm-text">{error}</p>}
+        <TermsConsent />
         <button
           type="submit"
           disabled={submitting}

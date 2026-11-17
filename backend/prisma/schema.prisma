@@ -45,6 +45,8 @@ model User {
   // (/trip/:token); cleared when they stop sharing, which kills the link.
   itineraryShareToken String?  @unique
   createdAt    DateTime @default(now())
+  // When the sign-up form's 利用規約・プライバシーポリシー box was ticked.
+  termsAcceptedAt DateTime?
 
   municipality Municipality?
   company      Company?

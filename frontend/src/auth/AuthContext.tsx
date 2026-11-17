@@ -147,7 +147,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     name: string,
     extra?: { nationality?: string; birthYear?: number }
   ) {
-    const { data } = await api.post("/auth/register", { email, password, name, ...extra });
+    // The sign-up forms can only be sent with the 利用規約 box ticked (TermsConsent).
+    const { data } = await api.post("/auth/register", { email, password, name, ...extra, acceptTerms: true });
     persist({ token: data.token, user: data.user, municipality: null, company: null });
   }
 
@@ -158,7 +159,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     municipalityName: string;
     prefecture: string;
   }) {
-    const { data } = await api.post("/auth/register-municipality", input);
+    const { data } = await api.post("/auth/register-municipality", { ...input, acceptTerms: true });
     persist({ token: data.token, user: data.user, municipality: data.municipality, company: null });
   }
 
@@ -169,7 +170,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     companyName: string;
     municipalityId: string;
   }) {
-    const { data } = await api.post("/auth/register-company", input);
+    const { data } = await api.post("/auth/register-company", { ...input, acceptTerms: true });
     persist({ token: data.token, user: data.user, municipality: null, company: data.company });
   }
 

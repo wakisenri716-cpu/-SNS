@@ -97,17 +97,40 @@ const DEMO_VIEWERS = [
   { name: "Somchai P.", email: "viewer-th1@example.com", nationality: "thailand", birthYear: 1983 },
 ];
 
-// Populates a handful of demo municipalities (+ one linked company) with reels so
-// the feed isn't empty on first look. Runs automatically at server startup (see
-// index.ts) but only when the municipality table is empty — on the Render free
-// deployment the database resets on every restart, so without this the app would
-// otherwise greet every wake-up with a blank feed. Safe to run repeatedly: it
-// no-ops once any municipality already exists.
+// The demo data — an "official" 松本市 account with a known password, posts
+// it never made, and made-up viewers and views — is for development and the
+// tests only. In production (NODE_ENV=production) it isn't created unless
+// SEED_DEMO=1, so the public site has no account anyone can sign in to with
+// a published password and no town shown as joined that hasn't; 松本市 is then
+// an unofficial page like the other towns (syncMunicipalityListings).
+export const demoEnabled = () => process.env.SEED_DEMO === "1" || (process.env.NODE_ENV !== "production" && process.env.SEED_DEMO !== "0");
+
+const DEMO_EMAILS = [...MUNICIPALITIES.map((m) => `demo-${m.slug}@example.com`), ...DEMO_VIEWERS.map((v) => v.email)];
+
+// Runs at server startup (index.ts). With the demo on, an empty database gets
+// the demo; either way every municipality's page is synced afterwards. Safe
+// to run repeatedly.
 export async function seedIfEmpty() {
-  if ((await prisma.municipality.count()) === 0) await seedDemo();
+  if (demoEnabled()) {
+    if ((await prisma.municipality.count()) === 0) await seedDemo();
+  } else {
+    await lockDemoAccounts();
+  }
   // Every Nagano municipality's page (after the demo, so the demo 松本市 is
   // kept and filled in rather than duplicated).
   await syncMunicipalityListings();
+}
+
+// A production database that already has the demo accounts (made before the
+// demo was turned off there): give them a random, unknown password so the
+// published one no longer signs in.
+async function lockDemoAccounts() {
+  const demo = await prisma.user.findMany({ where: { email: { in: DEMO_EMAILS } }, select: { id: true, passwordHash: true } });
+  for (const u of demo) {
+    if (!(await bcrypt.compare(SEED_PASSWORD, u.passwordHash))) continue;
+    await prisma.user.update({ where: { id: u.id }, data: { passwordHash: await bcrypt.hash(crypto.randomBytes(32).toString("hex"), 10) } });
+  }
+  if (demo.length > 0) console.log(`[seed] Demo is off: ${demo.length} demo account(s) can no longer sign in with the demo password.`);
 }
 
 async function seedDemo() {

@@ -2235,5 +2235,104 @@
       "middle": "Rising",
       "hidden": "Hidden gem"
     }
+  },
+  "terms": {
+    "title": "Terms of Use",
+    "draftNotice": "These terms are a draft. Fill in the operator's name and other details, and have a professional review them before launch.",
+    "updated": "Last updated: {{date}}",
+    "intro": "These Terms of Use (the \"Terms\") set out the conditions for using Jaziba (the \"Service\"). Please use the Service only if you agree to these Terms and the Privacy Policy.",
+    "operator": "Operator: {{name}}",
+    "unfilled": "(to be filled in by the operator)",
+    "contactLink": "Go to the contact form",
+    "privacyLink": "Privacy Policy",
+    "sections": [
+      {
+        "heading": "1. Accounts",
+        "items": [
+          "Enter accurate information when you sign up, and keep your email address and password safe yourself.",
+          "Municipality and business accounts can't post or use similar features until the operator has reviewed and approved them. Please sign up only if you are authorised to represent the organisation.",
+          "You may not transfer or lend your account to anyone else."
+        ]
+      },
+      {
+        "heading": "2. What you post or offer",
+        "items": [
+          "You keep the rights to your posts, comments, photos, videos and other content (\"Content\").",
+          "You allow the operator to display, copy, translate and edit (for example resize or crop) your Content free of charge to run, introduce and promote the Service.",
+          "You confirm that you hold the rights needed for your Content and, if people appear in it, that they have agreed.",
+          "Photos and videos travelers offer to a municipality are reviewed by that municipality (or by the operator for municipalities that haven't joined), and approved ones may be used in introduction posts. Offers still under review can be withdrawn."
+        ]
+      },
+      {
+        "heading": "3. Prohibited conduct",
+        "body": "You must not:",
+        "items": [
+          "break the law or public order and morals",
+          "infringe anyone's copyright, portrait rights, privacy or other rights",
+          "post false information or impersonate a municipality, business or other person",
+          "post defamation, discrimination, obscene or violent content",
+          "post advertising or solicitation unrelated to the Service, or the same content repeatedly",
+          "collect or publish other people's personal information",
+          "attempt unauthorised access, put excessive load on the servers, or harvest data with programs",
+          "interfere with the operation of the Service, or do anything else the operator considers inappropriate"
+        ]
+      },
+      {
+        "heading": "4. What the operator may do",
+        "body": "Content and comments that break these Terms may be hidden or removed without notice. Repeated or serious violations may lead to suspension of the account."
+      },
+      {
+        "heading": "5. Pages of municipalities that haven't joined",
+        "body": "Pages of municipalities that haven't joined the Service are made by the operator from public data and generally known information and are not official information from those municipalities. Their introduction posts are by Jaziba's editors, and the videos may be illustrations. To request corrections or to join, please use the contact form."
+      },
+      {
+        "heading": "6. Accuracy and outside services",
+        "items": [
+          "Information on transport, access, weather, best seasons, crowds, and room availability and prices is a guide. Check the official information of transport operators and facilities before you go.",
+          "Hotel bookings are made on outside services such as Rakuten Travel, and the booking contract is between you and that service or hotel. The operator is not a party to the booking. Those services' own terms apply.",
+          "Municipalities and businesses are responsible for the information and coupons they publish and their conditions of use."
+        ]
+      },
+      {
+        "heading": "7. AI features",
+        "items": [
+          "Answers and suggestions made by AI (trip advice, trip plans, translation, reading documents and so on) may contain mistakes. Check important plans against official information.",
+          "AI features have usage limits.",
+          "What you enter into AI features is sent to the AI provider (Anthropic) to produce the answer."
+        ]
+      },
+      {
+        "heading": "8. Points and coupons",
+        "body": "Points are an experimental feature and can't be exchanged for cash or other points. They may change or end without notice. Coupons can be used on the conditions set by the municipality or business offering them."
+      },
+      {
+        "heading": "9. Paid plans",
+        "body": "Prices, payment and cancellation of paid plans are as set out on the plans page and in the Specified Commercial Transactions Act disclosure. There are no pro-rata refunds when you cancel mid-period."
+      },
+      {
+        "heading": "10. Changes, interruption and end of the Service",
+        "body": "The operator may change the Service, or interrupt or end it, without notice."
+      },
+      {
+        "heading": "11. Limits of responsibility",
+        "items": [
+          "The operator does not guarantee that the Service is free of factual or legal defects.",
+          "Except in cases of the operator's intent or gross negligence, the operator's liability for damage caused to you by using the Service is limited to direct and ordinary damage.",
+          "Disputes between users, or between a user and a municipality, business or outside service, are to be settled between the parties."
+        ]
+      },
+      {
+        "heading": "12. Changes to these Terms",
+        "body": "When these Terms change, we will announce it in the Service. Using the Service after the change means you accept the changed Terms."
+      },
+      {
+        "heading": "13. Governing law and jurisdiction",
+        "body": "These Terms are governed by the laws of Japan. The district court with jurisdiction over the operator's location has exclusive jurisdiction in the first instance over disputes about the Service."
+      }
+    ],
+    "consent": "I agree to the {{terms}} and the {{privacy}}",
+    "consentTerms": "Terms of Use",
+    "consentPrivacy": "Privacy Policy",
+    "settingsLink": "Terms of Use"
   }
 }

@@ -68,6 +68,8 @@ const registerUserSchema = z.object({
   name: z.string().min(1),
   nationality: z.enum(NATIONALITIES).optional(),
   birthYear: z.coerce.number().int().min(1900).max(currentYear - 5).optional(),
+  // The sign-up forms' 利用規約・プライバシーポリシー checkbox; when it was ticked is kept.
+  acceptTerms: z.boolean().optional(),
 });
 
 const registerMunicipalitySchema = registerUserSchema.extend({
@@ -124,7 +126,7 @@ router.post("/register", registerLimiter, async (req, res) => {
 
   const passwordHash = await bcrypt.hash(password, 10);
   const user = await prisma.user.create({
-    data: { email, passwordHash, name, role: "USER", nationality, birthYear },
+    data: { email, passwordHash, name, role: "USER", nationality, birthYear, termsAcceptedAt: parsed.data.acceptTerms ? new Date() : null },
   });
 
   const token = issueToken(user.id, "USER");
@@ -153,6 +155,7 @@ router.post("/register-municipality", registerLimiter, async (req, res) => {
       passwordHash,
       name,
       role: "MUNICIPALITY",
+      termsAcceptedAt: parsed.data.acceptTerms ? new Date() : null,
       // 登録の承認: waits for the operator (admin console).
       approval: approvalRequired() ? "pending" : "approved",
       municipality: {
@@ -202,6 +205,7 @@ router.post("/register-company", registerLimiter, async (req, res) => {
       passwordHash,
       name,
       role: "COMPANY",
+      termsAcceptedAt: parsed.data.acceptTerms ? new Date() : null,
       // 登録の承認: waits for the operator (admin console).
       approval: approvalRequired() ? "pending" : "approved",
       company: {

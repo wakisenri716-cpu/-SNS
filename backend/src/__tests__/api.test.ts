@@ -2055,3 +2055,31 @@ test("おすすめ 9マス: posts in 定番・注目・穴場 pools by how well 
     delete process.env.ADMIN_EMAILS;
   }
 });
+
+test("公開に向けて: no demo in production, and when the terms were accepted is kept", async () => {
+  const { demoEnabled } = await import("../seed");
+  const saved = { NODE_ENV: process.env.NODE_ENV, SEED_DEMO: process.env.SEED_DEMO };
+  try {
+    delete process.env.SEED_DEMO;
+    process.env.NODE_ENV = "production";
+    assert.equal(demoEnabled(), false, "production: no demo");
+    process.env.SEED_DEMO = "1";
+    assert.equal(demoEnabled(), true, "SEED_DEMO=1 turns it on");
+    process.env.NODE_ENV = "development";
+    process.env.SEED_DEMO = "0";
+    assert.equal(demoEnabled(), false, "SEED_DEMO=0 turns it off");
+    delete process.env.SEED_DEMO;
+    assert.equal(demoEnabled(), true, "development: demo by default");
+  } finally {
+    for (const [k, v] of Object.entries(saved)) if (v === undefined) delete process.env[k];
+    else process.env[k] = v;
+  }
+
+  const { prisma } = await import("../prisma");
+  await call("POST", "/api/auth/register", { email: "terms-yes@example.com", password: "password123", name: "同意あり", acceptTerms: true });
+  await call("POST", "/api/auth/register", { email: "terms-none@example.com", password: "password123", name: "同意なし" });
+  const yes = await prisma.user.findUnique({ where: { email: "terms-yes@example.com" }, select: { termsAcceptedAt: true } });
+  const none = await prisma.user.findUnique({ where: { email: "terms-none@example.com" }, select: { termsAcceptedAt: true } });
+  assert.ok(yes?.termsAcceptedAt instanceof Date && Date.now() - yes.termsAcceptedAt.getTime() < 60_000);
+  assert.equal(none?.termsAcceptedAt, null);
+});
