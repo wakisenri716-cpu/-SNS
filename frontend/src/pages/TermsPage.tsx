@@ -5,7 +5,7 @@ import { OPERATOR_INFO } from "../lib/operatorInfo";
 // When this text was last changed (update it with the terms in the locales).
 const UPDATED = "2026-11-17";
 
-type Section = { heading: string; body?: string; items?: string[] };
+type Section = { heading: string; body?: string; items?: string[]; after?: string };
 
 // 利用規約: the conditions of use, agreed to at sign-up (TermsConsent).
 export default function TermsPage() {
@@ -33,6 +33,7 @@ export default function TermsPage() {
                 ))}
               </ul>
             )}
+            {s.after && <p className="mt-2">{s.after}</p>}
           </section>
         ))}
         <section>

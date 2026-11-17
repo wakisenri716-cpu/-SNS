@@ -2323,7 +2323,12 @@
       },
       {
         "heading": "12. Changes to these Terms",
-        "body": "When these Terms change, we will announce it in the Service. Using the Service after the change means you accept the changed Terms."
+        "body": "The operator may change these Terms when either of the following applies:",
+        "items": [
+          "the change is in the general interest of users; or",
+          "the change does not go against the purpose of these Terms and is reasonable in light of the need for the change, the appropriateness of the new content and other circumstances of the change."
+        ],
+        "after": "When these Terms change, we will announce in the Service, before the date the change takes effect, the new content of the Terms and that date."
       },
       {
         "heading": "13. Governing law and jurisdiction",
