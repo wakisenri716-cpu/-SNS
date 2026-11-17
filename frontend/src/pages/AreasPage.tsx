@@ -34,7 +34,6 @@ export default function AreasPage() {
     <div className="mx-auto w-full max-w-2xl px-4 py-6 md:py-8">
       <h1 className="text-2xl font-extrabold tracking-tight text-jz-ink">
         {t("areas.heading")}
-        <span className="ml-1 inline-block h-2 w-2 rounded-full bg-jz-warm align-baseline" aria-hidden />
       </h1>
       <p className="mt-1 text-sm text-gray-500">
         {t("areas.sub", { count: joined })}

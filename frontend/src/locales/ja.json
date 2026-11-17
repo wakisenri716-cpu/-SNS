@@ -2196,9 +2196,6 @@
     "label": "おすすめ 9マス",
     "pause": "自動の入れ替えを止める",
     "resume": "自動の入れ替えを再開",
-    "viewLabel": "表示の切り替え",
-    "viewGrid": "9マスで見る",
-    "viewList": "1件ずつ見る",
     "editorial": "ジャジバの紹介",
     "tier": {
       "famous": "定番",

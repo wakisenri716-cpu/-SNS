@@ -211,7 +211,7 @@ function buildSlides(r: Recap): Slide[] {
   const slides: Slide[] = [
     {
       key: "intro",
-      bg: "bg-gradient-to-br from-[#0e7f7f] via-[#3a6ea5] to-[#c2481c]",
+      bg: "bg-[#111827]",
       body: (t) => (
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.3em] text-white/80">Jaziba</p>
@@ -225,7 +225,7 @@ function buildSlides(r: Recap): Slide[] {
     },
     {
       key: "saved",
-      bg: "bg-gradient-to-br from-sky-700 via-sky-600 to-indigo-700",
+      bg: "bg-[#111827]",
       body: (t) => (
         <div>
           <p className="text-sm font-semibold text-white/80">{t("recap.savedLead")}</p>
@@ -252,7 +252,7 @@ function buildSlides(r: Recap): Slide[] {
     },
     {
       key: "stamps",
-      bg: "bg-gradient-to-br from-emerald-700 via-teal-700 to-emerald-900",
+      bg: "bg-[#111827]",
       body: (t) =>
         r.stamps.count > 0 ? (
           <div>
@@ -286,7 +286,7 @@ function buildSlides(r: Recap): Slide[] {
   if (r.topMunicipality || r.topCategory) {
     slides.push({
       key: "favourite",
-      bg: "bg-gradient-to-br from-fuchsia-700 via-purple-700 to-indigo-800",
+      bg: "bg-[#111827]",
       body: (t) => (
         <div>
           {r.topMunicipality && (
@@ -312,7 +312,7 @@ function buildSlides(r: Recap): Slide[] {
     const max = Math.max(...r.months, 1);
     slides.push({
       key: "months",
-      bg: "bg-gradient-to-br from-amber-600 via-orange-600 to-rose-700",
+      bg: "bg-[#111827]",
       body: (t) => (
         <div>
           <p className="text-sm font-semibold text-white/80">{t("recap.busiestLead")}</p>

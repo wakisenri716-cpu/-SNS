@@ -2196,9 +2196,6 @@
     "label": "추천 9칸",
     "pause": "자동 전환 멈추기",
     "resume": "자동 전환 다시 시작",
-    "viewLabel": "보기 전환",
-    "viewGrid": "9칸으로 보기",
-    "viewList": "하나씩 보기",
     "editorial": "Jaziba의 소개",
     "tier": {
       "famous": "대표",

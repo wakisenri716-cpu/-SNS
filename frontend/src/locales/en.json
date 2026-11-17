@@ -2229,9 +2229,6 @@
     "label": "Picks in 9 squares",
     "pause": "Stop changing automatically",
     "resume": "Resume changing automatically",
-    "viewLabel": "View",
-    "viewGrid": "9-square view",
-    "viewList": "One by one",
     "editorial": "Jaziba's intro",
     "tier": {
       "famous": "Classic",

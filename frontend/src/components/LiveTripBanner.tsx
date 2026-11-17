@@ -82,8 +82,8 @@ export default function LiveTripBanner({
   }
 
   return (
-    <section className="on-media mb-4 rounded-3xl bg-jz-ink p-4 text-white" aria-live="polite" aria-label={t("liveTrip.label")}>
-      <p className="flex items-center gap-1.5 text-px11 font-bold tracking-wide text-white/70">
+    <section className="mb-4 rounded-2xl border border-gray-200 bg-white p-4 text-jz-ink" aria-live="polite" aria-label={t("liveTrip.label")}>
+      <p className="flex items-center gap-1.5 text-px11 font-bold tracking-wide text-gray-500">
         <span className="relative flex h-2 w-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-jz-warm opacity-75 motion-reduce:hidden" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-jz-warm" />
@@ -93,7 +93,7 @@ export default function LiveTripBanner({
       </p>
       <p className="mt-1.5 text-lg font-extrabold leading-snug">{headline}</p>
       {sub && (
-        <p className="mt-0.5 flex items-center gap-1 text-xs text-white/75">
+        <p className="mt-0.5 flex items-center gap-1 text-xs text-gray-600">
           <Timer className="h-3.5 w-3.5" /> {sub}
         </p>
       )}
@@ -102,12 +102,12 @@ export default function LiveTripBanner({
           <button
             type="button"
             onClick={() => set({ ...state, delay: state.delay + 15 })}
-            className="rounded-full bg-white/15 px-3 py-1.5 text-xs font-bold hover:bg-white/25"
+            className="rounded-full bg-gray-100 px-3 py-1.5 text-xs font-bold hover:bg-gray-200"
           >
             {t("liveTrip.late")}
           </button>
         )}
-        <button type="button" onClick={() => set(null)} className="rounded-full px-3 py-1.5 text-xs font-semibold text-white/70 hover:bg-white/10">
+        <button type="button" onClick={() => set(null)} className="rounded-full px-3 py-1.5 text-xs font-semibold text-gray-500 hover:bg-gray-100">
           {t("liveTrip.end")}
         </button>
       </div>

@@ -57,9 +57,9 @@ export async function renderRecapCard(r: Recap, text: RecapCardText): Promise<Bl
   const ctx = canvas.getContext("2d")!;
 
   const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0, "#0e7f7f");
-  bg.addColorStop(0.55, "#3a6ea5");
-  bg.addColorStop(1, "#c2481c");
+  bg.addColorStop(0, "#1f2937");
+  bg.addColorStop(0.55, "#111827");
+  bg.addColorStop(1, "#0b0d12");
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 

@@ -2196,9 +2196,6 @@
     "label": "推荐 9宫格",
     "pause": "停止自动轮换",
     "resume": "恢复自动轮换",
-    "viewLabel": "切换显示",
-    "viewGrid": "9宫格显示",
-    "viewList": "逐条显示",
     "editorial": "Jaziba的介绍",
     "tier": {
       "famous": "经典",

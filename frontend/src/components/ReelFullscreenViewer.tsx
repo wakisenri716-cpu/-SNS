@@ -145,7 +145,7 @@ function ReelOverlayInfo({
           <Link
             to={`/reels/${reel.id}/access`}
             state={{ reel }}
-            className="pointer-events-auto mt-3 inline-flex items-center gap-1.5 rounded-full bg-jz-accent px-4 py-2.5 text-sm font-bold text-white shadow-[0_8px_24px_-6px_rgba(14,127,127,0.8)] transition hover:bg-jz-accent-dark active:scale-95"
+            className="pointer-events-auto mt-3 inline-flex items-center gap-1.5 rounded-full bg-jz-accent px-4 py-2.5 text-sm font-bold text-white shadow-[0_8px_24px_-6px_rgba(0,0,0,0.35)] transition hover:bg-jz-accent-dark active:scale-95"
           >
             <Navigation className="h-4 w-4 fill-white" /> {t("reelViewer.accessButton")}
           </Link>

@@ -1,21 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { flushSync } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowUp, ChevronRight, LayoutGrid, Rows3, Sparkles } from "lucide-react";
+import { ArrowUp, ChevronRight, Sparkles } from "lucide-react";
 import { api } from "../api/client";
 import { fetchSavedReelIds, onSavesChanged } from "../lib/savesChanged";
 import { useAuth } from "../auth/AuthContext";
-import { isOnScreen, withViewTransition } from "../lib/viewTransition";
 import { usePullToRefresh } from "../lib/usePullToRefresh";
 import { useNewPosts } from "../lib/useNewPosts";
 import { chooseTrips } from "../lib/trips";
-import { useLiveCounts } from "../lib/useLiveCounts";
 import { currentPosition, distanceKm } from "../lib/geo";
 import Avatar from "../components/Avatar";
-import CommentsSheet from "../components/CommentsSheet";
-import FeedPost from "../components/FeedPost";
-import FeedSkeleton from "../components/FeedSkeleton";
 import StoryViewer, { type StoryGroup } from "../components/StoryViewer";
 import { useSeenStories } from "../lib/storiesSeen";
 import ConciergeButton from "../components/ConciergeButton";
@@ -37,33 +31,20 @@ async function nearbyRequest() {
   const distances: Record<string, number> = {};
   for (const r of data.items) distances[r.id] = distanceKm(here, { lat: r.locationLat!, lng: r.locationLng! });
   const items = [...data.items].sort((a, b) => distances[a.id] - distances[b.id]);
-  return { data: { items, distances, nextCursor: null, personalized: false } };
+  return { data: { items, personalized: false } };
 }
 
-// おすすめ 9マス (grid view) or the one-by-one list; remembered on this device.
-type View = "grid" | "list";
-const VIEW_KEY = "jz-feed-view";
-function savedView(): View {
-  try {
-    return localStorage.getItem(VIEW_KEY) === "list" ? "list" : "grid";
-  } catch {
-    return "grid";
-  }
-}
+// Home shows its posts as おすすめ 9マス (components/RecommendGrid.tsx).
 // Tabs whose grid is split into 定番・注目・穴場 (the others rotate through their own list).
 const isTieredTab = (tab: Tab) => tab === "all" || tab === "season" || (REEL_CATEGORIES as readonly string[]).includes(tab);
 
-// saved/following/nearby return everything at once; the main feed is paged by cursor.
-function feedRequest(tab: Tab, cursor?: string): Promise<{ data: { items: Reel[]; nextCursor?: string | null; personalized?: boolean; distances?: Record<string, number> } }> {
+// The tab's list: the stories row comes from it, and saved/following/nearby
+// show it in the grid.
+function feedRequest(tab: Tab): Promise<{ data: { items: Reel[]; personalized?: boolean } }> {
   if (tab === "nearby") return nearbyRequest();
   if (tab === "saved") return api.get("/reels/saved");
   if (tab === "following") return api.get("/reels/following");
-  return api.get("/reels", {
-    params: {
-      ...(tab === "all" ? {} : tab === "season" ? { season: "now" } : { category: tab }),
-      ...(cursor ? { cursor } : {}),
-    },
-  });
+  return api.get("/reels", { params: tab === "all" ? {} : tab === "season" ? { season: "now" } : { category: tab } });
 }
 
 export default function FeedPage() {
@@ -71,15 +52,6 @@ export default function FeedPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("all");
-  const [view, setViewState] = useState<View>(savedView);
-  function setView(next: View) {
-    setViewState(next);
-    try {
-      localStorage.setItem(VIEW_KEY, next);
-    } catch {
-      /* private mode: just this visit */
-    }
-  }
   const [reels, setReels] = useState<Reel[]>([]);
   // おすすめ 9マス: the three pools (tiered tabs), and the posts opened from the grid.
   const [gridPools, setGridPools] = useState<Pools<Reel> | null>(null);
@@ -88,27 +60,19 @@ export default function FeedPage() {
   const latestRef = useRef(new Map<string, Reel>());
   const [loading, setLoading] = useState(true);
   const [openReelId, setOpenReelId] = useState<string | null>(null);
-  const [commentsReelId, setCommentsReelId] = useState<string | null>(null);
-  // Reel whose card/slide carries the shared name during an open/close morph.
-  const [heroId, setHeroId] = useState<string | null>(null);
-  // 近く tab: km from the viewer to each post, and whether location was unavailable.
-  const [distances, setDistances] = useState<Record<string, number>>({});
+  // 近く tab: whether location was unavailable.
   const [locationError, setLocationError] = useState(false);
   // Stories being watched: the groups as ordered when opened, so the row
   // re-sorting as posts become "seen" doesn't shift the viewer.
   const [storyView, setStoryView] = useState<{ groups: StoryGroup[]; start: number } | null>(null);
   const seenStories = useSeenStories();
   const [personalized, setPersonalized] = useState(false);
-  const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const sentinelRef = useRef<HTMLDivElement>(null);
   // Bumped on every tab/login change so responses for a previous list are dropped.
   const listVersion = useRef(0);
   // Pull-to-refresh reloads the list in place (no skeleton) while the dot pulses.
   const [refreshKey, setRefreshKey] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const refreshingRef = useRef(false);
-  const liveCounts = useLiveCounts();
   // 新しい投稿があります: posts published while this feed is open.
   const newPosts = useNewPosts(tab === "all" || tab === "season" || (REEL_CATEGORIES as readonly string[]).includes(tab));
   const unseenNew = newPosts.ids.filter((id) => !reels.some((r) => r.id === id));
@@ -129,15 +93,12 @@ export default function FeedPage() {
   useEffect(() => {
     const version = ++listVersion.current;
     if (!refreshingRef.current) setLoading(true);
-    setNextCursor(null);
     setLocationError(false);
     feedRequest(tab)
       .then(({ data }) => {
         if (version !== listVersion.current) return;
         setReels(data.items);
-        setDistances(data.distances ?? {});
         setPersonalized(!!data.personalized);
-        setNextCursor(data.nextCursor ?? null);
       })
       .catch(() => {
         if (version !== listVersion.current || tab !== "nearby") return;
@@ -153,7 +114,7 @@ export default function FeedPage() {
   }, [token, tab, refreshKey]);
 
   useEffect(() => {
-    if (view !== "grid" || !isTieredTab(tab)) return;
+    if (!isTieredTab(tab)) return;
     let stale = false;
     setGridPools(null);
     latestRef.current.clear();
@@ -164,7 +125,7 @@ export default function FeedPage() {
     return () => {
       stale = true;
     };
-  }, [view, tab, token, refreshKey]);
+  }, [tab, token, refreshKey]);
 
   // Saved / following / nearby: the grid rotates through the list itself,
   // starting over only when the list's posts change (not on a like).
@@ -188,31 +149,6 @@ export default function FeedPage() {
         : prev
     );
   }
-
-  // Infinite scroll: fetch the next page when the sentinel below the grid
-  // comes near the viewport.
-  useEffect(() => {
-    const el = sentinelRef.current;
-    if (!el || !nextCursor || loadingMore) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries[0].isIntersecting) return;
-        observer.disconnect();
-        const version = listVersion.current;
-        setLoadingMore(true);
-        feedRequest(tab, nextCursor)
-          .then(({ data }) => {
-            if (version !== listVersion.current) return;
-            setReels((prev) => [...prev, ...data.items.filter((r: Reel) => !prev.some((p) => p.id === r.id))]);
-            setNextCursor(data.nextCursor ?? null);
-          })
-          .finally(() => setLoadingMore(false));
-      },
-      { rootMargin: "400px" }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [nextCursor, loadingMore, tab, view]);
 
   // Keep savedByMe in sync when a save/unsave happens elsewhere (e.g. removing
   // a stop from the しおり), so the save button doesn't act on a stale state.
@@ -264,27 +200,15 @@ export default function FeedPage() {
     if (tab === "following" && target.isFollowing) setReels((prev) => prev.filter((r) => (r.postedByCompany ?? r.municipality).id !== target.id));
   }
 
-  function openViewer(reel: Reel) {
-    flushSync(() => setHeroId(reel.id));
-    void withViewTransition(() => setOpenReelId(reel.id)).then(() => setHeroId(null));
-  }
-
   // From the grid: the nine on screen, swipeable, with their latest state.
   function openFromGrid(reel: Reel, onScreen: Reel[]) {
     setViewerList(onScreen.map((r) => latestRef.current.get(r.id) ?? r));
     setOpenReelId(reel.id);
   }
 
-  function closeViewer(currentId: string) {
-    if (viewerList) {
-      setViewerList(null);
-      return setOpenReelId(null);
-    }
-    // Morph back only into a card that's actually on screen.
-    const card = document.querySelector(`[data-reel-id="${currentId}"]`);
-    if (!isOnScreen(card)) return setOpenReelId(null);
-    flushSync(() => setHeroId(currentId));
-    void withViewTransition(() => setOpenReelId(null)).then(() => setHeroId(null));
+  function closeViewer() {
+    setViewerList(null);
+    setOpenReelId(null);
   }
 
   function setCommentCount(reelId: string, count: number) {
@@ -317,7 +241,7 @@ export default function FeedPage() {
 
   return (
     <div className="mx-auto w-full max-w-[560px] md:px-4">
-      {/* Pull-to-refresh indicator: the logo's orange circle grows as you pull and pulses while loading. */}
+      {/* Pull-to-refresh indicator: a grey dot grows as you pull and pulses while loading. */}
       <div
         className="flex items-end justify-center overflow-hidden md:hidden"
         style={{ height: refreshing ? 48 : pull, transition: pull ? "none" : "height 0.3s ease" }}
@@ -325,9 +249,9 @@ export default function FeedPage() {
         role="status"
       >
         <span className="relative mb-3 flex h-4 w-4 items-center justify-center">
-          {refreshing && <span className="absolute h-4 w-4 animate-ping rounded-full bg-jz-warm opacity-60" />}
+          {refreshing && <span className="absolute h-4 w-4 animate-ping rounded-full bg-gray-400 opacity-60" />}
           <span
-            className="h-3 w-3 rounded-full bg-jz-warm"
+            className="h-3 w-3 rounded-full bg-gray-400"
             style={{ transform: `scale(${refreshing ? 1 : 0.3 + progress * 0.9})`, opacity: refreshing ? 1 : 0.4 + progress * 0.6 }}
           />
         </span>
@@ -336,26 +260,16 @@ export default function FeedPage() {
         <button
           type="button"
           onClick={showNewPosts}
-          className="animate-sheet-in fixed left-1/2 top-[calc(var(--header-offset,53px)+3.75rem)] z-40 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-jz-accent px-4 py-2 text-sm font-bold text-white shadow-[0_10px_30px_-8px_rgba(14,127,127,0.8)] active:scale-95 md:top-4"
+          className="animate-sheet-in fixed left-1/2 top-[calc(var(--header-offset,53px)+3.75rem)] z-40 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-jz-accent px-4 py-2 text-sm font-bold text-white shadow-[0_10px_30px_-8px_rgba(0,0,0,0.35)] active:scale-95 md:top-4"
         >
           <ArrowUp className="h-4 w-4" strokeWidth={2.5} /> {t("feed.newPosts", { count: unseenNew.length })}
         </button>
       )}
       <WelcomeIntro />
 
-      <div className="relative isolate">
-        <div className="aurora" aria-hidden>
-          <span />
-          <span />
-          <span />
-        </div>
-      <h1 className="px-4 pt-5 text-px24 font-extrabold leading-tight tracking-tight text-jz-ink md:px-0 md:pt-8">
-        {t("feed.heroTitle")}
-        <span className="ml-1 inline-block h-2.5 w-2.5 rounded-full bg-jz-warm align-baseline" aria-hidden />
-      </h1>
+      <h1 className="px-4 pt-5 text-px24 font-extrabold leading-tight tracking-tight text-jz-ink md:px-0 md:pt-8">{t("feed.heroTitle")}</h1>
       <div className="px-3 pt-3 md:px-0">
         <ConciergeButton />
-      </div>
       </div>
       {stories.length > 0 && (
         <nav aria-label={t("feed.storiesLabel")} className="scrollbar-none flex gap-4 overflow-x-auto px-4 pb-2 pt-3 md:px-0">
@@ -366,7 +280,7 @@ export default function FeedPage() {
               onClick={() => setStoryView({ groups: stories, start: idx })}
               className="flex w-[72px] shrink-0 flex-col items-center gap-1.5 transition active:scale-95"
             >
-              <Avatar name={sg.municipality.name} src={sg.municipality.avatarUrl} size={62} ring spin seen={isGroupSeen(sg)} />
+              <Avatar name={sg.municipality.name} src={sg.municipality.avatarUrl} size={62} ring seen={isGroupSeen(sg)} />
               <span className={`w-full truncate text-center text-xs ${isGroupSeen(sg) ? "text-gray-500" : "text-gray-900"}`}>
                 {sg.municipality.name}
               </span>
@@ -378,8 +292,7 @@ export default function FeedPage() {
       <UpcomingEvents />
 
       <div className="sticky top-[var(--header-offset,53px)] z-30 bg-white/80 backdrop-blur-xl backdrop-saturate-150 transition-[top] duration-300 md:top-0">
-        <div className="flex items-center">
-        <div className="scrollbar-none flex min-w-0 flex-1 gap-2 overflow-x-auto px-4 py-2.5">
+        <div className="scrollbar-none flex gap-2 overflow-x-auto px-4 py-2.5">
           {[...CATEGORY_TABS, ...(token ? SPECIAL_TABS : [])].map((c) => (
             <button
               key={c}
@@ -392,27 +305,6 @@ export default function FeedPage() {
               {t(`category.${c}`)}
             </button>
           ))}
-        </div>
-        <div className="flex shrink-0 gap-0.5 border-l border-gray-200 py-1 pl-1.5 pr-2" role="group" aria-label={t("grid.viewLabel")}>
-          {(
-            [
-              ["grid", LayoutGrid, "grid.viewGrid"],
-              ["list", Rows3, "grid.viewList"],
-            ] as const
-          ).map(([v, Icon, label]) => (
-            <button
-              key={v}
-              type="button"
-              onClick={() => setView(v)}
-              aria-pressed={view === v}
-              aria-label={t(label)}
-              title={t(label)}
-              className={`flex h-8 w-8 items-center justify-center rounded-full transition ${view === v ? "bg-gray-900 text-white" : "text-gray-500 hover:bg-gray-100"}`}
-            >
-              <Icon className="h-4 w-4" />
-            </button>
-          ))}
-        </div>
         </div>
       </div>
 
@@ -432,7 +324,7 @@ export default function FeedPage() {
         </Link>
       )}
 
-      {view === "grid" && (isTieredTab(tab) ? gridPools : !loading) ? (
+      {(isTieredTab(tab) ? gridPools : !loading) ? (
         (isTieredTab(tab) ? gridPools!.famous.length + gridPools!.middle.length + gridPools!.hidden.length : reels.length) > 0 ? (
           <div className="pb-4">
             <RecommendGrid pools={isTieredTab(tab) ? gridPools! : plainPools} active={!openReelId && !storyView} onOpen={openFromGrid} />
@@ -440,44 +332,18 @@ export default function FeedPage() {
         ) : (
           <p className="px-6 py-16 text-center text-sm text-gray-500">{emptyMessage()}</p>
         )
-      ) : view === "grid" ? (
+      ) : (
         <div className="grid grid-cols-3 gap-[2px] pt-9" aria-hidden>
           {Array.from({ length: 9 }, (_, i) => (
             <div key={i} className="skeleton aspect-[3/5]" />
           ))}
         </div>
-      ) : loading ? (
-        <div className="pt-2 md:pt-4">
-          <FeedSkeleton />
-        </div>
-      ) : reels.length === 0 ? (
-        <p className="px-6 py-16 text-center text-sm text-gray-500">{emptyMessage()}</p>
-      ) : (
-        <div className="pb-6 pt-3">
-          {reels.map((reel) => (
-            <FeedPost
-              key={reel.id}
-              reel={reel}
-              heroName={heroId === reel.id && !openReelId ? "reel-hero" : undefined}
-              distanceKm={tab === "nearby" ? distances[reel.id] : undefined}
-              liveCount={liveCounts[reel.id]}
-              onOpen={openViewer}
-              onToggleLike={toggleLike}
-              onToggleSave={toggleSave}
-              onToggleFollow={toggleFollow}
-              onOpenComments={(r) => setCommentsReelId(r.id)}
-            />
-          ))}
-        </div>
       )}
-      {view === "list" && <div ref={sentinelRef} />}
-      {view === "list" && loadingMore && <FeedSkeleton count={1} />}
 
       {openReelId && (
         <ReelFullscreenViewer
           reels={viewerList ?? reels}
           initialId={openReelId}
-          heroId={heroId}
           onClose={closeViewer}
           onToggleLike={toggleLike}
           onToggleSave={toggleSave}
@@ -487,13 +353,6 @@ export default function FeedPage() {
       )}
       {storyView && (
         <StoryViewer groups={storyView.groups} startGroup={storyView.start} onClose={() => setStoryView(null)} />
-      )}
-      {commentsReelId && (
-        <CommentsSheet
-          reelId={commentsReelId}
-          onClose={() => setCommentsReelId(null)}
-          onCountChange={(count) => setCommentCount(commentsReelId, count)}
-        />
       )}
     </div>
   );

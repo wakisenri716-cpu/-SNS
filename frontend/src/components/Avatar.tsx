@@ -1,19 +1,16 @@
-// Round profile picture (or initial). `ring` adds the Instagram-style
-// gradient story ring around it; `spin` slowly rotates that gradient, and
-// `seen` turns the ring gray (stories already watched).
+// Round profile picture (or initial). `ring` adds a plain dark story ring
+// around it, and `seen` turns the ring gray (stories already watched).
 export default function Avatar({
   name,
   src,
   size = 32,
   ring = false,
-  spin = false,
   seen = false,
 }: {
   name: string;
   src?: string | null;
   size?: number;
   ring?: boolean;
-  spin?: boolean;
   seen?: boolean;
 }) {
   const inner = (
@@ -28,8 +25,7 @@ export default function Avatar({
   return (
     <span className="relative inline-flex shrink-0 overflow-hidden rounded-full p-[2.5px]">
       <span
-        className={`absolute -inset-1/4 ${spin && !seen ? "animate-ring-spin" : ""} ${seen ? "bg-gray-300" : ""}`}
-        style={seen ? undefined : { background: "conic-gradient(from 200deg, #14a3a3, #3a6ea5, #f26b38, #f6c343, #14a3a3)" }}
+        className={`absolute -inset-1/4 ${seen ? "bg-gray-300" : "bg-gray-900"}`}
         aria-hidden
       />
       <span className="relative block rounded-full bg-white p-[2px]">{inner}</span>

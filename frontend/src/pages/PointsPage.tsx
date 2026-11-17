@@ -73,13 +73,10 @@ export default function PointsPage() {
     <div className="mx-auto max-w-2xl px-4 py-6 lg:py-8">
       <h1 className="text-xl font-extrabold text-jz-ink">{t("points.title")}</h1>
       {summary ? (
-        <div className="mt-3 flex items-end gap-3 rounded-3xl bg-jz-ink p-5 text-white">
-          <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold text-white/70">{t("points.balance")}</p>
-            <p className="text-4xl font-black tabular-nums">{t("myPage.pointsValue", { points: summary.points })}</p>
-            <p className="mt-1 text-px11 text-white/60">{t("points.earnedSpent", { earned: summary.earned, spent: summary.spent })}</p>
-          </div>
-          <span className="h-14 w-14 shrink-0 rounded-full bg-jz-warm" aria-hidden />
+        <div className="mt-3 rounded-2xl border border-gray-200 bg-white p-5 text-jz-ink">
+          <p className="text-xs font-semibold text-gray-500">{t("points.balance")}</p>
+          <p className="text-4xl font-black tabular-nums">{t("myPage.pointsValue", { points: summary.points })}</p>
+          <p className="mt-1 text-px11 text-gray-500">{t("points.earnedSpent", { earned: summary.earned, spent: summary.spent })}</p>
         </div>
       ) : (
         <p className="mt-3 rounded-2xl bg-gray-50 p-4 text-xs leading-relaxed text-gray-600">

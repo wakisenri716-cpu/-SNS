@@ -72,7 +72,7 @@ export default function TripWeather({
           const f = forecasts.days[i];
           const date = addDays(startDate, day);
           return (
-            <div key={day} className="min-w-[7.5rem] shrink-0 rounded-2xl bg-gradient-to-br from-sky-50 to-white px-3 py-2 ring-1 ring-sky-100">
+            <div key={day} className="min-w-[7.5rem] shrink-0 rounded-2xl bg-gray-50 px-3 py-2 ring-1 ring-gray-200">
               <p className="text-px11 font-semibold text-gray-500">
                 {multiDay && `${t("itinerary.dayLabel", { day: day + 1 })}・`}
                 {new Date(`${date}T00:00:00`).toLocaleDateString(i18n.language, { month: "numeric", day: "numeric", weekday: "short" })}

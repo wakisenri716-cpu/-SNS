@@ -75,8 +75,6 @@ function SideNavItem({ to, label, icon: IconC, badge = 0, className = "" }: Omit
         <>
           <span className="relative">
             <IconC className="h-6 w-6 shrink-0 transition-transform group-hover:scale-105" strokeWidth={isActive ? 2.6 : 1.8} />
-            {/* A red dot marks where you are. */}
-            {isActive && <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-jz-warm ring-2 ring-white" />}
           </span>
           <span className="flex-1">{label}</span>
           <Badge count={badge} />
@@ -419,7 +417,7 @@ function TabBar({ tabs, label }: { tabs: NavEntry[]; label: string }) {
             <>
               <IconC className={`h-[25px] w-[25px] transition-transform duration-300 ${isActive ? "scale-105" : ""}`} strokeWidth={isActive ? 2.4 : 1.7} />
               <span
-                className={`mt-1 h-1.5 w-1.5 rounded-full bg-jz-warm transition-all duration-300 ${isActive ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
+                className={`mt-1 h-1.5 w-1.5 rounded-full bg-jz-ink transition-all duration-300 ${isActive ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
                 aria-hidden
               />
               {badge > 0 && <Badge count={badge} className="absolute left-1/2 top-1 ml-1.5" />}
