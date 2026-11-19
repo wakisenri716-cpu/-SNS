@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useExtraAi } from "../lib/aiStatus";
 import { ArrowUp, ChevronRight, Sparkles } from "lucide-react";
 import { api } from "../api/client";
 import { fetchSavedReelIds, onSavesChanged } from "../lib/savesChanged";
@@ -52,6 +53,8 @@ export default function FeedPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("all");
+  // AIに旅を相談 is off for now with the other AI beyond the しおり.
+  const extraAi = useExtraAi();
   const [reels, setReels] = useState<Reel[]>([]);
   // おすすめ 9マス: the three pools (tiered tabs), and the posts opened from the grid.
   const [gridPools, setGridPools] = useState<Pools<Reel> | null>(null);
@@ -269,9 +272,11 @@ export default function FeedPage() {
 
       {/* No big headline (like Instagram); kept for screen readers. */}
       <h1 className="sr-only">{t("feed.heroTitle")}</h1>
-      <div className="px-4 pt-3 md:px-0 md:pt-6">
-        <ConciergeButton />
-      </div>
+      {extraAi && (
+        <div className="px-4 pt-3 md:px-0 md:pt-6">
+          <ConciergeButton />
+        </div>
+      )}
       {stories.length > 0 && (
         <nav aria-label={t("feed.storiesLabel")} className="scrollbar-none flex gap-3 overflow-x-auto px-3 pb-1 pt-3 md:px-0">
           {stories.map((sg, idx) => (

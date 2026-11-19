@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+import { useExtraAi } from "../lib/aiStatus";
 import { BusFront, FileText, ImageIcon, Loader2, Pencil, Plus, Sparkles, Trash2, Upload } from "lucide-react";
 import { api } from "../api/client";
 import { aiLimitOf } from "../lib/aiLimit";
@@ -25,6 +26,8 @@ export default function LocalTransitManager({ reels }: { reels: Reel[] }) {
   const [preview, setPreview] = useState<string | null>(null);
   const [aiDrafted, setAiDrafted] = useState(false);
   const [reading, setReading] = useState(false);
+  // AIで読み取る is off for now with the other AI beyond the しおり.
+  const extraAi = useExtraAi();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [limit, setLimit] = useState<{ signedIn: boolean; plan: string | null } | null>(null);
@@ -130,7 +133,7 @@ export default function LocalTransitManager({ reels }: { reels: Reel[] }) {
           </button>
         )}
       </div>
-      <p className="rounded-2xl bg-jz-tint px-4 py-3 text-xs leading-relaxed text-jz-ink">{t("localTransit.manageIntro")}</p>
+      <p className="rounded-2xl bg-jz-tint px-4 py-3 text-xs leading-relaxed text-jz-ink">{t(extraAi ? "localTransit.manageIntro" : "localTransit.manageIntroNoAi")}</p>
 
       {open && (
         <form onSubmit={save} className="space-y-3 rounded-2xl border border-gray-200 p-3">
@@ -157,7 +160,7 @@ export default function LocalTransitManager({ reels }: { reels: Reel[] }) {
                 >
                   <Upload className="h-3.5 w-3.5" /> {file ? t("localTransit.changeFile") : t("localTransit.chooseFile")}
                 </button>
-                {file && (
+                {file && extraAi && (
                   <button
                     type="button"
                     onClick={() => void readWithAi()}
@@ -183,7 +186,7 @@ export default function LocalTransitManager({ reels }: { reels: Reel[] }) {
                   <span className="min-w-0 flex-1 truncate">{file.name}</span>
                 </div>
               )}
-              <p className="mt-1 text-px11 text-gray-500">{t("localTransit.fileHint")}</p>
+              <p className="mt-1 text-px11 text-gray-500">{t(extraAi ? "localTransit.fileHint" : "localTransit.fileHintNoAi")}</p>
             </div>
           )}
           {limit && <AiLimitNotice signedIn={limit.signedIn} plan={limit.plan} />}

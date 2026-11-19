@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useExtraAi } from "../lib/aiStatus";
 import { Sparkles } from "lucide-react";
 import { commentsForSummary, onDeviceSummarySupported, summarizeOnDevice } from "../lib/onDeviceSummarize";
 
@@ -10,11 +11,13 @@ export const MIN_COMMENTS = 4;
 // browser's own AI (Chrome's Summarizer API) — on the device, free, nothing
 // sent anywhere. Shown only where the browser has it.
 export default function CommentSummary({ bodies }: { bodies: string[] }) {
+  const extraAi = useExtraAi();
   const { t, i18n } = useTranslation();
   const [state, setState] = useState<{ kind: "idle" } | { kind: "working"; progress: number | null } | { kind: "done"; text: string } | { kind: "failed" }>({
     kind: "idle",
   });
-  if (!onDeviceSummarySupported() || bodies.length < MIN_COMMENTS) return null;
+  // Off for now with the other AI beyond the しおり.
+  if (extraAi !== true || !onDeviceSummarySupported() || bodies.length < MIN_COMMENTS) return null;
 
   async function run() {
     setState({ kind: "working", progress: null });

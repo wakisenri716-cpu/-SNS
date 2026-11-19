@@ -1,4 +1,5 @@
 import { Router, type Response } from "express";
+import { extraAiOn, requireExtraAi } from "../lib/aiFeatures";
 import { z } from "zod";
 import { prisma } from "../prisma";
 import { optionalAuth } from "../middleware/auth";
@@ -39,7 +40,8 @@ const bodySchema = z.object({
 
 // Whether answers come from Claude or from keyword matching, so the UI can label them.
 router.get("/status", (_req, res) => {
-  res.json({ ai: isAiConciergeConfigured() });
+  // extras: whether the AI beyond the しおり is on (lib/aiFeatures.ts).
+  res.json({ ai: isAiConciergeConfigured(), extras: extraAiOn() });
 });
 
 // The newest posts the concierge chooses from, with the viewer's like/save state.
@@ -106,7 +108,7 @@ async function respond(
   res.json({ mode: result.mode, reply: result.reply, picks });
 }
 
-router.post("/", conciergeLimiter, optionalAuth, async (req, res) => {
+router.post("/", requireExtraAi, conciergeLimiter, optionalAuth, async (req, res) => {
   const parsed = bodySchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "相談内容を入力してください（300文字まで）" });
   const quota = await checkAiQuota(req, res, "concierge");
@@ -129,7 +131,7 @@ const photoSchema = z.object({
   lang: z.enum(["ja", "en", "zh", "ko"]).default("ja"),
 });
 
-router.post("/photo", conciergeLimiter, optionalAuth, async (req, res) => {
+router.post("/photo", requireExtraAi, conciergeLimiter, optionalAuth, async (req, res) => {
   if (!isAiConciergeConfigured()) return res.status(503).json({ error: "写真で探す機能は現在利用できません" });
   const parsed = photoSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "画像（JPEG・PNG・WebP）を送ってください" });

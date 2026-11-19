@@ -1,4 +1,5 @@
 import { PENDING_APPROVAL, isUnapproved } from "../lib/admin";
+import { requireExtraAi } from "../lib/aiFeatures";
 import { fameTierOf, type FameTier } from "../lib/fameTier";
 import { randomBytes } from "node:crypto";
 import { locatePlace } from "../services/placeLookup";
@@ -1066,7 +1067,7 @@ router.delete("/:id/comments/:commentId/reports", requireAuth, async (req, res) 
 // (the UI hides the button then — see GET /concierge/status).
 const translationSchema = z.object({ lang: z.enum(["en", "zh", "ko"]) });
 
-router.post("/:id/translation", translateLimiter, async (req, res) => {
+router.post("/:id/translation", requireExtraAi, translateLimiter, async (req, res) => {
   const parsed = translationSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "翻訳先の言語が正しくありません" });
   const { lang } = parsed.data;
@@ -1099,7 +1100,7 @@ router.post("/:id/translation", translateLimiter, async (req, res) => {
 // by reports can't be fetched this way by others.
 const commentTranslationSchema = z.object({ lang: z.enum(["ja", "en", "zh", "ko"]) });
 
-router.post("/:id/comments/:commentId/translation", translateLimiter, optionalAuth, async (req, res) => {
+router.post("/:id/comments/:commentId/translation", requireExtraAi, translateLimiter, optionalAuth, async (req, res) => {
   const parsed = commentTranslationSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "翻訳先の言語が正しくありません" });
   const { lang } = parsed.data;

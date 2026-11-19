@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useExtraAi } from "../lib/aiStatus";
 import { Sparkles } from "lucide-react";
 import { onDeviceRewriteSupported, rewriteOnDevice, type RewriteStyle } from "../lib/onDeviceRewrite";
 
@@ -8,9 +9,11 @@ const STYLES: RewriteStyle[] = ["appealing", "shorter", "polite"];
 // 端末のAIで整える, under a post's text box: a suggestion from the browser's
 // own AI that the poster can take or leave. Shown only where the browser has it.
 export default function CaptionAssist({ value, onChange }: { value: string; onChange: (text: string) => void }) {
+  const extraAi = useExtraAi();
   const { t } = useTranslation();
   const [state, setState] = useState<{ kind: "idle" } | { kind: "working"; progress: number | null } | { kind: "done"; text: string } | { kind: "failed" }>({ kind: "idle" });
-  if (!onDeviceRewriteSupported()) return null;
+  // Off for now with the other AI beyond the しおり.
+  if (extraAi !== true || !onDeviceRewriteSupported()) return null;
 
   async function run(style: RewriteStyle) {
     setState({ kind: "working", progress: null });

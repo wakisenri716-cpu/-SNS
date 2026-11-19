@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useExtraAi } from "../lib/aiStatus";
 import { ChevronRight, History, MapPinned, Mic, Search as SearchIcon } from "lucide-react";
 import { clearRecentlyViewed, getRecentlyViewed, type RecentItem } from "../lib/recentlyViewed";
 import Avatar from "../components/Avatar";
@@ -22,6 +23,8 @@ interface RecommendItem {
 
 export default function SearchPage() {
   const { t, i18n } = useTranslation();
+  // AIに旅を相談 is off for now with the other AI beyond the しおり.
+  const extraAi = useExtraAi();
   // ?q= starts a search (e.g. text shared from another app, see SharePage).
   const [params] = useSearchParams();
   const [q, setQ] = useState(() => params.get("q") ?? "");
@@ -81,7 +84,7 @@ export default function SearchPage() {
           </button>
         )}
       </div>
-      <ConciergeButton className="mt-2" />
+      {extraAi && <ConciergeButton className="mt-2" />}
       <Link to="/areas" className="mt-1 flex items-center gap-2 py-2 text-sm font-semibold text-jz-ink active:opacity-60">
         <MapPinned className="h-4 w-4" />
         <span className="flex-1">{t("areas.heading")}</span>

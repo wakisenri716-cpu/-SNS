@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAiAvailable } from "./aiStatus";
+import { useAiAvailable, useExtraAi } from "./aiStatus";
 import { onDeviceTranslationSupported, translateOnDevice } from "./onDeviceTranslate";
 
 // "翻訳を見る" for a caption or comment, into the UI language. With Claude
@@ -14,13 +14,15 @@ export function useTranslatable(
   const { i18n } = useTranslation();
   const lang = i18n.language;
   const ai = useAiAvailable();
+  // Translation is one of the AI features switched off for now.
+  const extras = useExtraAi();
   const onDevice = !ai && onDeviceTranslationSupported();
   const [done, setDone] = useState<Record<string, { text: string; by: "claude" | "device" }>>({});
   const [showing, setShowing] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "failed" | "same" | "unsupported">("idle");
   const [progress, setProgress] = useState<number | null>(null);
 
-  const available = text.trim().length > 0 && (source ? source !== lang : true) && (!!ai || onDevice);
+  const available = extras === true && text.trim().length > 0 && (source ? source !== lang : true) && (!!ai || onDevice);
   const result = done[lang];
 
   async function toggle() {

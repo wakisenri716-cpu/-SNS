@@ -16,6 +16,8 @@ process.env.JWT_SECRET = "test-secret";
 process.env.DISABLE_RATE_LIMITS = "1";
 // 登録の承認 is tested on its own below; elsewhere new accounts can post at once.
 process.env.POSTER_APPROVAL = "off";
+// The AI beyond the しおり is off by default for now; these tests cover it switched on.
+process.env.AI_EXTRA_FEATURES = "on";
 delete process.env.ANTHROPIC_API_KEY;
 delete process.env.GOOGLE_MAPS_API_KEY;
 
@@ -213,7 +215,7 @@ test("stamp rally: refused far away, granted on site, only once", async () => {
 
 test("concierge answers by keyword without an API key, and says so", async () => {
   const status = await call("GET", "/api/concierge/status");
-  assert.deepEqual(status.json, { ai: false });
+  assert.deepEqual(status.json, { ai: false, extras: true });
   const res = await call("POST", "/api/concierge", { message: "家族でお城を見たい", lang: "ja" });
   assert.equal(res.status, 200);
   assert.equal(res.json.mode, "keyword");
@@ -2082,4 +2084,26 @@ test("公開に向けて: no demo in production, and when the terms were accepte
   const none = await prisma.user.findUnique({ where: { email: "terms-none@example.com" }, select: { termsAcceptedAt: true } });
   assert.ok(yes?.termsAcceptedAt instanceof Date && Date.now() - yes.termsAcceptedAt.getTime() < 60_000);
   assert.equal(none?.termsAcceptedAt, null);
+});
+
+test("AI beyond the しおり can be switched off: the API refuses it and the app is told", async () => {
+  delete process.env.AI_EXTRA_FEATURES;
+  try {
+    const muni = await login("demo-matsumoto@example.com");
+    const status = (await call("GET", "/api/concierge/status")).json;
+    assert.equal(status.extras, false);
+    const reel = (await call("GET", "/api/reels")).json.items[0];
+    for (const [method, url, token] of [
+      ["POST", "/api/concierge", undefined],
+      ["POST", "/api/concierge/photo", undefined],
+      ["POST", `/api/reels/${reel.id}/translation`, undefined],
+      ["POST", "/api/local-transit/read", muni],
+    ] as const) {
+      const r = await call(method, url, { question: "温泉", lang: "en" }, token);
+      assert.deepEqual([r.status, r.json?.code], [404, "aiOff"], url);
+    }
+  } finally {
+    process.env.AI_EXTRA_FEATURES = "on";
+  }
+  assert.equal((await call("GET", "/api/concierge/status")).json.extras, true);
 });

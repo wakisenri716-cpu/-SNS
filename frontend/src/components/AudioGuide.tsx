@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Headphones, Square } from "lucide-react";
 import { api } from "../api/client";
-import { useAiAvailable } from "../lib/aiStatus";
+import { useAiAvailable, useExtraAi } from "../lib/aiStatus";
 import { formatBestMonths } from "../lib/season";
 import type { Reel } from "../types";
 
@@ -16,7 +16,10 @@ const VOICE_LANG: Record<string, string> = { ja: "ja-JP", en: "en-US", zh: "zh-C
 // voice, and the button says so.
 export default function AudioGuide({ reel }: { reel: Reel }) {
   const { t, i18n } = useTranslation();
-  const aiAvailable = useAiAvailable();
+  // Translating the guide into the listener's language is off with the other extra AI.
+  const extras = useExtraAi();
+  const ai = useAiAvailable();
+  const aiAvailable = ai === null || extras === null ? null : ai && extras;
   const [speaking, setSpeaking] = useState(false);
   const [preparing, setPreparing] = useState(false);
   const alive = useRef(true);

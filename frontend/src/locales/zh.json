@@ -1831,7 +1831,9 @@
     "deleteConfirm": "要删除“{{title}}”吗？",
     "none": "还没有交通信息",
     "edit": "编辑",
-    "delete": "删除"
+    "delete": "删除",
+    "manageIntroNoAi": "可以用截图或PDF添加只刊登在官网或纸质资料上的交通信息（社区巴士、拼车出租车、接送巴士、季节运行等）。写下要点后，会显示在地点的交通页面上。",
+    "fileHintNoAi": "图片（JPEG・PNG・WebP）或PDF，15MB以内。旅行者也可以查看该资料。"
   },
   "admin": {
     "title": "Jaziba 管理后台",

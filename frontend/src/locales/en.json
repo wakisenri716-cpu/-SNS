@@ -1864,7 +1864,9 @@
     "deleteConfirm": "Delete “{{title}}”?",
     "none": "No transport information yet",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "manageIntroNoAi": "Add transport information that's only on your website or leaflets (community buses, shared taxis, shuttles, seasonal services) from a screenshot or PDF. Write the key points, and it appears on the spots' access pages.",
+    "fileHintNoAi": "An image (JPEG, PNG, WebP) or PDF, up to 15MB. Travelers can see the file too."
   },
   "admin": {
     "title": "Jaziba Admin",

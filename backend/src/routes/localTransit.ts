@@ -1,4 +1,5 @@
 import fs from "fs";
+import { requireExtraAi } from "../lib/aiFeatures";
 import path from "path";
 import { Router } from "express";
 import { z } from "zod";
@@ -68,7 +69,7 @@ router.get("/", async (req, res) => {
 
 // 翻訳を見る: into the traveler's language (cached per version for a day).
 const translations = ttlCache<{ title: string; body: string }>(24 * 60 * 60 * 1000, 500);
-router.post("/:id/translation", translateLimiter, async (req, res) => {
+router.post("/:id/translation", requireExtraAi, translateLimiter, async (req, res) => {
   const parsed = z.object({ lang: z.enum(["ja", "en", "zh", "ko"]) }).safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "翻訳先の言語が正しくありません" });
   const row = await prisma.localTransit.findUnique({ where: { id: req.params.id } });
@@ -102,7 +103,7 @@ router.get("/mine", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), async (
 });
 
 // AIで読み取る: a draft of the key points from the file (not saved).
-router.post("/read", requireAuth, requireRole("MUNICIPALITY", "COMPANY"), writeLimiter, readTransitFileUpload.single("file"), async (req, res) => {
+router.post("/read", requireExtraAi, requireAuth, requireRole("MUNICIPALITY", "COMPANY"), writeLimiter, readTransitFileUpload.single("file"), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: "画像かPDFを選んでください" });
   // Claude takes images up to 5MB.
   if (req.file.mimetype !== "application/pdf" && req.file.size > 5 * 1024 * 1024) {

@@ -10,7 +10,7 @@ import { localInputToIso } from "../lib/transportTiming";
 import { routeComplete, saveRoute, todayLocal } from "../lib/saveRoute";
 import { listTrips, type TripSummary } from "../lib/trips";
 import { showToast } from "../lib/toast";
-import { useAiAvailable } from "../lib/aiStatus";
+import { useAiAvailable, useExtraAi } from "../lib/aiStatus";
 import { coordsInText, readExifGps } from "../lib/exifGps";
 import { distanceKm, formatDistance } from "../lib/geo";
 import type { Reel } from "../types";
@@ -36,6 +36,8 @@ export default function SharePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const ai = useAiAvailable();
+  // 写真で探す is off for now with the other AI beyond the しおり.
+  const extraAi = useExtraAi();
   const [shared, setShared] = useState<Shared | null | undefined>(undefined);
   const [where, setWhere] = useState<{ lat: number; lng: number } | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -123,7 +125,7 @@ export default function SharePage() {
               {where ? t("shareIn.photoHasPlace") : t("shareIn.photoNoPlace")}
             </p>
           )}
-          {shared.photo && ai && (
+          {shared.photo && ai && extraAi && (
             <button
               type="button"
               onClick={() => setPhotoSearch(true)}
