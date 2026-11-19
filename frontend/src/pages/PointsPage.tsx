@@ -6,6 +6,7 @@ import { CheckCircle2, Gem, Sparkles, Store, Ticket } from "lucide-react";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { showToast } from "../lib/toast";
+import { useExtraAi } from "../lib/aiStatus";
 import type { Coupon, CouponRedemption, PointsSummary } from "../types";
 
 type Tab = "coupons" | "ai" | "mine";
@@ -15,6 +16,8 @@ type Tab = "coupons" | "ai" | "mine";
 // more AI uses than the free ones each day.
 export default function PointsPage() {
   const { t, i18n } = useTranslation();
+  // While the AI beyond the しおり is off, only the しおり ones are listed.
+  const extraAi = useExtraAi();
   const { user, token } = useAuth();
   const location = useLocation();
   const traveler = user?.role === "USER";
@@ -167,7 +170,7 @@ export default function PointsPage() {
             </p>
             <p className="mt-1">{t("points.aiIntro", { free: summary?.ai.freePerMonth ?? 30, perDay: summary?.ai.freeMaxPerDay ?? 10 })}</p>
             <ul className="mt-2 space-y-0.5">
-              {(["concierge", "photoConcierge", "tripPlan", "tripCompose"] as const).map((f) => (
+              {(extraAi ? (["concierge", "photoConcierge", "tripPlan", "tripCompose", "reservationRead"] as const) : (["tripPlan", "tripCompose", "reservationRead"] as const)).map((f) => (
                 <li key={f} className="flex justify-between gap-2">
                   <span>{t(`points.feature.${f}`)}</span>
                   <b className="shrink-0 tabular-nums">{t("points.unitsPerUse", { count: summary?.ai.units[f] ?? (f === "tripCompose" ? 5 : 1) })}</b>
@@ -202,7 +205,7 @@ export default function PointsPage() {
                 </button>
               </div>
             ))}
-          <p className="text-px11 leading-relaxed text-gray-500">{t("points.aiNote")}</p>
+          <p className="text-px11 leading-relaxed text-gray-500">{t(extraAi ? "points.aiNote" : "points.aiNoteShiori")}</p>
         </section>
       )}
 

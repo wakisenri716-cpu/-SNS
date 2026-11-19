@@ -1638,10 +1638,12 @@
       "photoConcierge": "以图搜索",
       "tripPlan": "AI制定计划",
       "tripCompose": "AI制作行程（自动生成行程）",
-      "transitRead": "用AI读取交通信息"
+      "transitRead": "用AI读取交通信息",
+      "reservationRead": "读取预订明细（行程）"
     },
     "planCta": "Plus每月可使用{{count}}次",
-    "planCtaButton": "查看方案"
+    "planCtaButton": "查看方案",
+    "aiNoteShiori": "免费次数在每月1日0点（日本时间）恢复。AI券没有有效期。"
   },
   "coupons": {
     "tab": "优惠券",

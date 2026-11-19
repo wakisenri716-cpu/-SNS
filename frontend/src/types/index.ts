@@ -409,7 +409,7 @@ export interface PointsSummary {
     freeLeftThisMonth: number;
     credits: number;
     /** How many uses each AI feature counts for. */
-    units: Record<"concierge" | "photoConcierge" | "tripPlan" | "tripCompose" | "transitRead", number>;
+    units: Record<"concierge" | "photoConcierge" | "tripPlan" | "tripCompose" | "transitRead" | "reservationRead", number>;
     packs: { id: string; credits: number; points: number }[];
   };
 }

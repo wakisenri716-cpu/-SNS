@@ -1638,10 +1638,12 @@
       "photoConcierge": "사진으로 찾기",
       "tripPlan": "AI 플랜 만들기",
       "tripCompose": "AI 여행 만들기 (일정 자동 작성)",
-      "transitRead": "AI로 교통 정보 읽기"
+      "transitRead": "AI로 교통 정보 읽기",
+      "reservationRead": "예약 내역 읽기(여행 일정)"
     },
     "planCta": "플러스는 매월 {{count}}회까지 사용할 수 있습니다",
-    "planCtaButton": "플랜 보기"
+    "planCtaButton": "플랜 보기",
+    "aiNoteShiori": "무료 횟수는 매월 1일 0시(일본 시간)에 초기화돼요. AI 티켓에는 기한이 없어요."
   },
   "coupons": {
     "tab": "쿠폰",

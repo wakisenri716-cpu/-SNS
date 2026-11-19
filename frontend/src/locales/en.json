@@ -1671,10 +1671,12 @@
       "photoConcierge": "Search by photo",
       "tripPlan": "AI plan",
       "tripCompose": "AI trip (builds the plan for you)",
-      "transitRead": "Read transport info with AI"
+      "transitRead": "Read transport info with AI",
+      "reservationRead": "Reading booking details (trip plan)"
     },
     "planCta": "With Plus you get up to {{count}} uses a month",
-    "planCtaButton": "See plans"
+    "planCtaButton": "See plans",
+    "aiNoteShiori": "Free uses reset on the 1st of each month at 0:00 (Japan time). AI tickets don't expire."
   },
   "coupons": {
     "tab": "Coupons",

@@ -1638,10 +1638,12 @@
       "photoConcierge": "写真で探す",
       "tripPlan": "AIでプランを作る",
       "tripCompose": "AIで旅をつくる（しおりを自動作成）",
-      "transitRead": "交通情報をAIで読み取る"
+      "transitRead": "交通情報をAIで読み取る",
+      "reservationRead": "予約明細の読み取り（しおり）"
     },
     "planCta": "プラスなら月{{count}}回分まで使えます",
-    "planCtaButton": "プランを見る"
+    "planCtaButton": "プランを見る",
+    "aiNoteShiori": "無料の回数は毎月1日0時（日本時間）に戻ります。AIチケットに期限はありません。"
   },
   "coupons": {
     "tab": "クーポン",
